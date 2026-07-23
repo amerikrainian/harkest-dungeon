@@ -1,0 +1,19 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.2.0</Version>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>
+  </PropertyGroup>
+
+  <!-- Machine-local overrides (gitignored): set GameDir here for a non-default install. -->
+  <Import Project="$(MSBuildThisFileDirectory)Directory.Build.local.props"
+          Condition="Exists('$(MSBuildThisFileDirectory)Directory.Build.local.props')" />
+
+  <PropertyGroup>
+    <GameDir Condition="'$(GameDir)' == '' and '$(DD2_DIR)' != ''">$(DD2_DIR)</GameDir>
+    <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Darkest Dungeon® II</GameDir>
+    <ManagedDir>$(GameDir)\Darkest Dungeon II_Data\Managed</ManagedDir>
+    <BepInExDir>$(GameDir)\BepInEx</BepInExDir>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,43 @@
+# DD2A11y translation template. Copy to <language>.txt and translate the values.
+# Lines starting with # are comments. Format: key = value.
+# {0}-style slots are filled at runtime; keep them, reorder freely.
+# '|' separates plural forms, chosen by the _plural rule below.
+_plural = english
+ModLoaded = DD2A11y {0} loaded
+ScreenMainMenu = main menu
+ScreenSettings = settings
+ScreenPauseMenu = pause menu
+ScreenCrossroads = crossroads
+ScreenDialog = dialog
+RoleButton = button
+RoleToggle = toggle
+RoleSlider = slider
+RoleDropdown = dropdown
+RoleTab = tab
+StatusOn = on
+StatusOff = off
+StatusMinimum = minimum
+StatusMaximum = maximum
+StatusSelected = selected
+StatusUnavailable = unavailable
+ValuePercent = {0} percent
+CrossroadsParty = party
+CrossroadsRoster = roster
+CrossroadsEmptySlot = empty slot
+BufferControl = control
+BufferNone = no buffer lines
+BufferLine = {0}: {1}
+InputNavigateUp = Navigate up
+InputNavigateDown = Navigate down
+InputNavigateLeft = Navigate left
+InputNavigateRight = Navigate right
+InputNextPanel = Next panel
+InputPrevPanel = Previous panel
+InputActivate = Activate control
+InputBack = Back
+InputJumpFirst = Jump to first
+InputJumpLast = Jump to last
+InputBufferNext = Next buffer
+InputBufferPrev = Previous buffer
+InputBufferLineNext = Next buffer line
+InputBufferLinePrev = Previous buffer line

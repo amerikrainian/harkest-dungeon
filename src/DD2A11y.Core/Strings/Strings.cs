@@ -1,0 +1,179 @@
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+
+namespace DD2A11y.Core.Strings {
+    /// <summary>
+    /// Central table for text the MOD itself authors and speaks (never game content, which is read
+    /// live and already localized). Every authored word lives in <see cref="Defaults"/> as a key and
+    /// its English value; the members below are typed accessors reading through
+    /// <see cref="Translation"/>, so a loaded translation file overrides any value at speak time.
+    /// Grammar lives in the values: "{0}"-style slots carry word order, and '|'-separated forms carry
+    /// plurals (picked by the translation's plural rule - see <see cref="PluralRules"/>). Game-content
+    /// reading must never route through here.
+    /// </summary>
+    public static class Strings {
+        private static KeyValuePair<string, string> D(string key, string value)
+            => new KeyValuePair<string, string>(key, value);
+
+        /// <summary>Every authored string, in template order: the key a translation file addresses
+        /// and its English default. The comments are the translation context: where the line is
+        /// spoken, what fills each {0} slot, and the part of speech where a bare English word is
+        /// ambiguous. Values are spoken by a screen reader: terse, lowercase unless shown otherwise,
+        /// no decorative punctuation.</summary>
+        internal static readonly KeyValuePair<string, string>[] Defaults = {
+            // Spoken once when the mod finishes initializing at game launch; {0} = the mod version.
+            D("ModLoaded", "DD2A11y {0} loaded"),
+
+            // Screen names, spoken when the mod takes over a screen. Match the game's own word for
+            // the screen where it has one (the settings screen's title, the pause header).
+            D("ScreenMainMenu", "main menu"),
+            D("ScreenSettings", "settings"),
+            D("ScreenPauseMenu", "pause menu"),
+            D("ScreenCrossroads", "crossroads"),
+            // A generic confirmation dialog with no title of its own.
+            D("ScreenDialog", "dialog"),
+
+            // Control type words, spoken after a control's label ("Continue, button"). Nouns.
+            D("RoleButton", "button"),
+            D("RoleToggle", "toggle"),
+            D("RoleSlider", "slider"),
+            D("RoleDropdown", "dropdown"),
+            D("RoleTab", "tab"),
+
+            // Control state words.
+            // A toggle that is checked / unchecked.
+            D("StatusOn", "on"),
+            D("StatusOff", "off"),
+            // Spoken when adjusting a slider that is already at its end.
+            D("StatusMinimum", "minimum"),
+            D("StatusMaximum", "maximum"),
+            // The currently chosen entry (a tab, a hero already in the party).
+            D("StatusSelected", "selected"),
+            // A control present but not usable right now (a grayed-out button). Adjective.
+            D("StatusUnavailable", "unavailable"),
+            // A slider value; {0} = the number.
+            D("ValuePercent", "{0} percent"),
+
+            // Crossroads (the pre-run hub). Section names for the two hero strips; the game shows
+            // these visually with no header string to reuse. Nouns.
+            D("CrossroadsParty", "party"),
+            D("CrossroadsRoster", "roster"),
+            // A hero slot with no hero in it.
+            D("CrossroadsEmptySlot", "empty slot"),
+
+            // Buffer review (Ctrl plus arrows). The buffer holding the focused control's detail
+            // lines (its tooltips). Noun naming that buffer.
+            D("BufferControl", "control"),
+            // Spoken when a buffer key is pressed and every buffer is empty.
+            D("BufferNone", "no buffer lines"),
+            // Switching to a buffer: {0} = the buffer's name, {1} = its current line.
+            D("BufferLine", "{0}: {1}"),
+
+            // Input action names, for a future keybindings reader. Short imperative phrases.
+            D("InputNavigateUp", "Navigate up"),
+            D("InputNavigateDown", "Navigate down"),
+            D("InputNavigateLeft", "Navigate left"),
+            D("InputNavigateRight", "Navigate right"),
+            D("InputNextPanel", "Next panel"),
+            D("InputPrevPanel", "Previous panel"),
+            D("InputActivate", "Activate control"),
+            D("InputBack", "Back"),
+            D("InputJumpFirst", "Jump to first"),
+            D("InputJumpLast", "Jump to last"),
+            D("InputBufferNext", "Next buffer"),
+            D("InputBufferPrev", "Previous buffer"),
+            D("InputBufferLineNext", "Next buffer line"),
+            D("InputBufferLinePrev", "Previous buffer line"),
+        };
+
+        private static readonly Dictionary<string, string> English = BuildEnglish();
+
+        private static Dictionary<string, string> BuildEnglish() {
+            var map = new Dictionary<string, string>(Defaults.Length, System.StringComparer.Ordinal);
+            foreach (var entry in Defaults) {
+                map[entry.Key] = entry.Value;
+            }
+            return map;
+        }
+
+        /// <summary>Whether the table defines this key (used by <see cref="Translation.Load"/> to
+        /// reject typo'd entries).</summary>
+        public static bool DefinesKey(string key) => English.ContainsKey(key);
+
+        /// <summary>The full translator template: a header, the plural rule, then every key and its
+        /// English default in table order. lang/en.txt is pinned to this by a test.</summary>
+        public static string DumpTemplate() {
+            var sb = new StringBuilder();
+            sb.Append("# DD2A11y translation template. Copy to <language>.txt and translate the values.\n");
+            sb.Append("# Lines starting with # are comments. Format: key = value.\n");
+            sb.Append("# {0}-style slots are filled at runtime; keep them, reorder freely.\n");
+            sb.Append("# '|' separates plural forms, chosen by the _plural rule below.\n");
+            sb.Append("_plural = english\n");
+            foreach (var entry in Defaults) {
+                sb.Append(entry.Key).Append(" = ").Append(entry.Value).Append('\n');
+            }
+            return sb.ToString();
+        }
+
+        private static string T(string key) => Translation.Get(key, English[key]);
+
+        private static string F(string key, params object[] args)
+            => string.Format(CultureInfo.InvariantCulture, T(key), args);
+
+        private static string P(string key, int count) {
+            string value = T(key);
+            string[] forms = value.Split('|');
+            int index = Translation.Overrides(key) ? Translation.PluralIndex(count) : PluralRules.English(count);
+            if (index >= forms.Length) {
+                index = forms.Length - 1;
+            }
+            return string.Format(CultureInfo.InvariantCulture, forms[index], count);
+        }
+
+        public static string ModLoaded(string version) => F("ModLoaded", version);
+
+        public static string ScreenMainMenu => T("ScreenMainMenu");
+        public static string ScreenSettings => T("ScreenSettings");
+        public static string ScreenPauseMenu => T("ScreenPauseMenu");
+        public static string ScreenCrossroads => T("ScreenCrossroads");
+        public static string ScreenDialog => T("ScreenDialog");
+
+        public static string RoleButton => T("RoleButton");
+        public static string RoleToggle => T("RoleToggle");
+        public static string RoleSlider => T("RoleSlider");
+        public static string RoleDropdown => T("RoleDropdown");
+        public static string RoleTab => T("RoleTab");
+
+        public static string StatusOn => T("StatusOn");
+        public static string StatusOff => T("StatusOff");
+        public static string StatusMinimum => T("StatusMinimum");
+        public static string StatusMaximum => T("StatusMaximum");
+        public static string StatusSelected => T("StatusSelected");
+        public static string StatusUnavailable => T("StatusUnavailable");
+        public static string ValuePercent(int value) => F("ValuePercent", value);
+
+        public static string CrossroadsParty => T("CrossroadsParty");
+        public static string CrossroadsRoster => T("CrossroadsRoster");
+        public static string CrossroadsEmptySlot => T("CrossroadsEmptySlot");
+
+        public static string BufferControl => T("BufferControl");
+        public static string BufferNone => T("BufferNone");
+        public static string BufferLine(string buffer, string line) => F("BufferLine", buffer, line);
+
+        public static string InputNavigateUp => T("InputNavigateUp");
+        public static string InputNavigateDown => T("InputNavigateDown");
+        public static string InputNavigateLeft => T("InputNavigateLeft");
+        public static string InputNavigateRight => T("InputNavigateRight");
+        public static string InputNextPanel => T("InputNextPanel");
+        public static string InputPrevPanel => T("InputPrevPanel");
+        public static string InputActivate => T("InputActivate");
+        public static string InputBack => T("InputBack");
+        public static string InputJumpFirst => T("InputJumpFirst");
+        public static string InputJumpLast => T("InputJumpLast");
+        public static string InputBufferNext => T("InputBufferNext");
+        public static string InputBufferPrev => T("InputBufferPrev");
+        public static string InputBufferLineNext => T("InputBufferLineNext");
+        public static string InputBufferLinePrev => T("InputBufferLinePrev");
+    }
+}
