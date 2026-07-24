@@ -55,6 +55,9 @@ namespace DD2A11y.Elements {
 
         public override IEnumerable<string> GetBufferLines() {
             yield return GetFocusText();
+            foreach (var line in ClassDescription.Lines(Actor?.ActorDataId)) {
+                yield return line;
+            }
             foreach (var line in TooltipReader.LinesOf(SealTooltipField(_sheet))) {
                 yield return line;
             }

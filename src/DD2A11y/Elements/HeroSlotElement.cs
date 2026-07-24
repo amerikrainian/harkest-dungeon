@@ -101,14 +101,20 @@ namespace DD2A11y.Elements {
         // The class name for a hero not yet unlocked (no ActorInstance exists): resolve the
         // actor data class from the slot's resource and localize its id, the same key the game
         // uses for unlocked names.
-        private string LockedClassName() {
+        private string LockedClassName() => GameLoc.TryGet(ClassId());
+
+        private string ClassId() {
+            if (Slot.IsOccupied) {
+                var instance = Slot.ActorInstance;
+                return instance == null ? null : instance.ActorDataId;
+            }
             var resource = ResourceActorField(Slot);
             if (resource == null || !SingletonMonoBehaviour<Library<string, ActorDataClass>>.HasInstance()) {
                 return null;
             }
             var dataClass = SingletonMonoBehaviour<Library<string, ActorDataClass>>.Instance
                 .GetLibraryElement(resource.name);
-            return dataClass == null ? null : GameLoc.TryGet(dataClass.Id);
+            return dataClass == null ? null : dataClass.Id;
         }
 
         public override IEnumerable<string> GetBufferLines() {
@@ -130,6 +136,9 @@ namespace DD2A11y.Elements {
                     }
                     yield return clean;
                 }
+            }
+            foreach (var line in ClassDescription.Lines(ClassId())) {
+                yield return line;
             }
         }
     }

@@ -55,16 +55,25 @@ Status: **built** - no UiModal appeared during live testing yet.
 ### Crossroads (`CrossroadsScreen`, HERO_SELECT mode)
 Status: **works** (live-verified 2026-07-23)
 - Party ranks (the game's "roster slots", Rank1-4) then the hero pool as horizontal strips,
-  then embark controls. Hero labels are the game's own class-name loc keys; locked heroes say
-  "unavailable" with their flavor/unlock text as buffer lines; drafted pool heroes read
-  "in party".
+  then the actions strip: the party's name when the composition has one, **Embark** (appears
+  once all four ranks are filled - drives the game's own `ConfirmRosterSelection`, including
+  its unequipped-skills confirmation dialog), and **Random Party**. Hero labels are the game's
+  own class-name loc keys; locked heroes say "unavailable" with their flavor/unlock text as
+  buffer lines; drafted pool heroes read "in party". Every hero slot's buffer ends with the
+  class blurb the sighted panel shows (`actor_verbose_description_*` / `actor_descriptors_*`:
+  the flavor line and the "+ Front Rank + Guard..." descriptor list); the same lines lead the
+  hero sheet header's buffer.
 - Enter = the game's own two-step (select a hero, then Enter on a rank places them).
   **Space** = grab-and-place through the game's drop logic (specific rank, rank swap, back to
   pool), with grabbed/cancelled/cannot-place feedback. **I** = the hero sheet (the mouse
   right-click equivalent), read by its dedicated screen; Escape closes it.
-- Known gaps: path-select and party-loadout sub-panels
-  (`HERO_SELECT_PATH_SELECT` / `HERO_SELECT_PARTY_LOADOUT`) not modeled; stagecoach config not
-  started; relationship buttons and the embark press itself not yet exercised.
+- Known gaps: the Embark element is live-verified up to (not including) the press - pressing
+  it starts the run, which leads into unmodeled screens. The path-select and party-loadout
+  canvas overlays are not modeled, so their opener buttons (the "Change Path" seal,
+  "Party Loadouts") are deliberately NOT surfaced - offering a control that opens an
+  unreadable overlay is a trap; surface them together with their panels. Stagecoach config
+  not started; hero rename/reroll on the canvas not surfaced; the party's aggregate
+  Rank/Target pips are not read (each skill's exact ranks are in the hero sheet).
 
 ### Hero sheet (`CharacterSheetScreen`)
 Status: **works** (live-verified 2026-07-23 from the crossroads)

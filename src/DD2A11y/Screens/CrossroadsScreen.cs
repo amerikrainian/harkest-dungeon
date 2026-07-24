@@ -7,6 +7,7 @@ using Assets.Code.UI.HeroSelect;
 using Assets.Code.Utils;
 using DD2A11y.Core.Nav;
 using DD2A11y.Elements;
+using DD2A11y.Game;
 using HarmonyLib;
 using S = DD2A11y.Core.Strings.Strings;
 using UnityEngine;
@@ -23,12 +24,10 @@ namespace DD2A11y.Screens {
     /// the buffer.
     /// </summary>
     public sealed class CrossroadsScreen : GameScreen {
-        private static readonly System.Reflection.FieldInfo EmbarkBtnField =
-            AccessTools.Field(typeof(EmbarkUiBhv), "m_embarkBtn");
-        private static readonly System.Reflection.FieldInfo MouseEmbarkBtnField =
-            AccessTools.Field(typeof(EmbarkUiBhv), "m_mouseEmbarkBtn");
-        private static readonly System.Reflection.FieldInfo ApplyAllField =
-            AccessTools.Field(typeof(EmbarkUiBhv), "m_applyAllRelationshipsButton");
+        // The embark control is the hero-select canvas's confirm button (a bare Selectable the
+        // game drives with a hold-to-confirm); it only activates once every party slot is filled.
+        private static readonly AccessTools.FieldRef<HeroSelectBhv, UnityEngine.UI.Selectable> ConfirmButtonField =
+            AccessTools.FieldRefAccess<HeroSelectBhv, UnityEngine.UI.Selectable>("m_ConfirmButton");
         private static readonly System.Reflection.MethodInfo IsDropValidMethod =
             AccessTools.Method(typeof(HeroSelectActorUIBhv), "IsDropValid");
         private static readonly System.Reflection.MethodInfo IsDropAcceptedMethod =
@@ -40,6 +39,7 @@ namespace DD2A11y.Screens {
         private HeroSelectBhv _heroSelect;
         private Container _root;
         private int _builtSlots;
+        private bool _builtEmbarkVisible;
         private HeroSlotElement _grabbed;
 
         public CrossroadsScreen(Action<string, bool> speak) {
@@ -67,11 +67,17 @@ namespace DD2A11y.Screens {
 
         public override bool OnUpdate(object target) {
             var slots = UnityEngine.Object.FindObjectsOfType<HeroSelectActorUIBhv>();
-            if (slots.Length != _builtSlots) {
+            if (slots.Length != _builtSlots || EmbarkVisible() != _builtEmbarkVisible) {
                 _root.Clear();
                 Populate();
             }
             return false;
+        }
+
+        // The confirm button appears (SetActive) only once the party has no empty slot.
+        private bool EmbarkVisible() {
+            var confirm = ConfirmButtonField(_heroSelect);
+            return confirm != null && confirm.gameObject.activeInHierarchy;
         }
 
         /// <summary>The Space key: pick up the focused hero, or place a grabbed hero on the
@@ -126,14 +132,39 @@ namespace DD2A11y.Screens {
             AddStrip(S.CrossroadsRoster, pool);
 
             var actions = new Container(ContainerShape.VerticalList);
-            var embarkUi = UnityEngine.Object.FindObjectOfType<EmbarkUiBhv>();
-            if (embarkUi != null) {
-                AddButtonFrom(actions, MouseEmbarkBtnField.GetValue(embarkUi) as GameObject);
-                AddButtonFrom(actions, EmbarkBtnField.GetValue(embarkUi) as GameObject);
-                AddButtonFrom(actions, ApplyAllField.GetValue(embarkUi) as GameObject);
+            var partyName = UnityEngine.Object.FindObjectOfType<PartyNameBhv>();
+            if (partyName != null) {
+                var partyNameObject = partyName.gameObject;
+                actions.Add(new ReadoutElement(() => UiText.FirstLabel(partyNameObject)));
+            }
+            var confirm = ConfirmButtonField(_heroSelect);
+            _builtEmbarkVisible = confirm != null && confirm.gameObject.activeInHierarchy;
+            if (_builtEmbarkVisible) {
+                // The game's own confirm flow: validates the party, asks its equip-skills
+                // confirmation dialog when a hero has unequipped skills, then starts the run.
+                var confirmObject = confirm.gameObject;
+                actions.Add(new ActionElement(() => UiText.FirstLabel(confirmObject), S.RoleButton,
+                    _heroSelect.ConfirmRosterSelection));
+            }
+            if (confirm != null) {
+                AddSiblingButton(actions, confirm.transform.parent, "RandomCompBtn");
             }
             if (!actions.IsEmptyContainer) {
                 _root.Add(actions);
+            }
+        }
+
+        // A canvas control with no serialized field on HeroSelectBhv, located by its stable
+        // prefab name next to the confirm button; logged loudly if the game renames it.
+        private static void AddSiblingButton(Container container, Transform canvas, string name) {
+            var holder = canvas == null ? null : canvas.Find(name);
+            if (holder == null) {
+                Plugin.Log.LogWarning("CrossroadsScreen: no '" + name + "' under the hero select canvas");
+                return;
+            }
+            var button = holder.GetComponent<Button>();
+            if (button != null && holder.gameObject.activeInHierarchy) {
+                container.Add(new SelectableElement(button));
             }
         }
 
@@ -150,16 +181,6 @@ namespace DD2A11y.Screens {
             }
             if (!strip.IsEmptyContainer) {
                 _root.Add(strip);
-            }
-        }
-
-        private static void AddButtonFrom(Container container, GameObject holder) {
-            if (holder == null || !holder.activeInHierarchy) {
-                return;
-            }
-            var button = holder.GetComponentInChildren<Button>(includeInactive: false);
-            if (button != null) {
-                container.Add(new SelectableElement(button, null, holder));
             }
         }
 
