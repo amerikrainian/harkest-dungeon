@@ -37,6 +37,8 @@ namespace DD2A11y.Core.Strings {
             D("ScreenGeneric", "screen"),
             // A hero's character sheet (stats, quirks, skills). The game calls it "hero sheet".
             D("ScreenHeroSheet", "hero sheet"),
+            // A battle. Noun.
+            D("ScreenCombat", "combat"),
 
             // Control type words, spoken after a control's label ("Continue, button"). Nouns.
             D("RoleButton", "button"),
@@ -83,6 +85,32 @@ namespace DD2A11y.Core.Strings {
             // the game shows blank space. Adjective.
             D("PanelEmpty", "empty"),
 
+            // Combat. The battle status line, spoken on turn changes and as the header readout;
+            // {0} = the round number, {1} = the acting combatant's name.
+            D("CombatHeader", "round {0}, {1}"),
+            // Section name for the enemy strip. Noun (the party strip reuses CrossroadsParty).
+            D("CombatEnemies", "enemies"),
+            // The torch/flame meter readout; {0} = its value. The game shows it as a bare icon.
+            D("CombatTorch", "torch {0}"),
+            // Spoken when a chosen skill starts waiting for its target.
+            D("CombatSelectTarget", "select target"),
+            // Appended to a combatant the chosen skill can hit / cannot hit.
+            D("CombatTargetValid", "valid target"),
+            D("CombatTargetInvalid", "invalid target"),
+            // Spoken when target selection is cancelled back to skill choice.
+            D("CombatTargetCancelled", "target cancelled"),
+            // Battle events, announced as they happen and kept in the combat buffer.
+            // Damage to any combatant; {0} = who, {1} = the amount (2 or more).
+            D("CombatTookDamage", "{0} took {1} damage"),
+            // Damage of exactly 1, where the number is noise.
+            D("CombatTookDamageOne", "{0} took damage"),
+            // A combatant died; {0} = who.
+            D("CombatDied", "{0} died"),
+            // A hero fell to death's door; {0} = who.
+            D("CombatDeathsDoor", "{0} at death's door"),
+            // An enemy acted; {0} = the enemy, {1} = the skill's name, {2} = its target.
+            D("CombatUsedSkill", "{0} used {1} on {2}"),
+
             // Words for the game's inline effect glyphs in skill and tooltip text, where the icon
             // itself carries the meaning. Nouns.
             // A healing effect.
@@ -99,6 +127,8 @@ namespace DD2A11y.Core.Strings {
             // Buffer review (Ctrl plus arrows). The buffer holding the focused control's detail
             // lines (its tooltips). Noun naming that buffer.
             D("BufferControl", "control"),
+            // The battle-event log buffer, non-empty only during combat. Noun naming that buffer.
+            D("BufferCombat", "combat"),
             // Spoken when a buffer key is pressed and every buffer is empty.
             D("BufferNone", "no buffer lines"),
             // Switching to a buffer: {0} = the buffer's name, {1} = its current line.
@@ -176,6 +206,7 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenDialog => T("ScreenDialog");
         public static string ScreenGeneric => T("ScreenGeneric");
         public static string ScreenHeroSheet => T("ScreenHeroSheet");
+        public static string ScreenCombat => T("ScreenCombat");
 
         public static string RoleButton => T("RoleButton");
         public static string RoleToggle => T("RoleToggle");
@@ -203,6 +234,19 @@ namespace DD2A11y.Core.Strings {
         public static string SheetSpeed(int value) => F("SheetSpeed", value);
         public static string PanelEmpty => T("PanelEmpty");
 
+        public static string CombatHeader(int round, string actor) => F("CombatHeader", round, actor);
+        public static string CombatEnemies => T("CombatEnemies");
+        public static string CombatTorch(int value) => F("CombatTorch", value);
+        public static string CombatSelectTarget => T("CombatSelectTarget");
+        public static string CombatTargetValid => T("CombatTargetValid");
+        public static string CombatTargetInvalid => T("CombatTargetInvalid");
+        public static string CombatTargetCancelled => T("CombatTargetCancelled");
+        public static string CombatTookDamage(string name, int damage) => F("CombatTookDamage", name, damage);
+        public static string CombatTookDamageOne(string name) => F("CombatTookDamageOne", name);
+        public static string CombatDied(string name) => F("CombatDied", name);
+        public static string CombatDeathsDoor(string name) => F("CombatDeathsDoor", name);
+        public static string CombatUsedSkill(string name, string skill, string target) => F("CombatUsedSkill", name, skill, target);
+
         public static string SpriteHeal => T("SpriteHeal");
         public static string SpriteBuff => T("SpriteBuff");
         public static string SpriteDebuff => T("SpriteDebuff");
@@ -210,6 +254,7 @@ namespace DD2A11y.Core.Strings {
         public static string SpriteDisease => T("SpriteDisease");
 
         public static string BufferControl => T("BufferControl");
+        public static string BufferCombat => T("BufferCombat");
         public static string BufferNone => T("BufferNone");
         public static string BufferLine(string buffer, string line) => F("BufferLine", buffer, line);
 

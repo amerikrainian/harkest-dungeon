@@ -10,13 +10,16 @@ namespace DD2A11y.Core.Text {
         public static string Join(string separator, IEnumerable<string?> parts) {
             var sb = new StringBuilder();
             foreach (string? part in parts) {
-                if (string.IsNullOrEmpty(part)) {
+                // Game strings sometimes carry stray edge whitespace ("Pass "); trimmed here so
+                // the separator lands flush against the words.
+                string? trimmed = part?.Trim();
+                if (string.IsNullOrEmpty(trimmed)) {
                     continue;
                 }
                 if (sb.Length > 0) {
                     sb.Append(separator);
                 }
-                sb.Append(part);
+                sb.Append(trimmed);
             }
             return sb.ToString();
         }

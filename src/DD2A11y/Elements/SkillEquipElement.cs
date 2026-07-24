@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Assets.Code.Skill;
 using Assets.Code.UI;
 using Assets.Code.UI.Widgets;
@@ -82,67 +80,9 @@ namespace DD2A11y.Elements {
 
         public override IEnumerable<string> GetBufferLines() {
             yield return GetFocusText();
-            var skill = Actors.Skill(_skillId);
-            if (skill == null) {
-                yield break;
+            foreach (var line in SkillCard.Lines(_skillId, _sheet.ActorGuid)) {
+                yield return line;
             }
-
-            if (SkillDescription.TryGetRankInfo(skill, 4, out _, out var launchRanks, out var targetRanks, out var multiHits)) {
-                string launch = RankList(launchRanks, null);
-                if (launch.Length > 0) {
-                    yield return Format("effect_tooltip_position", launch);
-                }
-                string target = RankList(targetRanks, multiHits);
-                if (target.Length > 0) {
-                    yield return Format("effect_tooltip_target", target);
-                }
-            }
-
-            var actor = Actors.Get(_sheet.ActorGuid);
-            string topBar = SkillDescription.GetTopBarString(skill, actor);
-            if (!string.IsNullOrWhiteSpace(topBar)) {
-                foreach (var line in topBar.Split('\n')) {
-                    if (!string.IsNullOrWhiteSpace(line)) {
-                        yield return line;
-                    }
-                }
-            }
-
-            foreach (var result in SkillDescription.GetResultStringsByTargetType(skill, showIgnores: false, _sheet.ActorGuid)) {
-                if (!string.IsNullOrWhiteSpace(result)) {
-                    yield return result;
-                }
-            }
-
-            if (skill.m_Tags.Contains("melee")) {
-                yield return GameLoc.TryGet("skill_tag_melee");
-            } else if (skill.m_Tags.Contains("ranged")) {
-                yield return GameLoc.TryGet("skill_tag_ranged");
-            }
-        }
-
-        // The used ranks in ascending order ("1 2"); a multi-hit pair joins with "+" ("1+2"),
-        // mirroring the game's own textual targeting rendering.
-        private static string RankList(bool[] active, bool[] multiHits) {
-            var sb = new StringBuilder();
-            for (int i = 0; i < active.Length; i++) {
-                if (!active[i]) {
-                    continue;
-                }
-                if (sb.Length > 0) {
-                    bool joined = multiHits != null && i > 0 && active[i - 1] && multiHits[i - 1];
-                    sb.Append(joined ? "+" : " ");
-                }
-                sb.Append(i + 1);
-            }
-            return sb.ToString();
-        }
-
-        // The game's own "Rank: {0}" / "Target: {0}" framing; falls back to the bare list if the
-        // key ever disappears.
-        private static string Format(string locKey, string ranks) {
-            string format = GameLoc.TryGet(locKey);
-            return format == null ? ranks : string.Format(format, ranks);
         }
     }
 }

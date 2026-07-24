@@ -54,6 +54,11 @@ namespace DD2A11y {
                                                    : element.GetBufferLines);
                 Buffers.SetCurrent("ui");
             };
+            // The battle-event history; filled from the combat screen's pump path and empty
+            // outside combat (an empty buffer is skipped by the review keys).
+            var combatBuffer = Buffers.Add(new Core.Buffers.Buffer("combat", () => S.BufferCombat));
+            combatBuffer.FollowLatest = true;
+            combatBuffer.SetSource(Game.CombatLog.Lines);
 
             Core.Text.SpriteText.Resolver = Game.SpriteWords.Resolve;
 
@@ -69,6 +74,7 @@ namespace DD2A11y {
             Router.Register(new GenericScreen());
             Router.Register(new MainMenuScreen());
             Router.Register(_crossroads);
+            Router.Register(new CombatScreen(speak));
 
             RegisterInputs();
             Input.ActiveCategoriesProvider = () => Gate.Captured ? UiCategories : NoCategories;

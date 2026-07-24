@@ -20,6 +20,9 @@ namespace DD2A11y.Core.Text {
         // an ellipsis (a run of identical dots) is never touched.
         private static readonly Regex PeriodThenComma = new Regex("\\.\\s*,", RegexOptions.Compiled);
         private static readonly Regex CommaThenPeriod = new Regex(",\\s*\\.", RegexOptions.Compiled);
+        // Whitespace stranded before a punctuation mark - typically a zero-width space TMP
+        // injected at a word edge (folded to a real space above) colliding with our ", " joiner.
+        private static readonly Regex SpaceBeforeMark = new Regex("\\s+([,.:;!?])", RegexOptions.Compiled);
         // Unicode bidi control characters. They shape visual text direction, which speech has none of,
         // and a synthesizer fed one may announce or garble it.
         private static readonly Regex BidiControls =
@@ -48,6 +51,7 @@ namespace DD2A11y.Core.Text {
             s = PeriodThenComma.Replace(s, ", ");
             s = CommaThenPeriod.Replace(s, ". ");
             s = Whitespace.Replace(s, " ").Trim();
+            s = SpaceBeforeMark.Replace(s, "$1");
             return s;
         }
 

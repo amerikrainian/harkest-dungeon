@@ -30,6 +30,10 @@ namespace DD2A11y.Tests {
             => Assert.Equal("a b", TextFilter.Clean("a    b "));
 
         [Fact]
+        public void ZeroWidthSpaceBeforeAJoinerCommaLeavesNoGap()
+            => Assert.Equal("Pass, button", TextFilter.Clean("Pass​, button"));
+
+        [Fact]
         public void EmptyAndNullAreEmpty() {
             Assert.Equal("", TextFilter.Clean(null));
             Assert.Equal("", TextFilter.Clean("  "));

@@ -111,8 +111,38 @@ screen existed)
   covers the scene) and below the dedicated stack screens. Driving HUD widgets (minimap,
   goals - non-SCREEN stack entries) are excluded so free driving is never captured.
 
+### Combat (`CombatScreen`, COMBAT mode)
+Status: **works** (live-verified 2026-07-23: full hero turn - skill pick, target pick,
+execution, kill, turn handoff - plus pause round trip)
+- Layout, top to bottom: the battle header ("round 1, Audrey"; torch value, round detail, and
+  retreat odds as buffer lines), the enemy strip, the party strip (both rank-ordered; labels
+  are name + Rank + HP read live; a monster's name is its data id's loc string, the same
+  source as the game's turn-order tooltips), the skills row (horizontal, with the game's own
+  "Uses: N" limit text), then the commands row (Move, Pass, and Retreat when the game offers
+  it).
+- The turn: Enter on a skill runs the game's own pick handler and announces "select target";
+  every combatant then reads its validity for the chosen skill (the same
+  `GetIsValidSkillTarget` check the game runs on a click); Enter on one sends the game's own
+  actor-pick event to execute. Escape cancels target-select first, else opens the pause menu.
+- Combatant buffers: HP, stress (heroes), then one line per token and per dot from the game's
+  own tooltip composers. Skill buffers: the full skill card (shared `SkillCard` composer with
+  the hero sheet).
+- **Battle events** are announced as they happen (queued, so narration stacks in order) and
+  kept in the **combat buffer** (Ctrl+Left/Right; follows the latest line; empties when the
+  battle ends): damage taken ("Lost Soul took 4 damage"; the number dropped when it is 1),
+  deaths, death's-door falls, what enemies do ("Lost Soul used Chomp on Paracelsus") - never
+  the player's own skill picks - and turn lines ("round 2, Audrey", spoken exactly once via
+  the router's announce chokepoint even as the rebuild re-homes focus to the header).
+  Verified live: hero attack damage, enemy skill + damage narration, single turn lines.
+- Known gaps: crits, heals, stress damage, resists, and token applications are not yet
+  event lines (the CombatEvents handlers are the plug-in point); Move is untested against
+  position targeting; Pass briefly announces "select target" before auto-resolving; the
+  retreat element only (dis)appears on turn-boundary rebuilds; stealth/corpse/summon edge
+  cases unexercised; the academic view and token-glossary overlays not modeled; the
+  post-battle loot/result surface is unmodeled (next screen after a won fight).
+
 ### Everything else
-Status: **not started** (floor-level reading only) - driving/map, combat, inn, loot, node
+Status: **not started** (floor-level reading only) - driving/map, inn, loot, node
 panels, glossary, tutorials, academy/altar, profile select, save management, kingdoms.
 
 ## Testing rule learned the hard way
