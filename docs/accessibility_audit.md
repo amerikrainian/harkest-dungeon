@@ -219,6 +219,19 @@ full inventory walk, item tooltip buffers)
   inventory's frame elements (filter, count, wallet, Sort itself) sit outside the rebuilt
   container so focus survives the press. Verified live: two consecutive sorts, items
   walkable immediately after each.
+- The filter reads as a tab ("All Items, tab"): Left/Right apply the game's own tab
+  buttons through `InventoryUiBhv.ApplyFilter` - the mouse path; the tabs themselves are
+  icon-only and invisible to a text sweep, and the game's own controller cycling
+  (PrevTab/NextTab) is gated on EventSystem focus we deliberately never grant. Hidden
+  (HideIfEmpty) tabs drop out of the live list. Verified live: cycling all five tabs both
+  ways with clamped ends, the item list re-filtering per tab (Trinkets showed exactly the
+  two trinkets), and the walk restored under All Items.
+- **Shift+Enter discards** the focused bag item (the game's shift-click; the whole stack,
+  instantly - the game confirms nothing except its own last-trophy safeguard). The element
+  advertises the action only where the game allows it (`m_canDiscard`, player bag slots);
+  anywhere else Shift+Enter answers "unavailable". Verified live: the action advertised on
+  a discardable item, absent elsewhere; an actual discard is unexercised (no expendable
+  item existed - every press destroys real property).
 - Bag position carries no meaning (no adjacency; the game's own Sort reshuffles), so the
   3-column visual grid is deliberately flattened to an occupied-only list; empties exist as
   the one capacity line. The game's slot-swap flow (`IsSelectingItemSlot`) accepts any

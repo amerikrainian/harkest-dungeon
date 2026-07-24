@@ -1,6 +1,7 @@
 using System;
 using Assets.Code.Game;
 using Assets.Code.Inn;
+using Assets.Code.UI;
 using Assets.Code.UI.Items;
 using Assets.Code.UI.Managers;
 using Assets.Code.UI.Screens;
@@ -21,10 +22,12 @@ namespace DD2A11y.Screens {
     /// named by the inn's own title. Layout, top to bottom: the regions-to-mountain readout,
     /// the hero rest strip (a horizontal row - name, HP, stress, status tooltip in the buffer),
     /// the station buttons (Travelogue, End Expedition, the shops when the inn has them;
-    /// captions live in their tooltips), then the inventory panel: filter, slot count, and
-    /// wallet readouts, the sort button (its press confirms "sorted by type" - the game's one
-    /// sort), one element per carried item (title and stack, full tooltip in the buffer), and
-    /// the free capacity as one collapsed line. A station opens through its own button; the
+    /// captions live in their tooltips), then the inventory panel: the filter as a tab
+    /// (Left/Right apply the game's own tab buttons), slot count and wallet readouts, the sort
+    /// button (its press confirms "sorted by type" - the game's one sort), one element per
+    /// carried item (title and stack, full tooltip in the buffer; Shift+Enter discards where
+    /// the game's shift-click would), and the free capacity as one collapsed line. A station
+    /// opens through its own button; the
     /// opened sub-screen is read by its dedicated screen or the generic floor. Escape opens
     /// the pause menu.
     /// </summary>
@@ -94,10 +97,30 @@ namespace DD2A11y.Screens {
             // so these elements are stable across re-sorts; only the pooled item slots below
             // ever need a rebuild. That keeps focus on Sort alive through its own press.
             if (_inventory != null) {
-                var filter = FindChild(_inventory.transform, "ActiveFilter");
-                if (filter != null) {
-                    _root.Add(new ReadoutElement(() => filter == null ? null : UiText.AllText(filter.gameObject)));
-                }
+                // The filter reads as a tab: Left/Right apply the game's own tab buttons (they
+                // are icon-only and invisible to a text sweep). Hidden tabs (HideIfEmpty) drop
+                // out of the live list, mirroring the game's own cycling.
+                var inventoryUi = _inventory;
+                System.Func<System.Collections.Generic.List<InventoryFilterBhv>> tabs = () => {
+                    var list = new System.Collections.Generic.List<InventoryFilterBhv>();
+                    if (inventoryUi != null) {
+                        list.AddRange(inventoryUi.GetComponentsInChildren<InventoryFilterBhv>(includeInactive: false));
+                    }
+                    return list;
+                };
+                _root.Add(new TabSelectorElement(
+                    () => tabs().IndexOf(inventoryUi.CurrentFilter),
+                    () => tabs().Count,
+                    index => {
+                        var list = tabs();
+                        return index >= 0 && index < list.Count ? GameLoc.TryGet(list[index].GetTitleLocKey()) : null;
+                    },
+                    index => {
+                        var list = tabs();
+                        if (index >= 0 && index < list.Count) {
+                            inventoryUi.ApplyFilter(list[index]);
+                        }
+                    }));
                 var count = FindChild(_inventory.transform, "SlotCountContainer");
                 if (count != null) {
                     _root.Add(new ReadoutElement(() => {

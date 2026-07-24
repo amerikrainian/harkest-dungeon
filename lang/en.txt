@@ -103,3 +103,4 @@ InputBufferLineNext = Next buffer line
 InputBufferLinePrev = Previous buffer line
 InputGrab = Grab or place hero
 InputInspect = Open hero sheet
+InputDiscard = Discard item

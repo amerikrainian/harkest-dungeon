@@ -218,6 +218,7 @@ namespace DD2A11y.Core.Strings {
             D("InputBufferLinePrev", "Previous buffer line"),
             D("InputGrab", "Grab or place hero"),
             D("InputInspect", "Open hero sheet"),
+            D("InputDiscard", "Discard item"),
         };
 
         private static readonly Dictionary<string, string> English = BuildEnglish();
@@ -375,5 +376,6 @@ namespace DD2A11y.Core.Strings {
         public static string InputBufferLinePrev => T("InputBufferLinePrev");
         public static string InputGrab => T("InputGrab");
         public static string InputInspect => T("InputInspect");
+        public static string InputDiscard => T("InputDiscard");
     }
 }

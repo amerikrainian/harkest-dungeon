@@ -132,6 +132,14 @@ namespace DD2A11y {
             // combat). C, matching the game's own "Hero Sheet (C)" hint.
             Reg("ui.inspect", S.InputInspect, () => Navigator.Current?.InvokeAction("inspect"))
                 .AddBinding(K(Key.C));
+            // Discard the focused item (the game's shift-click); the element advertises the
+            // action only where the game allows the discard, so anything else answers
+            // "unavailable" rather than silence.
+            Reg("ui.discard", S.InputDiscard, () => {
+                if (Navigator.Current == null || !Navigator.Current.InvokeAction("discard")) {
+                    Speech.Speak(S.StatusUnavailable, interrupt: true);
+                }
+            }).AddBinding(K(Key.Enter, shift: true)).AddBinding(K(Key.NumpadEnter, shift: true));
             // Grab-and-place for precise hero moves at the crossroads.
             Reg("crossroads.grab", S.InputGrab, () => _crossroads.ToggleGrab(Navigator.Current))
                 .AddBinding(K(Key.Space));

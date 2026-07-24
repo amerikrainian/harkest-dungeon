@@ -1,6 +1,7 @@
 using Assets.Code.Item;
 using Assets.Code.UI.Items;
 using Assets.Code.Utils;
+using DD2A11y.Core.Nav;
 using DD2A11y.Game;
 using UnityEngine.UI;
 
@@ -40,6 +41,19 @@ namespace DD2A11y.Elements {
                 }
                 int quantity = item.GetQty();
                 return quantity > 1 ? quantity.ToString() : null;
+            }
+        }
+
+        // Discard (Shift+Enter, the game's shift-click), advertised only where the game itself
+        // allows it: a player bag slot holding a discardable item. The game's own handler runs
+        // its trophy safeguards.
+        public override System.Collections.Generic.IEnumerable<ElementAction> GetActions() {
+            foreach (var action in base.GetActions()) {
+                yield return action;
+            }
+            if (_item is PlayerInventoryItemBhv player && ItemUtils.IsValid(player.Item)
+                && player.Item.GetItemDefinition().m_canDiscard) {
+                yield return new ElementAction("discard", player.OnDiscardItem);
             }
         }
     }
