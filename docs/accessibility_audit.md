@@ -135,11 +135,17 @@ execution, kill, turn handoff - plus pause round trip)
   kept in the **combat buffer** (Ctrl+Left/Right; follows the latest line; empties when the
   battle ends): damage taken ("Lost Soul took 4 damage"; the number dropped when it is 1),
   deaths, death's-door falls, what enemies do ("Lost Soul used Chomp on Paracelsus") - never
-  the player's own skill picks - and turn lines ("round 2, Audrey", spoken exactly once via
-  the router's announce chokepoint even as the rebuild re-homes focus to the header).
-  Verified live: hero attack damage, enemy skill + damage narration, single turn lines.
-- Known gaps: crits, heals, stress damage, resists, and token applications are not yet
-  event lines (the CombatEvents handlers are the plug-in point); Move is untested against
+  the player's own skill picks - token and dot applications ("Dismas gained Crit", the
+  game's own names and count format, honoring its pop-text visibility gate), resisted
+  effects ("Woodsman resisted Blight" - without it a failed rider reads as unexplained
+  silence), and turn lines ("round 2, Audrey", spoken exactly once via the router's
+  announce chokepoint even as the rebuild re-homes focus to the header).
+  Verified live: hero attack damage, enemy skill + damage narration, token gains on both
+  sides, single turn lines.
+- Known gaps: crits, heals, stress damage, and misses/dodges (a Blinded attacker whiffing
+  reads as silence) are not yet event lines (the CombatEvents handlers are the plug-in
+  point); a token id with no name key anywhere ("blind-line") reads as its humanized id;
+  Move is untested against
   position targeting; Pass briefly announces "select target" before auto-resolving; the
   retreat element only (dis)appears on turn-boundary rebuilds; stealth/corpse/summon edge
   cases unexercised; the academic view and token-glossary overlays not modeled; battle-end

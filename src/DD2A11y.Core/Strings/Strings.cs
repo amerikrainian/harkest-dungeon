@@ -112,6 +112,11 @@ namespace DD2A11y.Core.Strings {
             D("CombatDeathsDoor", "{0} at death's door"),
             // An enemy acted; {0} = the enemy, {1} = the skill's name, {2} = its target.
             D("CombatUsedSkill", "{0} used {1} on {2}"),
+            // A combatant received a token or a damage-over-time; {0} = who, {1} = what (the
+            // game's own token/dot name, with its own count format when stacked).
+            D("CombatGained", "{0} gained {1}"),
+            // A combatant shrugged off an applied effect; {0} = who, {1} = what was resisted.
+            D("CombatResisted", "{0} resisted {1}"),
 
             // Driving. Spoken (with the fork cue) when a junction comes into range; the route
             // menu follows when the coach stops there.
@@ -263,6 +268,8 @@ namespace DD2A11y.Core.Strings {
         public static string CombatDied(string name) => F("CombatDied", name);
         public static string CombatDeathsDoor(string name) => F("CombatDeathsDoor", name);
         public static string CombatUsedSkill(string name, string skill, string target) => F("CombatUsedSkill", name, skill, target);
+        public static string CombatGained(string name, string what) => F("CombatGained", name, what);
+        public static string CombatResisted(string name, string what) => F("CombatResisted", name, what);
 
         public static string RoadForkAhead => T("RoadForkAhead");
         public static string RouteLeft => T("RouteLeft");
