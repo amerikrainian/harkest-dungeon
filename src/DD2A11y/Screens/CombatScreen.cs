@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Assets.Code.Actor;
 using Assets.Code.Actor.Queries;
 using Assets.Code.Combat;
+using Assets.Code.Combat.Queries;
 using Assets.Code.Game;
 using Assets.Code.Run;
 using Assets.Code.UI;
@@ -10,6 +11,7 @@ using Assets.Code.UI.Managers;
 using Assets.Code.UI.Tooltips;
 using Assets.Code.Utils;
 using DD2A11y.Core.Nav;
+using DD2A11y.Core.Text;
 using DD2A11y.Elements;
 using DD2A11y.Game;
 using HarmonyLib;
@@ -18,10 +20,11 @@ using UnityEngine.UI;
 
 namespace DD2A11y.Screens {
     /// <summary>
-    /// A battle (the COMBAT game mode). Layout, top to bottom: the battle header (round and
-    /// acting combatant; torch, round detail, and retreat odds in the buffer), the enemy strip,
-    /// the party strip (both rank-ordered, full status in each combatant's buffer), then the
-    /// acting hero's skill bar (skills, move, pass, retreat). Enter on a skill runs the game's
+    /// A battle (the COMBAT game mode). Layout, top to bottom: the header row (round and acting
+    /// combatant with torch, wave count, round detail, and retreat odds in the buffer; then the
+    /// turn order; then the battle goal when the fight has one), the enemy strip, the party
+    /// strip (both rank-ordered, full status in each combatant's buffer), then the acting
+    /// hero's skill bar (skills, move, pass, retreat). Enter on a skill runs the game's
     /// own pick and flips into target-select - every combatant then reads its validity, and
     /// Enter on one sends the game's own actor-pick to execute. Escape cancels target-select,
     /// else opens the pause menu. Turn changes rebuild the tree; turn lines and battle events
@@ -102,7 +105,11 @@ namespace DD2A11y.Screens {
 
         public override Container BuildRoot(object target) {
             _root = new RootContainer(ContainerShape.VerticalList, back: Back);
-            _root.Add(new ReadoutElement(HeaderText, detail: HeaderDetail));
+            var header = new Container(ContainerShape.HorizontalList);
+            header.Add(new ReadoutElement(HeaderText, detail: HeaderDetail));
+            header.Add(new ReadoutElement(TurnOrderText));
+            header.Add(new ReadoutElement(GoalText));
+            _root.Add(header);
             _enemies = new Container(ContainerShape.HorizontalList, S.CombatEnemies);
             _root.Add(_enemies);
             _party = new Container(ContainerShape.HorizontalList, S.CrossroadsParty);
@@ -126,21 +133,19 @@ namespace DD2A11y.Screens {
                 }
             }
 
-            bool announce = false;
             uint turnGuid = CurrentTurnGuid();
             if (turnGuid != _builtTurnGuid) {
                 // A new turn: the skill bar belongs to the new actor and combatant state moved.
-                // The rebuild orphans any strip focus, so the router re-homes to the header -
-                // whose label IS the turn line - and the returned announce request covers the
-                // focus-still-on-header case; either way the turn is spoken exactly once. The
-                // line is logged when it settles (handoffs pass through a transient nameless
-                // actor, which reads as null and logs nothing).
+                // The turn line is spoken outright - focus can sit anywhere (a strip position
+                // survives the rebuild in place), so a focus re-announce would read the wrong
+                // thing or nothing. The line is logged when it settles (handoffs pass through a
+                // transient nameless actor, which reads as null and speaks nothing).
                 Populate();
-                announce = true;
                 string line = HeaderText();
                 if (line != null && line != _lastTurnLine) {
                     _lastTurnLine = line;
                     CombatLog.Append(line);
+                    _speak(line, false);
                 }
             } else if (CombatantCount() != _builtCombatants) {
                 Populate();
@@ -154,7 +159,7 @@ namespace DD2A11y.Screens {
                     _speak(S.CombatSelectTarget, true);
                 }
             }
-            return announce;
+            return false;
         }
 
         // ---- Reads ----
@@ -172,9 +177,41 @@ namespace DD2A11y.Screens {
             return S.CombatHeader(_combat.CurrentRound, name);
         }
 
+        // The live remaining acting order, current actor first (the strip of portraits a
+        // sighted player plans around).
+        private string TurnOrderText() {
+            if (_combat == null || _combat.CurrentBattleState == BattleState.INACTIVE) {
+                return null;
+            }
+            var names = new List<string>();
+            foreach (uint guid in QueryTurnOrder.Trigger().m_RemainingTurnOrder) {
+                string name = Actors.Name(Actors.Get(guid));
+                if (name != null) {
+                    names.Add(name);
+                }
+            }
+            return names.Count == 0 ? null : S.CombatTurnOrder(SpokenLine.Join(names.ToArray()));
+        }
+
+        // The battle's objective, in fights that carry one (kingdoms defenses); absent
+        // otherwise, which hides the element.
+        private string GoalText() {
+            var config = Scenario()?.CurrentBattleConfiguration;
+            return config == null ? null : GameLoc.TryGet("battle_goal_" + config.m_Id);
+        }
+
+        private static CombatScenarioData Scenario() {
+            var gameType = Singleton<GameTypeMgr>.Instance;
+            return gameType == null ? null : gameType.CombatScenarioData;
+        }
+
         private IEnumerable<string> HeaderDetail() {
             if (Singleton<GameTypeMgr>.Instance != null && Singleton<GameTypeMgr>.Instance.IsGameTypeStarted) {
                 yield return S.CombatTorch((int)Singleton<GameTypeMgr>.Instance.RunValues.GetValue(RunValueType.TORCH));
+            }
+            var scenario = Scenario();
+            if (scenario != null && scenario.TotalNumberOfBattles > 1) {
+                yield return S.CombatBattleCount(scenario.CurrentBattleConfigurationIndex + 1, scenario.TotalNumberOfBattles);
             }
             if (_battleInfo == null) {
                 yield break;

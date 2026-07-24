@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Assets.Code.Actor;
 using Assets.Code.Actor.Events;
+using Assets.Code.Buff;
 using Assets.Code.Combat;
 using Assets.Code.UI;
 using Assets.Code.UI.Events;
@@ -17,8 +18,8 @@ namespace DD2A11y.Elements {
     /// its target - whether this combatant is a valid target for it. Enter sends the game's own
     /// actor-pick event (the mouse click equivalent: executes the selected skill on a valid
     /// target, otherwise the game ignores it); the inspect action opens the hero sheet. The
-    /// buffer is the full status readout: HP, stress, then one line per token and per dot, all
-    /// from the game's own describers.
+    /// buffer is the full status readout: HP, stress, then one line per token, dot, and combat
+    /// buff, all from the game's own describers.
     /// </summary>
     public sealed class CombatantElement : UIElement {
         private readonly uint _guid;
@@ -121,6 +122,24 @@ namespace DD2A11y.Elements {
                 foreach (var line in DotTooltipBhv.MakeTooltipText(dots, condense: false).Split('\n')) {
                     if (!string.IsNullOrWhiteSpace(line)) {
                         yield return line;
+                    }
+                }
+            }
+            // Stat buffs and debuffs, filtered to the ones the game's own actor panel shows.
+            var buffs = actor.BuffContainer?.GetInstances();
+            if (buffs != null) {
+                foreach (var buff in buffs) {
+                    if (buff?.Definition == null || !buff.Definition.IsEligibleToShowAsCombatUi) {
+                        continue;
+                    }
+                    string text = BuffDescription.GetDescriptionWithDuration(buff);
+                    if (string.IsNullOrWhiteSpace(text)) {
+                        continue;
+                    }
+                    foreach (var line in text.Split('\n')) {
+                        if (!string.IsNullOrWhiteSpace(line)) {
+                            yield return line;
+                        }
                     }
                 }
             }

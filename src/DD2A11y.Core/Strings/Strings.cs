@@ -117,6 +117,43 @@ namespace DD2A11y.Core.Strings {
             D("CombatGained", "{0} gained {1}"),
             // A combatant shrugged off an applied effect; {0} = who, {1} = what was resisted.
             D("CombatResisted", "{0} resisted {1}"),
+            // The upcoming acting order, current actor first; {0} = the combatant names, joined.
+            D("CombatTurnOrder", "turn order, {0}"),
+            // Multi-wave fights; {0} = the current battle number, {1} = the total.
+            D("CombatBattleCount", "battle {0} of {1}"),
+            // Damage that was a critical hit; {0} = who was hit, {1} = the amount.
+            D("CombatTookDamageCrit", "{0} took {1} damage, crit"),
+            // A combatant recovered HP; {0} = who, {1} = the amount.
+            D("CombatHealed", "{0} healed {1}"),
+            // A critical heal; {0} = who, {1} = the amount.
+            D("CombatHealedCrit", "{0} healed {1}, crit"),
+            // An attack missed; {0} = the attacker, {1} = the intended target.
+            D("CombatMissed", "{0} missed {1}"),
+            // The target evaded an attack that would have hit; {0} = the target.
+            D("CombatDodged", "{0} dodged"),
+            // Stress gained; {0} = the hero, {1} = the amount.
+            D("CombatStressed", "{0} gained {1} stress"),
+            // Stress relieved; {0} = the hero, {1} = the amount.
+            D("CombatStressHealed", "{0} lost {1} stress"),
+            // A hero at death's door survived a hit that would have killed; {0} = the hero.
+            D("CombatDeathBlowResisted", "{0} resisted the death blow"),
+            // A token was used up powering its effect; {0} = who, {1} = the token's name.
+            D("CombatSpent", "{0} spent {1}"),
+            // A token was destroyed by an enemy effect; {0} = who, {1} = the token's name.
+            D("CombatLost", "{0} lost {1}"),
+            // A combatant was wounded / had a wound healed; {0} = who.
+            D("CombatWounded", "{0} wounded"),
+            D("CombatWoundHealed", "{0} wound healed"),
+            // The relationship meter between two heroes moved; {0} and {1} = the heroes,
+            // {2} = the signed change ("+1").
+            D("CombatAffinity", "{0} and {1}, affinity {2}"),
+            // A speech-bubble line a combatant says; {0} = the speaker, {1} = the game's line.
+            D("BarkLine", "{0}: {1}"),
+
+            // Toasts (corner notifications). A tutorial toast; {0} = the game's tutorial title.
+            D("ToastTutorial", "tutorial, {0}"),
+            // A hero completed their run objective; {0} = the hero.
+            D("ToastObjective", "{0} objective complete"),
 
             // Driving. Spoken (with the fork cue) when a junction comes into range; the route
             // menu follows when the coach stops there.
@@ -270,6 +307,25 @@ namespace DD2A11y.Core.Strings {
         public static string CombatUsedSkill(string name, string skill, string target) => F("CombatUsedSkill", name, skill, target);
         public static string CombatGained(string name, string what) => F("CombatGained", name, what);
         public static string CombatResisted(string name, string what) => F("CombatResisted", name, what);
+        public static string CombatTurnOrder(string names) => F("CombatTurnOrder", names);
+        public static string CombatBattleCount(int current, int total) => F("CombatBattleCount", current, total);
+        public static string CombatTookDamageCrit(string name, int damage) => F("CombatTookDamageCrit", name, damage);
+        public static string CombatHealed(string name, int amount) => F("CombatHealed", name, amount);
+        public static string CombatHealedCrit(string name, int amount) => F("CombatHealedCrit", name, amount);
+        public static string CombatMissed(string attacker, string target) => F("CombatMissed", attacker, target);
+        public static string CombatDodged(string name) => F("CombatDodged", name);
+        public static string CombatStressed(string name, int amount) => F("CombatStressed", name, amount);
+        public static string CombatStressHealed(string name, int amount) => F("CombatStressHealed", name, amount);
+        public static string CombatDeathBlowResisted(string name) => F("CombatDeathBlowResisted", name);
+        public static string CombatSpent(string name, string what) => F("CombatSpent", name, what);
+        public static string CombatLost(string name, string what) => F("CombatLost", name, what);
+        public static string CombatWounded(string name) => F("CombatWounded", name);
+        public static string CombatWoundHealed(string name) => F("CombatWoundHealed", name);
+        public static string CombatAffinity(string first, string second, string change) => F("CombatAffinity", first, second, change);
+        public static string BarkLine(string speaker, string text) => F("BarkLine", speaker, text);
+
+        public static string ToastTutorial(string title) => F("ToastTutorial", title);
+        public static string ToastObjective(string name) => F("ToastObjective", name);
 
         public static string RoadForkAhead => T("RoadForkAhead");
         public static string RouteLeft => T("RouteLeft");

@@ -116,41 +116,61 @@ screen existed)
   goals - non-SCREEN stack entries) are excluded so free driving is never captured.
 
 ### Combat (`CombatScreen`, COMBAT mode)
-Status: **works** (live-verified 2026-07-23: full hero turn - skill pick, target pick,
-execution, kill, turn handoff - plus pause round trip)
-- Layout, top to bottom: the battle header ("round 1, Audrey"; torch value, round detail, and
-  retreat odds as buffer lines), the enemy strip, the party strip (both rank-ordered; labels
-  are name + Rank + HP read live; a monster's name is its data id's loc string, the same
-  source as the game's turn-order tooltips), the skills row (horizontal, with the game's own
-  "Uses: N" limit text), then the commands row (Move, Pass, and Retreat when the game offers
-  it).
+Status: **works** (live-verified 2026-07-24: two full rounds fought to Victory - skill picks,
+target picks, kills, turn handoffs, free-action stance swap - with the expanded event set and
+header row)
+- Layout, top to bottom: the header row (Left/Right within it) - the battle status ("round 1,
+  Audrey"; torch value, wave count in chained fights, round detail, and retreat odds as buffer
+  lines), the **turn order** ("turn order, Sahar, Audrey, Widow...", current actor first, read
+  live from `QueryTurnOrder`), and the **battle goal** (the game's `battle_goal_<config>`
+  string, present only in fights that carry one) - then the enemy strip, the party strip (both
+  rank-ordered; labels are name + Rank + HP read live; a monster's name is its data id's loc
+  string, the same source as the game's turn-order tooltips), the skills row (horizontal, with
+  the game's own "Uses: N" limit text), then the commands row (Move, Pass, and Retreat when
+  the game offers it).
 - The turn: Enter on a skill runs the game's own pick handler and announces "select target";
   every combatant then reads its validity for the chosen skill (the same
   `GetIsValidSkillTarget` check the game runs on a click); Enter on one sends the game's own
   actor-pick event to execute. Escape cancels target-select first, else opens the pause menu.
-- Combatant buffers: HP, stress (heroes), then one line per token and per dot from the game's
-  own tooltip composers. Skill buffers: the full skill card (shared `SkillCard` composer with
-  the hero sheet).
+  Turn lines ("round 2, Audrey") are spoken outright on every turn change - focus can sit
+  anywhere - and logged to the combat buffer once.
+- Combatant buffers: HP, stress (heroes), then one line per token, per dot, and per combat
+  buff (filtered to `IsEligibleToShowAsCombatUi`, e.g. Preparation's "On Riposte: heal Self
+  10%"), all from the game's own describers. Skill buffers: the full skill card (shared
+  `SkillCard` composer with the hero sheet).
 - **Battle events** are announced as they happen (queued, so narration stacks in order) and
   kept in the **combat buffer** (Ctrl+Left/Right; follows the latest line; empties when the
-  battle ends): damage taken ("Lost Soul took 4 damage"; the number dropped when it is 1),
-  deaths, death's-door falls, what enemies do ("Lost Soul used Chomp on Paracelsus") - never
-  the player's own skill picks - token and dot applications ("Dismas gained Crit", the
-  game's own names and count format, honoring its pop-text visibility gate), resisted
-  effects ("Woodsman resisted Blight" - without it a failed rider reads as unexplained
-  silence), and turn lines ("round 2, Audrey", spoken exactly once via the router's
-  announce chokepoint even as the rebuild re-homes focus to the header).
-  Verified live: hero attack damage, enemy skill + damage narration, token gains on both
-  sides, single turn lines.
-- Known gaps: crits, heals, stress damage, and misses/dodges (a Blinded attacker whiffing
-  reads as silence) are not yet event lines (the CombatEvents handlers are the plug-in
-  point); a token id with no name key anywhere ("blind-line") reads as its humanized id;
-  Move is untested against
-  position targeting; Pass briefly announces "select target" before auto-resolving; the
-  retreat element only (dis)appears on turn-boundary rebuilds; stealth/corpse/summon edge
-  cases unexercised; the academic view and token-glossary overlays not modeled; battle-end
-  cleanup fires "Corpse died" lines (real death events for the corpse entities - noise at
-  the end of a won fight, informative mid-fight).
+  battle ends). Display gates mirror the game's own pop-text handlers. Covered: damage taken
+  ("Lost Soul took 4 damage"; number dropped at 1; ", crit" appended on crits), heals (with
+  crit variant), misses and dodges from the finalized skill results ("Woodsman missed
+  Paracelsus" / "Audrey dodged"), stress damage and relief ("Dismas gained 2 stress" /
+  "Audrey lost 1 stress"), meltdowns (the game's "resolve is tested" line plus the outcome's
+  own name), deaths, death's-door falls and survivals ("Woodsman resisted the death blow"),
+  what enemies do ("Lost Soul used Chomp on Paracelsus") - never the player's own skill
+  picks - token, dot, buff, and quirk applications ("Dismas gained Crit", the game's own
+  names and count format, honoring its pop-text visibility gates; buffs speak their stat
+  text), token consumption and negation ("Sahar spent Speed" / "Sahar lost Weak"), resisted
+  effects ("Woodsman resisted Blight"), retreat outcomes and wave starts and the final round
+  (all three via the game's own pop-text strings), wounds, affinity changes ("Dismas and
+  Paracelsus, affinity +1"), barks ("Dismas: I line 'em up..."), hero objective completions,
+  and tutorial/message toasts shown over combat ("tutorial, Enemy Death Armor"; Harmony
+  postfixes on `ToastManager`, the one toast surface with no event).
+  Verified live 2026-07-24: turn order readout, blank goal hiding, buff buffer lines, crit
+  damage, miss, stress damage and relief, token spend and loss, death-blow resist, affinity
+  tick, barks, tutorial toast, always-spoken turn lines, wave count suppressed in a
+  single-battle fight.
+- Known gaps: dodge/heal/meltdown/retreat/final-round/wave-start/wound/quirk/objective/message
+  -toast lines are deployed but not yet observed live (their handlers share gates and
+  composition with the verified ones); the goal readout is unverified in a fight that has
+  one; relationship skill markers rely on the skill card's actor-aware result strings and are
+  unverified with an active relationship; a combat item rides the skill bar as a regular
+  skill button but no hero had one equipped to verify; a token id with no name key anywhere
+  ("blind-line") reads as its humanized id; Move is untested against position targeting; Pass
+  briefly announces "select target" before auto-resolving; the retreat element only
+  (dis)appears on turn-boundary rebuilds; stealth/corpse/summon edge cases unexercised; the
+  academic view and token-glossary overlays not modeled; battle-end cleanup fires "Corpse
+  died" lines (real death events for the corpse entities - noise at the end of a won fight,
+  informative mid-fight).
 
 ### Victory / loot (`LootScreen`)
 Status: **works** (live-verified 2026-07-23: item buffer, single take, leave-items dialog,
