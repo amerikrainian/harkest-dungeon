@@ -158,9 +158,46 @@ last-item auto-close)
 - Known gaps: Take All's per-item toast stream is unspoken; the utility buttons read via
   their tooltips only.
 
+### Driving (`RoadSense` + `RouteChoiceScreen`, DRIVING mode)
+Status: **built**; cues live-verified by ear (pickup ping confirmed audible), fork menu not
+yet reached in play
+- Free driving stays UNCAPTURED - the game keeps WASD (W rolls/cruises, S brakes, A/D
+  steer, M/I/G/Z/C its own screens). The mod adds an audio layer through its own NAudio
+  output (independent of FMOD; `assets/audio`, placeholders replace 1:1): the nearest
+  uncollected pickup pings on a 0.7 s cadence, panned to its bearing and louder as it
+  nears; collection plays a blip and speaks the item's own title; road damage plays the
+  penalty cue and speaks the combat damage wording; the coach's stop/start each cue; a
+  junction's banners coming up cue "fork ahead" (once per junction).
+- The fork menu (`RouteChoiceScreen`) opens when the game's own junction wait halts the
+  coach unchosen: routes in left-to-right order read "direction, destination" (the game's
+  road-indicator titles; "Unknown" unrevealed - the hidden type is never leaked), each
+  focus playing the destination's identity tick panned to its side. Buffers: description,
+  which heroes prefer the route, banner tooltips. Enter commits via the banner's own
+  OnClick (game audio + narration; the coach then drives itself); Escape dismisses that
+  junction back to manual steering (steer at a banner holding W, the game's hold-to-fill).
+- Known gaps: fork menu unexercised live; zone enter/exit, danger stretches, coach
+  damage/break, opt-in prompts, and Loathing cues have assets but no wiring yet; the
+  minimap and distance-to-Inn readouts are unread (a status readout key is the natural
+  next step); edge-tone lane keeping unused.
+
+### Road stories (`StoryScreen`)
+Status: **works** (live-verified 2026-07-23 on "Help Us!"; the commit event is wired but
+deliberately not pressed in testing)
+- Every road story's choices are heroes; each reads name + HP + stress, with the full
+  consequences in the buffer: the hero's bark line, then the sighted Alt panel's own
+  preview lines (loc-keyed descriptions with values - "party, Flame 100",
+  "party, Supplies"), split party/enemy. Enter fires the game's own selection event (the
+  click-and-hold equivalent), honoring its hoverable gate; C inspects the hero. The
+  narration itself is the game's voiced narrator, already audible.
+- The node-arrival panel (`screen_enter_node_panel`) reads on the generic floor: one
+  engage button; Escape declines back to the road.
+- Known gaps: choices spawning after screen entry leave focus on the utility buttons until
+  the player moves (Home reaches the choices); story RESULT presentation is unread beyond
+  the narrator; relationship banners and affinity previews unspoken.
+
 ### Everything else
-Status: **not started** (floor-level reading only) - driving/map, inn, loot, node
-panels, glossary, tutorials, academy/altar, profile select, save management, kingdoms.
+Status: **not started** (floor-level reading only) - map overlay, inn, glossary,
+tutorials, academy/altar, profile select, save management, kingdoms.
 
 ## Testing rule learned the hard way
 

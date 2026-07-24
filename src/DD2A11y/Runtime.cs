@@ -26,9 +26,12 @@ namespace DD2A11y {
         public BufferControls BufferCtl { get; }
         public ScreenRouter Router { get; }
         public InputGate Gate { get; } = new InputGate();
+        public Core.Audio.IAudioEngine Audio { get; }
         public DevServer Dev { get; }
 
         private readonly PrismBackend _backend;
+        private readonly Audio.NAudioEngine _audioEngine;
+        private readonly Game.RoadSense _roadSense;
         private readonly LanguageSync _language;
         private CrossroadsScreen _crossroads;
         private string _lastTickError;
@@ -62,6 +65,10 @@ namespace DD2A11y {
 
             Core.Text.SpriteText.Resolver = Game.SpriteWords.Resolve;
 
+            _audioEngine = new Audio.NAudioEngine(Path.Combine(pluginDir, "assets", "audio"));
+            Audio = _audioEngine;
+            _roadSense = new Game.RoadSense(Audio, speak, Gate);
+
             Router = new ScreenRouter(Navigator, Gate, speak);
             _crossroads = new CrossroadsScreen(speak);
             Router.Register(new ConfirmationScreen());
@@ -70,12 +77,14 @@ namespace DD2A11y {
             Router.Register(new PauseScreen());
             Router.Register(new CharacterSheetScreen());
             Router.Register(new LootScreen());
+            Router.Register(new StoryScreen());
             // The floor for any other pushed screen (glossary, node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());
             Router.Register(new MainMenuScreen());
             Router.Register(_crossroads);
             Router.Register(new CombatScreen(speak));
+            Router.Register(new RouteChoiceScreen(Audio));
 
             RegisterInputs();
             Input.ActiveCategoriesProvider = () => Gate.Captured ? UiCategories : NoCategories;
@@ -129,6 +138,7 @@ namespace DD2A11y {
                 Dev?.PumpMainThread();
                 _language.Tick();
                 Router.Tick();
+                _roadSense.Tick();
                 Gate.Reassert();
                 Input.Tick(Time.unscaledTimeAsDouble);
             } catch (Exception ex) {
@@ -143,6 +153,7 @@ namespace DD2A11y {
 
         public void Dispose() {
             Dev?.Dispose();
+            _audioEngine.Dispose();
             _backend.Shutdown();
         }
     }

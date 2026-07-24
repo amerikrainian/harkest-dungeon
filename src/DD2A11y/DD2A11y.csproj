@@ -5,12 +5,15 @@
     <RootNamespace>DD2A11y</RootNamespace>
     <AssemblyName>DD2A11y</AssemblyName>
     <DebugType>embedded</DebugType>
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <!-- Copies NuGet runtime assemblies (NAudio, the cue engine's own output device) into the
+         build output so they deploy beside the plugin. -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DD2A11y.Core\DD2A11y.Core.csproj" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -69,11 +72,16 @@
     <ItemGroup>
       <DeployFiles Include="$(TargetDir)DD2A11y.dll" />
       <DeployFiles Include="$(TargetDir)DD2A11y.Core.dll" />
+      <DeployFiles Include="$(TargetDir)NAudio*.dll" />
       <DeployFiles Include="$(RepoRoot)third_party\prism\prism.dll" />
       <DeployFiles Include="$(RepoRoot)third_party\mono.csharp\Mono.CSharp.dll" />
       <LangFiles Include="$(RepoRoot)lang\*.txt" />
+      <AudioAssets Include="$(RepoRoot)assets\audio\**\*.wav" />
     </ItemGroup>
     <Copy SourceFiles="@(DeployFiles)" DestinationFolder="$(BepInExDir)\plugins\DD2A11y" ContinueOnError="true" Retries="0" />
     <Copy SourceFiles="@(LangFiles)" DestinationFolder="$(BepInExDir)\plugins\DD2A11y\lang" ContinueOnError="true" Retries="0" Condition="'@(LangFiles)' != ''" />
+    <Copy SourceFiles="@(AudioAssets)"
+          DestinationFiles="@(AudioAssets->'$(BepInExDir)\plugins\DD2A11y\assets\audio\%(RecursiveDir)%(Filename)%(Extension)')"
+          ContinueOnError="true" Retries="0" Condition="'@(AudioAssets)' != ''" />
   </Target>
 </Project>

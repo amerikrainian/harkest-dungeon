@@ -39,6 +39,8 @@ namespace DD2A11y.Core.Strings {
             D("ScreenHeroSheet", "hero sheet"),
             // A battle. Noun.
             D("ScreenCombat", "combat"),
+            // The road-fork route menu, shown while the coach waits at a junction.
+            D("ScreenFork", "fork"),
 
             // Control type words, spoken after a control's label ("Continue, button"). Nouns.
             D("RoleButton", "button"),
@@ -110,6 +112,16 @@ namespace DD2A11y.Core.Strings {
             D("CombatDeathsDoor", "{0} at death's door"),
             // An enemy acted; {0} = the enemy, {1} = the skill's name, {2} = its target.
             D("CombatUsedSkill", "{0} used {1} on {2}"),
+
+            // Driving. Spoken (with the fork cue) when a junction comes into range; the route
+            // menu follows when the coach stops there.
+            D("RoadForkAhead", "fork ahead"),
+            // Route directions at a fork. The game shows arrows with no words to reuse.
+            D("RouteLeft", "left"),
+            D("RouteForward", "forward"),
+            D("RouteRight", "right"),
+            // Heroes whose route preference matches this route; {0} = their names, joined.
+            D("RoutePreferredBy", "preferred by {0}"),
 
             // Words for the game's inline effect glyphs in skill and tooltip text, where the icon
             // itself carries the meaning. Nouns.
@@ -207,6 +219,7 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenGeneric => T("ScreenGeneric");
         public static string ScreenHeroSheet => T("ScreenHeroSheet");
         public static string ScreenCombat => T("ScreenCombat");
+        public static string ScreenFork => T("ScreenFork");
 
         public static string RoleButton => T("RoleButton");
         public static string RoleToggle => T("RoleToggle");
@@ -246,6 +259,12 @@ namespace DD2A11y.Core.Strings {
         public static string CombatDied(string name) => F("CombatDied", name);
         public static string CombatDeathsDoor(string name) => F("CombatDeathsDoor", name);
         public static string CombatUsedSkill(string name, string skill, string target) => F("CombatUsedSkill", name, skill, target);
+
+        public static string RoadForkAhead => T("RoadForkAhead");
+        public static string RouteLeft => T("RouteLeft");
+        public static string RouteForward => T("RouteForward");
+        public static string RouteRight => T("RouteRight");
+        public static string RoutePreferredBy(string names) => F("RoutePreferredBy", names);
 
         public static string SpriteHeal => T("SpriteHeal");
         public static string SpriteBuff => T("SpriteBuff");
