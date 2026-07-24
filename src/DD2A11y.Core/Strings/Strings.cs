@@ -33,6 +33,8 @@ namespace DD2A11y.Core.Strings {
             D("ScreenCrossroads", "crossroads"),
             // A generic confirmation dialog with no title of its own.
             D("ScreenDialog", "dialog"),
+            // A game screen the mod reads generically, when it shows no title text to reuse.
+            D("ScreenGeneric", "screen"),
 
             // Control type words, spoken after a control's label ("Continue, button"). Nouns.
             D("RoleButton", "button"),
@@ -61,6 +63,14 @@ namespace DD2A11y.Core.Strings {
             D("CrossroadsRoster", "roster"),
             // A hero slot with no hero in it.
             D("CrossroadsEmptySlot", "empty slot"),
+            // A roster hero currently placed in the party, appended to their readout.
+            D("CrossroadsInParty", "in party"),
+            // Spoken when the player picks up a hero to move; {0} = the hero's name.
+            D("CrossroadsGrabbed", "grabbed {0}"),
+            // Spoken when the player puts a grabbed hero back without moving them.
+            D("CrossroadsGrabCancelled", "grab cancelled"),
+            // Spoken when a grabbed hero cannot be placed on the focused slot.
+            D("CrossroadsCannotPlace", "cannot place here"),
 
             // Buffer review (Ctrl plus arrows). The buffer holding the focused control's detail
             // lines (its tooltips). Noun naming that buffer.
@@ -85,6 +95,8 @@ namespace DD2A11y.Core.Strings {
             D("InputBufferPrev", "Previous buffer"),
             D("InputBufferLineNext", "Next buffer line"),
             D("InputBufferLinePrev", "Previous buffer line"),
+            D("InputGrab", "Grab or place hero"),
+            D("InputInspect", "Open hero sheet"),
         };
 
         private static readonly Dictionary<string, string> English = BuildEnglish();
@@ -138,6 +150,7 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenPauseMenu => T("ScreenPauseMenu");
         public static string ScreenCrossroads => T("ScreenCrossroads");
         public static string ScreenDialog => T("ScreenDialog");
+        public static string ScreenGeneric => T("ScreenGeneric");
 
         public static string RoleButton => T("RoleButton");
         public static string RoleToggle => T("RoleToggle");
@@ -156,6 +169,10 @@ namespace DD2A11y.Core.Strings {
         public static string CrossroadsParty => T("CrossroadsParty");
         public static string CrossroadsRoster => T("CrossroadsRoster");
         public static string CrossroadsEmptySlot => T("CrossroadsEmptySlot");
+        public static string CrossroadsInParty => T("CrossroadsInParty");
+        public static string CrossroadsGrabbed(string hero) => F("CrossroadsGrabbed", hero);
+        public static string CrossroadsGrabCancelled => T("CrossroadsGrabCancelled");
+        public static string CrossroadsCannotPlace => T("CrossroadsCannotPlace");
 
         public static string BufferControl => T("BufferControl");
         public static string BufferNone => T("BufferNone");
@@ -175,5 +192,7 @@ namespace DD2A11y.Core.Strings {
         public static string InputBufferPrev => T("InputBufferPrev");
         public static string InputBufferLineNext => T("InputBufferLineNext");
         public static string InputBufferLinePrev => T("InputBufferLinePrev");
+        public static string InputGrab => T("InputGrab");
+        public static string InputInspect => T("InputInspect");
     }
 }

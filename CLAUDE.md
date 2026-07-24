@@ -23,9 +23,11 @@ screen's own methods), never synthetic OS input.
   **net472**; `DD2A11y.Core` targets netstandard2.0 so the net8 test project can consume it.
 - UI middleware: **uGUI + TextMeshPro**, wrapped in the game's own screen framework (`UiScreenBhv`
   screens on a `ScreenStackBhv` stack, `GameModeMgr` modes for full-scene screens). Input is the
-  **Unity Input System** wrapped by `InputSystemBhv` (action names like "Submit", "ExitMenu",
-  "PauseMenu"); the legacy `UnityEngine.Input` polling API also works and is what our key reader
-  uses. Localization is the game's own `Localization` singleton (`GetString(locKey)`).
+  **Unity Input System ONLY** - the legacy `UnityEngine.Input` API throws
+  `InvalidOperationException` at runtime (the few game files referencing it are dead code). Our
+  key reader polls `UnityEngine.InputSystem.Keyboard.current` device state directly; the game's
+  own action layer is `InputSystemBhv` (action names like "Submit", "ExitMenu", "PauseMenu").
+  Localization is the game's own `Localization` singleton (`GetString(locKey)`).
 - Speech backend is **Prism** (https://github.com/ethindp/prism), bound via hand-written P/Invoke
   against `prism.dll`, vendored in `third_party/prism/` and deployed into the plugin folder.
 - Logs: BepInEx logging with a `[DD2A11y]` source into `<game>\BepInEx\LogOutput.log` (truncated
@@ -226,6 +228,11 @@ gaps). Update it in the same change that adds or fixes a screen.
 Recurring traps, several inherited from the previous incarnation of this mod - they will bite
 again on each new screen.
 
+- **`/input` bypasses the physical key path.** The dev verb drives the navigator's logical
+  handlers directly, so it proves screen logic but NOT key polling - that is how a broken
+  `KeyboardBinding` shipped while every scripted test passed. To exercise the real path, inject
+  device-level events via `/eval`: `InputSystem.QueueStateEvent(Keyboard.current, new
+  KeyboardState(Key.DownArrow))` (then an empty `KeyboardState()` to release), or press keys.
 - **The game destroys the BepInEx manager object during boot**, taking the plugin component's
   `OnDestroy` with it. Never dispose mod state there (the dev server dies silently); dispose only
   on `Application.quitting`. Everything long-lived hangs off the mod's own hidden pump object.

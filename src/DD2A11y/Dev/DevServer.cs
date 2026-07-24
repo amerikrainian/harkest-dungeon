@@ -337,6 +337,8 @@ namespace DD2A11y.Dev {
                 case "buffer-prev": _runtime.BufferCtl.PreviousBuffer(); return "ok";
                 case "buffer-item-next": _runtime.BufferCtl.NextLine(); return "ok";
                 case "buffer-item-prev": _runtime.BufferCtl.PreviousLine(); return "ok";
+                case "inspect": return _runtime.Input.FireAction("ui.inspect") ? "ok" : "unhandled";
+                case "grab": return _runtime.Input.FireAction("crossroads.grab") ? "ok" : "unhandled";
                 default: return "unknown verb " + verb;
             }
         }

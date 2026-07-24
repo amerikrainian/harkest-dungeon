@@ -9,6 +9,7 @@ using DD2A11y.Input;
 using DD2A11y.Screens;
 using DD2A11y.Speech;
 using S = DD2A11y.Core.Strings.Strings;
+using Key = UnityEngine.InputSystem.Key;
 using UnityEngine;
 
 namespace DD2A11y {
@@ -29,6 +30,7 @@ namespace DD2A11y {
 
         private readonly PrismBackend _backend;
         private readonly LanguageSync _language;
+        private CrossroadsScreen _crossroads;
         private string _lastTickError;
         private float _lastTickErrorTime;
 
@@ -54,12 +56,16 @@ namespace DD2A11y {
             };
 
             Router = new ScreenRouter(Navigator, Gate, speak);
+            _crossroads = new CrossroadsScreen(speak);
             Router.Register(new ConfirmationScreen());
             Router.Register(new UiModalScreen());
             Router.Register(new OptionsScreen());
             Router.Register(new PauseScreen());
+            // The floor for any other pushed screen (hero sheet, glossary, node panels) sits
+            // ABOVE the mode screens: a pushed screen always covers the scene behind it.
+            Router.Register(new GenericScreen());
             Router.Register(new MainMenuScreen());
-            Router.Register(new CrossroadsScreen());
+            Router.Register(_crossroads);
 
             RegisterInputs();
             Input.ActiveCategoriesProvider = () => Gate.Captured ? UiCategories : NoCategories;
@@ -75,29 +81,36 @@ namespace DD2A11y {
         private void RegisterInputs() {
             InputAction Reg(string key, string label, Action handler = null)
                 => Input.Register(key, label, InputCategory.UI, handler);
-            KeyboardBinding K(KeyCode key, bool ctrl = false, bool shift = false)
+            KeyboardBinding K(UnityEngine.InputSystem.Key key, bool ctrl = false, bool shift = false)
                 => new KeyboardBinding(key, ctrl, shift);
 
-            Reg(UiActions.Up, S.InputNavigateUp).AddBinding(K(KeyCode.UpArrow)).Repeating();
-            Reg(UiActions.Down, S.InputNavigateDown).AddBinding(K(KeyCode.DownArrow)).Repeating();
-            Reg(UiActions.Left, S.InputNavigateLeft).AddBinding(K(KeyCode.LeftArrow)).Repeating();
-            Reg(UiActions.Right, S.InputNavigateRight).AddBinding(K(KeyCode.RightArrow)).Repeating();
-            Reg(UiActions.Next, S.InputNextPanel).AddBinding(K(KeyCode.Tab)).Repeating();
-            Reg(UiActions.Prev, S.InputPrevPanel).AddBinding(K(KeyCode.Tab, shift: true)).Repeating();
+            Reg(UiActions.Up, S.InputNavigateUp).AddBinding(K(Key.UpArrow)).Repeating();
+            Reg(UiActions.Down, S.InputNavigateDown).AddBinding(K(Key.DownArrow)).Repeating();
+            Reg(UiActions.Left, S.InputNavigateLeft).AddBinding(K(Key.LeftArrow)).Repeating();
+            Reg(UiActions.Right, S.InputNavigateRight).AddBinding(K(Key.RightArrow)).Repeating();
+            Reg(UiActions.Next, S.InputNextPanel).AddBinding(K(Key.Tab)).Repeating();
+            Reg(UiActions.Prev, S.InputPrevPanel).AddBinding(K(Key.Tab, shift: true)).Repeating();
             Reg(UiActions.Activate, S.InputActivate)
-                .AddBinding(K(KeyCode.Return)).AddBinding(K(KeyCode.KeypadEnter));
-            Reg(UiActions.Back, S.InputBack).AddBinding(K(KeyCode.Escape));
-            Reg(UiActions.Home, S.InputJumpFirst).AddBinding(K(KeyCode.Home));
-            Reg(UiActions.End, S.InputJumpLast).AddBinding(K(KeyCode.End));
+                .AddBinding(K(Key.Enter)).AddBinding(K(Key.NumpadEnter));
+            Reg(UiActions.Back, S.InputBack).AddBinding(K(Key.Escape));
+            Reg(UiActions.Home, S.InputJumpFirst).AddBinding(K(Key.Home));
+            Reg(UiActions.End, S.InputJumpLast).AddBinding(K(Key.End));
 
             Reg("buffer.next", S.InputBufferNext, BufferCtl.NextBuffer)
-                .AddBinding(K(KeyCode.RightArrow, ctrl: true));
+                .AddBinding(K(Key.RightArrow, ctrl: true));
             Reg("buffer.prev", S.InputBufferPrev, BufferCtl.PreviousBuffer)
-                .AddBinding(K(KeyCode.LeftArrow, ctrl: true));
+                .AddBinding(K(Key.LeftArrow, ctrl: true));
             Reg("buffer.line.next", S.InputBufferLineNext, BufferCtl.NextLine)
-                .AddBinding(K(KeyCode.UpArrow, ctrl: true)).Repeating();
+                .AddBinding(K(Key.UpArrow, ctrl: true)).Repeating();
             Reg("buffer.line.prev", S.InputBufferLinePrev, BufferCtl.PreviousLine)
-                .AddBinding(K(KeyCode.DownArrow, ctrl: true)).Repeating();
+                .AddBinding(K(Key.DownArrow, ctrl: true)).Repeating();
+
+            // The focused element's inspect action (the hero sheet at the crossroads).
+            Reg("ui.inspect", S.InputInspect, () => Navigator.Current?.InvokeAction("inspect"))
+                .AddBinding(K(Key.I));
+            // Grab-and-place for precise hero moves at the crossroads.
+            Reg("crossroads.grab", S.InputGrab, () => _crossroads.ToggleGrab(Navigator.Current))
+                .AddBinding(K(Key.Space));
         }
 
         public void Tick() {
