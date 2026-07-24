@@ -87,10 +87,13 @@ Status: **works** (live-verified 2026-07-23 from the crossroads)
   button - with the full skill card as buffer lines (Rank/Target lines with multi-hit "+"
   joins, DMG/CRIT/cooldown, per-target effects, melee/ranged), then the combat item and
   trinket slots.
-- Inline effect glyphs in game text (tokens, dots, heal/buff/debuff icons) are spoken as words:
-  token and dot names resolve through the game's own `token_name_*` / `dot_name_*` strings, the
-  handful of unnamed effect icons through authored words. This applies pipeline-wide, so quirk
-  and tooltip text benefits too.
+- Inline effect glyphs in game text (tokens, dots, heal/buff/debuff and stat icons) are spoken
+  as words: token and dot names resolve through the game's own `token_name_*` / `dot_name_*`
+  strings; the icons with no name string anywhere in the game (heal, buff, debuff, stress,
+  disease, speed, HP) carry authored words; any other icon speaks its humanized sprite name
+  rather than silently dropping ("-2 speed" on a trinket, not a bare "-2"). Known-decorative
+  glyphs (the hero-seal mark) are the only ones dropped. Applies pipeline-wide - every buffer
+  and announcement benefits.
 - Other tabs (Relationships, Conditions, Story, Cosmetics) read as a generic sweep of the tab
   panel's labeled selectables, with the panel's own text - or "empty" - as the floor; verified
   live: Relationships "empty" pre-run, Conditions "Memories", Story its unlock hint, Cosmetics
