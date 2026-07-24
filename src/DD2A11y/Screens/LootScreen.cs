@@ -82,7 +82,7 @@ namespace DD2A11y.Screens {
                 var item = container.GetElement(i);
                 var selectable = item == null ? null : item.GetComponent<Selectable>();
                 if (selectable != null) {
-                    _items.Add(new LootItemElement(item, selectable));
+                    _items.Add(new InventoryItemElement(item, selectable));
                 }
             }
             _builtItems = FilledSlots(loot);

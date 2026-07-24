@@ -78,6 +78,10 @@ namespace DD2A11y {
             Router.Register(new CharacterSheetScreen());
             Router.Register(new LootScreen());
             Router.Register(new StoryScreen());
+            Router.Register(new InnResultsScreen());
+            // The inn hub reads THROUGH its own inventory stack entry, so it must outrank the
+            // generic floor that would otherwise take that entry.
+            Router.Register(new InnScreen());
             // The floor for any other pushed screen (glossary, node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());

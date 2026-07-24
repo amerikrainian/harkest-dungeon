@@ -6,14 +6,16 @@ using UnityEngine.UI;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// One reward on the loot screen: the item's own title with its stack size, the full item
-    /// tooltip as buffer lines, and Enter taking it through the game's own submit handler (which
-    /// also plays the invalid click when the player inventory is full).
+    /// One occupied item slot in any of the game's inventories (a loot reward, a bag slot at
+    /// the inn): the item's own title with its stack size, the full item tooltip as buffer
+    /// lines, and Enter through the game's own submit handler (take on the loot screen,
+    /// auto-transfer or slot-select in a bag; the invalid click plays when it cannot act).
+    /// Empty slots cannot take focus.
     /// </summary>
-    public sealed class LootItemElement : SelectableElement {
+    public sealed class InventoryItemElement : SelectableElement {
         private readonly InventoryItemBhv _item;
 
-        public LootItemElement(InventoryItemBhv item, Selectable selectable)
+        public InventoryItemElement(InventoryItemBhv item, Selectable selectable)
             : base(selectable, null, item.gameObject) {
             _item = item;
         }

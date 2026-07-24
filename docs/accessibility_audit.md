@@ -187,6 +187,47 @@ last-item auto-close)
 - Known gaps: Take All's per-item toast stream is unspoken; the utility buttons read via
   their tooltips only.
 
+### Travelogue (`InnResultsScreen`, inn-arrival recap on the stack)
+Status: **works** (live-verified 2026-07-24: arrival restore, full arrow walk)
+- The inn-arrival run recap (`SubScreenBiomeResultsBhv`; the hub's Travelogue button reopens
+  the same surface). Reads like a modal: one focusable text row per run-log entry (the
+  game's own rendered lines - "The resolute Companions reached The Torch & Crown", "2
+  Candles gained for reaching the Inn!"), then the Loathing meter's tooltip as a readout
+  ("The Loathing Abates, Prologue"), then Continue (arrival only; the game hides it on a
+  reopened travelogue). Continue activates through the button's own submit; Escape runs the
+  screen's continue flow when a continue button stands, else the game's own close.
+- Known gaps: the innkeeper portrait button (unlabeled, flavor) is not modeled; a reopened
+  travelogue (from the hub) is unexercised live.
+
+### Inn hub (`InnScreen`, INN mode)
+Status: **works** (live-verified 2026-07-24 at the prologue inn: name, hero row, stations,
+full inventory walk, item tooltip buffers)
+- Named by the inn's own title (`InnBhv.GetInnInstance().Name` already holds the localized
+  title; authored "inn" fallback). Layout, top to bottom: the regions-to-mountain readout;
+  the **hero rest strip as a horizontal row** (`RestHeroElement` over each `RestItemSlotBhv`
+  - name with HP and stress from the live actor, the slot's status tooltip as buffer lines,
+  Enter through the slot's own submit); the station buttons (captions from their tooltips;
+  the prologue inn genuinely offers only Travelogue and End Expedition - the bar rebuilds
+  per inn and later inns add the shops); then the inventory panel: the filter, "slots 5 /
+  20", and wallet rows ("Relics, 40") as readouts, the sort button, one element per carried
+  item (`InventoryItemElement`, shared with the loot screen: the item's own title and stack
+  - "Candle of Hope, 3" - full tooltip in the buffer), and the free capacity collapsed to
+  one live line ("15 empty slots"). Escape opens the pause menu.
+- Bag position carries no meaning (no adjacency; the game's own Sort reshuffles), so the
+  3-column visual grid is deliberately flattened to an occupied-only list; empties exist as
+  the one capacity line. The game's slot-swap flow (`IsSelectingItemSlot`) accepts any
+  same-inventory slot as a target, so a future grab-and-place flow needs only one "empty"
+  destination, never a specific cell.
+- The hub deliberately outranks the generic floor: the inn keeps its inventory panel
+  (`screen_inn_player_inventory`, an `InventoryUiBhv` stack entry) as the top stack entry
+  while the hub is up, and the floor would otherwise capture just that panel and strand the
+  station buttons. Any station sub-screen pushed above it hands the surface to its own
+  reader (travelogue dedicated, the rest the generic floor for now).
+- Known gaps: station sub-screens (shops, End Expedition, Select Route) read at floor level
+  only; the item slot-select/move flow and rest-item application onto heroes are unmodeled
+  (Enter runs the game's own submit, which auto-transfers where the game allows); shops'
+  richer inns unexercised (only the two-station prologue inn verified).
+
 ### Driving (`RoadSense` + `RouteChoiceScreen`, DRIVING mode)
 Status: **built**; cues live-verified by ear (pickup ping confirmed audible), fork menu not
 yet reached in play

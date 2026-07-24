@@ -41,6 +41,12 @@ namespace DD2A11y.Core.Strings {
             D("ScreenCombat", "combat"),
             // The road-fork route menu, shown while the coach waits at a junction.
             D("ScreenFork", "fork"),
+            // The inn hub, when the inn's own name is unavailable. Noun.
+            D("ScreenInn", "inn"),
+            // The inventory's used-slot readout; {0} = the game's own count text ("5 / 20").
+            D("InventorySlots", "slots {0}"),
+            // The free bag capacity, collapsed to one line; {0} = how many slots are empty.
+            D("InventoryEmptySlots", "{0} empty slot|{0} empty slots"),
 
             // Control type words, spoken after a control's label ("Continue, button"). Nouns.
             D("RoleButton", "button"),
@@ -266,6 +272,9 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenHeroSheet => T("ScreenHeroSheet");
         public static string ScreenCombat => T("ScreenCombat");
         public static string ScreenFork => T("ScreenFork");
+        public static string ScreenInn => T("ScreenInn");
+        public static string InventorySlots(string count) => F("InventorySlots", count);
+        public static string InventoryEmptySlots(int count) => P("InventoryEmptySlots", count);
 
         public static string RoleButton => T("RoleButton");
         public static string RoleToggle => T("RoleToggle");
