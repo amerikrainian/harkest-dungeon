@@ -16,6 +16,7 @@ ScreenFork = fork
 ScreenInn = inn
 InventorySlots = slots {0}
 InventoryEmptySlots = {0} empty slot|{0} empty slots
+InventorySorted = sorted by type
 RoleButton = button
 RoleToggle = toggle
 RoleSlider = slider

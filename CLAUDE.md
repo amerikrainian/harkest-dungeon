@@ -271,6 +271,11 @@ again on each new screen.
   host must not `ReferenceAssembly` mscorlib/System/System.Core/System.Xml (the evaluator loads
   its own defaults) nor the netstandard/System.Runtime facades, or every System type is
   ambiguous.
+- **Pooled lists recycle EVERY widget on re-populate** (`PooledListBhv` - inventory slots on
+  sort, station buttons on inn-state changes): the same count of brand-new instances replaces
+  the old ones, so a count-based rebuild check reads equal while every held reference is dead.
+  Key rebuild checks to an instance-id signature over the swept widgets, and keep elements
+  over persistent widgets out of the rebuilt container so focus survives.
 - **FMOD owns audio.** Whether a mod-owned Unity `AudioSource` is audible is unverified; check
   before building audio cues.
 

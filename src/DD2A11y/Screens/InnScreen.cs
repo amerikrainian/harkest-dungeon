@@ -1,3 +1,4 @@
+using System;
 using Assets.Code.Game;
 using Assets.Code.Inn;
 using Assets.Code.UI.Items;
@@ -11,6 +12,7 @@ using DD2A11y.Elements;
 using DD2A11y.Game;
 using S = DD2A11y.Core.Strings.Strings;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DD2A11y.Screens {
@@ -20,20 +22,26 @@ namespace DD2A11y.Screens {
     /// the hero rest strip (a horizontal row - name, HP, stress, status tooltip in the buffer),
     /// the station buttons (Travelogue, End Expedition, the shops when the inn has them;
     /// captions live in their tooltips), then the inventory panel: filter, slot count, and
-    /// wallet readouts, the sort button, one element per carried item (title and stack, full
-    /// tooltip in the buffer), and the free capacity as one collapsed line. A station opens
-    /// through its own button; the opened sub-screen is read by its dedicated screen or the
-    /// generic floor. Escape opens the pause menu.
+    /// wallet readouts, the sort button (its press confirms "sorted by type" - the game's one
+    /// sort), one element per carried item (title and stack, full tooltip in the buffer), and
+    /// the free capacity as one collapsed line. A station opens through its own button; the
+    /// opened sub-screen is read by its dedicated screen or the generic floor. Escape opens
+    /// the pause menu.
     /// </summary>
     public sealed class InnScreen : GameScreen {
+        private readonly Action<string, bool> _speak;
         private SubScreenCollectionBhv _collection;
         private InventoryUiBhv _inventory;
         private Container _root;
         private Container _heroes;
         private Container _buttons;
         private Container _items;
-        private int _builtButtons;
-        private int _builtItems;
+        private int _builtButtonsSignature;
+        private int _builtItemsSignature;
+
+        public InnScreen(Action<string, bool> speak) {
+            _speak = speak;
+        }
 
         public override string Name {
             get {
@@ -57,7 +65,7 @@ namespace DD2A11y.Screens {
                 return null;
             }
             if (_collection == null) {
-                _collection = Object.FindObjectOfType<SubScreenCollectionBhv>();
+                _collection = UnityEngine.Object.FindObjectOfType<SubScreenCollectionBhv>();
             }
             if (_collection == null || !_collection.gameObject.activeInHierarchy) {
                 return null;
@@ -82,18 +90,57 @@ namespace DD2A11y.Screens {
             _root.Add(_buttons);
             PopulateButtons();
 
+            // The inventory's frame (filter, count, wallet, sort) lives on persistent widgets,
+            // so these elements are stable across re-sorts; only the pooled item slots below
+            // ever need a rebuild. That keeps focus on Sort alive through its own press.
+            if (_inventory != null) {
+                var filter = FindChild(_inventory.transform, "ActiveFilter");
+                if (filter != null) {
+                    _root.Add(new ReadoutElement(() => filter == null ? null : UiText.AllText(filter.gameObject)));
+                }
+                var count = FindChild(_inventory.transform, "SlotCountContainer");
+                if (count != null) {
+                    _root.Add(new ReadoutElement(() => {
+                        string text = count == null ? null : UiText.AllText(count.gameObject);
+                        return string.IsNullOrEmpty(text) ? null : S.InventorySlots(text);
+                    }));
+                }
+                var currencies = FindChild(_inventory.transform, "Currencies");
+                if (currencies != null) {
+                    foreach (Transform row in currencies) {
+                        var captured = row;
+                        _root.Add(new ReadoutElement(() => CurrencyLine(captured)));
+                    }
+                }
+                foreach (var selectable in _inventory.GetComponentsInChildren<Selectable>(includeInactive: false)) {
+                    if (selectable.GetComponent<InventoryItemBhv>() != null || !Include(selectable)) {
+                        continue;
+                    }
+                    var button = selectable;
+                    if (button.gameObject.name == "SortButton") {
+                        _root.Add(new ActionElement(() => UiText.FirstLabel(button.gameObject), S.RoleButton, () => {
+                            ExecuteEvents.Execute(button.gameObject, new BaseEventData(EventSystem.current),
+                                ExecuteEvents.submitHandler);
+                            _speak(S.InventorySorted, false);
+                        }));
+                    } else {
+                        _root.Add(new SelectableElement(button));
+                    }
+                }
+            }
+
             _items = new Container(ContainerShape.VerticalList);
             _root.Add(_items);
-            PopulateInventory();
+            PopulateItems();
             return _root;
         }
 
         public override bool OnUpdate(object target) {
-            if (CountSelectables(_collection) != _builtButtons) {
+            if (ButtonsSignature() != _builtButtonsSignature) {
                 PopulateButtons();
             }
-            if (_inventory != null && CountOccupied(_inventory) != _builtItems) {
-                PopulateInventory();
+            if (_inventory != null && ItemsSignature() != _builtItemsSignature) {
+                PopulateItems();
             }
             return false;
         }
@@ -102,8 +149,8 @@ namespace DD2A11y.Screens {
         // a hero hide themselves through the element.
         private void PopulateHeroes() {
             _heroes.Clear();
-            var slots = Object.FindObjectsOfType<RestItemSlotBhv>();
-            System.Array.Sort(slots, (a, b) => a.transform.GetSiblingIndex().CompareTo(b.transform.GetSiblingIndex()));
+            var slots = UnityEngine.Object.FindObjectsOfType<RestItemSlotBhv>();
+            Array.Sort(slots, (a, b) => a.transform.GetSiblingIndex().CompareTo(b.transform.GetSiblingIndex()));
             foreach (var slot in slots) {
                 var selectable = slot.GetComponent<Selectable>();
                 if (selectable != null) {
@@ -116,57 +163,31 @@ namespace DD2A11y.Screens {
         // UiText.FirstLabel already resolves.
         private void PopulateButtons() {
             _buttons.Clear();
-            _builtButtons = 0;
             if (_collection == null) {
+                _builtButtonsSignature = 0;
                 return;
             }
             foreach (var selectable in _collection.GetComponentsInChildren<Selectable>(includeInactive: false)) {
                 if (Include(selectable)) {
                     _buttons.Add(new SelectableElement(selectable));
-                    _builtButtons++;
                 }
             }
+            _builtButtonsSignature = ButtonsSignature();
         }
 
-        // The inventory panel: the filter, slot count, and wallet as readouts, then the sort
-        // button, then what the player carries - occupied slots only, with the free capacity
-        // collapsed to one line (bag position carries no meaning; the game's own sort reorders
-        // freely).
-        private void PopulateInventory() {
+        // What the player carries - occupied slots only, with the free capacity collapsed to
+        // one live line (bag position carries no meaning; the game's own sort reorders freely).
+        private void PopulateItems() {
             _items.Clear();
-            _builtItems = 0;
             if (_inventory == null) {
+                _builtItemsSignature = 0;
                 return;
-            }
-            var filter = FindChild(_inventory.transform, "ActiveFilter");
-            if (filter != null) {
-                _items.Add(new ReadoutElement(() => filter == null ? null : UiText.AllText(filter.gameObject)));
-            }
-            var count = FindChild(_inventory.transform, "SlotCountContainer");
-            if (count != null) {
-                _items.Add(new ReadoutElement(() => {
-                    string text = count == null ? null : UiText.AllText(count.gameObject);
-                    return string.IsNullOrEmpty(text) ? null : S.InventorySlots(text);
-                }));
-            }
-            var currencies = FindChild(_inventory.transform, "Currencies");
-            if (currencies != null) {
-                foreach (Transform row in currencies) {
-                    var captured = row;
-                    _items.Add(new ReadoutElement(() => CurrencyLine(captured)));
-                }
-            }
-            foreach (var selectable in _inventory.GetComponentsInChildren<Selectable>(includeInactive: false)) {
-                if (selectable.GetComponent<InventoryItemBhv>() == null && Include(selectable)) {
-                    _items.Add(new SelectableElement(selectable));
-                }
             }
             foreach (var slot in _inventory.GetComponentsInChildren<PlayerInventoryItemBhv>(includeInactive: false)) {
                 if (slot.IsOccupied) {
                     var selectable = slot.GetComponent<Selectable>();
                     if (selectable != null) {
                         _items.Add(new InventoryItemElement(slot, selectable));
-                        _builtItems++;
                     }
                 }
             }
@@ -175,19 +196,7 @@ namespace DD2A11y.Screens {
                 int empty = CountEmpty(inventory);
                 return empty > 0 ? S.InventoryEmptySlots(empty) : null;
             }));
-        }
-
-        private static int CountEmpty(InventoryUiBhv inventory) {
-            if (inventory == null) {
-                return 0;
-            }
-            int count = 0;
-            foreach (var slot in inventory.GetComponentsInChildren<PlayerInventoryItemBhv>(includeInactive: false)) {
-                if (!slot.IsOccupied) {
-                    count++;
-                }
-            }
-            return count;
+            _builtItemsSignature = ItemsSignature();
         }
 
         // A wallet row ("Relics, 40"): the caption is the row's tooltip, the amount its label.
@@ -213,23 +222,42 @@ namespace DD2A11y.Screens {
             return UiText.HasAnyTextSource(selectable.gameObject);
         }
 
-        private static int CountSelectables(Component scope) {
-            if (scope == null) {
+        // Identity signatures, not counts: the game's pooled lists recycle and respawn their
+        // widgets on a re-sort or a station rebuild, leaving the same number of NEW instances -
+        // a count check reads equal while every held reference is dead.
+        private int ButtonsSignature() {
+            int signature = 17;
+            if (_collection == null) {
+                return 0;
+            }
+            foreach (var selectable in _collection.GetComponentsInChildren<Selectable>(includeInactive: false)) {
+                if (Include(selectable)) {
+                    signature = signature * 31 + selectable.GetInstanceID();
+                }
+            }
+            return signature;
+        }
+
+        private int ItemsSignature() {
+            int signature = 17;
+            if (_inventory == null) {
+                return 0;
+            }
+            foreach (var slot in _inventory.GetComponentsInChildren<PlayerInventoryItemBhv>(includeInactive: false)) {
+                if (slot.IsOccupied) {
+                    signature = signature * 31 + slot.GetInstanceID();
+                }
+            }
+            return signature;
+        }
+
+        private static int CountEmpty(InventoryUiBhv inventory) {
+            if (inventory == null) {
                 return 0;
             }
             int count = 0;
-            foreach (var selectable in scope.GetComponentsInChildren<Selectable>(includeInactive: false)) {
-                if (Include(selectable)) {
-                    count++;
-                }
-            }
-            return count;
-        }
-
-        private static int CountOccupied(InventoryUiBhv inventory) {
-            int count = 0;
             foreach (var slot in inventory.GetComponentsInChildren<PlayerInventoryItemBhv>(includeInactive: false)) {
-                if (slot.IsOccupied) {
+                if (!slot.IsOccupied) {
                     count++;
                 }
             }

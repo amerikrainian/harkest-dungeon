@@ -213,6 +213,12 @@ full inventory walk, item tooltip buffers)
   item (`InventoryItemElement`, shared with the loot screen: the item's own title and stack
   - "Candle of Hope, 3" - full tooltip in the buffer), and the free capacity collapsed to
   one live line ("15 empty slots"). Escape opens the pause menu.
+- Sort speaks "sorted by type" on press (the game has exactly one sort - item type, then
+  name; no modes). A sort re-populates the pooled slot widgets with all-new instances, so
+  the item list rebuild is keyed to an instance-id signature, not a count - and the
+  inventory's frame elements (filter, count, wallet, Sort itself) sit outside the rebuilt
+  container so focus survives the press. Verified live: two consecutive sorts, items
+  walkable immediately after each.
 - Bag position carries no meaning (no adjacency; the game's own Sort reshuffles), so the
   3-column visual grid is deliberately flattened to an occupied-only list; empties exist as
   the one capacity line. The game's slot-swap flow (`IsSelectingItemSlot`) accepts any

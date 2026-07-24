@@ -47,6 +47,9 @@ namespace DD2A11y.Core.Strings {
             D("InventorySlots", "slots {0}"),
             // The free bag capacity, collapsed to one line; {0} = how many slots are empty.
             D("InventoryEmptySlots", "{0} empty slot|{0} empty slots"),
+            // Spoken after the sort button runs; the game's one sort orders by item type,
+            // then name.
+            D("InventorySorted", "sorted by type"),
 
             // Control type words, spoken after a control's label ("Continue, button"). Nouns.
             D("RoleButton", "button"),
@@ -275,6 +278,7 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenInn => T("ScreenInn");
         public static string InventorySlots(string count) => F("InventorySlots", count);
         public static string InventoryEmptySlots(int count) => P("InventoryEmptySlots", count);
+        public static string InventorySorted => T("InventorySorted");
 
         public static string RoleButton => T("RoleButton");
         public static string RoleToggle => T("RoleToggle");
