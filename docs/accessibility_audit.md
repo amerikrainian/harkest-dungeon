@@ -65,8 +65,9 @@ Status: **works** (live-verified 2026-07-23)
   hero sheet header's buffer.
 - Enter = the game's own two-step (select a hero, then Enter on a rank places them).
   **Space** = grab-and-place through the game's drop logic (specific rank, rank swap, back to
-  pool), with grabbed/cancelled/cannot-place feedback. **I** = the hero sheet (the mouse
-  right-click equivalent), read by its dedicated screen; Escape closes it.
+  pool), with grabbed/cancelled/cannot-place feedback. **C** = the hero sheet (the mouse
+  right-click equivalent, matching the game's own "Hero Sheet (C)" hint), read by its
+  dedicated screen; Escape closes it.
 - Known gaps: the Embark element is live-verified up to (not including) the press - pressing
   it starts the run, which leads into unmodeled screens. The path-select and party-loadout
   canvas overlays are not modeled, so their opener buttons (the "Change Path" seal,
@@ -138,8 +139,24 @@ execution, kill, turn handoff - plus pause round trip)
   event lines (the CombatEvents handlers are the plug-in point); Move is untested against
   position targeting; Pass briefly announces "select target" before auto-resolving; the
   retreat element only (dis)appears on turn-boundary rebuilds; stealth/corpse/summon edge
-  cases unexercised; the academic view and token-glossary overlays not modeled; the
-  post-battle loot/result surface is unmodeled (next screen after a won fight).
+  cases unexercised; the academic view and token-glossary overlays not modeled; battle-end
+  cleanup fires "Corpse died" lines (real death events for the corpse entities - noise at
+  the end of a won fight, informative mid-fight).
+
+### Victory / loot (`LootScreen`)
+Status: **works** (live-verified 2026-07-23: item buffer, single take, leave-items dialog,
+last-item auto-close)
+- The loot screen (a battle's Victory rewards; the same surface serves road caches): the
+  description line, then each reward with the item's own title and stack size ("Candle of
+  Hope", "Minor Gilded Mind") - the full item tooltip as buffer lines - then Take All, Leave
+  Items, and the utility buttons (Hero Sheet, Inventory). Enter takes an item through the
+  game's own transfer (invalid-click audio when the player inventory is full); the list
+  rebuilds as items leave, re-homing focus.
+- Escape runs the game's own close flow: with rewards remaining it opens the game's
+  leave-items confirmation dialog, which the dialog screen reads ("You will leave items
+  behind. Still press onwards?").
+- Known gaps: Take All's per-item toast stream is unspoken; the utility buttons read via
+  their tooltips only.
 
 ### Everything else
 Status: **not started** (floor-level reading only) - driving/map, inn, loot, node

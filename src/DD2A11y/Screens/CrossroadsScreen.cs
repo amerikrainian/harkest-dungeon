@@ -134,8 +134,10 @@ namespace DD2A11y.Screens {
             var actions = new Container(ContainerShape.VerticalList);
             var partyName = UnityEngine.Object.FindObjectOfType<PartyNameBhv>();
             if (partyName != null) {
-                var partyNameObject = partyName.gameObject;
-                actions.Add(new ReadoutElement(() => UiText.FirstLabel(partyNameObject)));
+                // Live-guarded: the closure can be read the frame the canvas is torn down, when
+                // the captured component is Unity-dead but not null.
+                actions.Add(new ReadoutElement(
+                    () => partyName == null ? null : UiText.FirstLabel(partyName.gameObject)));
             }
             var confirm = ConfirmButtonField(_heroSelect);
             _builtEmbarkVisible = confirm != null && confirm.gameObject.activeInHierarchy;

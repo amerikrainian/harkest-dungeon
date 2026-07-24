@@ -69,6 +69,7 @@ namespace DD2A11y {
             Router.Register(new OptionsScreen());
             Router.Register(new PauseScreen());
             Router.Register(new CharacterSheetScreen());
+            Router.Register(new LootScreen());
             // The floor for any other pushed screen (glossary, node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());
@@ -114,9 +115,10 @@ namespace DD2A11y {
             Reg("buffer.line.prev", S.InputBufferLinePrev, BufferCtl.PreviousLine)
                 .AddBinding(K(Key.DownArrow, ctrl: true)).Repeating();
 
-            // The focused element's inspect action (the hero sheet at the crossroads).
+            // The focused element's inspect action (the hero sheet at the crossroads and in
+            // combat). C, matching the game's own "Hero Sheet (C)" hint.
             Reg("ui.inspect", S.InputInspect, () => Navigator.Current?.InvokeAction("inspect"))
-                .AddBinding(K(Key.I));
+                .AddBinding(K(Key.C));
             // Grab-and-place for precise hero moves at the crossroads.
             Reg("crossroads.grab", S.InputGrab, () => _crossroads.ToggleGrab(Navigator.Current))
                 .AddBinding(K(Key.Space));
