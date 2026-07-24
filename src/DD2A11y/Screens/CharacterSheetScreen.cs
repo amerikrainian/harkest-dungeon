@@ -332,9 +332,13 @@ namespace DD2A11y.Screens {
                 return;
             }
             var button = slot.GetComponent<Button>();
-            if (button != null) {
-                container.Add(new SelectableElement(button, null, rowScope));
+            if (button == null) {
+                return;
             }
+            var itemSlot = slot.GetComponent<Assets.Code.UI.Items.InventoryItemBhv>();
+            container.Add(itemSlot != null
+                ? new EquipSlotElement(itemSlot, button, rowScope)
+                : new SelectableElement(button, null, rowScope));
         }
 
         // Any other tab: the panel's labeled selectables, with the panel's own text as the floor

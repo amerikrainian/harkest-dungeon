@@ -102,10 +102,12 @@ Status: **works** (live-verified 2026-07-23 from the crossroads)
   switching (both our selector and the game keeping the tab across hero switches), Escape
   closes through `HideCharacterSheet` with the crossroads re-announcing, physical **I** key
   entry from a hero slot.
+- Equip slots (trinkets, combat items) are `EquipSlotElement`s: occupied slots read the
+  item's own title from the model, empty ones their caption, and activation speaks the
+  landed state (live-verified 2026-07-24 via the inn equip flow, both directions).
 - Known gaps: hero rename (the name input field and edit button) is not modeled; the cosmetics
-  tab is floor-level (palette slots read as bare numbers); an equipped trinket's slot label is
-  its "Equip Trinket" caption with the item detail in the buffer (not yet exercised with an
-  equipped trinket); the game's own tab hotkeys and tooltip-view mode are not used.
+  tab is floor-level (palette slots read as bare numbers); the game's own tab hotkeys and
+  tooltip-view mode are not used.
 
 ### Generic floor (`GenericScreen`)
 Status: **works** (live-verified 2026-07-23, originally on the hero sheet before its dedicated
@@ -229,9 +231,18 @@ full inventory walk, item tooltip buffers)
 - **Shift+Enter discards** the focused bag item (the game's shift-click; the whole stack,
   instantly - the game confirms nothing except its own last-trophy safeguard). The element
   advertises the action only where the game allows it (`m_canDiscard`, player bag slots);
-  anywhere else Shift+Enter answers "unavailable". Verified live: the action advertised on
-  a discardable item, absent elsewhere; an actual discard is unexercised (no expendable
-  item existed - every press destroys real property).
+  anywhere else Shift+Enter answers "unavailable". Player-verified live.
+- **Equipping rides the game's own slot-select flow, end to end** (live-verified both ways):
+  Enter on a bag trinket/combat item makes the game itself open the hero sheet in
+  slot-select mode; Enter on a sheet equip slot runs the game's `Swap()` (equips; a held
+  item swaps back to the bag), and Enter on an occupied slot auto-transfers it off (unequip).
+  Escape anywhere cancels the mode and falls back to the inn. Sheet equip slots are
+  `EquipSlotElement`s: the label is the equipped item's title read from the model (current
+  the same frame the swap lands, where the widget text is a frame late; empty slots read
+  their "Equip Trinket" caption) and activation speaks the landed state back ("Minor Gilded
+  Mind" on equip, "Equip Trinket" on unequip). Bag-to-bag rearrangement has no logical
+  handler in the game at all (mouse-drag only), so it is deliberately out of scope; REST
+  items use a select-then-apply-to-hero flow instead of slot-select (unexercised live).
 - Bag position carries no meaning (no adjacency; the game's own Sort reshuffles), so the
   3-column visual grid is deliberately flattened to an occupied-only list; empties exist as
   the one capacity line. The game's slot-swap flow (`IsSelectingItemSlot`) accepts any

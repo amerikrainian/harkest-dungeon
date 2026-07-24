@@ -49,7 +49,9 @@ namespace DD2A11y.Core.Nav {
             => Text.SpokenLine.Join(Label, Role, Value);
 
         /// <summary>Just the changed state, for re-announcing after an in-place activation.</summary>
-        public string GetValueText() => Value ?? "";
+        /// <summary>What a post-activation re-announce speaks. Virtual for elements whose
+        /// activation changes their label rather than a value (an equip slot).</summary>
+        public virtual string GetValueText() => Value ?? "";
 
         /// <summary>What to announce after an in-place adjust action (increase/decrease) just ran;
         /// <paramref name="changed"/> is whether the value text actually moved. A move reads the new
