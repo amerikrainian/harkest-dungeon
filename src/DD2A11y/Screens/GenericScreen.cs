@@ -1,4 +1,3 @@
-using Assets.Code.UI.Managers;
 using Assets.Code.UI.Screens;
 using Assets.Code.Utils;
 using DD2A11y.Core.Nav;
@@ -10,7 +9,7 @@ using UnityEngine.UI;
 namespace DD2A11y.Screens {
     /// <summary>
     /// The floor under every stack screen the mod has no dedicated reader for (glossary, road
-    /// node panels, the character sheet): a generic sweep of the screen's selectables so no
+    /// node panels): a generic sweep of the screen's selectables so no
     /// surface is ever dead air. Registered last, so dedicated screens always win. Only real
     /// SCREEN stack entries are taken - driving HUD widgets (minimap, goals) register on the
     /// stack too and must not capture the keyboard mid-drive.
@@ -42,7 +41,7 @@ namespace DD2A11y.Screens {
 
         public override Container BuildRoot(object target) {
             var screen = (UiScreenBhv)target;
-            _root = new RootContainer(ContainerShape.VerticalList, back: () => Close(screen));
+            _root = new RootContainer(ContainerShape.VerticalList, back: () => screen.TryCloseScreen());
             Populate(screen);
             return _root;
         }
@@ -87,14 +86,5 @@ namespace DD2A11y.Screens {
             return UiText.HasAnyTextSource(selectable.gameObject);
         }
 
-        private static void Close(UiScreenBhv screen) {
-            // The character sheet has its own teardown path the plain close skips.
-            var common = SingletonMonoBehaviour<CommonUiBhv>.Instance;
-            if (common != null && common.IsCharacterSheetActive) {
-                common.HideCharacterSheet();
-                return;
-            }
-            screen.TryCloseScreen();
-        }
     }
 }

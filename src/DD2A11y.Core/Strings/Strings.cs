@@ -35,6 +35,8 @@ namespace DD2A11y.Core.Strings {
             D("ScreenDialog", "dialog"),
             // A game screen the mod reads generically, when it shows no title text to reuse.
             D("ScreenGeneric", "screen"),
+            // A hero's character sheet (stats, quirks, skills). The game calls it "hero sheet".
+            D("ScreenHeroSheet", "hero sheet"),
 
             // Control type words, spoken after a control's label ("Continue, button"). Nouns.
             D("RoleButton", "button"),
@@ -42,6 +44,8 @@ namespace DD2A11y.Core.Strings {
             D("RoleSlider", "slider"),
             D("RoleDropdown", "dropdown"),
             D("RoleTab", "tab"),
+            // The hero sheet's header line (the hero's name); Left/Right there switch heroes.
+            D("RoleHero", "hero"),
 
             // Control state words.
             // A toggle that is checked / unchecked.
@@ -71,6 +75,26 @@ namespace DD2A11y.Core.Strings {
             D("CrossroadsGrabCancelled", "grab cancelled"),
             // Spoken when a grabbed hero cannot be placed on the focused slot.
             D("CrossroadsCannotPlace", "cannot place here"),
+
+            // Hero sheet. The speed stat readout; {0} = the number. The game shows this stat as a
+            // bare icon with no name string to reuse.
+            D("SheetSpeed", "speed {0}"),
+            // A tab or panel with nothing in it yet (the relationships tab before a run), where
+            // the game shows blank space. Adjective.
+            D("PanelEmpty", "empty"),
+
+            // Words for the game's inline effect glyphs in skill and tooltip text, where the icon
+            // itself carries the meaning. Nouns.
+            // A healing effect.
+            D("SpriteHeal", "heal"),
+            // A positive status effect.
+            D("SpriteBuff", "buff"),
+            // A negative status effect.
+            D("SpriteDebuff", "debuff"),
+            // Stress damage.
+            D("SpriteStress", "stress"),
+            // A disease effect.
+            D("SpriteDisease", "disease"),
 
             // Buffer review (Ctrl plus arrows). The buffer holding the focused control's detail
             // lines (its tooltips). Noun naming that buffer.
@@ -151,12 +175,14 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenCrossroads => T("ScreenCrossroads");
         public static string ScreenDialog => T("ScreenDialog");
         public static string ScreenGeneric => T("ScreenGeneric");
+        public static string ScreenHeroSheet => T("ScreenHeroSheet");
 
         public static string RoleButton => T("RoleButton");
         public static string RoleToggle => T("RoleToggle");
         public static string RoleSlider => T("RoleSlider");
         public static string RoleDropdown => T("RoleDropdown");
         public static string RoleTab => T("RoleTab");
+        public static string RoleHero => T("RoleHero");
 
         public static string StatusOn => T("StatusOn");
         public static string StatusOff => T("StatusOff");
@@ -173,6 +199,15 @@ namespace DD2A11y.Core.Strings {
         public static string CrossroadsGrabbed(string hero) => F("CrossroadsGrabbed", hero);
         public static string CrossroadsGrabCancelled => T("CrossroadsGrabCancelled");
         public static string CrossroadsCannotPlace => T("CrossroadsCannotPlace");
+
+        public static string SheetSpeed(int value) => F("SheetSpeed", value);
+        public static string PanelEmpty => T("PanelEmpty");
+
+        public static string SpriteHeal => T("SpriteHeal");
+        public static string SpriteBuff => T("SpriteBuff");
+        public static string SpriteDebuff => T("SpriteDebuff");
+        public static string SpriteStress => T("SpriteStress");
+        public static string SpriteDisease => T("SpriteDisease");
 
         public static string BufferControl => T("BufferControl");
         public static string BufferNone => T("BufferNone");

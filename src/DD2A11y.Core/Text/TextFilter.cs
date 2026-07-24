@@ -30,7 +30,9 @@ namespace DD2A11y.Core.Text {
                 return string.Empty;
             }
 
-            string s = RichTags.Replace(raw!, string.Empty);
+            // Meaning-bearing sprite glyphs become words before the markup strip discards them.
+            string s = SpriteText.Expand(raw!);
+            s = RichTags.Replace(s, string.Empty);
             s = s.Replace(' ', ' ');   // non-breaking space
             s = s.Replace('​', ' ');   // zero-width space TMP sometimes injects
             s = BidiControls.Replace(s, string.Empty);

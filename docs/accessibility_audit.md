@@ -61,14 +61,42 @@ Status: **works** (live-verified 2026-07-23)
 - Enter = the game's own two-step (select a hero, then Enter on a rank places them).
   **Space** = grab-and-place through the game's drop logic (specific rank, rank swap, back to
   pool), with grabbed/cancelled/cannot-place feedback. **I** = the hero sheet (the mouse
-  right-click equivalent), read by the generic floor screen; Escape closes it.
-- Known gaps: the hero sheet is floor-level only (skill buttons read as "1"/"2", no skill
-  names/tooltips - needs a dedicated screen); path-select and party-loadout sub-panels
+  right-click equivalent), read by its dedicated screen; Escape closes it.
+- Known gaps: path-select and party-loadout sub-panels
   (`HERO_SELECT_PATH_SELECT` / `HERO_SELECT_PARTY_LOADOUT`) not modeled; stagecoach config not
   started; relationship buttons and the embark press itself not yet exercised.
 
+### Hero sheet (`CharacterSheetScreen`)
+Status: **works** (live-verified 2026-07-23 from the crossroads)
+- Layout: hero header (name, then class and path; **Left/Right page through the heroes**, the
+  path description is buffer lines), the sheet's tab selector, then the active tab's content.
+- Skills tab (the sheet's main view) reads from the game model: HP/stress/speed (each with its
+  tooltip breakdown as buffer lines), the nine resistances (displayed value; base/modifier
+  breakdown in the buffer), quirks (name; description in the buffer, re-read live so rerolls
+  never go stale), each combat skill as a toggle - Enter equips/unequips through the game's own
+  button - with the full skill card as buffer lines (Rank/Target lines with multi-hit "+"
+  joins, DMG/CRIT/cooldown, per-target effects, melee/ranged), then the combat item and
+  trinket slots.
+- Inline effect glyphs in game text (tokens, dots, heal/buff/debuff icons) are spoken as words:
+  token and dot names resolve through the game's own `token_name_*` / `dot_name_*` strings, the
+  handful of unnamed effect icons through authored words. This applies pipeline-wide, so quirk
+  and tooltip text benefits too.
+- Other tabs (Relationships, Conditions, Story, Cosmetics) read as a generic sweep of the tab
+  panel's labeled selectables, with the panel's own text - or "empty" - as the floor; verified
+  live: Relationships "empty" pre-run, Conditions "Memories", Story its unlock hint, Cosmetics
+  its palette buttons.
+- Verified: equip toggle round-trip (on/off/on), hero switching rebuilds all content, tab
+  switching (both our selector and the game keeping the tab across hero switches), Escape
+  closes through `HideCharacterSheet` with the crossroads re-announcing, physical **I** key
+  entry from a hero slot.
+- Known gaps: hero rename (the name input field and edit button) is not modeled; the cosmetics
+  tab is floor-level (palette slots read as bare numbers); an equipped trinket's slot label is
+  its "Equip Trinket" caption with the item detail in the buffer (not yet exercised with an
+  equipped trinket); the game's own tab hotkeys and tooltip-view mode are not used.
+
 ### Generic floor (`GenericScreen`)
-Status: **works** (live-verified 2026-07-23 on the hero sheet)
+Status: **works** (live-verified 2026-07-23, originally on the hero sheet before its dedicated
+screen existed)
 - Any pushed SCREEN stack entry with no dedicated reader gets a generic sweep of its labeled
   selectables, so no surface is dead air. Registered above the mode screens (a pushed screen
   covers the scene) and below the dedicated stack screens. Driving HUD widgets (minimap,

@@ -55,13 +55,16 @@ namespace DD2A11y {
                 Buffers.SetCurrent("ui");
             };
 
+            Core.Text.SpriteText.Resolver = Game.SpriteWords.Resolve;
+
             Router = new ScreenRouter(Navigator, Gate, speak);
             _crossroads = new CrossroadsScreen(speak);
             Router.Register(new ConfirmationScreen());
             Router.Register(new UiModalScreen());
             Router.Register(new OptionsScreen());
             Router.Register(new PauseScreen());
-            // The floor for any other pushed screen (hero sheet, glossary, node panels) sits
+            Router.Register(new CharacterSheetScreen());
+            // The floor for any other pushed screen (glossary, node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());
             Router.Register(new MainMenuScreen());
