@@ -524,13 +524,14 @@ Status: **new, deployed 2026-07-25, awaiting live verification**
   and restored on close), WASD keeps steering, and M / Z / Escape stay the game's own
   (Escape closes through the game's handler; the mod speaks "map closed" on any close).
 - The cursor (STS2-style tree walk over the minimap's own node/link graph): starts at the
-  **wagon** - a synthetic between-nodes position read live ("on the road, Gate to
-  Hoarder"), since the coach keeps moving. Up crosses the road ahead and auto-advances
-  through no-choice stretches, naming each road and node passed, until a fork - where it
-  lands on the first alternative prefixed "choice" - or the route's end; Left/Right swap
-  among that fork's alternatives; Down retraces the exact path taken, then the traveled
-  road, then back onto the wagon. Home jumps to the wagon, End to the biome's last row.
-  Landings play the node-type audio tick.
+  **wagon** - on its node when the coach stands at one ("at Assistance Encounter,
+  traveled"), else a synthetic between-nodes position read live ("on the road, Gate to
+  Hoarder"), since the coach keeps moving. Up crosses one road per press ("road, node";
+  a fork's first alternative is prefixed "choice"); Left/Right swap among that fork's
+  alternatives; Down retraces the exact path taken, then the traveled road, then back
+  onto the wagon. Home jumps to the wagon, End to the biome's last row. Landings play the
+  node-type audio tick. Auto-advance through no-choice stretches was tried and removed;
+  it is planned to return as an opt-in setting.
 - **Fog of war is enforced by construction**: every node and road name reads through the
   game's own fog-gated tooltips (`MinimapIcon.GetTooltip()` returns the "Unknown" tooltip
   until revealed; roads read the unknown-route tooltip until `IsRevealed()`), and

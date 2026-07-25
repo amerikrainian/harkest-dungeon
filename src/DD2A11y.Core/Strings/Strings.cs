@@ -67,6 +67,8 @@ namespace DD2A11y.Core.Strings {
             D("MapRow", "row {0} of {1}"),
             // Buffer line per road out of the focused node; {0} = the road, {1} = where it leads.
             D("MapRoadTo", "{0}, to {1}"),
+            // Buffer line: the road the cursor arrived by; {0} = the road.
+            D("MapVia", "via {0}"),
             // A safe road (the game ships no string of its own for one).
             D("MapSafeRoad", "safe road"),
             // A tooltip that yielded no text (the game's shape changed).
@@ -397,6 +399,7 @@ namespace DD2A11y.Core.Strings {
         public static string MapNotTaken => T("MapNotTaken");
         public static string MapRow(int row, int count) => F("MapRow", row, count);
         public static string MapRoadTo(string route, string node) => F("MapRoadTo", route, node);
+        public static string MapVia(string route) => F("MapVia", route);
         public static string MapSafeRoad => T("MapSafeRoad");
         public static string MapUnknown => T("MapUnknown");
         public static string ScreenFork => T("ScreenFork");

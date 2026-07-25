@@ -117,8 +117,14 @@ namespace DD2A11y {
             Router.Register(_combat);
             Router.Register(new RouteChoiceScreen(Audio));
             // The road map shares the keyboard with live driving, so it sits below every
-            // taking surface (the fork menu included).
-            Router.Register(new MapScreen(speak, Audio));
+            // taking surface (the fork menu included). Its cursor moves re-home the buffers
+            // the same way a focus change does.
+            Router.Register(new MapScreen(speak, Audio, () => {
+                uiBuffer.SetSource(Navigator.Current == null
+                    ? (Func<System.Collections.Generic.IEnumerable<string>>)null
+                    : Navigator.Current.GetBufferLines);
+                Buffers.SetCurrent("ui");
+            }));
             // Target-select feedback: validity beeps fire on focus landings, not per frame.
             Navigator.FocusSettled += element => {
                 if (Router.Active == _combat) {

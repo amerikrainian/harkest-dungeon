@@ -28,6 +28,7 @@ MapTraveled = traveled
 MapNotTaken = not taken
 MapRow = row {0} of {1}
 MapRoadTo = {0}, to {1}
+MapVia = via {0}
 MapSafeRoad = safe road
 MapUnknown = unknown
 ScreenFork = fork

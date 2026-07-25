@@ -21,11 +21,13 @@ namespace DD2A11y.Screens {
     public sealed class MapScreen : GameScreen {
         private readonly Action<string, bool> _speak;
         private readonly MapViewer _viewer;
+        private readonly Action _cursorMoved;
         private readonly DrivingKeySuppressor _suppressor = new DrivingKeySuppressor();
 
-        public MapScreen(Action<string, bool> speak, Core.Audio.IAudioEngine audio) {
+        public MapScreen(Action<string, bool> speak, Core.Audio.IAudioEngine audio, Action cursorMoved) {
             _speak = speak;
             _viewer = new MapViewer(speak, audio);
+            _cursorMoved = cursorMoved;
         }
 
         public override string Name => S.ScreenMap;
@@ -57,16 +59,24 @@ namespace DD2A11y.Screens {
 
         public override bool HandleAction(string actionKey) {
             switch (actionKey) {
-                case UiActions.Up: _viewer.Forward(); return true;
-                case UiActions.Down: _viewer.Backward(); return true;
-                case UiActions.Left: _viewer.CycleFork(-1); return true;
-                case UiActions.Right: _viewer.CycleFork(+1); return true;
-                case UiActions.Home: _viewer.JumpToWagon(); return true;
-                case UiActions.End: _viewer.JumpToEnd(); return true;
+                case UiActions.Up: return Moved(_viewer.Forward);
+                case UiActions.Down: return Moved(_viewer.Backward);
+                case UiActions.Left: return Moved(() => _viewer.CycleFork(-1));
+                case UiActions.Right: return Moved(() => _viewer.CycleFork(+1));
+                case UiActions.Home: return Moved(_viewer.JumpToWagon);
+                case UiActions.End: return Moved(_viewer.JumpToEnd);
                 // Escape stays the game's: its own Back listener closes the map (our gate is
                 // not holding the keyboard), and OnLeave speaks the dismissal.
                 default: return false;
             }
+        }
+
+        // A cursor move is this screen's focus change: the buffers re-home on the new stop, so
+        // the review keys never resume mid-way through the previous node's lines.
+        private bool Moved(Action move) {
+            move();
+            _cursorMoved();
+            return true;
         }
 
         public override void OnLeave() {
