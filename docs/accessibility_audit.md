@@ -185,8 +185,10 @@ header row)
   string, present only in fights that carry one) - then the enemy strip, the party strip (both
   rank-ordered; labels are name + Rank + HP read live; a monster's name is its data id's loc
   string, the same source as the game's turn-order tooltips), the skills row (horizontal, with
-  the game's own "Uses: N" limit text), then the commands row (Move, Pass, and Retreat when
-  the game offers it).
+  the game's own "Uses: N" limit text; when the game grants an always-equipped copy of a skill
+  the player also equipped it shows two identical buttons that select the same skill - the mod
+  reads only the first and ends its buffer with "also granted as a bonus skill"), then the
+  commands row (Move, Pass, and Retreat when the game offers it).
 - The turn: Enter on a skill runs the game's own pick handler and announces "select target";
   every combatant then reads its validity for the chosen skill (the same
   `GetIsValidSkillTarget` check the game runs on a click); Enter on one sends the game's own

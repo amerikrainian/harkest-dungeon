@@ -284,7 +284,7 @@ namespace DD2A11y.Screens {
             _commands.Clear();
             if (_skillSelection != null) {
                 for (int i = 0; i < _skillSelection.SkillButtonCount; i++) {
-                    _skills.Add(new CombatSkillElement(_skillSelection.GetSkillButton(i)));
+                    _skills.Add(new CombatSkillElement(_skillSelection.GetSkillButton(i), _skillSelection, i));
                 }
                 _commands.Add(new CombatSkillElement(MoveButtonField(_skillSelection)));
                 _commands.Add(new CombatSkillElement(PassButtonField(_skillSelection)));

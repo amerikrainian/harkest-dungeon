@@ -139,6 +139,10 @@ namespace DD2A11y.Core.Strings {
             D("CombatTargetInvalid", "invalid target"),
             // Spoken when target selection is cancelled back to skill choice.
             D("CombatTargetCancelled", "target cancelled"),
+            // Buffer line on a skill the hero holds twice: once equipped by the player, once as
+            // a granted always-equipped copy. The game's bar shows two identical buttons that
+            // select the same skill; the mod reads one button and notes the grant here.
+            D("CombatSkillAlsoGranted", "also granted as a bonus skill"),
             // Battle events, announced as they happen and kept in the combat buffer.
             // Damage to any combatant; {0} = who, {1} = the amount (2 or more).
             D("CombatTookDamage", "{0} took {1} damage"),
@@ -363,6 +367,7 @@ namespace DD2A11y.Core.Strings {
         public static string CombatTargetValid => T("CombatTargetValid");
         public static string CombatTargetInvalid => T("CombatTargetInvalid");
         public static string CombatTargetCancelled => T("CombatTargetCancelled");
+        public static string CombatSkillAlsoGranted => T("CombatSkillAlsoGranted");
         public static string CombatTookDamage(string name, int damage) => F("CombatTookDamage", name, damage);
         public static string CombatTookDamageOne(string name) => F("CombatTookDamageOne", name);
         public static string CombatDied(string name) => F("CombatDied", name);

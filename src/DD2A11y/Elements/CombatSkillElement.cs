@@ -15,12 +15,47 @@ namespace DD2A11y.Elements {
     /// </summary>
     public sealed class CombatSkillElement : UIElement {
         private readonly SkillButtonBhv _button;
+        private readonly SkillSelectionBhv _selection;
+        private readonly int _index;
 
-        public CombatSkillElement(SkillButtonBhv button) {
+        public CombatSkillElement(SkillButtonBhv button, SkillSelectionBhv selection = null, int index = 0) {
             _button = button;
+            _selection = selection;
+            _index = index;
         }
 
-        public override bool CanFocus => _button != null && _button.gameObject.activeInHierarchy;
+        public override bool CanFocus
+            => _button != null && _button.gameObject.activeInHierarchy && !IsDuplicate();
+
+        // The game's unlock bookkeeping can grant a hero an always-equipped copy of a skill the
+        // player also has equipped, putting the same skill id on two live bar buttons. Its own
+        // handlers resolve buttons by skill id and take the first match, so the extra button is
+        // indistinguishable from the first in label, card, and effect; only the first reads,
+        // and it carries the grant as a buffer line (the hero holds the skill beyond the
+        // loadout slot the player filled).
+        private bool IsDuplicate() => HasSameSkillButton(0, _index);
+
+        private bool HasGrantedCopy() => HasSameSkillButton(0, _selection == null ? 0 : _selection.SkillButtonCount);
+
+        private bool HasSameSkillButton(int from, int to) {
+            if (_selection == null) {
+                return false;
+            }
+            string id = _button.SkillId;
+            if (string.IsNullOrEmpty(id)) {
+                return false;
+            }
+            for (int i = from; i < to; i++) {
+                if (i == _index) {
+                    continue;
+                }
+                var other = _selection.GetSkillButton(i);
+                if (other.gameObject.activeInHierarchy && other.SkillId == id) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         public override string Label {
             get {
@@ -61,6 +96,9 @@ namespace DD2A11y.Elements {
             yield return GetFocusText();
             foreach (var line in SkillCard.Lines(_button.SkillId, _button.ActorGuid)) {
                 yield return line;
+            }
+            if (HasGrantedCopy()) {
+                yield return S.CombatSkillAlsoGranted;
             }
         }
     }
