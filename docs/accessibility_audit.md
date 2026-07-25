@@ -295,10 +295,12 @@ driven through the game's own show event so the camera, fog of war, and its gate
 - Layout, top to bottom, all read live from the model through the game's own describers:
   the identity line (name, "blessed" on ordained enemies, HP, stress on heroes, speed;
   death's door and the boss-blessing description as buffer lines), the studied **skill
-  list** (enemies: round skills first, then turn skills, each with the full skill card,
-  flavor description, token ignores, and use conditions in the buffer; skills the player
-  has never seen use the game's own "???" hidden strings; heroes: equipped skills with
-  remaining uses and cooldowns), hero **conditions** (class conditions, condition-tagged
+  list** (enemies: round skills first, then turn skills, each with the game's own token-view
+  card in the buffer - ranks/targets, the tokens and dots it applies, melee/ranged - plus
+  flavor description, token ignores, and use conditions; the full effect renderer is a
+  player-skill surface whose enemy-only internals, AI class changes, read as raw ids;
+  skills the player has never seen use the game's own "???" hidden strings; heroes:
+  equipped skills with the full skill card, remaining uses and cooldowns), hero **conditions** (class conditions, condition-tagged
   buffs, stagecoach effects, the wound line), **trinkets** (enemies and Kingdoms allies
   carry visible ones), the **resistance grid** (every resist with the game's immune and
   death's-door special cases; per-source breakdown in the buffer), then **tokens, damage
