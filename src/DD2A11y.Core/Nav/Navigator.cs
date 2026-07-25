@@ -26,6 +26,33 @@ namespace DD2A11y.Core.Nav {
         /// methods.</summary>
         public IReadOnlyList<UIElement> FocusPath => Path;
 
+        /// <summary>Activates the first focusable element whose label carries the given hotkey
+        /// caption ("(M)"). The game's own buttons advertise their keys in their captions, and a
+        /// captured screen swallows those keys - this makes the advertised key press the button.
+        /// Focus stays put; the activation's own consequences (a new screen) announce themselves.</summary>
+        public bool ActivateCaptionHotkey(string caption) {
+            if (Root == null) {
+                return false;
+            }
+            var match = FindCaption(Root, caption);
+            return match != null && match.InvokeAction(ActionIds.Activate);
+        }
+
+        private static UIElement? FindCaption(Container container, string caption) {
+            foreach (var child in container.Children) {
+                if (child is Container nested) {
+                    var found = FindCaption(nested, caption);
+                    if (found != null) {
+                        return found;
+                    }
+                } else if (child.CanFocus
+                           && child.Label?.IndexOf(caption, StringComparison.OrdinalIgnoreCase) >= 0) {
+                    return child;
+                }
+            }
+            return null;
+        }
+
         /// <summary>Fired whenever focus settles on a (possibly new) leaf - every move, every
         /// landing, every silent refocus. The plugin's buffer bridge listens here to rebind the
         /// buffers to the focused element.</summary>

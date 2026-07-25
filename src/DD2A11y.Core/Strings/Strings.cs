@@ -322,6 +322,9 @@ namespace DD2A11y.Core.Strings {
             D("InputGrab", "Grab or place"),
             D("InputPlaceOne", "Place one from a grabbed stack"),
             D("InputInspect", "Open hero sheet"),
+            // The advertised-hotkey buttons ("Map (M)", "Inventory (I)") on captured screens.
+            D("InputHotkeyMap", "Map button"),
+            D("InputHotkeyInventory", "Inventory button"),
             // The combat inspector keys (the game's academic view).
             D("InputInspector", "Toggle inspector"),
             D("InputInspectorPrev", "Inspector previous combatant"),
@@ -537,6 +540,8 @@ namespace DD2A11y.Core.Strings {
         public static string InputGrab => T("InputGrab");
         public static string InputPlaceOne => T("InputPlaceOne");
         public static string InputInspect => T("InputInspect");
+        public static string InputHotkeyMap => T("InputHotkeyMap");
+        public static string InputHotkeyInventory => T("InputHotkeyInventory");
         public static string InputInspector => T("InputInspector");
         public static string InputInspectorPrev => T("InputInspectorPrev");
         public static string InputInspectorNext => T("InputInspectorNext");

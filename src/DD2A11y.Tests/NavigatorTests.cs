@@ -60,6 +60,20 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
+        public void CaptionHotkeyActivatesTheAdvertisingButton_WithoutMovingFocus() {
+            var map = new TestElement("Map (M)", "button");
+            var nested = VerticalMenu(map);
+            var first = new TestElement("Continue", "button");
+            var root = VerticalMenu(first, nested);
+            _nav.Attach(root);
+
+            Assert.True(_nav.ActivateCaptionHotkey("(M)"));
+            Assert.Equal(1, map.Activations);
+            Assert.Same(first, _nav.Current);
+            Assert.False(_nav.ActivateCaptionHotkey("(Z)"));
+        }
+
+        [Fact]
         public void EdgesConsumeWithoutWrapping() {
             _nav.Attach(VerticalMenu(new TestElement("A"), new TestElement("B")));
             Assert.False(_nav.Handle(UiActions.Up)); // top edge: no spill target

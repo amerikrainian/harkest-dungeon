@@ -175,9 +175,20 @@ namespace DD2A11y {
                 .AddBinding(K(Key.DownArrow, ctrl: true)).Repeating();
 
             // The focused element's inspect action (the hero sheet at the crossroads and in
-            // combat). C, matching the game's own "Hero Sheet (C)" hint.
-            Reg("ui.inspect", S.InputInspect, () => Navigator.Current?.InvokeAction("inspect"))
-                .AddBinding(K(Key.C));
+            // combat). C, matching the game's own "Hero Sheet (C)" hint; where the focused
+            // element has no inspect, a button captioned "(C)" takes the press instead.
+            Reg("ui.inspect", S.InputInspect, () => {
+                if (Navigator.Current?.InvokeAction("inspect") != true) {
+                    Navigator.ActivateCaptionHotkey("(C)");
+                }
+            }).AddBinding(K(Key.C));
+            // The game captions its screen shortcuts on the buttons themselves ("Map (M)",
+            // "Inventory (I)"); a captured screen swallows those keys, so the advertised key
+            // presses the advertising button.
+            Reg("ui.hotkey.map", S.InputHotkeyMap, () => Navigator.ActivateCaptionHotkey("(M)"))
+                .AddBinding(K(Key.M));
+            Reg("ui.hotkey.inventory", S.InputHotkeyInventory, () => Navigator.ActivateCaptionHotkey("(I)"))
+                .AddBinding(K(Key.I));
             // The combat inspector (the game's academic view): I toggles it on the focused
             // combatant; while it is up, A/D cycle combatants - the game's own keys for it.
             Reg("combat.inspector", S.InputInspector, () => _academic.Toggle(Router, Navigator))

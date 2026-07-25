@@ -6,6 +6,13 @@ Statuses: **works** (live-verified), **built** (code exists, not yet live-verifi
 
 ## Conventions every screen shares
 
+- **Advertised hotkeys work on captured screens** (live-verified 2026-07-25 on a road
+  story): the game captions its screen shortcuts on the buttons themselves ("Map (M)",
+  "Inventory (I)", "Hero Sheet (C)"), and the input gate swallows those keys - so M, I,
+  and C activate the button carrying that caption in the current tree, through its own
+  onClick. C first tries the focused element's inspect action (a hero), then the "(C)"
+  button.
+
 - Arrows navigate the mod's own focus; Enter activates; Escape backs out; Home/End jump.
 - Focus lines are terse (label, role, value). Tooltips and detail are buffer lines:
   Ctrl+Up/Down step lines, Ctrl+Left/Right switch buffers.
@@ -175,11 +182,10 @@ screen existed)
   label at that instant) rather than its title.
 
 ### Player inventory (`InventoryScreen`, the standalone "Inventory (I)" screen)
-Status: **works** (live-verified 2026-07-25 on the road up to the entry landing - "All
-Items, tab" - before a pending road story reasserted itself on top each time, the correct
-priority; the panel body is the inn's live-verified reader extracted verbatim. Previously
-fell to the generic floor, which announced itself as "Sort" and read item slots as their
-bare stack count. The close path is unverified)
+Status: **works** (live-verified 2026-07-25 on the road: entry landing, tab, and the
+Escape close path back to the underlying screen; the panel body is the inn's
+live-verified reader extracted verbatim. Previously fell to the generic floor, which
+announced itself as "Sort" and read item slots as their bare stack count)
 - The game's inventory screen as pushed on the road, at the crossroads, and from the loot
   screen. Nothing but the shared bag panel (`InventoryPanel`, the same reader the inn hub
   embeds): the filter as a tab (Left/Right apply the game's own icon-only filter buttons,

@@ -17,6 +17,7 @@ namespace DD2A11y.Screens {
         private readonly InventoryPanel _panel;
         private InventoryUiBhv _inventory;
         private Container _root;
+        private bool _awaitingLabel;
 
         public InventoryScreen(Action<string, bool> speak, TraditionalNavigator navigator) {
             _panel = new InventoryPanel(speak, navigator);
@@ -36,12 +37,16 @@ namespace DD2A11y.Screens {
         public override Container BuildRoot(object target) {
             _root = new RootContainer(ContainerShape.VerticalList, back: Back);
             _panel.BuildInto(_root, (InventoryUiBhv)target);
+            // Opened mid-animation the filter tab has no title yet and the landing reads a bare
+            // "tab"; the arrival of its label requests the one re-announce.
+            var first = _root.FirstFocusable();
+            _awaitingLabel = first != null && string.IsNullOrEmpty(first.Label);
             return _root;
         }
 
         public override bool OnUpdate(object target) {
             _panel.Update();
-            return false;
+            return PauseScreen.LabelArrived(_root, ref _awaitingLabel);
         }
 
         private void Back() {
