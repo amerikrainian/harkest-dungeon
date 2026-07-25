@@ -186,6 +186,15 @@ namespace DD2A11y.Core.Strings {
             D("CombatHitChance", "{0}% hit"),
             D("CombatCritChance", "{0}% crit"),
             D("CombatHealPreview", "heals {0}"),
+            // The pick would strip these from the hit combatant: the tokens the game previews
+            // by flashing their tray icons, plus the dots its cleanse effects cover (the game
+            // carries no dot preview - sighted players read that only in the skill text);
+            // {0} = the names, joined.
+            D("CombatRemoves", "removes {0}"),
+            // The pick would move these tokens or dots to the acting hero; {0} = the names.
+            D("CombatSteals", "steals {0}"),
+            // The pick would turn these tokens into others; {0} = the names.
+            D("CombatConverts", "converts {0}"),
             // A guardian will absorb the hit aimed at this target; {0} = the guardian.
             D("CombatIntercepted", "intercepted by {0}"),
             // Picking this target draws a counter-attack; {0} = its damage range.
@@ -470,6 +479,9 @@ namespace DD2A11y.Core.Strings {
         public static string CombatHitChance(int percent) => F("CombatHitChance", percent);
         public static string CombatCritChance(int percent) => F("CombatCritChance", percent);
         public static string CombatHealPreview(string range) => F("CombatHealPreview", range);
+        public static string CombatRemoves(string names) => F("CombatRemoves", names);
+        public static string CombatSteals(string names) => F("CombatSteals", names);
+        public static string CombatConverts(string names) => F("CombatConverts", names);
         public static string CombatIntercepted(string guardian) => F("CombatIntercepted", guardian);
         public static string CombatRiposte(string damage) => F("CombatRiposte", damage);
         public static string CombatTookDamage(string name, int damage) => F("CombatTookDamage", name, damage);
