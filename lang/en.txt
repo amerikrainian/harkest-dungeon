@@ -19,6 +19,7 @@ InventoryEmptySlots = {0} empty slot|{0} empty slots
 InventorySorted = sorted by type
 ItemDiscarded = discarded {0}
 ItemSold = sold {0}
+ResultsTotal = total {0}
 RoleButton = button
 RoleToggle = toggle
 RoleSlider = slider

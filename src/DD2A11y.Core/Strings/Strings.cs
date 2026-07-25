@@ -56,6 +56,9 @@ namespace DD2A11y.Core.Strings {
             // Outcome of the same key while a seller is open (the game sells one item per
             // press instead); {0} = the item's name.
             D("ItemSold", "sold {0}"),
+            // The results screens' run total (end expedition, game over), which the game shows
+            // as a bare number beside a candle icon; {0} = the number.
+            D("ResultsTotal", "total {0}"),
 
             // Control type words, spoken after a control's label ("Continue, button"). Nouns.
             D("RoleButton", "button"),
@@ -292,6 +295,7 @@ namespace DD2A11y.Core.Strings {
         public static string InventorySorted => T("InventorySorted");
         public static string ItemDiscarded(string item) => F("ItemDiscarded", item);
         public static string ItemSold(string item) => F("ItemSold", item);
+        public static string ResultsTotal(string number) => F("ResultsTotal", number);
 
         public static string RoleButton => T("RoleButton");
         public static string RoleToggle => T("RoleToggle");

@@ -132,6 +132,16 @@ screen existed)
   selectables, so no surface is dead air. Registered above the mode screens (a pushed screen
   covers the scene) and below the dedicated stack screens. Driving HUD widgets (minimap,
   goals - non-SCREEN stack entries) are excluded so free driving is never captured.
+- **Results surfaces read fully** (live-verified 2026-07-24 on the inn's End Expedition
+  screen, "Every League, a Lesson."): the score-row prefab these screens share
+  (`GameOverScoreLabelBhv`) reads as a readout composed like the sighted row - the game's
+  reason label plus its number ("Candles Found: 3"; a 0 is what the visual cross mark
+  means) - with the row's explanation tooltip in the buffer, followed by the run total
+  ("total 5"), which the visual panel shows only as a bare number beside a candle icon
+  (no game caption string exists; the total reads the game-over flow's pre-composed line
+  as-is when the binding holds one). The same code serves the game-over and Kingdoms
+  results screens (deployed, unverified there). Collect Hope reads as the ordinary button
+  it is.
 
 ### Combat (`CombatScreen`, COMBAT mode)
 Status: **works** (live-verified 2026-07-24: two full rounds fought to Victory - skill picks,
@@ -299,8 +309,9 @@ full inventory walk, item tooltip buffers)
   while the hub is up, and the floor would otherwise capture just that panel and strand the
   station buttons. Any station sub-screen pushed above it hands the surface to its own
   reader (travelogue dedicated, the rest the generic floor for now).
-- Known gaps: station sub-screens (shops, End Expedition, Select Route) read at floor level
-  only; rest-item application onto heroes (the game's select-then-apply flow; our elements
+- Known gaps: station sub-screens (shops, Select Route) read at floor level only (End
+  Expedition's floor read is complete - see the generic floor's results-surface note);
+  rest-item application onto heroes (the game's select-then-apply flow; our elements
   drive the right handlers but no REST item was owned to verify) and shops' richer inns are
   unexercised (only the two-station prologue inn verified). The grab flow's cross-inventory
   half (bag to **inn storage**, where `AcceptsItem` blocks undiscardables) is unexercised:
