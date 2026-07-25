@@ -94,7 +94,23 @@ Status: **works** (live-verified 2026-07-23 from the crossroads)
   rather than silently dropping ("-2 speed" on a trinket, not a bare "-2"). Known-decorative
   glyphs (the hero-seal mark) are the only ones dropped. Applies pipeline-wide - every buffer
   and announcement benefits.
-- Other tabs (Relationships, Conditions, Story, Cosmetics) read as a generic sweep of the tab
+- The **Relationships tab** reads each partner row as a dedicated element
+  (`RelationshipRowElement`): the partner's name with the affinity readout the sighted
+  banner shows on the focus line - the band word and pip meter ("Paracelsus, button,
+  Neutral, 9/20") while affinity builds, or the formed relationship's name (plus remaining
+  days in Kingdoms) once one exists - all live from the row's own data bindings
+  (`affinity_name` localized, `pip_value`, the game's own Kingdoms gate for the duration).
+  The full affinity tooltip (band description, formation-chance breakdown with per-quirk
+  contributions) is the buffer, line per line. Enter is the game's own click - it moves the
+  sheet to that partner - and speaks the destination hero's name so the switch is never
+  silent (the landing row announce can read one frame stale off the reused ring widgets;
+  the hero name is the reliable signal). Live-verified 2026-07-24: all rows with values,
+  buffer chain, jump both ways with the hero announce. Unexercised: a formed relationship
+  (all Neutral in the test run; the tooltip mechanism is shared so buffers carry its
+  description) and the Kingdoms duration line. The unviewed-change notification icon is
+  deliberately unspoken - the game clears it the moment the tab opens, so one glance is
+  all sighted players get too.
+- The other tabs (Conditions, Story, Cosmetics) read as a generic sweep of the tab
   panel's labeled selectables, with the panel's own text - or "empty" - as the floor; verified
   live: Relationships "empty" pre-run, Conditions "Memories", Story its unlock hint, Cosmetics
   its palette buttons.

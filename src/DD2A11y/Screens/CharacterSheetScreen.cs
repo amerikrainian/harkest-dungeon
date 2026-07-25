@@ -20,7 +20,8 @@ namespace DD2A11y.Screens {
     /// party's heroes), then the sheet's tab selector, then the active tab's content. The
     /// Skills tab is read fully from the game model: health/stress/speed, the resistances, the
     /// quirks, each combat skill (Enter equips/unequips through the game's own button) with its
-    /// full card as buffer lines, the combat item and trinket slots. The other tabs read as a
+    /// full card as buffer lines, the combat item and trinket slots. The Relationships tab reads
+    /// each partner row with its affinity readout on the focus line; the other tabs read as a
     /// generic sweep of their panel's labeled selectables. Escape closes through the sheet's own
     /// teardown.
     /// </summary>
@@ -342,10 +343,14 @@ namespace DD2A11y.Screens {
         }
 
         // Any other tab: the panel's labeled selectables, with the panel's own text as the floor
-        // when it has none (a tab that is purely informational).
+        // when it has none (a tab that is purely informational). Relationship rows get their
+        // dedicated element so the affinity readout rides the focus line.
         private void BuildGenericTab(CharacterSheetUiBhv sheet) {
             foreach (var selectable in SweepPanel(sheet)) {
-                _items.Add(new SelectableElement(selectable));
+                var relationship = selectable.GetComponent<CharacterSheetRelationshipActorUiBhv>();
+                _items.Add(relationship != null
+                    ? new RelationshipRowElement(relationship, selectable)
+                    : (UIElement)new SelectableElement(selectable));
             }
             if (_items.IsEmptyContainer) {
                 var panel = sheet.GetTabPanel(sheet.ActiveTab);
