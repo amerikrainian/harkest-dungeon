@@ -513,8 +513,36 @@ yet reached in play
 - Known gaps: fork menu unexercised live; coach damage/break and barricade/cleared cues
   still have assets but no wiring (no dedicated game event surfaced - wheels/armor are
   stagecoach items, so a count poll is the likely wire; barricades want live confirmation
-  of what spawns as force-stop obstacles); the minimap and distance-to-Inn readouts are
-  unread (a status readout key is the natural next step).
+  of what spawns as force-stop obstacles); the distance-to-Inn readout is unread (a
+  status readout key is the natural next step).
+
+### Road map (`MapScreen`, M while driving)
+Status: **new, deployed 2026-07-25, awaiting live verification**
+- The game's minimap overlay, which does not pause the coach - so the screen SHARES the
+  keyboard instead of taking it: our arrows walk a map cursor (the game's arrow bindings
+  are disabled with empty binding overrides while the map stands, re-asserted per frame
+  and restored on close), WASD keeps steering, and M / Z / Escape stay the game's own
+  (Escape closes through the game's handler; the mod speaks "map closed" on any close).
+- The cursor (STS2-style tree walk over the minimap's own node/link graph): starts at the
+  **wagon** - a synthetic between-nodes position read live ("on the road, Gate to
+  Hoarder"), since the coach keeps moving. Up crosses the road ahead and auto-advances
+  through no-choice stretches, naming each road and node passed, until a fork - where it
+  lands on the first alternative prefixed "choice" - or the route's end; Left/Right swap
+  among that fork's alternatives; Down retraces the exact path taken, then the traveled
+  road, then back onto the wagon. Home jumps to the wagon, End to the biome's last row.
+  Landings play the node-type audio tick.
+- **Fog of war is enforced by construction**: every node and road name reads through the
+  game's own fog-gated tooltips (`MinimapIcon.GetTooltip()` returns the "Unknown" tooltip
+  until revealed; roads read the unknown-route tooltip until `IsRevealed()`), and
+  unrevealed landings tick as the unknown timbre, never the true type.
+- Node line: fog-gated name, then candle/loathing/contract markers (the sighted overlay
+  icons, read from their live objects) and traveled/not-taken state. The buffer holds the
+  full tooltip, marker tooltips, row position, and one line per road out ("Barricade
+  combat, to Lair..."). The wagon's buffer carries its road's route line and row position.
+- Known gaps: phase 1 walks the current biome's ladder (biome boundaries hand over only
+  where the game links them); reveal events (scouting, watchtowers) are not announced as
+  they happen; no points-of-interest jump or user markers yet (the STS2 features staged
+  for phase 2); the whole screen is awaiting live verification.
 
 ### Road stories (`StoryScreen`)
 Status: **works** (live-verified 2026-07-23 on "Help Us!"; the commit event is wired but

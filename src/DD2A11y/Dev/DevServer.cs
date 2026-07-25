@@ -321,18 +321,17 @@ namespace DD2A11y.Dev {
         }
 
         private string Drive(string verb) {
-            var nav = _runtime.Router.Navigator;
             switch (verb) {
-                case "up": return nav.Handle(UiActions.Up) ? "ok" : "unhandled";
-                case "down": return nav.Handle(UiActions.Down) ? "ok" : "unhandled";
-                case "left": return nav.Handle(UiActions.Left) ? "ok" : "unhandled";
-                case "right": return nav.Handle(UiActions.Right) ? "ok" : "unhandled";
-                case "confirm": return nav.Handle(UiActions.Activate) ? "ok" : "unhandled";
-                case "back": return nav.Handle(UiActions.Back) ? "ok" : "unhandled";
-                case "tab": return nav.Handle(UiActions.Next) ? "ok" : "unhandled";
-                case "prev": return nav.Handle(UiActions.Prev) ? "ok" : "unhandled";
-                case "home": return nav.Handle(UiActions.Home) ? "ok" : "unhandled";
-                case "end": return nav.Handle(UiActions.End) ? "ok" : "unhandled";
+                case "up": return Dispatch(UiActions.Up);
+                case "down": return Dispatch(UiActions.Down);
+                case "left": return Dispatch(UiActions.Left);
+                case "right": return Dispatch(UiActions.Right);
+                case "confirm": return Dispatch(UiActions.Activate);
+                case "back": return Dispatch(UiActions.Back);
+                case "tab": return Dispatch(UiActions.Next);
+                case "prev": return Dispatch(UiActions.Prev);
+                case "home": return Dispatch(UiActions.Home);
+                case "end": return Dispatch(UiActions.End);
                 case "buffer-next": _runtime.BufferCtl.NextBuffer(); return "ok";
                 case "buffer-prev": _runtime.BufferCtl.PreviousBuffer(); return "ok";
                 case "buffer-item-next": _runtime.BufferCtl.NextLine(); return "ok";
@@ -345,6 +344,16 @@ namespace DD2A11y.Dev {
                 case "place-one": return _runtime.Input.FireAction("ui.place.one") ? "ok" : "unhandled";
                 default: return "unknown verb " + verb;
             }
+        }
+
+        // The same chain the key dispatcher walks: the active screen's own handler first (the
+        // map viewer's cursor), then the navigator tree - so a verb proves what a key would do.
+        private string Dispatch(string actionKey) {
+            var active = _runtime.Router.Active;
+            if (active != null && active.HandleAction(actionKey)) {
+                return "ok";
+            }
+            return _runtime.Router.Navigator.Handle(actionKey) ? "ok" : "unhandled";
         }
 
         private string DescribeNav() {

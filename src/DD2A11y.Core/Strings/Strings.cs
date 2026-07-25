@@ -43,6 +43,34 @@ namespace DD2A11y.Core.Strings {
             D("ScreenInspector", "inspector"),
             // The standalone player-inventory screen (road, crossroads, loot).
             D("ScreenInventory", "inventory"),
+            // The road map (M while driving) and its cursor lines. Node and road names come
+            // from the game's own fog-gated tooltips; these frame them.
+            D("ScreenMap", "map"),
+            D("MapClosed", "map closed"),
+            // The wagon's live position; {0}/{1} = the road's endpoints (fog-gated names).
+            D("MapWagon", "on the road, {0} to {1}"),
+            D("MapWagonAt", "at {0}"),
+            // Prefixed to the road crossed into a fork's first alternative.
+            D("MapChoice", "choice"),
+            // The cursor hit the last node ahead / the first node behind.
+            D("MapTop", "no road forward"),
+            D("MapBottom", "no road back"),
+            // Node markers: carries a Candle of Hope; visiting advances Loathing; a Kingdoms
+            // kill contract.
+            D("MapCandle", "candle"),
+            D("MapDoom", "loathing"),
+            D("MapContract", "contract"),
+            // Chosen-state of a node or road already passed.
+            D("MapTraveled", "traveled"),
+            D("MapNotTaken", "not taken"),
+            // Buffer line: the cursor's row position; {0} = row, {1} = the biome's row count.
+            D("MapRow", "row {0} of {1}"),
+            // Buffer line per road out of the focused node; {0} = the road, {1} = where it leads.
+            D("MapRoadTo", "{0}, to {1}"),
+            // A safe road (the game ships no string of its own for one).
+            D("MapSafeRoad", "safe road"),
+            // A tooltip that yielded no text (the game's shape changed).
+            D("MapUnknown", "unknown"),
             // The road-fork route menu, shown while the coach waits at a junction.
             D("ScreenFork", "fork"),
             // The inn hub, when the inn's own name is unavailable. Noun.
@@ -355,6 +383,22 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenCombat => T("ScreenCombat");
         public static string ScreenInspector => T("ScreenInspector");
         public static string ScreenInventory => T("ScreenInventory");
+        public static string ScreenMap => T("ScreenMap");
+        public static string MapClosed => T("MapClosed");
+        public static string MapWagon(string from, string to) => F("MapWagon", from, to);
+        public static string MapWagonAt(string node) => F("MapWagonAt", node);
+        public static string MapChoice => T("MapChoice");
+        public static string MapTop => T("MapTop");
+        public static string MapBottom => T("MapBottom");
+        public static string MapCandle => T("MapCandle");
+        public static string MapDoom => T("MapDoom");
+        public static string MapContract => T("MapContract");
+        public static string MapTraveled => T("MapTraveled");
+        public static string MapNotTaken => T("MapNotTaken");
+        public static string MapRow(int row, int count) => F("MapRow", row, count);
+        public static string MapRoadTo(string route, string node) => F("MapRoadTo", route, node);
+        public static string MapSafeRoad => T("MapSafeRoad");
+        public static string MapUnknown => T("MapUnknown");
         public static string ScreenFork => T("ScreenFork");
         public static string ScreenInn => T("ScreenInn");
         public static string ScreenAltar => T("ScreenAltar");

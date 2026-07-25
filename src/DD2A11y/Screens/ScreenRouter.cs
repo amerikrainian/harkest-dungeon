@@ -63,10 +63,17 @@ namespace DD2A11y.Screens {
         }
 
         private void Enter(GameScreen screen, object target) {
+            if (_active != null && _active != screen) {
+                _active.OnLeave();
+            }
             _active = screen;
             _target = target;
             Plugin.Log.LogInfo("screen: " + screen.GetType().Name);
-            _gate.Capture();
+            if (screen.CapturesKeyboard) {
+                _gate.Capture();
+            } else {
+                _gate.Release();
+            }
             _navigator.Attach(screen.BuildRoot(target));
             _speak(screen.Name, true);
             _navigator.AnnounceCurrent();
@@ -74,6 +81,7 @@ namespace DD2A11y.Screens {
 
         private void Leave() {
             Plugin.Log.LogInfo("screen: none (released)");
+            _active.OnLeave();
             _active = null;
             _target = null;
             _navigator.Attach(null);

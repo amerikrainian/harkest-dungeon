@@ -116,6 +116,9 @@ namespace DD2A11y {
             _combat = new CombatScreen(speak, Audio);
             Router.Register(_combat);
             Router.Register(new RouteChoiceScreen(Audio));
+            // The road map shares the keyboard with live driving, so it sits below every
+            // taking surface (the fork menu included).
+            Router.Register(new MapScreen(speak, Audio));
             // Target-select feedback: validity beeps fire on focus landings, not per frame.
             Navigator.FocusSettled += element => {
                 if (Router.Active == _combat) {
@@ -124,9 +127,13 @@ namespace DD2A11y {
             };
 
             RegisterInputs();
-            Input.ActiveCategoriesProvider = () => Gate.Captured ? UiCategories : NoCategories;
+            // Keys are live while the gate holds the keyboard, and also under a screen that
+            // deliberately shares it (the road map claims arrows, the game keeps WASD).
+            Input.ActiveCategoriesProvider = () =>
+                Gate.Captured || (Router.Active != null && !Router.Active.CapturesKeyboard) ? UiCategories : NoCategories;
             Input.JustPressedDispatcher = action =>
-                action.Key.StartsWith("ui.", StringComparison.Ordinal) && Router.HasScreen && Navigator.Handle(action.Key);
+                action.Key.StartsWith("ui.", StringComparison.Ordinal) && Router.HasScreen
+                && (Router.Active.HandleAction(action.Key) || Navigator.Handle(action.Key));
 
             _language = new LanguageSync(Path.Combine(pluginDir, "lang"));
             Dev = DevServer.TryStart(this);
