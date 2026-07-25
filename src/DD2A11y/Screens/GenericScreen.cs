@@ -27,8 +27,9 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<ResultsScoreUIWidgetBhv, DataContextBhv>("m_dataContextBhv");
         private UiScreenBhv _screen;
         private Container _root;
-        private int _builtCount;
+        private int _builtSignature;
         private bool _awaitingLabel;
+        private Dictionary<object, UIElement> _byWidget = new Dictionary<object, UIElement>();
 
         public override string Name {
             get {
@@ -51,21 +52,39 @@ namespace DD2A11y.Screens {
 
         public override Container BuildRoot(object target) {
             var screen = (UiScreenBhv)target;
-            _root = new RootContainer(ContainerShape.VerticalList, back: () => screen.TryCloseScreen());
+            // A hub's sub-screen panel must close through its own flow - the hub re-enables
+            // its own controls there (the altar re-enables its region markers); a raw stack
+            // pop leaves the hub behind it dead.
+            _root = new RootContainer(ContainerShape.VerticalList, back: () => {
+                if (screen is SubScreenElementBhv panel) {
+                    panel.CloseSubscreen();
+                } else {
+                    screen.TryCloseScreen();
+                }
+            });
+            _byWidget.Clear();
             Populate(screen);
             return _root;
         }
 
         public override bool OnUpdate(object target) {
             var screen = (UiScreenBhv)target;
-            if (CountActive(screen) != _builtCount) {
+            if (Signature(screen) != _builtSignature) {
                 _root.Clear();
                 Populate(screen);
             }
             return PauseScreen.LabelArrived(_root, ref _awaitingLabel);
         }
 
+        // The results screens animate their score rows in one at a time; every arrival
+        // re-populates. Elements are keyed to their live widget and reused across rebuilds, so
+        // the focused element survives and the row stream stays silent (the landing already
+        // announced; the grown list reads on demand). A recycled widget gets a fresh element,
+        // orphaning focus - the router then re-lands and announces, the correct read for a
+        // genuinely replaced surface.
         private void Populate(UiScreenBhv screen) {
+            var previous = _byWidget;
+            _byWidget = new Dictionary<object, UIElement>();
             var elements = new List<UIElement>();
             int lastScoreRow = -1;
             foreach (var selectable in screen.GetComponentsInChildren<Selectable>(includeInactive: false)) {
@@ -73,21 +92,27 @@ namespace DD2A11y.Screens {
                     continue;
                 }
                 var score = selectable.GetComponent<GameOverScoreLabelBhv>();
+                if (!previous.TryGetValue(selectable, out var element)) {
+                    element = score != null ? ScoreRow(score) : new SelectableElement(selectable);
+                }
+                _byWidget[selectable] = element;
+                elements.Add(element);
                 if (score != null) {
-                    elements.Add(ScoreRow(score));
                     lastScoreRow = elements.Count - 1;
-                } else {
-                    elements.Add(new SelectableElement(selectable));
                 }
             }
-            _builtCount = elements.Count;
             var results = screen.GetComponentInChildren<ResultsScoreUIWidgetBhv>(includeInactive: false);
             if (results != null) {
-                elements.Insert(lastScoreRow + 1, TotalRow(results));
+                if (!previous.TryGetValue(results, out var total)) {
+                    total = TotalRow(results);
+                }
+                _byWidget[results] = total;
+                elements.Insert(lastScoreRow + 1, total);
             }
             foreach (var element in elements) {
                 _root.Add(element);
             }
+            _builtSignature = Signature(screen);
             var first = _root.FirstFocusable();
             _awaitingLabel = first != null && string.IsNullOrEmpty(first.Label);
         }
@@ -135,14 +160,16 @@ namespace DD2A11y.Screens {
             return true;
         }
 
-        private static int CountActive(UiScreenBhv screen) {
-            int count = 0;
+        // An instance-id signature, not a count: pooled widgets recycle into the same number of
+        // brand-new instances, which a count reads as unchanged while every held reference dies.
+        private static int Signature(UiScreenBhv screen) {
+            int signature = 17;
             foreach (var selectable in screen.GetComponentsInChildren<Selectable>(includeInactive: false)) {
                 if (Include(selectable)) {
-                    count++;
+                    signature = signature * 31 + selectable.GetInstanceID();
                 }
             }
-            return count;
+            return signature;
         }
 
         private static bool Include(Selectable selectable) {

@@ -1,15 +1,22 @@
 using System.Collections.Generic;
+using Assets.Code.Data;
 using Assets.Code.UI.Options;
 using DD2A11y.Game;
+using HarmonyLib;
 using UnityEngine.UI;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// A settings row spawned from an <see cref="OptionsValue"/>: the label and tooltip come from
-    /// the option's own loc keys (the row's DataContext binders apply text a frame late, so keys
-    /// are the reliable source), the control is the row's Toggle or Slider.
+    /// A settings row spawned from an <see cref="OptionsValue"/>: the label comes from the
+    /// option's own loc key (the row's DataContext binders apply text a frame late, so keys
+    /// are the reliable source), the control is the row's Toggle or Slider. The buffer carries
+    /// the row's live tooltip binding - the option's description, or, on a locked altar row,
+    /// the unlock requirement the game swaps in.
     /// </summary>
     public sealed class OptionsItemElement : SelectableElement {
+        private static readonly AccessTools.FieldRef<OptionsItemBhv, DataContextBhv> ContextField =
+            AccessTools.FieldRefAccess<OptionsItemBhv, DataContextBhv>("m_dataContextBhv");
+
         private readonly OptionsItemBhv _item;
 
         private OptionsItemElement(OptionsItemBhv item, Selectable control)
@@ -34,7 +41,11 @@ namespace DD2A11y.Elements {
 
         public override IEnumerable<string> GetBufferLines() {
             yield return GetFocusText();
-            string tooltip = GameLoc.TryGet(_item.OptionValue.m_tooltipLocKey);
+            // The binding holds a loc key: the option's tooltip key, or the unlock-requirement
+            // key SetLocked swapped in on a locked altar row.
+            var context = ContextField(_item);
+            string stored = context == null ? null : context.GetStringValue("option_tooltip");
+            string tooltip = GameLoc.TryGet(stored) ?? GameLoc.TryGet(_item.OptionValue.m_tooltipLocKey);
             if (!string.IsNullOrEmpty(tooltip)) {
                 yield return tooltip;
             }

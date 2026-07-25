@@ -132,6 +132,11 @@ screen existed)
   selectables, so no surface is dead air. Registered above the mode screens (a pushed screen
   covers the scene) and below the dedicated stack screens. Driving HUD widgets (minimap,
   goals - non-SCREEN stack entries) are excluded so free driving is never captured.
+- Escape closes a `SubScreenElementBhv` panel through its own `CloseSubscreen`, a raw
+  `TryCloseScreen` otherwise: a hub re-enables its own controls only in the panel's close
+  flow - a raw pop of the altar's stagecoach-tracks panel ("The Intrepid Coast", on the
+  generic floor) left every altar region marker disabled (observed live 2026-07-24; the
+  in-place repair is the game's own `CheckToEnableSubScreenButtons`).
 - **Results surfaces read fully** (live-verified 2026-07-24 on the inn's End Expedition
   screen, "Every League, a Lesson."): the score-row prefab these screens share
   (`GameOverScoreLabelBhv`) reads as a readout composed like the sighted row - the game's
@@ -142,6 +147,15 @@ screen existed)
   as-is when the binding holds one). The same code serves the game-over and Kingdoms
   results screens (deployed, unverified there). Collect Hope reads as the ordinary button
   it is.
+- **Rebuilds are silent while the surface grows**: the results screens animate their score
+  rows in one at a time, and each arrival re-populates the tree. Elements are keyed to
+  their live widget and reused across rebuilds (the rebuild check is an instance-id
+  signature, not a count), so the focused element survives and nothing re-announces - the
+  game-over screen used to queue "Continue, button" once per arriving row (observed live
+  2026-07-24). Focus falls and announces only when the focused widget itself is gone.
+- Known gap: the screen name is read at entry, before a results screen's late-bound title
+  has text - the game-over screen announced itself as "Continue" (its first readable
+  label at that instant) rather than its title.
 
 ### Combat (`CombatScreen`, COMBAT mode)
 Status: **works** (live-verified 2026-07-24: two full rounds fought to Victory - skill picks,
@@ -453,10 +467,17 @@ player-driven candle spends)
   purchase (observed live). On return the panel re-announces with focus restored onto the
   purchased category, so its updated count is the landing line and another Enter pulls
   again.
-- Known gaps: the five other regions are locked during the intro altar, so their
-  sub-screens (class/hero tracks, memories, cosmetics - the progress-track surfaces with
-  hold-to-purchase milestones) are unbuilt and unreachable for testing; build them at the
-  first post-intro altar. The hub's milestone pool readouts (candle-threshold rewards) were
+- **The game-options panel reads fully** (`AltarOptionsScreen` over
+  `AltarOptionsSubscreenBhv`, "The Dam"): one settings row per altar option, reusing the
+  options screen's own row element - the generic floor read this panel as dead air because
+  each Toggle is a bare checkmark object with its caption in a sibling label. A row the
+  profile has not earned reads its state plus "unavailable" and carries the game's own
+  unlock-requirement line in the buffer (the game swaps it into the row's tooltip binding
+  on `SetLocked`); an earned row toggles with Enter and reads back its new state. The
+  profile saves through the panel's own close (Escape).
+- Known gaps: the remaining region sub-screens (class/hero tracks, memories, cosmetics -
+  the progress-track surfaces with hold-to-purchase milestones) are unbuilt; build them as
+  they unlock. The hub's milestone pool readouts (candle-threshold rewards) were
   empty on the intro altar and are unread. Embark's press is verified only up to (not
   including) the exit. The reroll variant of the item panel (`m_isRerollScreen`, after full
   completion) shares the class and should read identically but is decades of candles away.

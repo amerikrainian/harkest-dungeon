@@ -89,6 +89,7 @@ namespace DD2A11y {
             // floor (label-only buttons, no reveals).
             Router.Register(new AltarRevealScreen());
             Router.Register(new AltarRecollectionScreen());
+            Router.Register(new AltarOptionsScreen());
             // The inn's station sub-screens, each outranking the floor's label-only sweep.
             Router.Register(new ProvisionerScreen(Navigator));
             Router.Register(new MasteryScreen());
