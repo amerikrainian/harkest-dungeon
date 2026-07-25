@@ -309,9 +309,7 @@ full inventory walk, item tooltip buffers)
   while the hub is up, and the floor would otherwise capture just that panel and strand the
   station buttons. Any station sub-screen pushed above it hands the surface to its own
   reader (travelogue dedicated, the rest the generic floor for now).
-- Known gaps: station sub-screens (shops, Select Route) read at floor level only (End
-  Expedition's floor read is complete - see the generic floor's results-surface note);
-  rest-item application onto heroes (the game's select-then-apply flow; our elements
+- Known gaps: rest-item application onto heroes (the game's select-then-apply flow; our elements
   drive the right handlers but no REST item was owned to verify) and shops' richer inns are
   unexercised (only the two-station prologue inn verified). The grab flow's cross-inventory
   half (bag to **inn storage**, where `AcceptsItem` blocks undiscardables) is unexercised:
@@ -321,6 +319,51 @@ full inventory walk, item tooltip buffers)
   widgets (their Enter flows already transfer). The "new item" glow is unspoken (its model
   flag is consumed on first render - `Refresh` calls `SetViewed` - so the live signal would
   be the background director's loop; deliberately skipped as cosmetic).
+
+### Inn stations (`ProvisionerScreen`, `MasteryScreen`, `WainwrightScreen`,
+`RouteSelectScreen`)
+Status: **works** (live-verified 2026-07-24 at the first Denial inn), each named by the inn
+header's own station title (which retitles a beat after entry, so the entry announce can
+speak the inn's name once - known cosmetic race). All close through their own
+`CloseSubscreen` on Escape.
+- **The Provisioner** (`InnStoreUiBhv`): wallet rows, then the store slots - item title,
+  price, and stock from the model and the game's own price text ("Bear Trap, button,
+  relic 6, 2"; a sold-out slot reads the game's "Out of Stock!"), full item tooltip in the
+  buffer - then the player's bag (shared elements: items, free-capacity line) so
+  **Shift+Enter sells one per press** with the "sold X" wording. Both lists rebuild on an
+  instance-id signature with focus re-homed (pooled widgets recycle on every transaction).
+  Enter buys through the game's own validated purchase; a landed buy speaks the slot's new
+  state, a failed one the game's insufficient-funds line. Live-verified: full walk, one
+  purchase (A Glimmer of Hope, stock and outcome spoken). Sell-one press not yet
+  player-verified on this screen (identical wiring to the verified inn-hub discard).
+- **Mastery Trainer** (`InnUpgradeSkillsBhv`): the hero header (name + "mastery points N";
+  Left/Right page the party via the trainer's own arrows), one element per skill (the
+  game's own name with its upgraded-skill glyph spoken as words; states "mastered" /
+  "selected" / "unavailable"; full skill card in the buffer), the path seal, "Change Path"
+  with its cost (caption from its tooltip - the visible text is only the cost), and Reset -
+  whose visual is a hold gesture, so the element drives the real `OnResetPressed`. Enter
+  queues a skill through the trainer's own `TrySelectSkillToUnlock` (the mouse holds); the
+  rebuild announces the new points. The path panel stays permanently active with a
+  CanvasGroup riding visibility, so the view split keys on `blocksRaycasts`; the path view
+  reads the comparison text (named children only - the panel carries unbound template
+  labels) plus each path option and the purchase button. Live-verified: walk, hero paging
+  wiring, queue ("selected", points drop), Reset (queue cleared, points restored).
+  Unexercised: Apply/commit (the batch confirm), an actual path purchase, hero paging with
+  a full party.
+- **The Wainwright** (`StageCoachConfigUiBhv`): the coach's name from the model (renaming
+  is unmodeled), wallet, the game's own composed stat lines ("Cargo Slots: 20",
+  "Armor: 2/2", damage explanations in the buffer), a "repair, baubles 8" button per stat
+  (the game's own transaction; `cost_` currency glyphs now speak - the faction glyph as
+  the authored "baubles", no game string spells it), the livery cycler, and the upgrade
+  slots as equip slots (altar-locked ones carry their lock text). Live-verified: full
+  walk. Unexercised: a repair press (stats were full), equip/unequip on this sheet.
+- **Select Route** (`SubScreenBiomeChoiceBhv`): one element per offered route - the
+  destination's own name, "selected" state, goal/modifier/reward tooltips in the buffer,
+  Enter marking the choice through the game's own submit - or "empty" when the inn offers
+  none. Live-verified ONLY in the empty state: this Denial inn wants 2 biome choices but
+  rolled zero, and `GetCanEmbark` is false - either a stuck save state (many dev restarts
+  mid-inn) or choices that appear after an inn step; the populated reader is model-built
+  and untested. **If departure refuses, this zero-choice state is why.**
 
 ### Driving (`RoadSense` + `RouteChoiceScreen`, DRIVING mode)
 Status: **built**; cues live-verified by ear (pickup ping confirmed audible), fork menu not

@@ -88,6 +88,11 @@ namespace DD2A11y {
             // floor (label-only buttons, no reveals).
             Router.Register(new AltarRevealScreen());
             Router.Register(new AltarRecollectionScreen());
+            // The inn's station sub-screens, each outranking the floor's label-only sweep.
+            Router.Register(new ProvisionerScreen(Navigator));
+            Router.Register(new MasteryScreen());
+            Router.Register(new WainwrightScreen());
+            Router.Register(new RouteSelectScreen());
             // The floor for any other pushed screen (glossary, node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());

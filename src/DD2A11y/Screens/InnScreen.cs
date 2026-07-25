@@ -257,7 +257,8 @@ namespace DD2A11y.Screens {
         }
 
         // A wallet row ("Relics, 40"): the caption is the row's tooltip, the amount its label.
-        private static string CurrencyLine(Transform row) {
+        // Shared with the inn station screens, which show the same wallet.
+        internal static string CurrencyLine(Transform row) {
             if (row == null || !row.gameObject.activeInHierarchy) {
                 return null;
             }

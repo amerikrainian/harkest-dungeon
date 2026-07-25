@@ -50,6 +50,13 @@ namespace DD2A11y.Core.Strings {
             D("AltarCandleCost", "{0} candle|{0} candles"),
             // The altar's item reveal modal, spoken before the unlocked item's name.
             D("AltarUnlocked", "unlocked"),
+            // A skill the hero has already mastered, on the inn's Mastery Trainer. Adjective.
+            D("SkillMastered", "mastered"),
+            // The Mastery Trainer's remaining points readout; {0} = the number.
+            D("MasteryPoints", "mastery points {0}"),
+            // A repair button on the Wainwright's stagecoach sheet, where the game shows only
+            // a wrench icon and the cost; {0} = the game's own cost text ("baubles 8").
+            D("StationRepair", "repair, {0}"),
             // The inventory's used-slot readout; {0} = the game's own count text ("5 / 20").
             D("InventorySlots", "slots {0}"),
             // The free bag capacity, collapsed to one line; {0} = how many slots are empty.
@@ -209,6 +216,9 @@ namespace DD2A11y.Core.Strings {
             D("SpriteSpeed", "speed"),
             // The health stat, as the game abbreviates it in its own status text.
             D("SpriteHealth", "HP"),
+            // The faction currency's cost glyph (the Wainwright's repair prices); the game
+            // calls the currency Baubles but spells it only in a tooltip.
+            D("SpriteBaubles", "baubles"),
             // Replaces the game's "???" placeholder glyph (a locked confession, an unexplored
             // node's rewards), which a synthesizer voices as nothing. Adjective.
             D("TextUnknown", "unknown"),
@@ -303,6 +313,9 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenAltar => T("ScreenAltar");
         public static string AltarCandleCost(int count) => P("AltarCandleCost", count);
         public static string AltarUnlocked => T("AltarUnlocked");
+        public static string SkillMastered => T("SkillMastered");
+        public static string MasteryPoints(int count) => F("MasteryPoints", count);
+        public static string StationRepair(string cost) => F("StationRepair", cost);
         public static string InventorySlots(string count) => F("InventorySlots", count);
         public static string InventoryEmptySlots(int count) => P("InventoryEmptySlots", count);
         public static string InventorySorted => T("InventorySorted");
@@ -383,6 +396,7 @@ namespace DD2A11y.Core.Strings {
         public static string SpriteDisease => T("SpriteDisease");
         public static string SpriteSpeed => T("SpriteSpeed");
         public static string SpriteHealth => T("SpriteHealth");
+        public static string SpriteBaubles => T("SpriteBaubles");
         public static string TextUnknown => T("TextUnknown");
 
         public static string BufferControl => T("BufferControl");
