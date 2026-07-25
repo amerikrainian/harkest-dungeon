@@ -34,6 +34,7 @@ namespace DD2A11y {
         private readonly Game.RoadSense _roadSense;
         private readonly LanguageSync _language;
         private CrossroadsScreen _crossroads;
+        private InnScreen _inn;
         private string _lastTickError;
         private float _lastTickErrorTime;
 
@@ -81,7 +82,8 @@ namespace DD2A11y {
             Router.Register(new InnResultsScreen());
             // The inn hub reads THROUGH its own inventory stack entry, so it must outrank the
             // generic floor that would otherwise take that entry.
-            Router.Register(new InnScreen(speak));
+            _inn = new InnScreen(speak, Navigator);
+            Router.Register(_inn);
             // The floor for any other pushed screen (glossary, node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());
@@ -140,9 +142,24 @@ namespace DD2A11y {
                     Speech.Speak(S.StatusUnavailable, interrupt: true);
                 }
             }).AddBinding(K(Key.Enter, shift: true)).AddBinding(K(Key.NumpadEnter, shift: true));
-            // Grab-and-place for precise hero moves at the crossroads.
-            Reg("crossroads.grab", S.InputGrab, () => _crossroads.ToggleGrab(Navigator.Current))
-                .AddBinding(K(Key.Space));
+            // Grab-and-place: hero moves at the crossroads, inventory stacks at the inn - one
+            // key, routed by what stands under focus. Shift+Space never initiates; it places
+            // a single item off the held stack, repeatable until the stack runs out.
+            Reg("ui.grab", S.InputGrab, () => ToggleGrab(takeOne: false)).AddBinding(K(Key.Space));
+            Reg("ui.place.one", S.InputPlaceOne, () => ToggleGrab(takeOne: true))
+                .AddBinding(K(Key.Space, shift: true));
+        }
+
+        private void ToggleGrab(bool takeOne) {
+            if (Navigator.Current is Elements.HeroSlotElement) {
+                if (!takeOne) { // heroes have no stacks to split
+                    _crossroads.ToggleGrab(Navigator.Current);
+                }
+                return;
+            }
+            if (Router.Active == _inn) {
+                _inn.ToggleGrab(Navigator.Current, takeOne);
+            }
         }
 
         public void Tick() {

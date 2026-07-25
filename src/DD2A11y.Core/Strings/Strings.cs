@@ -50,6 +50,12 @@ namespace DD2A11y.Core.Strings {
             // Spoken after the sort button runs; the game's one sort orders by item type,
             // then name.
             D("InventorySorted", "sorted by type"),
+            // Outcome of the discard key: the whole focused stack was thrown away; {0} = the
+            // item's name.
+            D("ItemDiscarded", "discarded {0}"),
+            // Outcome of the same key while a seller is open (the game sells one item per
+            // press instead); {0} = the item's name.
+            D("ItemSold", "sold {0}"),
 
             // Control type words, spoken after a control's label ("Continue, button"). Nouns.
             D("RoleButton", "button"),
@@ -82,12 +88,15 @@ namespace DD2A11y.Core.Strings {
             D("CrossroadsEmptySlot", "empty slot"),
             // A roster hero currently placed in the party, appended to their readout.
             D("CrossroadsInParty", "in party"),
-            // Spoken when the player picks up a hero to move; {0} = the hero's name.
-            D("CrossroadsGrabbed", "grabbed {0}"),
-            // Spoken when the player puts a grabbed hero back without moving them.
-            D("CrossroadsGrabCancelled", "grab cancelled"),
-            // Spoken when a grabbed hero cannot be placed on the focused slot.
-            D("CrossroadsCannotPlace", "cannot place here"),
+
+            // Grab-and-place, shared by the crossroads hero move and the inventory stack move.
+            // Spoken when something is picked up to move; {0} = the hero's or item's name.
+            D("Grabbed", "grabbed {0}"),
+            // Spoken when a grab is dropped without placing (the same slot again, Escape, or
+            // the source changed underneath).
+            D("GrabCancelled", "grab cancelled"),
+            // Spoken when the grabbed hero or item cannot be placed on the focused target.
+            D("CannotPlace", "cannot place here"),
 
             // Hero sheet. The speed stat readout; {0} = the number. The game shows this stat as a
             // bare icon with no name string to reuse.
@@ -216,7 +225,8 @@ namespace DD2A11y.Core.Strings {
             D("InputBufferPrev", "Previous buffer"),
             D("InputBufferLineNext", "Next buffer line"),
             D("InputBufferLinePrev", "Previous buffer line"),
-            D("InputGrab", "Grab or place hero"),
+            D("InputGrab", "Grab or place"),
+            D("InputPlaceOne", "Place one from a grabbed stack"),
             D("InputInspect", "Open hero sheet"),
             D("InputDiscard", "Discard item"),
         };
@@ -280,6 +290,8 @@ namespace DD2A11y.Core.Strings {
         public static string InventorySlots(string count) => F("InventorySlots", count);
         public static string InventoryEmptySlots(int count) => P("InventoryEmptySlots", count);
         public static string InventorySorted => T("InventorySorted");
+        public static string ItemDiscarded(string item) => F("ItemDiscarded", item);
+        public static string ItemSold(string item) => F("ItemSold", item);
 
         public static string RoleButton => T("RoleButton");
         public static string RoleToggle => T("RoleToggle");
@@ -300,9 +312,9 @@ namespace DD2A11y.Core.Strings {
         public static string CrossroadsRoster => T("CrossroadsRoster");
         public static string CrossroadsEmptySlot => T("CrossroadsEmptySlot");
         public static string CrossroadsInParty => T("CrossroadsInParty");
-        public static string CrossroadsGrabbed(string hero) => F("CrossroadsGrabbed", hero);
-        public static string CrossroadsGrabCancelled => T("CrossroadsGrabCancelled");
-        public static string CrossroadsCannotPlace => T("CrossroadsCannotPlace");
+        public static string Grabbed(string what) => F("Grabbed", what);
+        public static string GrabCancelled => T("GrabCancelled");
+        public static string CannotPlace => T("CannotPlace");
 
         public static string SheetSpeed(int value) => F("SheetSpeed", value);
         public static string PanelEmpty => T("PanelEmpty");
@@ -375,6 +387,7 @@ namespace DD2A11y.Core.Strings {
         public static string InputBufferLineNext => T("InputBufferLineNext");
         public static string InputBufferLinePrev => T("InputBufferLinePrev");
         public static string InputGrab => T("InputGrab");
+        public static string InputPlaceOne => T("InputPlaceOne");
         public static string InputInspect => T("InputInspect");
         public static string InputDiscard => T("InputDiscard");
     }

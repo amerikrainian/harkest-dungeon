@@ -93,12 +93,12 @@ namespace DD2A11y.Screens {
                     return;
                 }
                 _grabbed = hero;
-                _speak(S.CrossroadsGrabbed(hero.Label), true);
+                _speak(S.Grabbed(hero.Label), true);
                 return;
             }
             if (_grabbed.Slot == hero.Slot) {
                 _grabbed = null;
-                _speak(S.CrossroadsGrabCancelled, true);
+                _speak(S.GrabCancelled, true);
                 return;
             }
 
@@ -107,7 +107,7 @@ namespace DD2A11y.Screens {
             bool valid = (bool)IsDropValidMethod.Invoke(target, new object[] { source })
                 && (bool)IsDropAcceptedMethod.Invoke(target, new object[] { source });
             if (!valid) {
-                _speak(S.CrossroadsCannotPlace, true);
+                _speak(S.CannotPlace, true);
                 return;
             }
             OnDropAcceptedMethod.Invoke(target, new object[] { source });

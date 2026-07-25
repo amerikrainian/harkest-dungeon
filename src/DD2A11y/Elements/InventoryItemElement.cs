@@ -1,8 +1,11 @@
+using Assets.Code.Game;
 using Assets.Code.Item;
 using Assets.Code.UI.Items;
 using Assets.Code.Utils;
 using DD2A11y.Core.Nav;
+using DD2A11y.Core.Speech;
 using DD2A11y.Game;
+using S = DD2A11y.Core.Strings.Strings;
 using UnityEngine.UI;
 
 namespace DD2A11y.Elements {
@@ -20,6 +23,9 @@ namespace DD2A11y.Elements {
             : base(selectable, null, item.gameObject) {
             _item = item;
         }
+
+        /// <summary>The live slot widget, for the grab-and-place flow.</summary>
+        public InventoryItemBhv Slot => _item;
 
         public override bool CanFocus => base.CanFocus && _item.IsOccupied;
 
@@ -53,7 +59,27 @@ namespace DD2A11y.Elements {
             }
             if (_item is PlayerInventoryItemBhv player && ItemUtils.IsValid(player.Item)
                 && player.Item.GetItemDefinition().m_canDiscard) {
-                yield return new ElementAction("discard", player.OnDiscardItem);
+                yield return new ElementAction("discard", () => Discard(player));
+            }
+        }
+
+        // With a seller open the game's discard press SELLS one item instead of dropping the
+        // stack (PlayerInventoryItemBhv.OnDiscardItem), so the outcome wording follows the
+        // same branch the handler takes. Spoken only when the model actually changed: an
+        // unchanged slot means a confirmation dialog took over, and it announces itself.
+        private static void Discard(PlayerInventoryItemBhv player) {
+            var inventory = player.ItemContainer.Inventory;
+            var item = inventory.GetItem(player.ItemIndex);
+            var definition = item.GetItemDefinition();
+            string title = ItemDescription.GetTitle(definition);
+            bool selling = Singleton<GameTypeMgr>.Instance.PlayerInventory.GetIsSellingActive()
+                && item.HasSellCost;
+            int before = item.GetQty();
+            player.OnDiscardItem();
+            var after = inventory.GetItemOrDefault(player.ItemIndex);
+            bool changed = !ItemUtils.IsValid(after) || !after.Is(definition) || after.GetQty() != before;
+            if (changed) {
+                SpeechPipeline.Instance?.Speak(selling ? S.ItemSold(title) : S.ItemDiscarded(title));
             }
         }
     }

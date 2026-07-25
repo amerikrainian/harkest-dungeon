@@ -231,7 +231,37 @@ full inventory walk, item tooltip buffers)
 - **Shift+Enter discards** the focused bag item (the game's shift-click; the whole stack,
   instantly - the game confirms nothing except its own last-trophy safeguard). The element
   advertises the action only where the game allows it (`m_canDiscard`, player bag slots);
-  anywhere else Shift+Enter answers "unavailable". Player-verified live.
+  anywhere else Shift+Enter answers "unavailable". Player-verified live. The press now
+  speaks its outcome from the model - "discarded X", or **"sold X"** when a seller is open
+  (the game's own handler sells ONE item per press in that state instead; the wording
+  follows the same `GetIsSellingActive && HasSellCost` branch the handler takes). Silence
+  means the game's confirmation dialog took over, and it announces itself. Sell wording
+  deployed but unverified live (no seller at the prologue inn; expedition selling is gated
+  on the hoarder option).
+- **Space grabs and places inventory stacks** (`ItemGrab`) - the keyboard face of the
+  game's item drag and drop, same key and feedback as the crossroads hero grab: Space on
+  a stack speaks "grabbed X", Space on the landing target places the whole stack, and
+  **while a grab is held Shift+Space places a single item off it** (the game's
+  split-stack drag), keeping the grab held so repeated presses keep splitting until the
+  stack runs out (then the grab ends with the landing line; Shift+Space never initiates -
+  unarmed it answers "unavailable"). Targets: another stack (same item combines - the
+  merge the mouse gets by dropping; different item swaps in place, no free slot needed -
+  the full-inventory exchange) and the **"N empty slots" capacity line, meaning this
+  inventory's free space** (a single placed there accumulates onto an existing partial
+  stack before opening a new slot, and a fresh stack opens the LAST empty slot, so it
+  reads at the bottom of the list right above the capacity line the cursor sits on).
+  Placement mirrors `InventoryItemBhv.DefaultSwap` at the model level
+  (`ItemInventory.SwapItems` / `TakeItemQty`, then `EventInventoryItemSwapped` like the
+  game's own drop), with the game's `AcceptsItem` rules honored across inventories; a
+  split onto a different-item target answers "cannot place here" rather than inherit
+  DefaultSwap's whole-stack-swap fallback. Same-slot Space or Escape cancels ("grab
+  cancelled"; Escape only falls through to the pause menu when no grab is armed). The
+  landing speaks the placed stack's title and new size from the model. Live-verified
+  2026-07-24 (dev driver + player keys): whole-stack move, split, accumulate,
+  split-until-empty ending the grab, merge, swap both directions, both cancels.
+- **Item-list rebuilds re-home focus** over the widget the cursor sat on (a placement, a
+  sale, a restock rebuilds our elements; the cursor no longer falls to the top of the
+  screen), silently - the action's own feedback is the only speech.
 - **Equipping rides the game's own slot-select flow, end to end** (live-verified both ways):
   Enter on a bag trinket/combat item makes the game itself open the hero sheet in
   slot-select mode; Enter on a sheet equip slot runs the game's `Swap()` (equips; a held
@@ -254,9 +284,16 @@ full inventory walk, item tooltip buffers)
   station buttons. Any station sub-screen pushed above it hands the surface to its own
   reader (travelogue dedicated, the rest the generic floor for now).
 - Known gaps: station sub-screens (shops, End Expedition, Select Route) read at floor level
-  only; the item slot-select/move flow and rest-item application onto heroes are unmodeled
-  (Enter runs the game's own submit, which auto-transfers where the game allows); shops'
-  richer inns unexercised (only the two-station prologue inn verified).
+  only; rest-item application onto heroes (the game's select-then-apply flow; our elements
+  drive the right handlers but no REST item was owned to verify) and shops' richer inns are
+  unexercised (only the two-station prologue inn verified). The grab flow's cross-inventory
+  half (bag to **inn storage**, where `AcceptsItem` blocks undiscardables) is unexercised:
+  storage is a Kingdoms feature and only the bag exists at an expedition inn - it needs no
+  new code (grab is target-generic over `PlayerInventoryItemBhv` slots) but wants a live
+  pass when a Kingdoms inn is first modeled. Grab deliberately excludes loot and store
+  widgets (their Enter flows already transfer). The "new item" glow is unspoken (its model
+  flag is consumed on first render - `Refresh` calls `SetViewed` - so the live signal would
+  be the background director's loop; deliberately skipped as cosmetic).
 
 ### Driving (`RoadSense` + `RouteChoiceScreen`, DRIVING mode)
 Status: **built**; cues live-verified by ear (pickup ping confirmed audible), fork menu not

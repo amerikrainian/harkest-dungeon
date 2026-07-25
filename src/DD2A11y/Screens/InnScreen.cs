@@ -25,14 +25,19 @@ namespace DD2A11y.Screens {
     /// captions live in their tooltips), then the inventory panel: the filter as a tab
     /// (Left/Right apply the game's own tab buttons), slot count and wallet readouts, the sort
     /// button (its press confirms "sorted by type" - the game's one sort), one element per
-    /// carried item (title and stack, full tooltip in the buffer; Shift+Enter discards where
-    /// the game's shift-click would), and the free capacity as one collapsed line. A station
-    /// opens through its own button; the
-    /// opened sub-screen is read by its dedicated screen or the generic floor. Escape opens
-    /// the pause menu.
+    /// carried item (title and stack, full tooltip in the buffer; Shift+Enter discards - or
+    /// sells one, with a seller open - where the game's shift-click would), and the free
+    /// capacity as one collapsed line. Space grabs the focused stack and places it on the
+    /// next target (another stack to swap or combine, the capacity line for a free slot);
+    /// while a grab is held, Shift+Space places a single item off it, repeatable until the
+    /// stack runs out. A station opens through its own button; the opened sub-screen is read
+    /// by its dedicated screen or the generic floor. Escape drops an armed grab first, else
+    /// opens the pause menu.
     /// </summary>
     public sealed class InnScreen : GameScreen {
         private readonly Action<string, bool> _speak;
+        private readonly TraditionalNavigator _navigator;
+        private readonly ItemGrab _grab;
         private SubScreenCollectionBhv _collection;
         private InventoryUiBhv _inventory;
         private Container _root;
@@ -42,9 +47,14 @@ namespace DD2A11y.Screens {
         private int _builtButtonsSignature;
         private int _builtItemsSignature;
 
-        public InnScreen(Action<string, bool> speak) {
+        public InnScreen(Action<string, bool> speak, TraditionalNavigator navigator) {
             _speak = speak;
+            _navigator = navigator;
+            _grab = new ItemGrab(speak);
         }
+
+        /// <summary>The grab key (Space / Shift+Space), routed here while this screen stands.</summary>
+        public void ToggleGrab(Core.Nav.UIElement current, bool takeOne) => _grab.Toggle(current, takeOne);
 
         public override string Name {
             get {
@@ -77,8 +87,15 @@ namespace DD2A11y.Screens {
         }
 
         public override Container BuildRoot(object target) {
+            _grab.Reset();
             _root = new RootContainer(ContainerShape.VerticalList,
-                back: () => SingletonMonoBehaviour<CommonUiBhv>.Instance.TogglePauseMenu());
+                back: () => {
+                    if (_grab.Armed) {
+                        _grab.Cancel();
+                    } else {
+                        SingletonMonoBehaviour<CommonUiBhv>.Instance.TogglePauseMenu();
+                    }
+                });
 
             var regions = FindChild(_collection.transform.parent, "RegionsToMountain");
             if (regions != null) {
@@ -154,7 +171,7 @@ namespace DD2A11y.Screens {
 
             _items = new Container(ContainerShape.VerticalList);
             _root.Add(_items);
-            PopulateItems();
+            PopulateItems(repairFocus: false);
             return _root;
         }
 
@@ -163,7 +180,7 @@ namespace DD2A11y.Screens {
                 PopulateButtons();
             }
             if (_inventory != null && ItemsSignature() != _builtItemsSignature) {
-                PopulateItems();
+                PopulateItems(repairFocus: true);
             }
             return false;
         }
@@ -200,7 +217,11 @@ namespace DD2A11y.Screens {
 
         // What the player carries - occupied slots only, with the free capacity collapsed to
         // one live line (bag position carries no meaning; the game's own sort reorders freely).
-        private void PopulateItems() {
+        private void PopulateItems(bool repairFocus) {
+            var focused = repairFocus ? _navigator.Current : null;
+            var focusedSlot = (focused as InventoryItemElement)?.Slot;
+            bool onFreeSlots = focused is FreeSlotsElement;
+
             _items.Clear();
             if (_inventory == null) {
                 _builtItemsSignature = 0;
@@ -214,12 +235,25 @@ namespace DD2A11y.Screens {
                     }
                 }
             }
-            var inventory = _inventory;
-            _items.Add(new ReadoutElement(() => {
-                int empty = CountEmpty(inventory);
-                return empty > 0 ? S.InventoryEmptySlots(empty) : null;
-            }));
+            var inventoryUi = _inventory;
+            _items.Add(new FreeSlotsElement(() => inventoryUi == null
+                ? null : inventoryUi.GetComponentInChildren<InventoryItemContainerBhv>(includeInactive: false)));
             _builtItemsSignature = ItemsSignature();
+
+            // The rebuild replaced our elements over the same live widgets; re-home focus over
+            // the one it sat on so a sale, a placement, or a restock does not throw the cursor
+            // to the top of the screen.
+            if (focusedSlot != null || onFreeSlots) {
+                foreach (var child in _items.Children) {
+                    if ((focusedSlot != null && child is InventoryItemElement item && item.Slot == focusedSlot)
+                        || (onFreeSlots && child is FreeSlotsElement)) {
+                        if (child.CanFocus) {
+                            _navigator.Focus(child, announce: false);
+                        }
+                        break;
+                    }
+                }
+            }
         }
 
         // A wallet row ("Relics, 40"): the caption is the row's tooltip, the amount its label.
@@ -272,19 +306,6 @@ namespace DD2A11y.Screens {
                 }
             }
             return signature;
-        }
-
-        private static int CountEmpty(InventoryUiBhv inventory) {
-            if (inventory == null) {
-                return 0;
-            }
-            int count = 0;
-            foreach (var slot in inventory.GetComponentsInChildren<PlayerInventoryItemBhv>(includeInactive: false)) {
-                if (!slot.IsOccupied) {
-                    count++;
-                }
-            }
-            return count;
         }
 
         private static Transform FindChild(Transform root, string name) {
