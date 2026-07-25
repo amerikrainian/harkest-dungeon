@@ -154,6 +154,10 @@ namespace DD2A11y.Core.Strings {
             D("CombatHitChance", "{0}% hit"),
             D("CombatCritChance", "{0}% crit"),
             D("CombatHealPreview", "heals {0}"),
+            // A guardian will absorb the hit aimed at this target; {0} = the guardian.
+            D("CombatIntercepted", "intercepted by {0}"),
+            // Picking this target draws a counter-attack; {0} = its damage range.
+            D("CombatRiposte", "riposte {0}"),
             // Spoken when target selection is cancelled back to skill choice.
             D("CombatTargetCancelled", "target cancelled"),
             // Buffer line on a skill the hero holds twice: once equipped by the player, once as
@@ -409,6 +413,8 @@ namespace DD2A11y.Core.Strings {
         public static string CombatHitChance(int percent) => F("CombatHitChance", percent);
         public static string CombatCritChance(int percent) => F("CombatCritChance", percent);
         public static string CombatHealPreview(string range) => F("CombatHealPreview", range);
+        public static string CombatIntercepted(string guardian) => F("CombatIntercepted", guardian);
+        public static string CombatRiposte(string damage) => F("CombatRiposte", damage);
         public static string CombatTookDamage(string name, int damage) => F("CombatTookDamage", name, damage);
         public static string CombatTookDamageOne(string name) => F("CombatTookDamageOne", name);
         public static string CombatDied(string name) => F("CombatDied", name);

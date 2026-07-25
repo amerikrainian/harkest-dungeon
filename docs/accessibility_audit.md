@@ -202,7 +202,9 @@ header row)
   target's line leads with the derived reason (out of range, allies only, stealthed...,
   mirroring the game's own target-validity walk, which sighted players see only as dimming);
   a valid target's line ends with the game's own precomputed preview (`QuerySkillPreview`:
-  "85% hit, 5% crit", or the heal range on friendly skills). Enter on one sends the game's
+  "85% hit, 5% crit", or the heal range on friendly skills; "intercepted by X" when a
+  guardian will absorb the hit, "riposte 3-7" when the pick draws a counter). Enter on one
+  sends the game's
   own actor-pick event to execute. Escape cancels target-select first, else opens the pause
   menu.
   Turn lines ("round 2, Audrey") are spoken outright on every turn change - focus can sit
@@ -246,8 +248,9 @@ header row)
   `m_escalationTooltip` on `BattleInfoUiBhv`, shown via the More Info hold) is not modeled -
   Kingdoms-only, needs a siege to design against; the battle modifier readout is deployed but
   unverified (no modifier rolled in the fights seen so far); target beeps, invalid-target
-  reasons, and the hit/crit preview are unverified against friendly skills, stealth, and
-  guarded targets; battle-end cleanup fires "Corpse died" lines (real death events for the
+  reasons, and the hit/crit preview are unverified against friendly skills and stealth
+  (guard interception and riposte verified live against the preview cache, spoken as
+  suffixes); battle-end cleanup fires "Corpse died" lines (real death events for the
   corpse entities - noise at the end of a won fight, informative mid-fight).
 
 ### Inspector (`AcademicScreen`, over combat)
