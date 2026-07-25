@@ -91,7 +91,8 @@ namespace DD2A11y {
             Router.Register(new AltarRecollectionScreen());
             Router.Register(new AltarOptionsScreen());
             // The inn's station sub-screens, each outranking the floor's label-only sweep.
-            Router.Register(new ProvisionerScreen(Navigator));
+            // The store screen also serves road merchants (the Hoarder).
+            Router.Register(new StoreScreen(Navigator));
             Router.Register(new MasteryScreen());
             Router.Register(new WainwrightScreen());
             Router.Register(new RouteSelectScreen());

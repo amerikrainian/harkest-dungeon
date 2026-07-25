@@ -356,18 +356,20 @@ full inventory walk, item tooltip buffers)
   flag is consumed on first render - `Refresh` calls `SetViewed` - so the live signal would
   be the background director's loop; deliberately skipped as cosmetic).
 
-### Inn stations (`ProvisionerScreen`, `MasteryScreen`, `WainwrightScreen`,
+### Inn stations (`StoreScreen`, `MasteryScreen`, `WainwrightScreen`,
 `RouteSelectScreen`)
 Status: **works** (live-verified 2026-07-24 at the first Denial inn), each named by the inn
 header's own station title (which retitles a beat after entry, so the entry announce can
 speak the inn's name once - known cosmetic race). All close through their own
 `CloseSubscreen` on Escape.
-- **The Provisioner** (`InnStoreUiBhv`): wallet rows, then the store slots - item title,
-  price, and stock from the model and the game's own price text ("Bear Trap, button,
-  relic 6, 2"; a sold-out slot reads the game's "Out of Stock!"), full item tooltip in the
-  buffer - then the player's bag (shared elements: items, free-capacity line) so
-  **Shift+Enter sells one per press** with the "sold X" wording. Both lists rebuild on an
-  instance-id signature with focus re-homed (pooled widgets recycle on every transaction).
+- **The Provisioner** (`StoreScreen` over `InnStoreUiBhv`; the same screen serves road
+  merchants - see the Hoarder under Driving): wallet rows, then the store slots - item
+  title, price, and stock from the model and the game's own price text ("Bear Trap,
+  button, relic 6, 2"; a sold-out slot reads the game's "Out of Stock!"), full item
+  tooltip in the buffer - then the player's bag (shared elements: items, free-capacity
+  line) so **Shift+Enter sells one per press** with the "sold X" wording. Both lists
+  rebuild on an instance-id signature with focus re-homed (pooled widgets recycle on
+  every transaction).
   Enter buys through the game's own validated purchase; a landed buy speaks the slot's new
   state, a failed one the game's insufficient-funds line. Live-verified: full walk, one
   purchase (A Glimmer of Hope, stock and outcome spoken). Sell-one press not yet
@@ -434,6 +436,17 @@ yet reached in play
   which heroes prefer the route, banner tooltips. Enter commits via the banner's own
   OnClick (game audio + narration; the coach then drives itself); Escape dismisses that
   junction back to manual steering (steer at a banner holding W, the game's hold-to-fill).
+- **Pickup titles ride the loot toast** (`EventLootToastPresented`): a road grant never
+  raises the inventory widgets' loot event (the mod's original hook, dead code on the
+  road - found live 2026-07-25 as "collection sound but no name"), so the item's own
+  title speaks when the game's corner toast presents - speech only, no mod cue, because
+  the game's own pickup sfx already marks the moment.
+- **Road merchants (the Hoarder)** read through the shared `StoreScreen`: the game
+  raises the player inventory panel above the `StoreUiBhv` screen and the pair reads as
+  one store surface, named by the store's own title - wallet rows, store slots with
+  price and stock, the bag with sell-per-press where the game allows selling (the
+  Hoarder needs the altar's Enable Hoarder Selling option). Escape exits through the
+  store's own done flow, which resumes the drive.
 - Known gaps: fork menu unexercised live; coach damage/break and barricade/cleared cues
   still have assets but no wiring (no dedicated game event surfaced - wheels/armor are
   stagecoach items, so a count poll is the likely wire; barricades want live confirmation
