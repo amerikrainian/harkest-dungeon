@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using Assets.Code.Cost;
+using Assets.Code.Game;
 using Assets.Code.Item;
+using Assets.Code.Run;
 using Assets.Code.UI.Items;
 using Assets.Code.Utils;
 using DD2A11y.Core.Nav;
@@ -7,7 +10,6 @@ using DD2A11y.Core.Speech;
 using DD2A11y.Core.Text;
 using DD2A11y.Game;
 using S = DD2A11y.Core.Strings.Strings;
-using TMPro;
 using UnityEngine.UI;
 
 namespace DD2A11y.Elements {
@@ -20,19 +22,12 @@ namespace DD2A11y.Elements {
     /// </summary>
     public sealed class StoreItemElement : SelectableElement {
         private readonly StoreInventoryItemBhv _slot;
-        private readonly TMP_Text _price;
 
         /// <summary>The live slot widget, for focus re-homing across rebuilds.</summary>
         public StoreInventoryItemBhv Slot => _slot;
 
         public StoreItemElement(StoreInventoryItemBhv slot, Selectable selectable) : base(selectable) {
             _slot = slot;
-            foreach (var tmp in slot.GetComponentsInChildren<TMP_Text>(includeInactive: false)) {
-                if (tmp.gameObject.name == "Price") {
-                    _price = tmp;
-                    break;
-                }
-            }
         }
 
         public override string Label {
@@ -49,9 +44,15 @@ namespace DD2A11y.Elements {
                 if (!ItemUtils.IsValid(item)) {
                     return null;
                 }
+                // The price composes from the model at speech time - the slot's own Price
+                // text binder lags a frame behind the screen's entry, which dropped the
+                // price from the landing line.
+                float multiplier = Singleton<GameTypeMgr>.Instance.RunDataManager.GetStatValue(
+                    RunStatType.STORE_COST_BUY_MULTIPLIER, item.GetItemType().GetName());
+                string price = CostDescription.GetStoreBuyDescription(item.BuyCostDefinition, multiplier,
+                    showStrikethrough: false);
                 int stock = item.GetQty();
-                return SpokenLine.Join(_price == null ? null : _price.text,
-                    stock > 1 ? stock.ToString() : null);
+                return SpokenLine.Join(price, stock > 1 ? stock.ToString() : null);
             }
         }
 
