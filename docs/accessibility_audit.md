@@ -406,11 +406,27 @@ Status: **built**; cues live-verified by ear (pickup ping confirmed audible), fo
 yet reached in play
 - Free driving stays UNCAPTURED - the game keeps WASD (W rolls/cruises, S brakes, A/D
   steer, M/I/G/Z/C its own screens). The mod adds an audio layer through its own NAudio
-  output (independent of FMOD; `assets/audio`, placeholders replace 1:1): the nearest
-  uncollected pickup pings on a 0.7 s cadence, panned to its bearing and louder as it
-  nears; collection plays a blip and speaks the item's own title; road damage plays the
-  penalty cue and speaks the combat damage wording; the coach's stop/start each cue; a
-  junction's banners coming up cue "fork ahead" (once per junction).
+  output (independent of FMOD; `assets/audio`, placeholders replace 1:1): **every
+  uncollected pickup in range loops** (one live loop voice each - pan to its bearing,
+  louder as it nears, parameter steps smoothed ~5 ms against zipper noise) and **every
+  map node in range loops its destination's identity timbre** (shared with the fork menu
+  via `NodeCues`; its first appearance also plays once louder as the announcement), each
+  re-aimed EVERY frame so steering reflects immediately; a loop cuts the frame its object
+  is collected/executed or drops out of range (a 10% exit margin keeps the boundary from
+  flapping). The allocating scene sweeps run on a 0.7 s clock only to refresh the
+  candidate arrays (measured live: ~43 pickups loaded, 2 within the 80-unit range; 6
+  nodes loaded, 1-3 in range - a handful of concurrent voices, mixed under one output
+  limiter). Collection plays a blip and speaks the item's own title; road damage plays
+  the penalty cue and speaks the combat damage wording; the coach's stop/start each cue;
+  a junction's banners coming up cue "fork ahead" (once per junction).
+- Wired 2026-07-25, by ear pass pending: **road edge** (off-center distance against the
+  road's half-width from the game's own road geometry; bumps panned to the drifting side
+  past 85%, re-arming under 70%); **zone enter/exit** (the game's own road-event zone
+  events; exit only while still uncollected - a pickup passed by); **the opt-in prompt**
+  (an event that fires only on the game's Interact key - Space/Enter on keyboard - cues
+  the prompt and speaks "interact" instead of the zone blip); **ambush**
+  (AMBUSH-category event executing); **danger stretches** (the game's inkfire-tile flag,
+  enter/exit on the flips); **Loathing** (a DOOM run-value increase).
 - The fork menu (`RouteChoiceScreen`) opens when the game's own junction wait halts the
   coach unchosen: routes in left-to-right order read "direction, destination" (the game's
   road-indicator titles; "Unknown" unrevealed - the hidden type is never leaked), each
@@ -418,10 +434,11 @@ yet reached in play
   which heroes prefer the route, banner tooltips. Enter commits via the banner's own
   OnClick (game audio + narration; the coach then drives itself); Escape dismisses that
   junction back to manual steering (steer at a banner holding W, the game's hold-to-fill).
-- Known gaps: fork menu unexercised live; zone enter/exit, danger stretches, coach
-  damage/break, opt-in prompts, and Loathing cues have assets but no wiring yet; the
-  minimap and distance-to-Inn readouts are unread (a status readout key is the natural
-  next step); edge-tone lane keeping unused.
+- Known gaps: fork menu unexercised live; coach damage/break and barricade/cleared cues
+  still have assets but no wiring (no dedicated game event surfaced - wheels/armor are
+  stagecoach items, so a count poll is the likely wire; barricades want live confirmation
+  of what spawns as force-stop obstacles); the minimap and distance-to-Inn readouts are
+  unread (a status readout key is the natural next step).
 
 ### Road stories (`StoryScreen`)
 Status: **works** (live-verified 2026-07-23 on "Help Us!"; the commit event is wired but

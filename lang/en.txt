@@ -86,6 +86,7 @@ RouteLeft = left
 RouteForward = forward
 RouteRight = right
 RoutePreferredBy = preferred by {0}
+RoadInteract = interact
 SpriteHeal = heal
 SpriteBuff = buff
 SpriteDebuff = debuff

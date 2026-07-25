@@ -74,6 +74,19 @@ namespace DD2A11y.Audio {
             _mixer.AddMixerInput(new CueVoice(clip, volume, pan));
         }
 
+        public IAudioLoop StartLoop(AudioCue cue, float volume, float pan) {
+            if (!EnsureStarted()) {
+                return NoopLoop.Instance;
+            }
+            float[] clip = LoadMono(CuePath(cue));
+            if (clip.Length == 0) {
+                return NoopLoop.Instance;
+            }
+            var voice = new LoopVoice(clip, volume, pan);
+            _mixer.AddMixerInput(voice);
+            return voice;
+        }
+
         private string CuePath(AudioCue cue) {
             switch (cue) {
                 case AudioCue.RoadPickup: return Road("pickup");
@@ -214,6 +227,63 @@ namespace DD2A11y.Audio {
                 }
                 return read;
             }
+        }
+
+        // A cached mono clip cycled seamlessly with live-settable gain targets: the main thread
+        // re-aims it (volume/pan) at any rate, the audio thread eases the applied gains toward
+        // the targets per sample (~5 ms), so movement tracks smoothly with no zipper noise. A
+        // stop fades to silence first, then returns 0 so the shared mixer auto-removes it.
+        private sealed class LoopVoice : ISampleProvider, IAudioLoop {
+            private const float Smooth = 0.004f;
+            private readonly float[] _clip;
+            private volatile bool _stopped;
+            private float _targetL, _targetR;
+            private float _gainL, _gainR;
+            private int _pos;
+
+            public LoopVoice(float[] clip, float volume, float pan) {
+                _clip = clip;
+                PanGains(pan, out float l, out float r);
+                _targetL = volume * l;
+                _targetR = volume * r;
+                _gainL = _targetL;
+                _gainR = _targetR;
+                WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(Rate, 2);
+            }
+
+            public WaveFormat WaveFormat { get; }
+
+            public void Update(float volume, float pan) {
+                PanGains(pan, out float l, out float r);
+                _targetL = volume * l;
+                _targetR = volume * r;
+            }
+
+            public void Stop() => _stopped = true;
+
+            public int Read(float[] buffer, int offset, int count) {
+                if (_stopped && _gainL < 0.0005f && _gainR < 0.0005f) {
+                    return 0;
+                }
+                float targetL = _stopped ? 0f : _targetL;
+                float targetR = _stopped ? 0f : _targetR;
+                int frames = count / 2;
+                for (int f = 0; f < frames; f++) {
+                    float s = _clip[_pos];
+                    _pos = _pos + 1 == _clip.Length ? 0 : _pos + 1;
+                    _gainL += (targetL - _gainL) * Smooth;
+                    _gainR += (targetR - _gainR) * Smooth;
+                    buffer[offset + f * 2] = s * _gainL;
+                    buffer[offset + f * 2 + 1] = s * _gainR;
+                }
+                return frames * 2;
+            }
+        }
+
+        private sealed class NoopLoop : IAudioLoop {
+            public static readonly NoopLoop Instance = new NoopLoop();
+            public void Update(float volume, float pan) { }
+            public void Stop() { }
         }
 
         // A cached mono clip played once at a fixed pan; returns fewer than count samples when

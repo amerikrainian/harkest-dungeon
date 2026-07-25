@@ -202,6 +202,9 @@ namespace DD2A11y.Core.Strings {
             D("RouteRight", "right"),
             // Heroes whose route preference matches this route; {0} = their names, joined.
             D("RoutePreferredBy", "preferred by {0}"),
+            // Spoken (with the prompt cue) on entering a roadside interaction that fires only
+            // on the game's Interact key, never by contact. Verb, an instruction.
+            D("RoadInteract", "interact"),
 
             // Words for the game's inline effect glyphs in skill and tooltip text, where the icon
             // itself carries the meaning. Nouns.
@@ -388,6 +391,7 @@ namespace DD2A11y.Core.Strings {
         public static string ToastObjective(string name) => F("ToastObjective", name);
 
         public static string RoadForkAhead => T("RoadForkAhead");
+        public static string RoadInteract => T("RoadInteract");
         public static string RouteLeft => T("RouteLeft");
         public static string RouteForward => T("RouteForward");
         public static string RouteRight => T("RouteRight");

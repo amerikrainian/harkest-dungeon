@@ -77,23 +77,7 @@ namespace DD2A11y.Elements {
             if (!_indicator.IsRevealed()) {
                 return AudioCue.NodeUnknown;
             }
-            var type = _indicator.GetNodeType();
-            if (type == NodeType.CACHE) return AudioCue.NodeCache;
-            if (type == NodeType.HOSPITAL) return AudioCue.NodeHospital;
-            if (type == NodeType.STORE) return AudioCue.NodeStore;
-            if (type == NodeType.WATCH_TOWER) return AudioCue.NodeWatchtower;
-            if (type == NodeType.OASIS) return AudioCue.NodeOasis;
-            if (type == NodeType.DUNGEON) return AudioCue.NodeDungeon;
-            if (type == NodeType.GUARDIAN) return AudioCue.NodeGuardian;
-            if (type == NodeType.CREATURE_DEN) return AudioCue.NodeDen;
-            if (type == NodeType.GATE) return AudioCue.NodeGate;
-            if (type == NodeType.BRIDGE) return AudioCue.NodeBridge;
-            if (type == NodeType.INN || type == NodeType.KINGDOM_INN) return AudioCue.NodeInn;
-            if (type == NodeType.STORY_CULTIST || type == NodeType.STORY_ASSIST || type == NodeType.STORY_RESIST
-                || type == NodeType.STORY_COSMIC || type == NodeType.STORY_HERO || type == NodeType.STORY_HERO_REPLACEMENT) {
-                return AudioCue.NodeStory;
-            }
-            return AudioCue.NodeUnknown;
+            return NodeCues.For(_indicator.GetNodeType());
         }
 
         public override IEnumerable<string> GetBufferLines() {
