@@ -359,9 +359,46 @@ deliberately not pressed in testing)
   the player moves (Home reaches the choices); story RESULT presentation is unread beyond
   the narrator; relationship banners and affinity previews unspoken.
 
+### Altar of Hope (`AltarScreen` + `AltarRecollectionScreen` + `AltarRevealScreen`,
+ALTAR_OF_HOPE mode)
+Status: **works** (live-verified 2026-07-24 on the first-visit intro altar, including
+player-driven candle spends)
+- The hub (previously dead air - the altar is a mode surface with no stack entry): the
+  candle balance ("Candle of Hope, 5" - the game's own item name over the profile's live
+  CANDLES value), the six region markers of the altar map as one list (named by the game's
+  `altar_region_<key>_name` strings; a region the game has disabled reads "unavailable" -
+  the game locks by disabling the Selectable COMPONENT, which a generic sweep misses), then
+  Embark. Enter on a region is the game's own submit (opens its sub-screen); Embark drives
+  `OnEmbark` with its spend-your-candles-first reminder dialog; Escape opens the pause menu.
+- A recollection panel (`AltarItemSubScreenBhv`, "The Working Fields") reads: balance, the
+  total line ("Recollection: 3/163"), and the unlock-category buttons with progress and
+  cost composed from their bindings ("Trinkets, 1/73, 1 candle" - authored plural for the
+  cost the game shows as icon+number). Enter purchases in ONE press by driving the game's
+  own (private) `Purchase` - the game's gesture is a mouse hold, and a synthetic hold risks
+  re-purchasing if the reveal timeline ever skips its pause; the purchase self-validates,
+  so a no-op answers "unavailable". Escape closes through the panel's own `CloseSubscreen`
+  - closing via a raw `TryCloseScreen` skips the altar's pop flow and leaves every region
+  marker disabled (found live; the repair is the game's own `CheckToEnableSubScreenButtons`).
+- **The item reveal reads as a modal** (`AltarRevealScreen`, outranking the panel): while a
+  purchase presents, the one element speaks "unlocked" then the item's name and full
+  description (buffer-reviewable line by line); arrows cannot wander mid-reveal, and Enter
+  or Escape continues (the game's own Submit step). The screen matches only once the name
+  binding holds THIS reward's name (`item_name_<activeRewardId>`), because the binding lags
+  the purchase by an icon load - without the gate the previous reveal re-reads on the next
+  purchase (observed live). On return the panel re-announces with focus restored onto the
+  purchased category, so its updated count is the landing line and another Enter pulls
+  again.
+- Known gaps: the five other regions are locked during the intro altar, so their
+  sub-screens (class/hero tracks, memories, cosmetics - the progress-track surfaces with
+  hold-to-purchase milestones) are unbuilt and unreachable for testing; build them at the
+  first post-intro altar. The hub's milestone pool readouts (candle-threshold rewards) were
+  empty on the intro altar and are unread. Embark's press is verified only up to (not
+  including) the exit. The reroll variant of the item panel (`m_isRerollScreen`, after full
+  completion) shares the class and should read identically but is decades of candles away.
+
 ### Everything else
-Status: **not started** (floor-level reading only) - map overlay, inn, glossary,
-tutorials, academy/altar, profile select, save management, kingdoms.
+Status: **not started** (floor-level reading only) - map overlay, glossary,
+tutorials, profile select, save management, kingdoms.
 
 ## Testing rule learned the hard way
 

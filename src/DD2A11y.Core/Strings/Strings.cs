@@ -43,6 +43,13 @@ namespace DD2A11y.Core.Strings {
             D("ScreenFork", "fork"),
             // The inn hub, when the inn's own name is unavailable. Noun.
             D("ScreenInn", "inn"),
+            // The Altar of Hope hub, when the game's own title is unavailable. Noun.
+            D("ScreenAltar", "altar"),
+            // The candle cost on an altar unlock button, where the game shows a candle icon
+            // and a bare number; {0} = the number.
+            D("AltarCandleCost", "{0} candle|{0} candles"),
+            // The altar's item reveal modal, spoken before the unlocked item's name.
+            D("AltarUnlocked", "unlocked"),
             // The inventory's used-slot readout; {0} = the game's own count text ("5 / 20").
             D("InventorySlots", "slots {0}"),
             // The free bag capacity, collapsed to one line; {0} = how many slots are empty.
@@ -290,6 +297,9 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenCombat => T("ScreenCombat");
         public static string ScreenFork => T("ScreenFork");
         public static string ScreenInn => T("ScreenInn");
+        public static string ScreenAltar => T("ScreenAltar");
+        public static string AltarCandleCost(int count) => P("AltarCandleCost", count);
+        public static string AltarUnlocked => T("AltarUnlocked");
         public static string InventorySlots(string count) => F("InventorySlots", count);
         public static string InventoryEmptySlots(int count) => P("InventoryEmptySlots", count);
         public static string InventorySorted => T("InventorySorted");

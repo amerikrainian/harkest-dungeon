@@ -84,11 +84,16 @@ namespace DD2A11y {
             // generic floor that would otherwise take that entry.
             _inn = new InnScreen(speak, Navigator);
             Router.Register(_inn);
+            // The altar's reveal modal outranks its recollection panel, which outranks the
+            // floor (label-only buttons, no reveals).
+            Router.Register(new AltarRevealScreen());
+            Router.Register(new AltarRecollectionScreen());
             // The floor for any other pushed screen (glossary, node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());
             Router.Register(new MainMenuScreen());
             Router.Register(_crossroads);
+            Router.Register(new AltarScreen());
             Router.Register(new CombatScreen(speak));
             Router.Register(new RouteChoiceScreen(Audio));
 
