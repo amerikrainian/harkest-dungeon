@@ -237,7 +237,9 @@ header row)
   menu.
   Turn lines ("round 2, Audrey") are spoken outright on every turn change - focus can sit
   anywhere - and logged to the combat buffer once.
-- Combatant buffers: HP, stress (heroes), then one line per token, per dot, and per combat
+- Combatant buffers: HP, stress (heroes), then one line per token (hidden tokens filtered
+  by the game's own `IsHidden` gate - they are internal logic-control state whose loc text
+  is a "please file a bug" placeholder), per dot, and per combat
   buff (filtered to `IsEligibleToShowAsCombatUi`, e.g. Preparation's "On Riposte: heal Self
   10%"), all from the game's own describers. Skill buffers: the full skill card (shared
   `SkillCard` composer with the hero sheet).
@@ -300,7 +302,9 @@ driven through the game's own show event so the camera, fog of war, and its gate
   buffs, stagecoach effects, the wound line), **trinkets** (enemies and Kingdoms allies
   carry visible ones), the **resistance grid** (every resist with the game's immune and
   death's-door special cases; per-source breakdown in the buffer), then **tokens, damage
-  over time, buffs, debuffs** (empty sections vanish).
+  over time, buffs, debuffs** (empty sections vanish; hidden tokens - the game's internal
+  logic-control state with "please file a bug" placeholder text - are filtered out, the
+  same IsHidden gate the game's own token icons apply).
 - Known gaps: unverified against an ordained (blessed) enemy, a stealthed enemy, and
   Kingdoms militia allies; resist percent formatting assumes the model's 0-1 fractions.
 

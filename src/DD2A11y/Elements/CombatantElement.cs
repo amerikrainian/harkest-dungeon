@@ -102,8 +102,8 @@ namespace DD2A11y.Elements {
                     yield return string.Format(stressFormat, (int)actor.Stress, (int)actor.StressMax);
                 }
             }
-            var tokens = actor.TokenContainer?.GetInstances();
-            if (tokens != null && tokens.Count > 0) {
+            var tokens = Actors.VisibleTokens(actor);
+            if (tokens.Count > 0) {
                 foreach (var line in TokenTooltipBhv.MakeTooltip(tokens).Split('\n')) {
                     if (!string.IsNullOrWhiteSpace(line)) {
                         yield return line;

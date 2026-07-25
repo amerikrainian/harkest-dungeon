@@ -91,8 +91,8 @@ namespace DD2A11y.Screens {
             _root.Add(_resists);
             var status = new Container(ContainerShape.HorizontalList);
             status.Add(StatusReadout(() => S.InspectorTokens, actor => {
-                var tokens = actor.TokenContainer?.GetInstances();
-                return tokens != null && tokens.Count > 0
+                var tokens = Actors.VisibleTokens(actor);
+                return tokens.Count > 0
                     ? Core.Text.SpokenLine.NonEmptyLines(TokenTooltipBhv.MakeTooltip(tokens))
                     : System.Linq.Enumerable.Empty<string>();
             }));
