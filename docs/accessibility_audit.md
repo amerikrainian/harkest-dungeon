@@ -416,3 +416,9 @@ presses.
   every surface a floor.
 - DataContext-bound text applies a frame late; anything read at commit time must come from loc
   keys or the model, not the TMP.
+- The game's "???" placeholder glyph (a locked confession's name on the confession-select
+  panel, an unexplored node's "Rewards: ???") is voiced as NOTHING by synthesizers, reading
+  as an unlabeled control. The text filter speaks a free-standing run of question marks as
+  the authored word "unknown", pipeline-wide; runs attached to a word ("What???" in a bark)
+  keep their marks. Live-verified 2026-07-24 on the confession select ("unknown, button,
+  unavailable" for the locked entries).

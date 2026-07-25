@@ -89,6 +89,7 @@ SpriteStress = stress
 SpriteDisease = disease
 SpriteSpeed = speed
 SpriteHealth = HP
+TextUnknown = unknown
 BufferControl = control
 BufferCombat = combat
 BufferNone = no buffer lines

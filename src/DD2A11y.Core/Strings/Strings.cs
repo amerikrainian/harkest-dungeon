@@ -209,6 +209,9 @@ namespace DD2A11y.Core.Strings {
             D("SpriteSpeed", "speed"),
             // The health stat, as the game abbreviates it in its own status text.
             D("SpriteHealth", "HP"),
+            // Replaces the game's "???" placeholder glyph (a locked confession, an unexplored
+            // node's rewards), which a synthesizer voices as nothing. Adjective.
+            D("TextUnknown", "unknown"),
 
             // Buffer review (Ctrl plus arrows). The buffer holding the focused control's detail
             // lines (its tooltips). Noun naming that buffer.
@@ -380,6 +383,7 @@ namespace DD2A11y.Core.Strings {
         public static string SpriteDisease => T("SpriteDisease");
         public static string SpriteSpeed => T("SpriteSpeed");
         public static string SpriteHealth => T("SpriteHealth");
+        public static string TextUnknown => T("TextUnknown");
 
         public static string BufferControl => T("BufferControl");
         public static string BufferCombat => T("BufferCombat");

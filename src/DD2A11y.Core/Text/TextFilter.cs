@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Core.Text {
     /// <summary>
@@ -27,6 +28,12 @@ namespace DD2A11y.Core.Text {
         // and a synthesizer fed one may announce or garble it.
         private static readonly Regex BidiControls =
             new Regex("[\\u061C\\u200E\\u200F\\u202A-\\u202E\\u2066-\\u2069]", RegexOptions.Compiled);
+        // The game's "???" placeholder glyph (a locked confession's name, an unexplored node's
+        // "Rewards: ???"): meaning-bearing, but a synthesizer voices bare question marks as
+        // nothing, so a free-standing run becomes a word. Runs attached to a word ("What???"
+        // in a bark) keep their marks.
+        private static readonly Regex UnknownGlyph =
+            new Regex("(?<![\\w?])\\?{2,}(?![\\w?])", RegexOptions.Compiled);
 
         public static string Clean(string? raw) {
             if (string.IsNullOrEmpty(raw)) {
@@ -39,6 +46,7 @@ namespace DD2A11y.Core.Text {
             s = s.Replace(' ', ' ');   // non-breaking space
             s = s.Replace('​', ' ');   // zero-width space TMP sometimes injects
             s = BidiControls.Replace(s, string.Empty);
+            s = UnknownGlyph.Replace(s, S.TextUnknown);
             s = FoldPunctuation(s);
             s = s.Trim();
             // A line break in multi-line game text (e.g. a tooltip listing effects on separate lines)

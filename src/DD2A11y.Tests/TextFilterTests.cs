@@ -40,6 +40,18 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
+        public void UnknownPlaceholderGlyphBecomesAWord() {
+            Assert.Equal("unknown", TextFilter.Clean("???"));
+            Assert.Equal("[Rewards: unknown]", TextFilter.Clean("[Rewards: ???]"));
+        }
+
+        [Fact]
+        public void QuestionMarksAttachedToAWordKeepTheirMarks() {
+            Assert.Equal("What???", TextFilter.Clean("What???"));
+            Assert.Equal("Really?", TextFilter.Clean("Really?"));
+        }
+
+        [Fact]
         public void SpokenLineJoinsNonEmptyParts()
             => Assert.Equal("Continue, button", SpokenLine.Join("Continue", null, "button", ""));
     }
