@@ -233,10 +233,10 @@ header row)
   "85% hit, 5% crit", or the heal range on friendly skills; "intercepted by X" when a
   guardian will absorb the hit, "riposte 3-7" when the pick draws a counter; "removes /
   steals / converts X" for the recipient's tokens the pick would strip - the lists the game
-  previews by flashing tray icons, named only when held - and for the recipient's live dots
-  the skill's cleanse effects cover, a mod-side read of the skill data since the game has no
-  dot preview and shows the removal only in the skill text; a conditional heal below its HP
-  threshold previews as 0 and stays silent, matching the game's hidden heal bar segment). Enter on one
+  previews by flashing tray icons, named only when held. Dot cleanses have no game preview
+  and are deliberately not spoken, keeping parity with the sighted view - the removal reads
+  in the skill's own text; a conditional heal below its HP threshold previews as 0 and
+  stays silent, matching the game's hidden heal bar segment). Enter on one
   sends the game's
   own actor-pick event to execute. Escape cancels target-select first, else opens the pause
   menu.

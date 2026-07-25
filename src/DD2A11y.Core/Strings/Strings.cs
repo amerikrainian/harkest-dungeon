@@ -186,12 +186,10 @@ namespace DD2A11y.Core.Strings {
             D("CombatHitChance", "{0}% hit"),
             D("CombatCritChance", "{0}% crit"),
             D("CombatHealPreview", "heals {0}"),
-            // The pick would strip these from the hit combatant: the tokens the game previews
-            // by flashing their tray icons, plus the dots its cleanse effects cover (the game
-            // carries no dot preview - sighted players read that only in the skill text);
-            // {0} = the names, joined.
+            // The pick would strip these tokens from the hit combatant - the removals the
+            // game previews by flashing the recipient's tray icons; {0} = the names, joined.
             D("CombatRemoves", "removes {0}"),
-            // The pick would move these tokens or dots to the acting hero; {0} = the names.
+            // The pick would move these tokens to the acting hero; {0} = the names.
             D("CombatSteals", "steals {0}"),
             // The pick would turn these tokens into others; {0} = the names.
             D("CombatConverts", "converts {0}"),
