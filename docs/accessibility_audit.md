@@ -181,18 +181,30 @@ header row)
 - Layout, top to bottom: the header row (Left/Right within it) - the battle status ("round 1,
   Audrey"; torch value, wave count in chained fights, round detail, and retreat odds as buffer
   lines), the **turn order** ("turn order, Sahar, Audrey, Widow...", current actor first, read
-  live from `QueryTurnOrder`), and the **battle goal** (the game's `battle_goal_<config>`
-  string, present only in fights that carry one) - then the enemy strip, the party strip (both
+  live from `QueryTurnOrder`; the order is rolled per round, so the current round's remainder
+  is all the information the game itself has), the **battle goal** (the game's
+  `battle_goal_<config>` string, present only in fights that carry one), and the **battle
+  modifier** (title from `battle_modifier_title_<id>`, present only in fights that roll one;
+  its tooltip title and effect/buff descriptions are buffer lines) - then the enemy strip, the
+  party strip (both
   rank-ordered; labels are name + Rank + HP read live; a monster's name is its data id's loc
   string, the same source as the game's turn-order tooltips), the skills row (horizontal, with
-  the game's own "Uses: N" limit text; when the game grants an always-equipped copy of a skill
-  the player also equipped it shows two identical buttons that select the same skill - the mod
-  reads only the first and ends its buffer with "also granted as a bonus skill"), then the
+  the game's own "Uses: N" limit text and the game's `invalid_skill_reason_<type>` wording
+  when a skill cannot be used - wrong rank, cooldown, out of uses - instead of a bare
+  "unavailable"; when the game grants an always-equipped copy of a skill the player also
+  equipped it shows two identical buttons that select the same skill - the mod reads only the
+  first and ends its buffer with "also granted as a bonus skill"), then the
   commands row (Move, Pass, and Retreat when the game offers it).
-- The turn: Enter on a skill runs the game's own pick handler and announces "select target";
-  every combatant then reads its validity for the chosen skill (the same
-  `GetIsValidSkillTarget` check the game runs on a click); Enter on one sends the game's own
-  actor-pick event to execute. Escape cancels target-select first, else opens the pause menu.
+- The turn: Enter on a skill runs the game's own pick handler and announces "select target".
+  Landing on a combatant then plays a validity beep (660 Hz triangle for a valid target,
+  440 Hz for an invalid one, `assets/audio/combat`), only when the validity CHANGED from the
+  previously focused combatant - runs of same-validity targets stay silent. An invalid
+  target's line leads with the derived reason (out of range, allies only, stealthed...,
+  mirroring the game's own target-validity walk, which sighted players see only as dimming);
+  a valid target's line ends with the game's own precomputed preview (`QuerySkillPreview`:
+  "85% hit, 5% crit", or the heal range on friendly skills). Enter on one sends the game's
+  own actor-pick event to execute. Escape cancels target-select first, else opens the pause
+  menu.
   Turn lines ("round 2, Audrey") are spoken outright on every turn change - focus can sit
   anywhere - and logged to the combat buffer once.
 - Combatant buffers: HP, stress (heroes), then one line per token, per dot, and per combat
@@ -229,9 +241,37 @@ header row)
   ("blind-line") reads as its humanized id; Move is untested against position targeting; Pass
   briefly announces "select target" before auto-resolving; the retreat element only
   (dis)appears on turn-boundary rebuilds; stealth/corpse/summon edge cases unexercised; the
-  academic view and token-glossary overlays not modeled; battle-end cleanup fires "Corpse
-  died" lines (real death events for the corpse entities - noise at the end of a won fight,
-  informative mid-fight).
+  token-glossary overlay is not modeled (redundant: combatant and inspector buffers speak
+  each token's full describer text); the **gang escalation tooltip** (Kingdoms sieges,
+  `m_escalationTooltip` on `BattleInfoUiBhv`, shown via the More Info hold) is not modeled -
+  Kingdoms-only, needs a siege to design against; the battle modifier readout is deployed but
+  unverified (no modifier rolled in the fights seen so far); target beeps, invalid-target
+  reasons, and the hit/crit preview are unverified against friendly skills, stealth, and
+  guarded targets; battle-end cleanup fires "Corpse died" lines (real death events for the
+  corpse entities - noise at the end of a won fight, informative mid-fight).
+
+### Inspector (`AcademicScreen`, over combat)
+Status: **new** - the game's academic view (hold-Alt / middle-click for sighted players),
+driven through the game's own show event so the camera, fog of war, and its gates follow.
+- **I** toggles it on the focused combatant (the acting hero when focus is not on a
+  combatant; "unavailable" when the game refuses - enemy turns, mid-animation). **A / D**
+  cycle combatants battlefield-order without leaving the view (the game's own keys for it);
+  the new subject's name is spoken and focus keeps its row. Enter (or C) on a party hero's
+  identity line opens their character sheet; Escape or I closes, and the game's own
+  force-close (combat resuming) falls back to the combat screen, which re-announces.
+- Layout, top to bottom, all read live from the model through the game's own describers:
+  the identity line (name, "blessed" on ordained enemies, HP, stress on heroes, speed;
+  death's door and the boss-blessing description as buffer lines), the studied **skill
+  list** (enemies: round skills first, then turn skills, each with the full skill card,
+  flavor description, token ignores, and use conditions in the buffer; skills the player
+  has never seen use the game's own "???" hidden strings; heroes: equipped skills with
+  remaining uses and cooldowns), hero **conditions** (class conditions, condition-tagged
+  buffs, stagecoach effects, the wound line), **trinkets** (enemies and Kingdoms allies
+  carry visible ones), the **resistance grid** (every resist with the game's immune and
+  death's-door special cases; per-source breakdown in the buffer), then **tokens, damage
+  over time, buffs, debuffs** (empty sections vanish).
+- Known gaps: unverified against an ordained (blessed) enemy, a stealthed enemy, and
+  Kingdoms militia allies; resist percent formatting assumes the model's 0-1 fractions.
 
 ### Victory / loot (`LootScreen`)
 Status: **works** (live-verified 2026-07-23: item buffer, single take, leave-items dialog,

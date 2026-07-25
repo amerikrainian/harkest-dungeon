@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Assets.Code.Combat.Queries;
 using Assets.Code.Skill;
 using Assets.Code.UI;
 using DD2A11y.Core.Nav;
@@ -80,10 +81,21 @@ namespace DD2A11y.Elements {
                     parts.Add(format == null ? uses.ToString() : string.Format(format, uses));
                 }
                 if (!_button.IsValid) {
-                    parts.Add(S.StatusUnavailable);
+                    // The game's own wording for why the skill is grey (wrong rank, on
+                    // cooldown, out of uses, no valid target...); the bare fallback covers a
+                    // validity type with no authored string.
+                    parts.Add(InvalidReasonText() ?? S.StatusUnavailable);
                 }
                 return parts.Count == 0 ? null : SpokenLine.Join(parts.ToArray());
             }
+        }
+
+        private string InvalidReasonText() {
+            var query = QueryIsValidSkill.Trigger(_button.ActorGuid, _button.SkillId);
+            if (query.m_ValidityType == null || query.IsValid) {
+                return null;
+            }
+            return GameLoc.TryGet("invalid_skill_reason_" + query.m_ValidityType);
         }
 
         public override IEnumerable<ElementAction> GetActions() {

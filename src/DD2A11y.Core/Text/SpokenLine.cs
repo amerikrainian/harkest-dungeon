@@ -23,5 +23,17 @@ namespace DD2A11y.Core.Text {
             }
             return sb.ToString();
         }
+
+        /// <summary>The non-blank lines of a multi-line game string, one buffer line each.</summary>
+        public static IEnumerable<string> NonEmptyLines(string? text) {
+            if (string.IsNullOrEmpty(text)) {
+                yield break;
+            }
+            foreach (string line in text!.Split('\n')) {
+                if (!string.IsNullOrWhiteSpace(line)) {
+                    yield return line.Trim();
+                }
+            }
+        }
     }
 }

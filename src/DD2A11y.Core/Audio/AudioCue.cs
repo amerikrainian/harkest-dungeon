@@ -60,5 +60,11 @@ namespace DD2A11y.Core.Audio {
         NodeDen,
         NodeGate,
         NodeBridge,
+
+        // Combat (assets/audio/combat).
+        /// <summary>Focus landed on a valid target for the chosen skill (660 Hz).</summary>
+        CombatTargetValid,
+        /// <summary>Focus landed on an invalid target for the chosen skill (440 Hz).</summary>
+        CombatTargetInvalid,
     }
 }

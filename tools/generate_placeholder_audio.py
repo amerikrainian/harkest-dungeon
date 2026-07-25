@@ -20,7 +20,7 @@ import wave
 from pathlib import Path
 
 import numpy as np
-from scipy.signal import butter, lfilter
+from scipy.signal import butter, lfilter, sawtooth
 
 RATE = 44100
 ROOT = Path(__file__).resolve().parent.parent / "assets" / "audio"
@@ -146,6 +146,24 @@ def tick_env() -> np.ndarray:
     return env(int(RATE * TICK_LEN), 0.002, 0.05)
 
 
+BEEP_FADE = 0.006
+
+
+def flat_env(n: int, fade: float = BEEP_FADE) -> np.ndarray:
+    """Unity gain with linear fade-in/fade-out ramps at the ends (no clicks)."""
+    f = int(RATE * fade)
+    out = np.ones(n)
+    out[:f] = np.linspace(0.0, 1.0, f, endpoint=False)
+    out[n - f:] = np.linspace(1.0, 0.0, f)
+    return out
+
+
+def target_beep(freq: float) -> np.ndarray:
+    # Combat target-validity tick: a plain triangle wave, spec'd pitch, 6 ms fades.
+    tt = t(0.09)
+    return sawtooth(2 * np.pi * freq * tt, width=0.5) * flat_env(len(tt))
+
+
 def node_guardian() -> np.ndarray:
     # Low and weighty: the lair boss.
     tt = t(TICK_LEN)
@@ -185,6 +203,8 @@ def main() -> None:
     write("nodes/node_den.wav", node_den(), TICK_PEAK)
     write("nodes/node_gate.wav", node_gate(), TICK_PEAK)
     write("nodes/node_bridge.wav", node_bridge(), TICK_PEAK)
+    write("combat/target_valid.wav", target_beep(660.0), TICK_PEAK)
+    write("combat/target_invalid.wav", target_beep(440.0), TICK_PEAK)
 
 
 if __name__ == "__main__":

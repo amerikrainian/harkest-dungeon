@@ -35,6 +35,8 @@ namespace DD2A11y {
         private readonly LanguageSync _language;
         private CrossroadsScreen _crossroads;
         private InnScreen _inn;
+        private CombatScreen _combat;
+        private AcademicScreen _academic;
         private string _lastTickError;
         private float _lastTickErrorTime;
 
@@ -103,8 +105,18 @@ namespace DD2A11y {
             Router.Register(_crossroads);
             Router.Register(new EmbarkScreen());
             Router.Register(new AltarScreen());
-            Router.Register(new CombatScreen(speak));
+            // The inspector overlays the battle, so it outranks the combat floor.
+            _academic = new AcademicScreen(speak);
+            Router.Register(_academic);
+            _combat = new CombatScreen(speak, Audio);
+            Router.Register(_combat);
             Router.Register(new RouteChoiceScreen(Audio));
+            // Target-select feedback: validity beeps fire on focus landings, not per frame.
+            Navigator.FocusSettled += element => {
+                if (Router.Active == _combat) {
+                    _combat.OnFocusSettled(element);
+                }
+            };
 
             RegisterInputs();
             Input.ActiveCategoriesProvider = () => Gate.Captured ? UiCategories : NoCategories;
@@ -148,6 +160,14 @@ namespace DD2A11y {
             // combat). C, matching the game's own "Hero Sheet (C)" hint.
             Reg("ui.inspect", S.InputInspect, () => Navigator.Current?.InvokeAction("inspect"))
                 .AddBinding(K(Key.C));
+            // The combat inspector (the game's academic view): I toggles it on the focused
+            // combatant; while it is up, A/D cycle combatants - the game's own keys for it.
+            Reg("combat.inspector", S.InputInspector, () => _academic.Toggle(Router, Navigator))
+                .AddBinding(K(Key.I));
+            Reg("combat.inspector.prev", S.InputInspectorPrev, () => _academic.Cycle(Router, -1))
+                .AddBinding(K(Key.A));
+            Reg("combat.inspector.next", S.InputInspectorNext, () => _academic.Cycle(Router, +1))
+                .AddBinding(K(Key.D));
             // Discard the focused item (the game's shift-click); the element advertises the
             // action only where the game allows the discard, so anything else answers
             // "unavailable" rather than silence.

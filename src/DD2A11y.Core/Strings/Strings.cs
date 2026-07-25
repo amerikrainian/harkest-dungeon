@@ -39,6 +39,8 @@ namespace DD2A11y.Core.Strings {
             D("ScreenHeroSheet", "hero sheet"),
             // A battle. Noun.
             D("ScreenCombat", "combat"),
+            // The academic view modeled as its own screen.
+            D("ScreenInspector", "inspector"),
             // The road-fork route menu, shown while the coach waits at a junction.
             D("ScreenFork", "fork"),
             // The inn hub, when the inn's own name is unavailable. Noun.
@@ -95,6 +97,8 @@ namespace DD2A11y.Core.Strings {
             D("StatusMaximum", "maximum"),
             // The currently chosen entry (a tab, a hero already in the party).
             D("StatusSelected", "selected"),
+            // An ordained enemy (carrying the confession boss's blessing).
+            D("StatusBlessed", "blessed"),
             // A control present but not usable right now (a grayed-out button). Adjective.
             D("StatusUnavailable", "unavailable"),
             // A slider value; {0} = the number.
@@ -134,9 +138,22 @@ namespace DD2A11y.Core.Strings {
             D("CombatTorch", "torch {0}"),
             // Spoken when a chosen skill starts waiting for its target.
             D("CombatSelectTarget", "select target"),
-            // Appended to a combatant the chosen skill can hit / cannot hit.
-            D("CombatTargetValid", "valid target"),
-            D("CombatTargetInvalid", "invalid target"),
+            // Why a combatant cannot take the chosen skill, prepended to its line during
+            // target-select (validity itself rides as the high/low beep). Mirrors the game's
+            // own target checks, which it shows only as dimming.
+            D("TargetOutOfRange", "out of range"),
+            D("TargetAlliesOnly", "allies only"),
+            D("TargetEnemiesOnly", "enemies only"),
+            D("TargetSelfOnly", "self only"),
+            D("TargetNotSelf", "not self"),
+            D("TargetStealthed", "stealthed"),
+            D("TargetBlocked", "blocked"),
+            D("TargetUntargetable", "untargetable"),
+            D("TargetConditionNotMet", "condition not met"),
+            // The game's per-target preview on a valid target; {0} = the percent / heal range.
+            D("CombatHitChance", "{0}% hit"),
+            D("CombatCritChance", "{0}% crit"),
+            D("CombatHealPreview", "heals {0}"),
             // Spoken when target selection is cancelled back to skill choice.
             D("CombatTargetCancelled", "target cancelled"),
             // Buffer line on a skill the hero holds twice: once equipped by the player, once as
@@ -189,6 +206,14 @@ namespace DD2A11y.Core.Strings {
             // The relationship meter between two heroes moved; {0} and {1} = the heroes,
             // {2} = the signed change ("+1").
             D("CombatAffinity", "{0} and {1}, affinity {2}"),
+            // Inspector section names, used where the game has no reusable header string.
+            D("InspectorTokens", "tokens"),
+            D("InspectorDots", "damage over time"),
+            D("InspectorBuffs", "buffs"),
+            D("InspectorDebuffs", "debuffs"),
+            D("InspectorConditions", "conditions"),
+            // A studied skill still cooling down; {0} = rounds remaining.
+            D("InspectorCooldown", "cooldown {0}"),
             // A speech-bubble line a combatant says; {0} = the speaker, {1} = the game's line.
             D("BarkLine", "{0}: {1}"),
 
@@ -261,6 +286,10 @@ namespace DD2A11y.Core.Strings {
             D("InputGrab", "Grab or place"),
             D("InputPlaceOne", "Place one from a grabbed stack"),
             D("InputInspect", "Open hero sheet"),
+            // The combat inspector keys (the game's academic view).
+            D("InputInspector", "Toggle inspector"),
+            D("InputInspectorPrev", "Inspector previous combatant"),
+            D("InputInspectorNext", "Inspector next combatant"),
             D("InputDiscard", "Discard item"),
         };
 
@@ -318,6 +347,7 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenGeneric => T("ScreenGeneric");
         public static string ScreenHeroSheet => T("ScreenHeroSheet");
         public static string ScreenCombat => T("ScreenCombat");
+        public static string ScreenInspector => T("ScreenInspector");
         public static string ScreenFork => T("ScreenFork");
         public static string ScreenInn => T("ScreenInn");
         public static string ScreenAltar => T("ScreenAltar");
@@ -346,6 +376,7 @@ namespace DD2A11y.Core.Strings {
         public static string StatusMinimum => T("StatusMinimum");
         public static string StatusMaximum => T("StatusMaximum");
         public static string StatusSelected => T("StatusSelected");
+        public static string StatusBlessed => T("StatusBlessed");
         public static string StatusUnavailable => T("StatusUnavailable");
         public static string ValuePercent(int value) => F("ValuePercent", value);
 
@@ -364,10 +395,20 @@ namespace DD2A11y.Core.Strings {
         public static string CombatEnemies => T("CombatEnemies");
         public static string CombatTorch(int value) => F("CombatTorch", value);
         public static string CombatSelectTarget => T("CombatSelectTarget");
-        public static string CombatTargetValid => T("CombatTargetValid");
-        public static string CombatTargetInvalid => T("CombatTargetInvalid");
         public static string CombatTargetCancelled => T("CombatTargetCancelled");
         public static string CombatSkillAlsoGranted => T("CombatSkillAlsoGranted");
+        public static string TargetOutOfRange => T("TargetOutOfRange");
+        public static string TargetAlliesOnly => T("TargetAlliesOnly");
+        public static string TargetEnemiesOnly => T("TargetEnemiesOnly");
+        public static string TargetSelfOnly => T("TargetSelfOnly");
+        public static string TargetNotSelf => T("TargetNotSelf");
+        public static string TargetStealthed => T("TargetStealthed");
+        public static string TargetBlocked => T("TargetBlocked");
+        public static string TargetUntargetable => T("TargetUntargetable");
+        public static string TargetConditionNotMet => T("TargetConditionNotMet");
+        public static string CombatHitChance(int percent) => F("CombatHitChance", percent);
+        public static string CombatCritChance(int percent) => F("CombatCritChance", percent);
+        public static string CombatHealPreview(string range) => F("CombatHealPreview", range);
         public static string CombatTookDamage(string name, int damage) => F("CombatTookDamage", name, damage);
         public static string CombatTookDamageOne(string name) => F("CombatTookDamageOne", name);
         public static string CombatDied(string name) => F("CombatDied", name);
@@ -390,6 +431,12 @@ namespace DD2A11y.Core.Strings {
         public static string CombatWounded(string name) => F("CombatWounded", name);
         public static string CombatWoundHealed(string name) => F("CombatWoundHealed", name);
         public static string CombatAffinity(string first, string second, string change) => F("CombatAffinity", first, second, change);
+        public static string InspectorTokens => T("InspectorTokens");
+        public static string InspectorDots => T("InspectorDots");
+        public static string InspectorBuffs => T("InspectorBuffs");
+        public static string InspectorDebuffs => T("InspectorDebuffs");
+        public static string InspectorConditions => T("InspectorConditions");
+        public static string InspectorCooldown(int rounds) => F("InspectorCooldown", rounds);
         public static string BarkLine(string speaker, string text) => F("BarkLine", speaker, text);
 
         public static string ToastTutorial(string title) => F("ToastTutorial", title);
@@ -434,6 +481,9 @@ namespace DD2A11y.Core.Strings {
         public static string InputGrab => T("InputGrab");
         public static string InputPlaceOne => T("InputPlaceOne");
         public static string InputInspect => T("InputInspect");
+        public static string InputInspector => T("InputInspector");
+        public static string InputInspectorPrev => T("InputInspectorPrev");
+        public static string InputInspectorNext => T("InputInspectorNext");
         public static string InputDiscard => T("InputDiscard");
     }
 }

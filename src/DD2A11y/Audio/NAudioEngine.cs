@@ -121,12 +121,15 @@ namespace DD2A11y.Audio {
                 case AudioCue.NodeDen: return Node("node_den");
                 case AudioCue.NodeGate: return Node("node_gate");
                 case AudioCue.NodeBridge: return Node("node_bridge");
+                case AudioCue.CombatTargetValid: return Combat("target_valid");
+                case AudioCue.CombatTargetInvalid: return Combat("target_invalid");
                 default: return Node("node_unknown");
             }
         }
 
         private string Road(string name) => Path.Combine(_assetRoot, "road", name + ".wav");
         private string Node(string name) => Path.Combine(_assetRoot, "nodes", name + ".wav");
+        private string Combat(string name) => Path.Combine(_assetRoot, "combat", name + ".wav");
 
         // Decode a WAV to a mono float[] at the mixer rate, caching only successes.
         private float[] LoadMono(string path) {

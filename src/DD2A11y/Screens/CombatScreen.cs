@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Assets.Code.Actor;
 using Assets.Code.Actor.Queries;
+using Assets.Code.Buff;
 using Assets.Code.Combat;
 using Assets.Code.Combat.Queries;
 using Assets.Code.Game;
@@ -46,6 +47,7 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<BattleInfoUiBhv, CombatTorchUiBhv>("m_torchBhv");
 
         private readonly Action<string, bool> _speak;
+        private readonly DD2A11y.Core.Audio.IAudioEngine _audio;
         private CombatBhv _combat;
         private SkillSelectionBhv _skillSelection;
         private BattleInfoUiBhv _battleInfo;
@@ -59,9 +61,11 @@ namespace DD2A11y.Screens {
         private int _builtCombatants;
         private SkillSelectionBhv.InputState _lastInputState;
         private string _lastTurnLine;
+        private bool? _lastTargetValid;
 
-        public CombatScreen(Action<string, bool> speak) {
+        public CombatScreen(Action<string, bool> speak, DD2A11y.Core.Audio.IAudioEngine audio) {
             _speak = speak;
+            _audio = audio;
         }
 
         public override string Name => S.ScreenCombat;
@@ -109,6 +113,7 @@ namespace DD2A11y.Screens {
             header.Add(new ReadoutElement(HeaderText, detail: HeaderDetail));
             header.Add(new ReadoutElement(TurnOrderText));
             header.Add(new ReadoutElement(GoalText));
+            header.Add(new ReadoutElement(ModifierTitle, detail: ModifierDetail));
             _root.Add(header);
             _enemies = new Container(ContainerShape.HorizontalList, S.CombatEnemies);
             _root.Add(_enemies);
@@ -155,11 +160,31 @@ namespace DD2A11y.Screens {
             // Falling back to skill-select is covered by the turn flow.
             if (_skillSelection != null && _skillSelection.CurrentInputState != _lastInputState) {
                 _lastInputState = _skillSelection.CurrentInputState;
+                _lastTargetValid = null;
                 if (_lastInputState == SkillSelectionBhv.InputState.ACTOR_SELECT) {
                     _speak(S.CombatSelectTarget, true);
                 }
             }
             return false;
+        }
+
+        // Target validity rides as audio while a pick is pending: a high beep on landing on a
+        // valid target, a low one on an invalid target, and only when the validity CHANGED from
+        // the previously focused combatant - a run of same-validity targets stays silent.
+        public void OnFocusSettled(UIElement element) {
+            if (_skillSelection == null
+                || _skillSelection.CurrentInputState != SkillSelectionBhv.InputState.ACTOR_SELECT
+                || !(element is CombatantElement combatant)
+                || !Game.Targeting.TryGetPick(out var performer, out _)) {
+                return;
+            }
+            bool valid = Game.Targeting.IsValidTarget(performer, combatant.Guid);
+            if (_lastTargetValid == valid) {
+                return;
+            }
+            _lastTargetValid = valid;
+            _audio.PlayCue(valid ? DD2A11y.Core.Audio.AudioCue.CombatTargetValid
+                                 : DD2A11y.Core.Audio.AudioCue.CombatTargetInvalid, 1f, 0f);
         }
 
         // ---- Reads ----
@@ -205,6 +230,39 @@ namespace DD2A11y.Screens {
             return gameType == null ? null : gameType.CombatScenarioData;
         }
 
+        // The battle's rolled modifier, in fights that carry one; absent otherwise, which hides
+        // the element. Title is the game's own short name, the buffer holds its tooltip title
+        // and effect/buff descriptions - the same describers the visual tooltip renders.
+        private string ModifierTitle() {
+            var modifier = _combat == null ? null : _combat.CurrentBattleModifier;
+            return modifier == null ? null : GameLoc.TryGet("battle_modifier_title_" + modifier.m_Id);
+        }
+
+        private IEnumerable<string> ModifierDetail() {
+            var modifier = _combat == null ? null : _combat.CurrentBattleModifier;
+            if (modifier == null) {
+                yield break;
+            }
+            string title = GameLoc.TryGet("battle_modifier_tooltip_title_" + modifier.m_Id);
+            if (title != null) {
+                yield return title;
+            }
+            if (modifier.ActorDataSkillEffects != null) {
+                foreach (var line in SpokenLine.NonEmptyLines(
+                    ActorDataEffectDescription.GetDescription(modifier.ActorDataSkillEffects, null, addLineOnEffect: false))) {
+                    yield return line;
+                }
+            }
+            if (modifier.ActorDataExternalBuffs != null) {
+                foreach (var buff in modifier.ActorDataExternalBuffs.GetBuffs()) {
+                    foreach (var line in SpokenLine.NonEmptyLines(
+                        BuffDescription.GetDescription(buff, addLineOnActorDataEffect: false))) {
+                        yield return line;
+                    }
+                }
+            }
+        }
+
         private IEnumerable<string> HeaderDetail() {
             if (Singleton<GameTypeMgr>.Instance != null && Singleton<GameTypeMgr>.Instance.IsGameTypeStarted) {
                 yield return S.CombatTorch((int)Singleton<GameTypeMgr>.Instance.RunValues.GetValue(RunValueType.TORCH));
@@ -240,6 +298,7 @@ namespace DD2A11y.Screens {
             PopulateActions();
             _lastInputState = _skillSelection != null
                 ? _skillSelection.CurrentInputState : SkillSelectionBhv.InputState.SKILL_SELECT;
+            _lastTargetValid = null;
         }
 
         private void PopulateTeam(Container strip, bool friendly) {

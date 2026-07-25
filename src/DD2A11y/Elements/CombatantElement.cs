@@ -14,12 +14,13 @@ using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// One combatant on the battlefield: name, with rank, HP, and - while a skill is waiting for
-    /// its target - whether this combatant is a valid target for it. Enter sends the game's own
-    /// actor-pick event (the mouse click equivalent: executes the selected skill on a valid
-    /// target, otherwise the game ignores it); the inspect action opens the hero sheet. The
-    /// buffer is the full status readout: HP, stress, then one line per token, dot, and combat
-    /// buff, all from the game's own describers.
+    /// One combatant on the battlefield: name, with rank and HP. While a skill is waiting for
+    /// its target, validity rides as audio (the screen's beeps): an invalid target's line leads
+    /// with the reason it cannot be hit, a valid one ends with the game's own hit/crit/heal
+    /// preview. Enter sends the game's own actor-pick event (the mouse click equivalent:
+    /// executes the selected skill on a valid target, otherwise the game ignores it); the
+    /// inspect action opens the hero sheet. The buffer is the full status readout: HP, stress,
+    /// then one line per token, dot, and combat buff, all from the game's own describers.
     /// </summary>
     public sealed class CombatantElement : UIElement {
         private readonly uint _guid;
@@ -32,11 +33,21 @@ namespace DD2A11y.Elements {
             _skillSelection = skillSelection;
         }
 
+        public uint Guid => _guid;
+
         private ActorInstance Actor => Actors.Get(_guid);
 
         public override bool CanFocus => Actor != null;
 
-        public override string Label => Actors.Name(Actor);
+        public override string Label {
+            get {
+                string name = Actors.Name(Actor);
+                string reason = PickPending(out var performer, out var skill)
+                                && !Targeting.IsValidTarget(performer, _guid)
+                    ? Targeting.InvalidReason(performer, skill, Actor) : null;
+                return reason == null ? name : SpokenLine.Join(reason, name);
+            }
+        }
 
         public override string Value {
             get {
@@ -44,36 +55,18 @@ namespace DD2A11y.Elements {
                 if (actor == null) {
                     return null;
                 }
-                string rank = RankText(actor);
-                string hp = HpText(actor);
-                return SpokenLine.Join(TargetingText(), rank, hp);
+                string preview = PickPending(out var performer, out _) && Targeting.IsValidTarget(performer, _guid)
+                    ? Targeting.PreviewText(performer, _guid) : null;
+                return SpokenLine.Join(RankText(actor), HpText(actor), preview);
             }
         }
 
-        // While the acting hero's chosen skill waits for a target, every combatant carries its
-        // validity for that skill - the same check the game runs on a click.
-        private string TargetingText() {
-            if (_skillSelection == null
-                || _skillSelection.CurrentInputState != SkillSelectionBhv.InputState.ACTOR_SELECT) {
-                return null;
-            }
-            var current = CurrentActor();
-            if (current?.Controller == null || current.SelectedSkillId == null) {
-                return null;
-            }
-            return current.Controller.GetIsValidSkillTarget(current.SelectedSkillId, _guid)
-                ? S.CombatTargetValid : S.CombatTargetInvalid;
-        }
-
-        private static ActorInstance CurrentActor() {
-            if (!SingletonMonoBehaviour<CombatBhv>.HasInstance()) {
-                return null;
-            }
-            var combat = SingletonMonoBehaviour<CombatBhv>.Instance;
-            if (combat.CurrentBattleState == BattleState.INACTIVE) {
-                return null;
-            }
-            return Actors.Get(combat.CurrentActorGuid);
+        private bool PickPending(out ActorInstance performer, out Assets.Code.Skill.ActorDataSkill skill) {
+            performer = null;
+            skill = null;
+            return _skillSelection != null
+                && _skillSelection.CurrentInputState == SkillSelectionBhv.InputState.ACTOR_SELECT
+                && Targeting.TryGetPick(out performer, out skill);
         }
 
         private static string RankText(ActorInstance actor) {
