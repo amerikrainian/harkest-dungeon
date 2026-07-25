@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Assets.Code.Actor;
-using Assets.Code.Actor.Queries;
 using Assets.Code.Buff;
 using Assets.Code.Combat;
 using Assets.Code.Combat.Queries;
@@ -195,7 +194,7 @@ namespace DD2A11y.Screens {
         // Null while the turn is mid-handoff (a transient current actor with no name), so no
         // half-empty turn line is ever spoken or logged.
         private string HeaderText() {
-            string name = Actors.Name(Actors.Get(CurrentTurnGuid()));
+            string name = Actors.SpokenName(Actors.Get(CurrentTurnGuid()));
             if (string.IsNullOrEmpty(name)) {
                 return null;
             }
@@ -210,7 +209,7 @@ namespace DD2A11y.Screens {
             }
             var names = new List<string>();
             foreach (uint guid in QueryTurnOrder.Trigger().m_RemainingTurnOrder) {
-                string name = Actors.Name(Actors.Get(guid));
+                string name = Actors.SpokenName(Actors.Get(guid));
                 if (name != null) {
                     names.Add(name);
                 }
@@ -303,40 +302,13 @@ namespace DD2A11y.Screens {
 
         private void PopulateTeam(Container strip, bool friendly) {
             strip.Clear();
-            foreach (var guid in TeamGuids(friendly)) {
-                strip.Add(new CombatantElement(guid, friendly, _skillSelection));
+            foreach (var actor in Actors.Team(friendly)) {
+                strip.Add(new CombatantElement(actor.m_ActorGuid, friendly, _skillSelection));
             }
         }
 
-        private int CombatantCount() {
-            int count = 0;
-            foreach (var _ in TeamGuids(friendly: false)) {
-                count++;
-            }
-            foreach (var _ in TeamGuids(friendly: true)) {
-                count++;
-            }
-            return count;
-        }
-
-        // The living combatants of one side, in rank order (the same filter the game's own
-        // character sheet applies to the combat party).
-        private static IEnumerable<uint> TeamGuids(bool friendly) {
-            var query = QueryTeamActors.Trigger(0, friendly);
-            var actors = new List<ActorInstance>();
-            foreach (uint guid in query.m_TeamActorGuids) {
-                var actor = Actors.Get(guid);
-                if (actor == null || actor.ActorDataClass.m_IsBattleComplete
-                    || actor.ActorDataClass.ContainsTag("kingdoms_ally")) {
-                    continue;
-                }
-                actors.Add(actor);
-            }
-            actors.Sort((a, b) => a.TeamPosition.CompareTo(b.TeamPosition));
-            foreach (var actor in actors) {
-                yield return actor.m_ActorGuid;
-            }
-        }
+        private int CombatantCount()
+            => Actors.Team(friendly: false).Count + Actors.Team(friendly: true).Count;
 
         private void PopulateActions() {
             _skills.Clear();

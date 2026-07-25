@@ -206,7 +206,11 @@ header row)
   Audrey"; torch value, wave count in chained fights, round detail, and retreat odds as buffer
   lines), the **turn order** ("turn order, Sahar, Audrey, Widow...", current actor first, read
   live from `QueryTurnOrder`; the order is rolled per round, so the current round's remainder
-  is all the information the game itself has), the **battle goal** (the game's
+  is all the information the game itself has; a name shared by several living enemies speaks
+  with its rank - "Lost Soul 1, Lost Soul 3" - matching the game's only pointer to the
+  specific one, the model highlight under a hovered portrait; the numbers are read live, so
+  they follow deaths and position changes, and drop when one survivor remains), the **battle
+  goal** (the game's
   `battle_goal_<config>` string, present only in fights that carry one), and the **battle
   modifier** (title from `battle_modifier_title_<id>`, present only in fights that roll one;
   its tooltip title and effect/buff descriptions are buffer lines) - then the enemy strip, the

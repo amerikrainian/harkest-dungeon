@@ -97,6 +97,7 @@ CombatUsedSkill = {0} used {1} on {2}
 CombatGained = {0} gained {1}
 CombatResisted = {0} resisted {1}
 CombatTurnOrder = turn order, {0}
+CombatantNumbered = {0} {1}
 CombatBattleCount = battle {0} of {1}
 CombatTookDamageCrit = {0} took {1} damage, crit
 CombatHealed = {0} healed {1}

@@ -214,6 +214,10 @@ namespace DD2A11y.Core.Strings {
             D("CombatResisted", "{0} resisted {1}"),
             // The upcoming acting order, current actor first; {0} = the combatant names, joined.
             D("CombatTurnOrder", "turn order, {0}"),
+            // A combatant whose name several living teammates share (a pack of Lost Souls):
+            // each speaks with its rank so the turn order tells them apart, the way the game's
+            // portrait hover highlights the specific one; {0} = the name, {1} = the rank.
+            D("CombatantNumbered", "{0} {1}"),
             // Multi-wave fights; {0} = the current battle number, {1} = the total.
             D("CombatBattleCount", "battle {0} of {1}"),
             // Damage that was a critical hit; {0} = who was hit, {1} = the amount.
@@ -476,6 +480,7 @@ namespace DD2A11y.Core.Strings {
         public static string CombatGained(string name, string what) => F("CombatGained", name, what);
         public static string CombatResisted(string name, string what) => F("CombatResisted", name, what);
         public static string CombatTurnOrder(string names) => F("CombatTurnOrder", names);
+        public static string CombatantNumbered(string name, int rank) => F("CombatantNumbered", name, rank);
         public static string CombatBattleCount(int current, int total) => F("CombatBattleCount", current, total);
         public static string CombatTookDamageCrit(string name, int damage) => F("CombatTookDamageCrit", name, damage);
         public static string CombatHealed(string name, int amount) => F("CombatHealed", name, amount);
