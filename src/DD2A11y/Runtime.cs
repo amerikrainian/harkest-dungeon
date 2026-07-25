@@ -35,6 +35,7 @@ namespace DD2A11y {
         private readonly LanguageSync _language;
         private CrossroadsScreen _crossroads;
         private InnScreen _inn;
+        private InventoryScreen _inventory;
         private CombatScreen _combat;
         private AcademicScreen _academic;
         private string _lastTickError;
@@ -98,6 +99,10 @@ namespace DD2A11y {
             Router.Register(new MasteryScreen());
             Router.Register(new WainwrightScreen());
             Router.Register(new RouteSelectScreen());
+            // The standalone player inventory (road, crossroads, loot); the inn hub above
+            // already took its own inline copy.
+            _inventory = new InventoryScreen(speak, Navigator);
+            Router.Register(_inventory);
             // The floor for any other pushed screen (glossary, node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());
@@ -193,6 +198,8 @@ namespace DD2A11y {
             }
             if (Router.Active == _inn) {
                 _inn.ToggleGrab(Navigator.Current, takeOne);
+            } else if (Router.Active == _inventory) {
+                _inventory.ToggleGrab(Navigator.Current, takeOne);
             }
         }
 

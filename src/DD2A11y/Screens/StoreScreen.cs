@@ -108,7 +108,7 @@ namespace DD2A11y.Screens {
                 if (currencies != null) {
                     foreach (Transform row in currencies) {
                         var captured = row;
-                        _wallet.Add(new ReadoutElement(() => InnScreen.CurrencyLine(captured)));
+                        _wallet.Add(new ReadoutElement(() => InventoryPanel.CurrencyLine(captured)));
                     }
                 }
             }

@@ -174,6 +174,24 @@ screen existed)
   has text - the game-over screen announced itself as "Continue" (its first readable
   label at that instant) rather than its title.
 
+### Player inventory (`InventoryScreen`, the standalone "Inventory (I)" screen)
+Status: **works** (live-verified 2026-07-25 on the road up to the entry landing - "All
+Items, tab" - before a pending road story reasserted itself on top each time, the correct
+priority; the panel body is the inn's live-verified reader extracted verbatim. Previously
+fell to the generic floor, which announced itself as "Sort" and read item slots as their
+bare stack count. The close path is unverified)
+- The game's inventory screen as pushed on the road, at the crossroads, and from the loot
+  screen. Nothing but the shared bag panel (`InventoryPanel`, the same reader the inn hub
+  embeds): the filter as a tab (Left/Right apply the game's own icon-only filter buttons,
+  captions from their loc keys), slot count ("15 / 20") and wallet rows (Relics/Mastery/
+  Baubles, captions from their tooltips), the sort button (press confirms "sorted by
+  type"), one element per carried item (title and stack, full tooltip in the buffer,
+  Shift+Enter discard), the free capacity as one line, and Space grab-and-place with
+  Shift+Space single placement. Escape drops an armed grab first, else the game's own
+  `HidePlayerInventory` close.
+- The inn outranks this screen by registration order and keeps its inline copy; dedicated
+  station screens above both take their own surfaces.
+
 ### Combat (`CombatScreen`, COMBAT mode)
 Status: **works** (live-verified 2026-07-24: two full rounds fought to Victory - skill picks,
 target picks, kills, turn handoffs, free-action stance swap - with the expanded event set and

@@ -13,6 +13,7 @@ ScreenGeneric = screen
 ScreenHeroSheet = hero sheet
 ScreenCombat = combat
 ScreenInspector = inspector
+ScreenInventory = inventory
 ScreenFork = fork
 ScreenInn = inn
 ScreenAltar = altar

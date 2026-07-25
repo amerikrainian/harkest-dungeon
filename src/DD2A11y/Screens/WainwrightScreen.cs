@@ -63,7 +63,7 @@ namespace DD2A11y.Screens {
             if (currencies != null) {
                 foreach (Transform row in currencies) {
                     var captured = row;
-                    _root.Add(new ReadoutElement(() => InnScreen.CurrencyLine(captured)));
+                    _root.Add(new ReadoutElement(() => InventoryPanel.CurrencyLine(captured)));
                 }
             }
 

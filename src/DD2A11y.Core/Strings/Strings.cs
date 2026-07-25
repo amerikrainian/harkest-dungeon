@@ -41,6 +41,8 @@ namespace DD2A11y.Core.Strings {
             D("ScreenCombat", "combat"),
             // The academic view modeled as its own screen.
             D("ScreenInspector", "inspector"),
+            // The standalone player-inventory screen (road, crossroads, loot).
+            D("ScreenInventory", "inventory"),
             // The road-fork route menu, shown while the coach waits at a junction.
             D("ScreenFork", "fork"),
             // The inn hub, when the inn's own name is unavailable. Noun.
@@ -352,6 +354,7 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenHeroSheet => T("ScreenHeroSheet");
         public static string ScreenCombat => T("ScreenCombat");
         public static string ScreenInspector => T("ScreenInspector");
+        public static string ScreenInventory => T("ScreenInventory");
         public static string ScreenFork => T("ScreenFork");
         public static string ScreenInn => T("ScreenInn");
         public static string ScreenAltar => T("ScreenAltar");
