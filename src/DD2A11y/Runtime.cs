@@ -100,6 +100,7 @@ namespace DD2A11y {
             Router.Register(new GenericScreen());
             Router.Register(new MainMenuScreen());
             Router.Register(_crossroads);
+            Router.Register(new EmbarkScreen());
             Router.Register(new AltarScreen());
             Router.Register(new CombatScreen(speak));
             Router.Register(new RouteChoiceScreen(Audio));

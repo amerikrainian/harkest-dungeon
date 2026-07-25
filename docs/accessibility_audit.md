@@ -76,6 +76,23 @@ Status: **works** (live-verified 2026-07-23)
   not started; hero rename/reroll on the canvas not surfaced; the party's aggregate
   Rank/Target pips are not read (each skill's exact ranks are in the hero sheet).
 
+### Embark staging (`EmbarkScreen`, EMBARK mode)
+Status: **deployed** (depart-only case live-verified 2026-07-25; relationship rows unexercised -
+they need a mid-run embark with new affinities)
+- The scene between the crossroads (or an inn) and the drive: an intro plays, then the game
+  waits for the depart press - previously dead air (a mode surface with an empty screen
+  stack), where a sighted player's keys fell through to the game unspoken. Named "departure".
+- One element per pending hero relationship (`EmbarkRelationshipBtnBhv` rows are
+  portrait-only; the element reads both heroes' names from the connection's actors, and the
+  relationship's own localized name as the value once applied). Enter is the game's own
+  press: it commits the pending relationship and plays the game's reveal sequence. The
+  apply-all button reads when the game shows one (reveal-relationships option, 2+ rows).
+- The depart button reads the game's own binding ("Continue", or "Continue: <region>" when
+  a destination is set), "unavailable" while relationships are still pending. Enter drives
+  the game's keyboard path, which self-validates: with pending relationships the game
+  answers with its own reminder dialog (read by the dialog screen) instead of departing.
+- Escape opens the pause menu (the game blocks it itself once departure is underway).
+
 ### Hero sheet (`CharacterSheetScreen`)
 Status: **works** (live-verified 2026-07-23 from the crossroads)
 - Layout: hero header (name, then class and path; **Left/Right page through the heroes**, the

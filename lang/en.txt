@@ -15,6 +15,7 @@ ScreenCombat = combat
 ScreenFork = fork
 ScreenInn = inn
 ScreenAltar = altar
+ScreenEmbark = departure
 AltarCandleCost = {0} candle|{0} candles
 AltarUnlocked = unlocked
 SkillMastered = mastered

@@ -45,6 +45,9 @@ namespace DD2A11y.Core.Strings {
             D("ScreenInn", "inn"),
             // The Altar of Hope hub, when the game's own title is unavailable. Noun.
             D("ScreenAltar", "altar"),
+            // The embark staging scene between the crossroads (or an inn) and the drive, where
+            // hero relationships reveal before the coach departs. Noun.
+            D("ScreenEmbark", "departure"),
             // The candle cost on an altar unlock button, where the game shows a candle icon
             // and a bare number; {0} = the number.
             D("AltarCandleCost", "{0} candle|{0} candles"),
@@ -311,6 +314,7 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenFork => T("ScreenFork");
         public static string ScreenInn => T("ScreenInn");
         public static string ScreenAltar => T("ScreenAltar");
+        public static string ScreenEmbark => T("ScreenEmbark");
         public static string AltarCandleCost(int count) => P("AltarCandleCost", count);
         public static string AltarUnlocked => T("AltarUnlocked");
         public static string SkillMastered => T("SkillMastered");

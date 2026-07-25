@@ -10,17 +10,21 @@ namespace DD2A11y.Elements {
         private readonly string _role;
         private readonly Action _activate;
         private readonly Func<IEnumerable<string>> _extraBufferLines;
+        private readonly Func<string> _value;
 
         public ActionElement(Func<string> label, string role, Action activate,
-                             Func<IEnumerable<string>> extraBufferLines = null) {
+                             Func<IEnumerable<string>> extraBufferLines = null,
+                             Func<string> value = null) {
             _label = label;
             _role = role;
             _activate = activate;
             _extraBufferLines = extraBufferLines;
+            _value = value;
         }
 
         public override string Label => _label();
         public override string Role => _role;
+        public override string Value => _value?.Invoke();
 
         public override IEnumerable<ElementAction> GetActions() {
             yield return new ElementAction(ActionIds.Activate, _activate);
