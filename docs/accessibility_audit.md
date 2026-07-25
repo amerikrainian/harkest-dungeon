@@ -304,6 +304,11 @@ full inventory walk, item tooltip buffers)
   the one capacity line. The game's slot-swap flow (`IsSelectingItemSlot`) accepts any
   same-inventory slot as a target, so a future grab-and-place flow needs only one "empty"
   destination, never a specific cell.
+- The embark button reads once: the game nests a clickable "Select a Route" overlay button
+  inside the disabled Rest/Embark button (a mouse-only nag whose caption duplicated the
+  station bar's own Select Route button), so the station sweep skips any selectable nested
+  under another selectable - the overlay's caption still reaches the Rest element's buffer
+  through the parent's tooltip scope.
 - The hub deliberately outranks the generic floor: the inn keeps its inventory panel
   (`screen_inn_player_inventory`, an `InventoryUiBhv` stack entry) as the top stack entry
   while the hub is up, and the floor would otherwise capture just that panel and strand the
@@ -401,6 +406,23 @@ deliberately not pressed in testing)
 - Known gaps: choices spawning after screen entry leave focus on the utility buttons until
   the player moves (Home reaches the choices); story RESULT presentation is unread beyond
   the narrator; relationship banners and affinity previews unspoken.
+
+### Confession select (`BossSelectScreen`)
+Status: **deployed** (verified on a dev-shown instance at an inn; the real road trigger is
+unexercised - it fires once per run, early in the drive)
+- The "Complete your Confession" screen a road trigger pushes early in a run: one element
+  per confession option (the game's own labels; locked confessions carry the game's "???"
+  placeholder, which the text filter already reads as "unknown"), then the confirm button -
+  icon-only in the game with no tooltip, captioned here with the game's own `continue_label`
+  string. Enter on an option is the game's own submit (marks it, arms the confirm, reads
+  back "selected"); confirm commits the confession and the drive resumes.
+- Escape is deliberately inert, like a road story: the choice is mandatory. Before this
+  screen existed the generic floor took the surface, whose Escape is `TryCloseScreen` - a
+  player escaped past the choice, and a run without a confession has no
+  `RunManager.Boss`, therefore no Mountain route: the last inn's Select Route screen is
+  genuinely empty, embark can never arm, and the game's own forced-run-end detection also
+  assumes a boss, so the run dead-ends with End Expedition as the only exit (observed live
+  2026-07-24).
 
 ### Altar of Hope (`AltarScreen` + `AltarRecollectionScreen` + `AltarRevealScreen`,
 ALTAR_OF_HOPE mode)

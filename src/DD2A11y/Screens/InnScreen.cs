@@ -277,6 +277,14 @@ namespace DD2A11y.Screens {
             if (selectable is Scrollbar || selectable.GetComponent<SelectOnEmptyFallbackBhv>() != null) {
                 return false;
             }
+            // The disabled embark button nests a clickable "Select a Route" overlay; a nested
+            // selectable is an input shim over its parent widget, which already reads it (the
+            // overlay's tooltip surfaces in the parent's buffer), so only top-level widgets
+            // become elements.
+            var parent = selectable.transform.parent;
+            if (parent != null && parent.GetComponentInParent<Selectable>() != null) {
+                return false;
+            }
             return UiText.HasAnyTextSource(selectable.gameObject);
         }
 
