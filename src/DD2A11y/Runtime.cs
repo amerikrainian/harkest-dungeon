@@ -40,6 +40,7 @@ namespace DD2A11y {
         private AcademicScreen _academic;
         private string _lastTickError;
         private float _lastTickErrorTime;
+        private bool _wasTyping;
 
         public Runtime(string pluginDir, string version) {
             _backend = new PrismBackend();
@@ -137,12 +138,19 @@ namespace DD2A11y {
 
             RegisterInputs();
             // Keys are live while the gate holds the keyboard, and also under a screen that
-            // deliberately shares it (the road map claims arrows, the game keeps WASD). While a
-            // text field is being typed into, every key belongs to the field.
+            // deliberately shares it (the road map claims arrows, the game keeps WASD).
             Input.ActiveCategoriesProvider = () =>
-                !Game.TextEntry.IsTyping
-                && (Gate.Captured || (Router.Active != null && !Router.Active.CapturesKeyboard))
-                    ? UiCategories : NoCategories;
+                Gate.Captured || (Router.Active != null && !Router.Active.CapturesKeyboard) ? UiCategories : NoCategories;
+            // While a game text field is being typed into, every key belongs to the field - and
+            // for one tick after the edit ends: the field processes its closing Enter/Escape
+            // earlier in the same frame, so that key is still this frame's press and would
+            // otherwise immediately re-fire as ours (reopening the edit it just closed).
+            Input.SuppressAll = () => {
+                bool typing = Game.TextEntry.IsTyping;
+                bool suppress = typing || _wasTyping;
+                _wasTyping = typing;
+                return suppress;
+            };
             Input.JustPressedDispatcher = action =>
                 action.Key.StartsWith("ui.", StringComparison.Ordinal) && Router.HasScreen
                 && (Router.Active.HandleAction(action.Key) || Navigator.Handle(action.Key));
