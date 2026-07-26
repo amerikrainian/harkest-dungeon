@@ -106,10 +106,13 @@ namespace DD2A11y {
             // The floor for any other pushed screen (glossary, node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());
+            // The kingdoms scene overlays the title menu inside the same MAIN_MENU mode.
+            Router.Register(new KingdomMenuScreen(speak));
             Router.Register(new MainMenuScreen());
             Router.Register(_crossroads);
             Router.Register(new EmbarkScreen());
             Router.Register(new AltarScreen());
+            Router.Register(new HeroStoryIntroScreen(speak));
             // The inspector overlays the battle, so it outranks the combat floor.
             _academic = new AcademicScreen(speak);
             Router.Register(_academic);
@@ -134,9 +137,12 @@ namespace DD2A11y {
 
             RegisterInputs();
             // Keys are live while the gate holds the keyboard, and also under a screen that
-            // deliberately shares it (the road map claims arrows, the game keeps WASD).
+            // deliberately shares it (the road map claims arrows, the game keeps WASD). While a
+            // text field is being typed into, every key belongs to the field.
             Input.ActiveCategoriesProvider = () =>
-                Gate.Captured || (Router.Active != null && !Router.Active.CapturesKeyboard) ? UiCategories : NoCategories;
+                !Game.TextEntry.IsTyping
+                && (Gate.Captured || (Router.Active != null && !Router.Active.CapturesKeyboard))
+                    ? UiCategories : NoCategories;
             Input.JustPressedDispatcher = action =>
                 action.Key.StartsWith("ui.", StringComparison.Ordinal) && Router.HasScreen
                 && (Router.Active.HandleAction(action.Key) || Navigator.Handle(action.Key));

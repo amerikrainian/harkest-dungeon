@@ -28,6 +28,9 @@ namespace DD2A11y.Core.Strings {
             // Screen names, spoken when the mod takes over a screen. Match the game's own word for
             // the screen where it has one (the settings screen's title, the pause header).
             D("ScreenMainMenu", "main menu"),
+            // The Kingdoms campaign menu opened from the title menu, when the game's own
+            // "Kingdoms" caption is unavailable. Noun.
+            D("ScreenKingdoms", "kingdoms"),
             D("ScreenSettings", "settings"),
             D("ScreenPauseMenu", "pause menu"),
             D("ScreenCrossroads", "crossroads"),
@@ -119,6 +122,8 @@ namespace DD2A11y.Core.Strings {
             D("RoleTab", "tab"),
             // The hero sheet's header line (the hero's name); Left/Right there switch heroes.
             D("RoleHero", "hero"),
+            // A text entry field (the kingdom name). Noun.
+            D("RoleEdit", "edit"),
 
             // Control state words.
             // A toggle that is checked / unchecked.
@@ -135,6 +140,14 @@ namespace DD2A11y.Core.Strings {
             D("StatusUnavailable", "unavailable"),
             // A slider value; {0} = the number.
             D("ValuePercent", "{0} percent"),
+
+            // Text entry. Spoken when a field enters typing mode: every key then goes into the
+            // field until Enter accepts or Escape cancels.
+            D("EditStarted", "editing, enter when done"),
+            // Echo of a typed space (a bare space is inaudible).
+            D("EditSpace", "space"),
+            // Echo of an erased character; {0} = the character.
+            D("EditDeleted", "{0} deleted"),
 
             // Crossroads (the pre-run hub). Section names for the two hero strips; the game shows
             // these visually with no header string to reuse. Nouns.
@@ -390,6 +403,7 @@ namespace DD2A11y.Core.Strings {
         public static string ModLoaded(string version) => F("ModLoaded", version);
 
         public static string ScreenMainMenu => T("ScreenMainMenu");
+        public static string ScreenKingdoms => T("ScreenKingdoms");
         public static string ScreenSettings => T("ScreenSettings");
         public static string ScreenPauseMenu => T("ScreenPauseMenu");
         public static string ScreenCrossroads => T("ScreenCrossroads");
@@ -435,6 +449,10 @@ namespace DD2A11y.Core.Strings {
         public static string RoleButton => T("RoleButton");
         public static string RoleToggle => T("RoleToggle");
         public static string RoleSlider => T("RoleSlider");
+        public static string RoleEdit => T("RoleEdit");
+        public static string EditStarted => T("EditStarted");
+        public static string EditSpace => T("EditSpace");
+        public static string EditDeleted(string character) => F("EditDeleted", character);
         public static string RoleDropdown => T("RoleDropdown");
         public static string RoleTab => T("RoleTab");
         public static string RoleHero => T("RoleHero");

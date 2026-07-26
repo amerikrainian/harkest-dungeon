@@ -66,6 +66,10 @@ namespace DD2A11y.Core.Nav {
             Path.Clear();
             if (root != null) {
                 BuildInitialFocus();
+            } else {
+                // Detached: settle on nothing so the buffer bridge drops the departed
+                // screen's elements instead of re-reading them dead.
+                SettleFocus();
             }
         }
 

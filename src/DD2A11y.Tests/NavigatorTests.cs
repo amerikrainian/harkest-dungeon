@@ -53,6 +53,17 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
+        public void DetachSettlesOnNothing_SoBufferListenersUnbind() {
+            UIElement? settled = null;
+            bool fired = false;
+            _nav.Attach(VerticalMenu(new TestElement("A")));
+            _nav.FocusSettled += element => { settled = element; fired = true; };
+            _nav.Attach(null);
+            Assert.True(fired);
+            Assert.Null(settled);
+        }
+
+        [Fact]
         public void DownMovesAndAnnouncesOnlyTheNewFocus() {
             _nav.Attach(VerticalMenu(new TestElement("A"), new TestElement("B")));
             Assert.True(_nav.Handle(UiActions.Down));

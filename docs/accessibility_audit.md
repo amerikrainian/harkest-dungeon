@@ -33,6 +33,36 @@ Status: **works** (live-verified 2026-07-23)
   label-arrival re-announce lands; the profile button reads the profile name (its "Change
   Profile" caption is a buffer line); list order is the game's serialized order, not visual.
 
+### Kingdoms menu (`KingdomMenuScreen`, kingdoms scene over MAIN_MENU)
+Status: **works** (live-verified 2026-07-26; save select built, untested - no kingdom save on
+the dev install)
+- The kingdoms scene loads additively over the title menu (the mode stays MAIN_MENU, nothing
+  lands on the screen stack); this screen outranks `MainMenuScreen`, which stands down while
+  the scene owns the menu. Three phases rebuilt in place: the entry menu (Continue Kingdom
+  where a save exists, New Kingdom, Back, the game-type description), the save-select list
+  (each save reads its name plus the widget's own day/difficulty/map labels; Enter loads
+  through the widget's click path, Shift+Enter opens the game's delete confirmation), and the
+  creation wizard.
+- Wizard steps read one at a time, landing on the new step's first element after the game's
+  cross-fade: the name field (Enter starts the game's own edit flow - every key then goes to
+  the field, typed characters echo, deletions speak "x deleted", Enter accepts and re-reads
+  the field, Escape cancels), gang cards (single-select, "selected" re-announce; the pick also
+  queues the game's own narration), the gang disclaimer text, map toggles (each map's blurb
+  tooltip in the buffer), difficulty presets (named from their definition id; the last slot
+  holds the game's Custom copy and takes the game's "Custom" caption) with the preset stat
+  rows as readouts ("Day Limit. 60. days", explanation tooltips in the buffer), then the
+  wizard's own Continue/Back.
+- Escape drives the game's `TryGoBack` end to end: save select closes, each wizard step steps
+  back (the name step exits the wizard), the entry menu returns to the title menu (which
+  re-announces itself).
+- While typing, all mod keys pause on the game's own `IsInputtingText` flag (device-verified:
+  an injected Down mid-edit moves nothing); the pause also covers the game's other rename
+  fields.
+- Known gaps: the save-select phase and the custom-difficulty editing widgets (the row
+  dropdowns/sliders that appear once Custom is picked) are modeled but not live-verified; the
+  mods step is swept generically and unverified; the "creating kingdom" hand-off to DRIVING is
+  unmodeled (the road screens take over after the load).
+
 ### Settings (`OptionsScreen`)
 Status: **works** (live-verified 2026-07-23)
 - Tab selector + active tab's rows in one vertical flow; rows: `OptionsItemBhv`
@@ -580,6 +610,19 @@ deliberately not pressed in testing)
 - Known gaps: choices spawning after screen entry leave focus on the utility buttons until
   the player moves (Home reaches the choices); story RESULT presentation is unread beyond
   the narrator; relationship banners and affinity previews unspoken.
+
+### Hero story intro (`HeroStoryIntroScreen`, HERO_STORY_INTRO mode)
+Status: **new** - the chapter card shown at a shrine before a hero story resolves; the mode
+previously had no screen at all (silent, keyboard released).
+- One readout: the chapter title leading (from the game's `hero_story_title` binding, which
+  lands after an async portrait load - the entry announce falls back to the hero's name and
+  a re-announce fires once the title binds), the hero's name, and the chapter body text as
+  buffer lines. The game's own narrator voices the title and, on story chapters, the body.
+- The Continue button appears only after the presentation and narration finish (the game's
+  fade-in cue); its appearance is spoken. Enter drives the uGUI submit path (the game's own
+  click handler); the game gates it with its own input-enabled flag.
+- Escape is inert: the game itself blocks the pause menu in this mode, so silence matches
+  the sighted experience.
 
 ### Confession select (`BossSelectScreen`)
 Status: **deployed** (verified on a dev-shown instance at an inn; the real road trigger is

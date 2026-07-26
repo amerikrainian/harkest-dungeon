@@ -38,6 +38,9 @@ namespace DD2A11y.Screens {
             if (GameModeMgr.CurrentMode != GameModeType.MAIN_MENU || Singleton<GameModeMgr>.Instance.IsChangingState()) {
                 return null;
             }
+            if (KingdomMenuScreen.LiveInstance() != null) {
+                return null; // the kingdoms scene owns the title menu
+            }
             if (_menu == null) {
                 _menu = UnityEngine.Object.FindObjectOfType<MainMenuUiScreenBhv>();
             }
