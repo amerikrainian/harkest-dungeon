@@ -309,8 +309,7 @@ header row)
   ("blind-line") reads as its humanized id; Move is untested against position targeting; Pass
   briefly announces "select target" before auto-resolving; the retreat element only
   (dis)appears on turn-boundary rebuilds; stealth/corpse/summon edge cases unexercised; the
-  token-glossary overlay is not modeled (redundant: combatant and inspector buffers speak
-  each token's full describer text); the **gang escalation tooltip** (Kingdoms sieges,
+  **gang escalation tooltip** (Kingdoms sieges,
   `m_escalationTooltip` on `BattleInfoUiBhv`, shown via the More Info hold) is not modeled -
   Kingdoms-only, needs a siege to design against; the battle modifier readout is deployed but
   unverified (no modifier rolled in the fights seen so far); target beeps, invalid-target
@@ -799,8 +798,33 @@ player-driven candle spends)
   including) the exit. The reroll variant of the item panel (`m_isRerollScreen`, after full
   completion) shares the class and should read identically but is decades of candles away.
 
+### Token glossary (`TokenGlossaryScreen`)
+Status: **deployed, needs live pass** (previously the generic floor: a flat list of
+"button"-role rows named after the legend's first label, with no category info)
+- The token reference overlay (`TokenGlossaryWidgetBhv`, a stack entry openable over pause,
+  combat, the inn, the academic view), named by the pause menu's own "Token Glossary"
+  caption. The game shows a flat token list whose name colours encode the category and an
+  on-screen legend of colour pips decodes them; the mod reads each category as **one labeled
+  horizontal row** (the legend's own caption strings; Left/Right within a row, Up/Down
+  between categories) holding its tokens in the game's order. The
+  colour-to-caption pairing uses the game's own data both ways: each row's bound
+  `name_colour` is the exact hex the game reads from its `glossary_*` colour loc strings,
+  matched back to the legend caption keys (`buffs_label`, `glossary_stealth_label`,
+  `debuffs_label`, `glossary_other_label`, `glossary_special_label`,
+  `glossary_enemy_type_label`). Hero tokens carry special's exact colour and biome tokens
+  unique's, so they fold into "Hero & Combo" / "Unique" just as they do visually; a colour
+  matching no group reads uncategorized, the same unexplained shade a sighted player sees.
+- Rows are plain entries, not buttons: the game wires no click or submit to them (their
+  Selectable only anchors the controller highlight), so the old "button" role and dead
+  Enter are gone. The token's name is the focus line (glyphs in names speak as words via
+  the pipeline); the full description is the buffer. Escape closes through the game's own
+  `HideTokenGlossary`.
+- The list's contents are the game's own context filter (viewed tokens, combat-contextual
+  tokens, the party's hero tokens, the kingdom gang's uniques, biome tokens while
+  driving/in combat), so the same screen legitimately lists different tokens per surface.
+
 ### Everything else
-Status: **not started** (floor-level reading only) - map overlay, glossary,
+Status: **not started** (floor-level reading only) - map overlay,
 tutorials, profile select, save management, kingdoms.
 
 ## Testing rule learned the hard way

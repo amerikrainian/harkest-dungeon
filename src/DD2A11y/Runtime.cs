@@ -86,6 +86,7 @@ namespace DD2A11y {
             Router.Register(new LootScreen());
             Router.Register(new StoryScreen());
             Router.Register(new BossSelectScreen());
+            Router.Register(new TokenGlossaryScreen());
             Router.Register(new InnResultsScreen());
             // The kingdom map's cell panels are stack screens over the map; the map itself
             // stands down to any pushed screen, so these register ahead of it and of the inn.
@@ -123,7 +124,7 @@ namespace DD2A11y {
             // already took its own inline copy.
             _inventory = new InventoryScreen(speak, Navigator);
             Router.Register(_inventory);
-            // The floor for any other pushed screen (glossary, node panels) sits
+            // The floor for any other pushed screen (node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());
             // The kingdoms scene overlays the title menu inside the same MAIN_MENU mode.
