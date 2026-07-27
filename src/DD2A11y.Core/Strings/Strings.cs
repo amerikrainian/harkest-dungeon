@@ -202,6 +202,9 @@ namespace DD2A11y.Core.Strings {
             // A tab or panel with nothing in it yet (the relationships tab before a run), where
             // the game shows blank space. Adjective.
             D("PanelEmpty", "empty"),
+            // Prefix on an archive tutorial the game marks with its unviewed notification
+            // icon. Adjective.
+            D("TutorialNew", "New"),
 
             // Combat. The battle status line, spoken on turn changes and as the header readout;
             // {0} = the round number, {1} = the acting combatant's name.
@@ -525,6 +528,7 @@ namespace DD2A11y.Core.Strings {
 
         public static string SheetSpeed(int value) => F("SheetSpeed", value);
         public static string SheetCombatItems => T("SheetCombatItems");
+        public static string TutorialNew => T("TutorialNew");
         public static string PanelEmpty => T("PanelEmpty");
 
         public static string CombatHeader(int round, string actor) => F("CombatHeader", round, actor);

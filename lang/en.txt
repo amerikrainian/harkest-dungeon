@@ -95,6 +95,7 @@ CannotPlace = cannot place here
 SheetSpeed = speed {0}
 SheetCombatItems = combat items
 PanelEmpty = empty
+TutorialNew = New
 CombatHeader = round {0}, {1}
 CombatEnemies = enemies
 CombatTorch = torch {0}

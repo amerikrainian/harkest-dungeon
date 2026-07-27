@@ -824,9 +824,30 @@ Status: **deployed, needs live pass** (previously the generic floor: a flat list
   tokens, the party's hero tokens, the kingdom gang's uniques, biome tokens while
   driving/in combat), so the same screen legitimately lists different tokens per surface.
 
+### Tutorial archive (`TutorialArchiveScreen`)
+Status: **deployed, needs live pass** (previously the generic floor: bare title buttons,
+no text on activation, no unviewed marker)
+- The pause menu's Tutorials screen (`TutorialArchiveWidgetBhv`, also pushed by the game
+  with a specific tutorial), named by its own "Archive" title (`tutorial_menu_title`). One
+  element per entry in the game's own order (majors, then their category's minors); each
+  reads its title (`tutorial_t{eventId}_title`) **prefixed "New"** (authored, translatable)
+  while the game shows the entry's unviewed notification icon (the row's bound
+  `notification_icon`, live - so the prefix drops the moment an entry is viewed).
+- **Enter is the game's own option click** (`OnOptionClicked`): the game opens the entry's
+  text in the side panel, marks it viewed, and saves; the mod speaks the landed title and
+  full description back (composed from the same `tutorial_t{eventId}_*` loc keys, not the
+  frame-late panel TMPs) and the focused entry's buffer carries the description line by
+  line while it is the one on display. Escape closes through the screen's own teardown.
+- These options **activate on uGUI selection** (`OnSelect` drives `ViewTutorialType` - the
+  game's controller path), so browsing must never mirror our focus into the EventSystem:
+  scrolling would view-and-clear every entry passed over. Our elements read without
+  selecting; only Enter commits.
+- Not modeled: the tutorial's image/video (visual-only), the close button (Escape covers
+  it).
+
 ### Everything else
 Status: **not started** (floor-level reading only) - map overlay,
-tutorials, profile select, save management, kingdoms.
+profile select, save management, kingdoms.
 
 ## Testing rule learned the hard way
 
