@@ -23,6 +23,10 @@ namespace DD2A11y.Core.Nav {
 
         public ContainerShape Shape { get; protected set; }
 
+        /// <summary>When set on a screen root, Tab past the last stop wraps to the first (and
+        /// Shift+Tab the reverse) instead of stopping at the ends.</summary>
+        public bool WrapTabStops { get; set; }
+
         public Container(ContainerShape shape = ContainerShape.VerticalList, string? label = null) {
             Shape = shape;
             _label = label;

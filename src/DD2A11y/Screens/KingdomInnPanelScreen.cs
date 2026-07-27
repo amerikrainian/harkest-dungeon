@@ -52,15 +52,26 @@ namespace DD2A11y.Screens {
             ("m_wainwrightTab", "wainwright_upgrades", "inn_upgrade_wainwright_label"),
         };
 
+        private readonly System.Action<string, bool> _speak;
         private ScreenKingdomMapInnPanel _panel;
+        private KingdomInnPanelActorBhv _held;
         private Container _root;
         private int _builtSignature;
+
+        public KingdomInnPanelScreen(System.Action<string, bool> speak) {
+            _speak = speak;
+        }
 
         // The model name, which is set before the panel's own populate runs - the bound
         // inn_name value arrives a beat after our entry announce.
         public override string Name {
             get {
                 var cell = _panel == null ? null : _panel.SelectedCell;
+                // On the entry frame the panel has not bound its cell yet; the game's
+                // viewed-cell query is set before the push and answers instead.
+                if (cell == null) {
+                    cell = KingdomBiomePanelScreen.ViewedCell<Assets.Code.Kingdom.KingdomMapCellInnContainer>();
+                }
                 if (cell == null) {
                     return S.ScreenGeneric;
                 }
@@ -83,11 +94,72 @@ namespace DD2A11y.Screens {
         public override Container BuildRoot(object target) {
             var panel = (ScreenKingdomMapInnPanel)target;
             var screen = panel.GetComponentInParent<UiScreenBhv>();
-            // TryCloseScreen honours the panel's own two-stage back: an open upgrade tree
-            // blocks the close and folds instead.
-            _root = new RootContainer(ContainerShape.VerticalList, back: () => screen.TryCloseScreen());
+            _held = null;
+            // Escape drops a held hero first; then TryCloseScreen honours the panel's own
+            // two-stage back (an open upgrade tree blocks the close and folds instead).
+            _root = new RootContainer(ContainerShape.VerticalList, back: () => {
+                if (_held != null) {
+                    _held = null;
+                    _speak(S.GrabCancelled, true);
+                    return;
+                }
+                screen.TryCloseScreen();
+            });
             Populate(panel);
             return _root;
+        }
+
+        /// <summary>The grab key: pick up the focused garrison hero, then place on another
+        /// slot - the two widgets swap slots and the new order commits through the cell's own
+        /// SetActorOrder, the same call the panel's drag release runs.</summary>
+        public void ToggleGrab(UIElement current) {
+            var element = current as KingdomGarrisonElement;
+            if (element == null || _panel == null) {
+                return;
+            }
+            if (_held == null) {
+                if (element.Widget.ActorGuid == 0) {
+                    _speak(S.StatusUnavailable, true); // militia slots are not movable
+                    return;
+                }
+                _held = element.Widget;
+                var actor = Actors.Get(_held.ActorGuid);
+                _speak(S.Grabbed(actor == null ? null : Actors.Name(actor)), true);
+                return;
+            }
+            var target = element.Widget;
+            if (target == _held) {
+                _held = null;
+                _speak(S.GrabCancelled, true);
+                return;
+            }
+            int from = _held.GetSlot();
+            int to = target.GetSlot();
+            _held.SetSlot(to);
+            target.SetSlot(from);
+            _held.SetPositionTarget(_panel.GetActorSlotPosition(to));
+            target.SetPositionTarget(_panel.GetActorSlotPosition(from));
+            _panel.SelectedCell.SetActorOrder(_panel.GetActorOrder());
+            _held = null;
+            _speak(GarrisonOrderLine(), true);
+        }
+
+        // The resulting order, hero names first to last - what the row now shows.
+        private string GarrisonOrderLine() {
+            var names = new List<string>();
+            foreach (uint guid in _panel.SelectedCell.ActorGuids) {
+                if (guid != 0) {
+                    var actor = Actors.Get(guid);
+                    if (actor != null) {
+                        names.Add(Actors.Name(actor));
+                    }
+                }
+            }
+            return SpokenLine.Join(names.ToArray());
+        }
+
+        public override void OnLeave() {
+            _held = null;
         }
 
         public override bool OnUpdate(object target) {
@@ -114,11 +186,13 @@ namespace DD2A11y.Screens {
         }
 
         private void PopulateMain(ScreenKingdomMapInnPanel panel) {
-            foreach (var actor in panel.GetComponentsInChildren<KingdomInnPanelActorBhv>(includeInactive: false)) {
+            // In slot order (the row's visual order), which a reorder rewrites.
+            var garrison = new List<KingdomInnPanelActorBhv>(
+                panel.GetComponentsInChildren<KingdomInnPanelActorBhv>(includeInactive: false));
+            garrison.Sort((a, b) => a.GetSlot().CompareTo(b.GetSlot()));
+            foreach (var actor in garrison) {
                 var captured = actor;
-                _root.Add(new ReadoutElement(
-                    () => GarrisonLine(captured),
-                    detail: () => TooltipReader.Lines(captured.gameObject)));
+                _root.Add(new KingdomGarrisonElement(captured, () => GarrisonLine(captured)));
             }
             var defenseless = DefenselessLabelField(panel);
             if (defenseless != null && defenseless.activeInHierarchy) {
@@ -217,6 +291,7 @@ namespace DD2A11y.Screens {
             foreach (var actor in panel.GetComponentsInChildren<KingdomInnPanelActorBhv>(includeInactive: false)) {
                 signature = signature * 31 + actor.GetInstanceID();
                 signature = signature * 31 + (int)actor.ActorGuid;
+                signature = signature * 31 + actor.GetSlot();
             }
             foreach (var reward in panel.GetComponentsInChildren<Assets.Code.UI.Items.UninteractableRewardItemBhv>(includeInactive: false)) {
                 signature = signature * 31 + reward.GetInstanceID();

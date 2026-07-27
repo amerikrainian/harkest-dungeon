@@ -36,6 +36,8 @@ namespace DD2A11y {
         private CrossroadsScreen _crossroads;
         private InnScreen _inn;
         private InventoryScreen _inventory;
+        private InnStorageScreen _innStorage;
+        private KingdomInnPanelScreen _kingdomInnPanel;
         private CombatScreen _combat;
         private AcademicScreen _academic;
         private string _lastTickError;
@@ -88,8 +90,11 @@ namespace DD2A11y {
             // The kingdom map's cell panels are stack screens over the map; the map itself
             // stands down to any pushed screen, so these register ahead of it and of the inn.
             Router.Register(new KingdomEventPanelScreen());
-            Router.Register(new KingdomInnPanelScreen());
+            _kingdomInnPanel = new KingdomInnPanelScreen(speak);
+            Router.Register(_kingdomInnPanel);
             Router.Register(new KingdomBiomePanelScreen());
+            _innStorage = new InnStorageScreen(speak, Navigator);
+            Router.Register(_innStorage);
             Router.Register(new KingdomMapScreen(Navigator, speak, () => {
                 uiBuffer.SetSource(Navigator.Current == null
                     ? (Func<System.Collections.Generic.IEnumerable<string>>)null
@@ -250,6 +255,12 @@ namespace DD2A11y {
                 _inn.ToggleGrab(Navigator.Current, takeOne);
             } else if (Router.Active == _inventory) {
                 _inventory.ToggleGrab(Navigator.Current, takeOne);
+            } else if (Router.Active == _innStorage) {
+                _innStorage.ToggleGrab(Navigator.Current, takeOne);
+            } else if (Router.Active == _kingdomInnPanel) {
+                if (!takeOne) { // heroes have no stacks to split
+                    _kingdomInnPanel.ToggleGrab(Navigator.Current);
+                }
             }
         }
 

@@ -30,13 +30,28 @@ namespace DD2A11y.Screens {
         public override string Name => BiomeName(_panel) ?? S.ScreenGeneric;
 
         // The same name the cell label shows; a boss-subtype biome has no type and stays
-        // nameless on screen.
+        // nameless on screen. On the entry frame the panel has not bound its cell yet, so the
+        // game's viewed-cell query (set before the push) answers instead.
         private static string BiomeName(ScreenKingdomMapBiomePanel panel) {
             var cell = panel == null ? null : panel.SelectedCell;
+            if (cell == null) {
+                cell = ViewedCell<Assets.Code.Kingdom.KingdomMapCellBiome>();
+            }
             if (cell == null || !cell.HasBiomeType) {
                 return null;
             }
             return GameLoc.TryGet($"biome_name_{cell.BiomeType}");
+        }
+
+        internal static T ViewedCell<T>() where T : Assets.Code.Kingdom.KingdomMapCellBase {
+            using (var query = Assets.Code.Kingdom.Queries.QueryKingdomCellIsCurrentlyViewed.Trigger()) {
+                foreach (var viewed in query.DisplayedMapCells) {
+                    if (viewed is T match) {
+                        return match;
+                    }
+                }
+            }
+            return null;
         }
 
         public override object ResolveTarget() {

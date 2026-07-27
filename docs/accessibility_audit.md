@@ -529,7 +529,7 @@ speak the inn's name once - known cosmetic race). All close through their own
   and untested. **If departure refuses, this zero-choice state is why.**
 
 ### Kingdom overworld map (`KingdomMapScreen` + `KingdomInnPanelScreen`,
-`KingdomBiomePanelScreen`, `KingdomEventPanelScreen`)
+`KingdomBiomePanelScreen`, `KingdomEventPanelScreen`, `InnStorageScreen`)
 Status: **works** (live-verified 2026-07-26 on the Drakia save, day 1); actions that commit
 the save (travel, pass day, engage siege, hero transfer, boss travel) are wired through the
 game's own handlers but deliberately unexercised.
@@ -574,11 +574,25 @@ game's own handlers but deliberately unexercised.
   effect + flavour as one element, rewards, close button; Escape via TryCloseScreen (the
   game swallows it during the slow day-intro). Model-built, NOT yet seen live (needs a day
   to pass).
-- Known cosmetic race: a cell panel's entry announce can say "screen" one frame before the
-  panel populates; the landing line that follows carries the full content. Known gaps: the
-  kingdoms Inn Storage screen opened from the panel is floor-read only (bare buttons); inn
-  panel hero REORDERING (drag/axis-poll gesture) is unmodeled; sidebar cursed-regions
-  counter unread; travel-path preview for hero transfers is visual only.
+- **Grid Tab wraps** both directions (the map root sets the navigator's `WrapTabStops`),
+  and Enter on a siege element hands focus straight back to the grid cursor at the jumped-to
+  cell. Panel entry announces read the cell's name from the game's viewed-cell query (set
+  before the push), so they are correct from frame one; the landing can still speak one
+  transient line before the populate re-land (cosmetic).
+- **Garrison reordering** (live-verified: swap spoken as the new order, model confirmed):
+  the grab key picks up a stationed hero and places it on another garrison slot - the two
+  widgets swap slots and the order commits through `SetActorOrder` via the panel's own
+  `GetActorOrder`, the same call its drag release runs. Militia slots refuse the grab;
+  Escape drops a held hero first.
+- **Inn Storage** (`InnStorageScreen` over the `InnStorageBhv` stack entry, live-verified:
+  stored stack read, grab-and-place within storage, model-change rebuild): the inn name,
+  the storage list (occupied stacks + free capacity line, shared `InventoryItemElement`
+  machinery), the frame's Inventory button, and - when the bag screen is open beneath (the
+  inn-hub path) - the full shared bag panel, one grab spanning both inventories. From the
+  map path the game shows storage alone; the Inventory button flips views.
+- Known gaps: sidebar cursed-regions counter unread; travel-path preview for hero
+  transfers is visual only; cross-inventory grab (bag to storage with both lists open) is
+  wired through the verified shared flow but that both-open state was not reached live.
 
 ### Driving (`RoadSense` + `RouteChoiceScreen`, DRIVING mode)
 Status: **built**; cues live-verified by ear (pickup ping confirmed audible), fork menu not

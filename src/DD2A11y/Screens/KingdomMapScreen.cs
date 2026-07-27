@@ -76,13 +76,15 @@ namespace DD2A11y.Screens {
             }
             _sessionLive = true;
             // A Panel root so Tab crosses cursor / header / sieges / heroes - the cursor
-            // element owns the arrows while focused, so Tab is the only way off it.
+            // element owns the arrows while focused, so Tab is the only way off it - and Tab
+            // wraps, so the cursor is always one or two presses away.
             _root = new RootContainer(ContainerShape.Panel, back: () => {
                 var presentation = (KingdomPresentationBhv)target;
                 if (!presentation.CloseMap()) {
                     _speak(S.StatusUnavailable, true);
                 }
             });
+            _root.WrapTabStops = true;
             Populate();
             MirrorSelection();
             return _root;
@@ -349,7 +351,12 @@ namespace DD2A11y.Screens {
                     () => SpokenLine.Join(S.KingdomSiege, InnNameAt(captured.m_Coordinates),
                         string.Format(GameLoc.TryGet("kingdom_map_days_remaining") ?? "{0}", captured.Delay)),
                     S.RoleButton,
-                    () => JumpTo(captured.m_Coordinates)));
+                    () => {
+                        // The jump hands the cursor straight back: arrows move the grid and
+                        // Tab reads the header next, with the landing already spoken.
+                        JumpTo(captured.m_Coordinates);
+                        _navigator.Focus(_cursorElement, announce: false);
+                    }));
             }
             if (!sieges.IsEmptyContainer) {
                 _root.Add(sieges);

@@ -156,7 +156,10 @@ namespace DD2A11y.Core.Nav {
 
             int ni = idx < 0 ? (step >= 0 ? 0 : stops.Count - 1) : idx + step;
             if (ni < 0 || ni >= stops.Count) {
-                return true; // at an end; consume, no wrap
+                if (Root == null || !Root.WrapTabStops) {
+                    return true; // at an end; consume, no wrap
+                }
+                ni = (ni + stops.Count) % stops.Count;
             }
 
             var snapshot = new List<UIElement>(Path);
