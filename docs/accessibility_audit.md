@@ -380,7 +380,12 @@ full inventory walk, item tooltip buffers)
   title; authored "inn" fallback). Layout, top to bottom: the regions-to-mountain readout;
   the **hero rest strip as a horizontal row** (`RestHeroElement` over each `RestItemSlotBhv`
   - name with HP and stress from the live actor, the slot's status tooltip as buffer lines,
-  Enter through the slot's own submit); the station buttons (captions from their tooltips;
+  Enter through the slot's own submit - which in Kingdoms is the game's own path INTO the
+  Select Replacement Hero screen); the **stationed-heroes row** (Kingdoms: the portrait
+  strip by the inn title, from the same `InnStationedActorBhv` widgets sighted players see -
+  each reads its class-name tooltip, Enter opens that hero's sheet the way the game's
+  right-click does; the pool is empty at expedition inns so the row vanishes from the
+  walk); the station buttons (captions from their tooltips;
   the prologue inn genuinely offers only Travelogue and End Expedition - the bar rebuilds
   per inn and later inns add the shops); then the inventory panel: the filter, "slots 5 /
   20", and wallet rows ("Relics, 40") as readouts, the sort button, one element per carried
@@ -470,6 +475,21 @@ full inventory walk, item tooltip buffers)
   widgets (their Enter flows already transfer). The "new item" glow is unspoken (its model
   flag is consumed on first render - `Refresh` calls `SetViewed` - so the live signal would
   be the background director's loop; deliberately skipped as cosmetic).
+
+### Select Replacement Hero (`InnReplacementScreen`)
+Status: **deployed, needs live pass** (previously read by the generic floor: class names
+only - no hero names, no at-this-inn markers)
+- The kingdoms hero swap screen (`InnReplacementScreenWidgetBhv`, pushed by Enter on a rest
+  slot): the Stationed Hero Effects readout first (its tooltip - what a hero stationed here
+  gains - as buffer lines), then one row per candidate (`InnReplacementRowElement`): the
+  hero's **name then class** from the row's own bindings ("Paracelsus, Plague Doctor"; the
+  random row reads its "Random Hero" label alone), **"at this inn"** as the value exactly
+  where the game shows its inn marker on the row (`m_innActorObj`, driven by the current
+  map cell's `ActorGuids`), and the row's add/station tooltip as buffer lines - "Add hero
+  to party", or "Station hero" on the last row, which is the current party hero and whose
+  Enter REMOVES them to the inn (the buffer is the distinguisher, matching the sighted
+  hover tooltip). Enter is the row's own submit; Escape closes through the screen's own
+  teardown.
 
 ### Inn stations (`StoreScreen`, `MasteryScreen`, `WainwrightScreen`,
 `RouteSelectScreen`, `RelationshipMatrixScreen`, `InnUpgradesScreen`)

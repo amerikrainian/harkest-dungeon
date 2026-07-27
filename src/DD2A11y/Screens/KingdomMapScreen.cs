@@ -55,7 +55,16 @@ namespace DD2A11y.Screens {
         public override string Name => S.ScreenKingdomMap;
 
         public override object ResolveTarget() {
-            if (!SingletonMonoBehaviour<KingdomBhv>.HasInstance() || !KingdomBhv.IsMapOpen()) {
+            if (!SingletonMonoBehaviour<KingdomBhv>.HasInstance()) {
+                return null;
+            }
+            // The game's own KingdomBhv.IsMapOpen dereferences the map scene's presentation
+            // without a null check and throws while the scene is still loading in; this walks
+            // the same chain guarded.
+            var mapManager = SingletonMonoBehaviour<KingdomBhv>.Instance.KingdomMapManager;
+            var mapRoot = mapManager == null || !mapManager.IsMapLoaded ? null : mapManager.KingdomMapRoot;
+            var presentation = mapRoot == null ? null : mapRoot.GetKingdomPresentationFromScene();
+            if (presentation == null || !presentation.IsMapOpen) {
                 return null;
             }
             // Any pushed screen (a cell panel, the hero sheet) covers the map and reads instead.
@@ -65,7 +74,7 @@ namespace DD2A11y.Screens {
                     return null;
                 }
             }
-            return UnityEngine.Object.FindObjectOfType<KingdomPresentationBhv>();
+            return presentation;
         }
 
         public override Container BuildRoot(object target) {

@@ -99,6 +99,11 @@ namespace DD2A11y.Core.Strings {
             D("ScreenFork", "fork"),
             // The inn hub, when the inn's own name is unavailable. Noun.
             D("ScreenInn", "inn"),
+            // The inn's stationed-hero portrait strip (Kingdoms), a section name. Noun.
+            D("InnStationedHeroes", "stationed heroes"),
+            // A replacement candidate already at the current inn, where the game shows a bare
+            // inn icon on the row. Spoken as the row's state.
+            D("InnAtThisInn", "at this inn"),
             // The Altar of Hope hub, when the game's own title is unavailable. Noun.
             D("ScreenAltar", "altar"),
             // The embark staging scene between the crossroads (or an inn) and the drive, where
@@ -472,6 +477,8 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenKingdomEvent => T("ScreenKingdomEvent");
         public static string ScreenFork => T("ScreenFork");
         public static string ScreenInn => T("ScreenInn");
+        public static string InnStationedHeroes => T("InnStationedHeroes");
+        public static string InnAtThisInn => T("InnAtThisInn");
         public static string ScreenAltar => T("ScreenAltar");
         public static string ScreenEmbark => T("ScreenEmbark");
         public static string AltarCandleCost(int count) => P("AltarCandleCost", count);

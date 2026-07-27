@@ -2,11 +2,13 @@ using System;
 using Assets.Code.Game;
 using Assets.Code.Inn;
 using Assets.Code.UI;
+using Assets.Code.UI.Inn;
 using Assets.Code.UI.Items;
 using Assets.Code.UI.Managers;
 using Assets.Code.UI.Screens;
 using Assets.Code.UI.Widgets;
 using Assets.Code.Utils;
+using HarmonyLib;
 using DD2A11y.Core.Nav;
 using DD2A11y.Core.Text;
 using DD2A11y.Elements;
@@ -21,6 +23,8 @@ namespace DD2A11y.Screens {
     /// The inn hub (the INN game mode with nothing but its own inventory panel on the stack),
     /// named by the inn's own title. Layout, top to bottom: the regions-to-mountain readout,
     /// the hero rest strip (a horizontal row - name, HP, stress, status tooltip in the buffer),
+    /// the stationed-heroes row (Kingdoms: the portrait strip by the inn title, each reading
+    /// its class; Enter opens that hero's sheet the way the game's right-click does),
     /// the station buttons (Travelogue, End Expedition, the shops when the inn has them;
     /// captions live in their tooltips), then the inventory panel: the filter as a tab
     /// (Left/Right apply the game's own tab buttons), slot count and wallet readouts, the sort
@@ -35,14 +39,19 @@ namespace DD2A11y.Screens {
     /// opens the pause menu.
     /// </summary>
     public sealed class InnScreen : GameScreen {
+        private static readonly AccessTools.FieldRef<InnStationedActorBhv, uint> StationedGuidField =
+            AccessTools.FieldRefAccess<InnStationedActorBhv, uint>("m_actorGuid");
+
         private readonly Action<string, bool> _speak;
         private readonly InventoryPanel _panel;
         private SubScreenCollectionBhv _collection;
         private InventoryUiBhv _inventory;
         private Container _root;
         private Container _heroes;
+        private Container _stationed;
         private Container _buttons;
         private int _builtButtonsSignature;
+        private int _builtStationedSignature;
 
         public InnScreen(Action<string, bool> speak, TraditionalNavigator navigator) {
             _speak = speak;
@@ -101,6 +110,10 @@ namespace DD2A11y.Screens {
             _root.Add(_heroes);
             PopulateHeroes();
 
+            _stationed = new Container(ContainerShape.HorizontalList, S.InnStationedHeroes);
+            _root.Add(_stationed);
+            PopulateStationed();
+
             _buttons = new Container(ContainerShape.VerticalList);
             _root.Add(_buttons);
             PopulateButtons();
@@ -116,6 +129,9 @@ namespace DD2A11y.Screens {
         public override bool OnUpdate(object target) {
             if (ButtonsSignature() != _builtButtonsSignature) {
                 PopulateButtons();
+            }
+            if (StationedSignature() != _builtStationedSignature) {
+                PopulateStationed();
             }
             if (_inventory != null) {
                 _panel.Update();
@@ -134,6 +150,45 @@ namespace DD2A11y.Screens {
                 if (selectable != null) {
                     _heroes.Add(new RestHeroElement(slot, selectable));
                 }
+            }
+        }
+
+        // The stationed-hero portraits by the inn title (Kingdoms; the pool is empty
+        // elsewhere): click-only widgets the selectable sweep misses, each captioned only by
+        // its class tooltip. Enter opens that hero's sheet through the same game method the
+        // widget's own right-click drives. The game recycles the pool on day changes, so an
+        // identity signature guards the rebuild.
+        private void PopulateStationed() {
+            _stationed.Clear();
+            foreach (var widget in StationedActors()) {
+                var stationed = widget;
+                _stationed.Add(new ActionElement(
+                    () => UiText.FirstLabel(stationed.gameObject),
+                    S.RoleButton,
+                    () => OpenStationedSheet(stationed)));
+            }
+            _builtStationedSignature = StationedSignature();
+        }
+
+        private static InnStationedActorBhv[] StationedActors() {
+            var widgets = UnityEngine.Object.FindObjectsOfType<InnStationedActorBhv>();
+            Array.Sort(widgets, (a, b) => a.transform.GetSiblingIndex().CompareTo(b.transform.GetSiblingIndex()));
+            return widgets;
+        }
+
+        private int StationedSignature() {
+            int signature = 17;
+            foreach (var widget in StationedActors()) {
+                signature = signature * 31 + widget.GetInstanceID();
+            }
+            return signature;
+        }
+
+        private static void OpenStationedSheet(InnStationedActorBhv widget) {
+            uint guid = StationedGuidField(widget);
+            if (guid != 0) {
+                SingletonMonoBehaviour<CommonUiBhv>.Instance.ToggleCharacterSheet(
+                    CharacterSheetUiBhv.Tab.Skills, guid, isSkillsEditable: true, isInventoryEditable: true);
             }
         }
 
