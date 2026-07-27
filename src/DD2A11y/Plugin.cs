@@ -5,7 +5,7 @@ using BepInEx.Logging;
 using UnityEngine;
 
 namespace DD2A11y {
-    [BepInPlugin("dd2a11y", "DD2A11y", Version)]
+    [BepInPlugin("dd2a11y", "Harkest Dungeon", Version)]
     public sealed class Plugin : BaseUnityPlugin {
         public const string Version = "0.2.0";
 

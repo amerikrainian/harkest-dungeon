@@ -2,14 +2,14 @@
 # https://github.com/rashadnaqeeb/NonVisualCalculus
 
 [package]
-name = "dd2a11y-installer"
+name = "harkest-dungeon-installer"
 version = "0.1.0"
 edition = "2024"
 
 # test = false: the exe embeds a requireAdministrator manifest, so a test
 # harness built from it cannot run unelevated. Tests live in the lib target.
 [[bin]]
-name = "dd2a11y-installer"
+name = "harkest-dungeon-installer"
 path = "src/main.rs"
 test = false
 

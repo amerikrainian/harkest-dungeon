@@ -23,7 +23,7 @@ namespace DD2A11y.Core.Strings {
         /// no decorative punctuation.</summary>
         internal static readonly KeyValuePair<string, string>[] Defaults = {
             // Spoken once when the mod finishes initializing at game launch; {0} = the mod version.
-            D("ModLoaded", "DD2A11y {0} loaded"),
+            D("ModLoaded", "Harkest Dungeon {0} loaded"),
 
             // Screen names, spoken when the mod takes over a screen. Match the game's own word for
             // the screen where it has one (the settings screen's title, the pause header).
@@ -406,7 +406,7 @@ namespace DD2A11y.Core.Strings {
         /// English default in table order. lang/en.txt is pinned to this by a test.</summary>
         public static string DumpTemplate() {
             var sb = new StringBuilder();
-            sb.Append("# DD2A11y translation template. Copy to <language>.txt and translate the values.\n");
+            sb.Append("# Harkest Dungeon translation template. Copy to <language>.txt and translate the values.\n");
             sb.Append("# Lines starting with # are comments. Format: key = value.\n");
             sb.Append("# {0}-style slots are filled at runtime; keep them, reorder freely.\n");
             sb.Append("# '|' separates plural forms, chosen by the _plural rule below.\n");

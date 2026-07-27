@@ -95,7 +95,7 @@ mod tests {
             "schema_version": 1,
             "installed_at": "2026-07-27T00:00:00Z",
             "source": "manual",
-            "release_asset": "DD2A11y-v1.0.0.zip",
+            "release_asset": "HarkestDungeon-v1.0.0.zip",
             "sha256": null,
             "installed_files": [],
             "backups": {}
@@ -111,7 +111,7 @@ mod tests {
             mod_version: "1.0.0".to_string(),
             installed_at: "2026-07-27T00:00:00Z".to_string(),
             source: "manual".to_string(),
-            release_asset: "DD2A11y-v1.0.0.zip".to_string(),
+            release_asset: "HarkestDungeon-v1.0.0.zip".to_string(),
             sha256: None,
             installed_files: Vec::new(),
             backups: HashMap::new(),

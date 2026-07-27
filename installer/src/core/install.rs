@@ -288,7 +288,7 @@ pub fn temp_session_dir() -> PathBuf {
         .map(|d| d.as_nanos())
         .unwrap_or(0);
     std::env::temp_dir()
-        .join("DD2A11yInstaller")
+        .join("HarkestDungeonInstaller")
         .join(format!("{}-{nanos}", std::process::id()))
 }
 
@@ -592,7 +592,7 @@ mod tests {
 
     fn test_asset() -> Asset {
         Asset {
-            name: "DD2A11y-v1.2.3.zip".to_string(),
+            name: "HarkestDungeon-v1.2.3.zip".to_string(),
             browser_download_url: "https://example.invalid/release.zip".to_string(),
             digest: None,
         }

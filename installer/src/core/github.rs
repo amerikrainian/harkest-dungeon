@@ -51,7 +51,7 @@ impl Asset {
 
 pub fn fetch_releases() -> Result<Vec<ReleaseInfo>, String> {
     let client = Client::builder()
-        .user_agent("DD2A11yInstaller")
+        .user_agent("HarkestDungeonInstaller")
         .timeout(std::time::Duration::from_secs(30))
         .build()
         .map_err(|e| format!("Failed to create HTTP client: {e}"))?;
@@ -126,7 +126,7 @@ pub fn parse_mod_zip_version(name: &str) -> Option<String> {
 
 pub fn download_asset(asset: &Asset, dest: &std::path::Path) -> Result<(), String> {
     let client = Client::builder()
-        .user_agent("DD2A11yInstaller")
+        .user_agent("HarkestDungeonInstaller")
         .timeout(std::time::Duration::from_secs(120))
         .build()
         .map_err(|e| format!("Failed to create HTTP client: {e}"))?;
@@ -175,11 +175,11 @@ mod tests {
     #[test]
     fn parses_mod_zip_version() {
         assert_eq!(
-            parse_mod_zip_version("DD2A11y-v1.0.0.zip").as_deref(),
+            parse_mod_zip_version("HarkestDungeon-v1.0.0.zip").as_deref(),
             Some("1.0.0")
         );
         assert!(parse_mod_zip_version("source.zip").is_none());
-        assert!(parse_mod_zip_version("DD2A11yInstaller.exe").is_none());
+        assert!(parse_mod_zip_version("HarkestDungeonInstaller.exe").is_none());
     }
 
     #[test]

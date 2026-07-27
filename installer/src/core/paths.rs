@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 // lookup and the per-version release notes shown after an update.
 pub const GITHUB_RELEASES_URL: &str =
     "https://api.github.com/repos/amerikrainian/harkest-dungeon/releases?per_page=100";
-pub const MOD_ZIP_PREFIX: &str = "DD2A11y-v";
+pub const MOD_ZIP_PREFIX: &str = "HarkestDungeon-v";
 pub const MOD_ZIP_SUFFIX: &str = ".zip";
 pub const GAME_EXES: &[&str] = &["Darkest Dungeon II.exe"];
 // Steam names the install folder with the registered-trademark sign; the plain

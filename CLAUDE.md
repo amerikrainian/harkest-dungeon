@@ -1,8 +1,9 @@
-# DD2A11y - Claude Code Instructions
+# Harkest Dungeon - Claude Code Instructions
 
-DD2A11y makes **Darkest Dungeon II** playable by blind users. Speech is the sole interface, so if
-something fails silently, speaks stale data, or omits information, the player has no way to know.
-A logged failure is actionable; a silent one is invisible.
+**Harkest Dungeon** (code identifiers keep the working name DD2A11y - projects, namespaces, DLLs,
+the plugin folder, the BepInEx GUID) makes **Darkest Dungeon II** playable by blind users. Speech
+is the sole interface, so if something fails silently, speaks stale data, or omits information,
+the player has no way to know. A logged failure is actionable; a silent one is invisible.
 
 The mod owns the keyboard whenever a supported screen is up: it builds a navigable tree from the
 live game UI, moves a mod-side focus with the arrow keys, and speaks each landing tersely. Detail
@@ -96,13 +97,13 @@ cycle yourself: kill the game, `dotnet build`, relaunch, wait for boot (~20 s to
 adapted from the Non-Visual Calculus installer by Rashad Naqeeb (MIT,
 https://github.com/rashadnaqeeb/NonVisualCalculus). It detects the Steam install (registry roots +
 `libraryfolders.vdf`; `DD2_DIR` overrides - `detect::game_candidates` keeps a per-store framework,
-Steam being the only store the game is sold on), downloads the newest `DD2A11y-vX.Y.Z.zip` asset
-from the GitHub releases, verifies its sha256 digest, extracts it over the game dir backing up any
-overwritten file, and records everything in `BepInEx/config/DD2A11y/install.json` so
+Steam being the only store the game is sold on), downloads the newest `HarkestDungeon-vX.Y.Z.zip`
+asset from the GitHub releases, verifies its sha256 digest, extracts it over the game dir backing
+up any overwritten file, and records everything in `BepInEx/config/DD2A11y/install.json` so
 update/repair/uninstall restore the dir exactly. Installer UI strings live in `installer/src/i18n.rs`
 (English only, matching `lang/`).
 
-- `build-installer.ps1` - cargo release build into `releases\DD2A11yInstaller.exe` (needs
+- `build-installer.ps1` - cargo release build into `releases\HarkestDungeonInstaller.exe` (needs
   libclang + ninja for the wxWidgets build; both probed from Visual Studio installs).
 - `test-installer.ps1` - the installer unit suite (`cargo test`; tests live in the lib target
   because the exe embeds a requireAdministrator manifest).

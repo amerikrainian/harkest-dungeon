@@ -1,4 +1,4 @@
-# DD2A11y screen audit
+# Harkest Dungeon screen audit
 
 Per-screen accessibility status. Update this in the same change that adds or fixes a screen.
 Statuses: **works** (live-verified), **built** (code exists, not yet live-verified), **planned**,

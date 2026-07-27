@@ -1,9 +1,9 @@
-# DD2A11y translation template. Copy to <language>.txt and translate the values.
+# Harkest Dungeon translation template. Copy to <language>.txt and translate the values.
 # Lines starting with # are comments. Format: key = value.
 # {0}-style slots are filled at runtime; keep them, reorder freely.
 # '|' separates plural forms, chosen by the _plural rule below.
 _plural = english
-ModLoaded = DD2A11y {0} loaded
+ModLoaded = Harkest Dungeon {0} loaded
 ScreenMainMenu = main menu
 ScreenKingdoms = kingdoms
 ScreenSettings = settings

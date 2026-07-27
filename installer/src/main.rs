@@ -3,7 +3,7 @@
 
 #![windows_subsystem = "windows"]
 
-use dd2a11y_installer::{cli, gui};
+use harkest_dungeon_installer::{cli, gui};
 
 fn main() {
     if std::env::args().any(|a| a == "--cli") {

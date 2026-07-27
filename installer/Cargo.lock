@@ -281,27 +281,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "dd2a11y-installer"
-version = "0.1.0"
-dependencies = [
- "embed-resource",
- "regex",
- "reqwest",
- "semver",
- "serde",
- "serde_json",
- "sha2",
- "sys-locale",
- "sysinfo",
- "tempfile",
- "time",
- "windows-sys 0.61.2",
- "winreg 0.56.0",
- "wxdragon",
- "zip",
-]
-
-[[package]]
 name = "deflate64"
 version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -526,6 +505,27 @@ name = "glob"
 version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e4eba85ea1d0a966a983acd07deee566e67395d2d96b6fb39e62b5a833f1eb0b"
+
+[[package]]
+name = "harkest-dungeon-installer"
+version = "0.1.0"
+dependencies = [
+ "embed-resource",
+ "regex",
+ "reqwest",
+ "semver",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sys-locale",
+ "sysinfo",
+ "tempfile",
+ "time",
+ "windows-sys 0.61.2",
+ "winreg 0.56.0",
+ "wxdragon",
+ "zip",
+]
 
 [[package]]
 name = "hashbrown"
