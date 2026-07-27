@@ -77,16 +77,6 @@ def write(rel: str, x: np.ndarray, peak: float) -> None:
     print(f"{rel}  {len(x) / RATE:.2f}s")
 
 
-def coach_stop() -> np.ndarray:
-    # A soft settling glide down: the coach came to rest.
-    return glide(330, 165, 0.30) * env(int(RATE * 0.30), 0.01, 0.10)
-
-
-def coach_start() -> np.ndarray:
-    # The mirror of coach_stop: rolling again.
-    return glide(165, 330, 0.30) * env(int(RATE * 0.30), 0.01, 0.12)
-
-
 def thump(f0: float, f1: float, seconds: float, noise_amt: float, seed: int) -> np.ndarray:
     body = glide(f0, f1, seconds) * env(int(RATE * seconds), 0.002, seconds * 0.28)
     burst = lowpass(noise(seconds, seed), 900) * env(int(RATE * seconds), 0.001, 0.03)
@@ -192,8 +182,6 @@ def node_bridge() -> np.ndarray:
 
 
 def main() -> None:
-    write("road/coach_stop.wav", coach_stop(), ROAD_PEAK)
-    write("road/coach_start.wav", coach_start(), ROAD_PEAK)
     write("road/coach_damage.wav", coach_damage(), ROAD_PEAK)
     write("road/coach_break.wav", coach_break(), ROAD_PEAK)
     write("road/penalty.wav", penalty(), ROAD_PEAK)

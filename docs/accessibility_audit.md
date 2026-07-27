@@ -646,8 +646,9 @@ yet reached in play
   candidate arrays (measured live: ~43 pickups loaded, 2 within the 80-unit range; 6
   nodes loaded, 1-3 in range - a handful of concurrent voices, mixed under one output
   limiter). Collection plays a blip and speaks the item's own title; road damage plays
-  the penalty cue and speaks the combat damage wording; the coach's stop/start each cue;
-  a junction's banners coming up cue "fork ahead" (once per junction).
+  the penalty cue and speaks the combat damage wording (the coach's stop/start is left to
+  the game's own driving audio); a junction's banners coming up cue "fork ahead" (once per
+  junction).
 - Wired 2026-07-25, by ear pass pending: **road edge** (off-center distance against the
   road's half-width from the game's own road geometry; bumps panned to the drifting side
   past 85%, re-arming under 70%); **zone enter/exit** (the game's own road-event zone
