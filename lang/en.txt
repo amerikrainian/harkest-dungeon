@@ -91,6 +91,7 @@ Grabbed = grabbed {0}
 GrabCancelled = grab cancelled
 CannotPlace = cannot place here
 SheetSpeed = speed {0}
+SheetCombatItems = combat items
 PanelEmpty = empty
 CombatHeader = round {0}, {1}
 CombatEnemies = enemies

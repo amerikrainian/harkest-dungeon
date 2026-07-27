@@ -191,6 +191,9 @@ namespace DD2A11y.Core.Strings {
             // Hero sheet. The speed stat readout; {0} = the number. The game shows this stat as a
             // bare icon with no name string to reuse.
             D("SheetSpeed", "speed {0}"),
+            // Section name for the combat item slots row, used when the game's item-type
+            // string ("item_type_combat") is missing. Noun.
+            D("SheetCombatItems", "combat items"),
             // A tab or panel with nothing in it yet (the relationships tab before a run), where
             // the game shows blank space. Adjective.
             D("PanelEmpty", "empty"),
@@ -514,6 +517,7 @@ namespace DD2A11y.Core.Strings {
         public static string CannotPlace => T("CannotPlace");
 
         public static string SheetSpeed(int value) => F("SheetSpeed", value);
+        public static string SheetCombatItems => T("SheetCombatItems");
         public static string PanelEmpty => T("PanelEmpty");
 
         public static string CombatHeader(int round, string actor) => F("CombatHeader", round, actor);

@@ -20,7 +20,9 @@ namespace DD2A11y.Screens {
     /// party's heroes), then the sheet's tab selector, then the active tab's content. The
     /// Skills tab is read fully from the game model: health/stress/speed, the resistances, the
     /// quirks, each combat skill (Enter equips/unequips through the game's own button) with its
-    /// full card as buffer lines, the combat item and trinket slots. The Relationships tab reads
+    /// full card as buffer lines, the combat item and trinket slots. Resistances, skills, combat
+    /// items and trinkets are one horizontal row each (Left/Right within, Up/Down across); the
+    /// quirks stay a vertical list. The Relationships tab reads
     /// each partner row with its affinity readout on the focus line; the other tabs read as a
     /// generic sweep of their panel's labeled selectables. Escape closes through the sheet's own
     /// teardown.
@@ -208,7 +210,7 @@ namespace DD2A11y.Screens {
                 },
                 detail: () => TooltipReader.LinesOf(SpeedTipField(stats))));
 
-            var resistances = new Container(ContainerShape.VerticalList, GameLoc.TryGet("character_sheet_resistances_title"));
+            var resistances = new Container(ContainerShape.HorizontalList, GameLoc.TryGet("character_sheet_resistances_title"));
             foreach (var row in Resistances) {
                 var tipRef = row.Tip;
                 string locKey = row.LocKey;
@@ -301,15 +303,20 @@ namespace DD2A11y.Screens {
             if (actor == null) {
                 return;
             }
-            var skills = new Container(ContainerShape.VerticalList, GameLoc.TryGet("character_sheet_tab_skills"));
-            foreach (var holder in CombatItemsField(stats)) {
-                AddSlotButton(skills, holder.GetComponent<Assets.Code.UI.Items.CombatInventoryItemContainerBhv>()?.GetElement(0)?.gameObject, holder);
-            }
+            var skills = new Container(ContainerShape.HorizontalList, GameLoc.TryGet("character_sheet_tab_skills"));
             foreach (var skillId in actor.GetUnlockedCharacterSheetCombatSkillIds()) {
                 skills.Add(new SkillEquipElement(sheet, stats, skillId));
             }
             if (!skills.IsEmptyContainer) {
                 _items.Add(skills);
+            }
+            var combatItems = new Container(ContainerShape.HorizontalList,
+                GameLoc.TryGet("item_type_combat") ?? S.SheetCombatItems);
+            foreach (var holder in CombatItemsField(stats)) {
+                AddSlotButton(combatItems, holder.GetComponent<Assets.Code.UI.Items.CombatInventoryItemContainerBhv>()?.GetElement(0)?.gameObject, holder);
+            }
+            if (!combatItems.IsEmptyContainer) {
+                _items.Add(combatItems);
             }
         }
 
@@ -318,7 +325,7 @@ namespace DD2A11y.Screens {
             if (container == null) {
                 return;
             }
-            var trinkets = new Container(ContainerShape.VerticalList, GameLoc.TryGet("character_sheet_trinkets_title"));
+            var trinkets = new Container(ContainerShape.HorizontalList, GameLoc.TryGet("character_sheet_trinkets_title"));
             for (int i = 0; i < container.GetElementCount(); i++) {
                 var slot = container.GetElement(i);
                 AddSlotButton(trinkets, slot == null ? null : slot.gameObject, slot == null ? null : slot.gameObject);

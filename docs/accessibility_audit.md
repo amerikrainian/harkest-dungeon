@@ -140,7 +140,8 @@ Status: **works** (live-verified 2026-07-23 from the crossroads)
   never go stale), each combat skill as a toggle - Enter equips/unequips through the game's own
   button - with the full skill card as buffer lines (Rank/Target lines with multi-hit "+"
   joins, DMG/CRIT/cooldown, per-target effects, melee/ranged), then the combat item and
-  trinket slots.
+  trinket slots. Resistances, skills, combat items and trinkets are one horizontal row each
+  (Left/Right within a row, Up/Down between sections); quirks stay a vertical list.
 - Inline effect glyphs in game text (tokens, dots, heal/buff/debuff and stat icons) are spoken
   as words: token and dot names resolve through the game's own `token_name_*` / `dot_name_*`
   strings; the icons with no name string anywhere in the game (heal, buff, debuff, stress,
