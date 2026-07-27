@@ -63,6 +63,13 @@ namespace DD2A11y.Screens {
             var menu = (MainMenuUiScreenBhv)target;
             bool disclaimerNow = !DisclaimerShownField(menu);
             if (disclaimerNow != _builtDisclaimer || (!disclaimerNow && CountActive(menu) != _builtCount)) {
+                // Through the menu's open animation the buttons are disabled with their tooltip
+                // captions off, and the unlock staggers across frames, so a rebuild would land
+                // on a bare "button, unavailable". Hold the tree until the landing button is
+                // readable; a keypress meanwhile skips the animation, the game's own behavior.
+                if (!disclaimerNow && !LandingReady(menu)) {
+                    return false;
+                }
                 _root.Clear();
                 Populate(menu);
             }
@@ -87,6 +94,15 @@ namespace DD2A11y.Screens {
                 return;
             }
 
+            if (!LandingReady(menu)) {
+                // Entered mid-animation (returning from a run pans back into the menu with the
+                // buttons locked); leave the tree empty - the count mismatch re-runs this once
+                // the buttons unlock.
+                _builtCount = -1;
+                _awaitingLabel = false;
+                return;
+            }
+
             int count = 0;
             foreach (var selectable in SelectablesField(menu)) {
                 if (selectable == null || !selectable.gameObject.activeInHierarchy) {
@@ -104,6 +120,24 @@ namespace DD2A11y.Screens {
             _builtCount = count;
             var first = _root.FirstFocusable();
             _awaitingLabel = first != null && string.IsNullOrEmpty(first.Label);
+        }
+
+        /// <summary>Whether the button the rebuilt tree lands on (the first entry the sweep
+        /// keeps) reads cleanly: interactable (<c>IsInteractable()</c> also covers the
+        /// CanvasGroup locks) with its label available. The open animation holds every button
+        /// disabled with its tooltip caption off, and the unlock staggers across frames, so
+        /// readiness of other buttons proves nothing about the landing.</summary>
+        private static bool LandingReady(MainMenuUiScreenBhv menu) {
+            foreach (var selectable in SelectablesField(menu)) {
+                if (selectable == null || !selectable.gameObject.activeInHierarchy
+                    || selectable.GetComponent<SelectOnEmptyFallbackBhv>() != null
+                    || !UiText.HasAnyTextSource(selectable.gameObject)) {
+                    continue;
+                }
+                return selectable.IsInteractable()
+                    && !string.IsNullOrEmpty(UiText.FirstLabel(selectable.gameObject));
+            }
+            return false;
         }
 
         private static int CountActive(MainMenuUiScreenBhv menu) {

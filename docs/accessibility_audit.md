@@ -23,15 +23,20 @@ Statuses: **works** (live-verified), **built** (code exists, not yet live-verifi
 ## Screens
 
 ### Main menu (`MainMenuScreen`)
-Status: **works** (live-verified 2026-07-23)
+Status: **works** (live-verified 2026-07-27)
 - Disclaimer text + continue control (drives `OnMainMenuPress`); then the game's own ordered
   selectable list. Icon-only footer buttons (Exit Game, Patch Notes, Cinematics, Mailing List)
   read via their tooltip; the Confessions/Kingdoms tooltips land in the buffer.
+- Through the open animation (after the disclaimer press, or entering the menu mid-pan) the
+  game holds every button disabled with its tooltip caption off and unlocks them staggered
+  across frames, so the tree holds until the landing button is interactable and labeled - the
+  press is followed by silence, then one clean landing ("Exit Game, button"). A keypress
+  during the animation skips it, the game's own behavior. Live-verified 2026-07-27 (previously
+  spoke "button, unavailable" mid-animation).
 - Escape opens settings (the game's own Escape behavior at the title).
 - The Confessions submenu is a container swap the count-rebuild picks up.
-- Known gaps: a control focused mid-open-animation can briefly read as bare "button" before the
-  label-arrival re-announce lands; the profile button reads the profile name (its "Change
-  Profile" caption is a buffer line); list order is the game's serialized order, not visual.
+- Known gaps: the profile button reads the profile name (its "Change Profile" caption is a
+  buffer line); list order is the game's serialized order, not visual.
 
 ### Kingdoms menu (`KingdomMenuScreen`, kingdoms scene over MAIN_MENU)
 Status: **works** (live-verified 2026-07-26; save select built, untested - no kingdom save on
