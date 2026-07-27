@@ -20,9 +20,9 @@ namespace DD2A11y.Screens {
     /// party's heroes), then the sheet's tab selector, then the active tab's content. The
     /// Skills tab is read fully from the game model: health/stress/speed, the resistances, the
     /// quirks, each combat skill (Enter equips/unequips through the game's own button) with its
-    /// full card as buffer lines, the combat item and trinket slots. Resistances, skills, combat
-    /// items and trinkets are one horizontal row each (Left/Right within, Up/Down across); the
-    /// quirks stay a vertical list. The Relationships tab reads
+    /// full card as buffer lines, the combat item and trinket slots. Resistances, quirks,
+    /// skills, combat items and trinkets are one horizontal row each (Left/Right within,
+    /// Up/Down across). The Relationships tab reads
     /// each partner row with its affinity readout on the focus line; the other tabs read as a
     /// generic sweep of their panel's labeled selectables. Escape closes through the sheet's own
     /// teardown.
@@ -231,7 +231,7 @@ namespace DD2A11y.Screens {
             if (actor?.QuirkContainer == null) {
                 return;
             }
-            var quirks = new Container(ContainerShape.VerticalList, GameLoc.TryGet("character_sheet_quirks_title"));
+            var quirks = new Container(ContainerShape.HorizontalList, GameLoc.TryGet("character_sheet_quirks_title"));
             // Elements address a quirk by category and index, re-reading the live container on
             // every speak, so a reroll never leaves a stale name behind.
             for (int kind = 0; kind < 3; kind++) {
