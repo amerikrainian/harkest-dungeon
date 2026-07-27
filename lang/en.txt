@@ -76,6 +76,7 @@ StatusMinimum = minimum
 StatusMaximum = maximum
 StatusSelected = selected
 StatusOwned = owned
+RequiresUpgrade = needs {0}
 StatusBlessed = blessed
 StatusUnavailable = unavailable
 ValuePercent = {0} percent

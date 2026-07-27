@@ -471,7 +471,7 @@ full inventory walk, item tooltip buffers)
   be the background director's loop; deliberately skipped as cosmetic).
 
 ### Inn stations (`StoreScreen`, `MasteryScreen`, `WainwrightScreen`,
-`RouteSelectScreen`, `RelationshipMatrixScreen`)
+`RouteSelectScreen`, `RelationshipMatrixScreen`, `InnUpgradesScreen`)
 Status: **works** (live-verified 2026-07-24 at the first Denial inn), each named by the inn
 header's own station title (which retitles a beat after entry, so the entry announce can
 speak the inn's name once - known cosmetic race). All close through their own
@@ -520,6 +520,22 @@ speak the inn's name once - known cosmetic race). All close through their own
   (readout renamed, tiles pivoted to the new anchor), Escape to the hub, reopen from the
   hub's button. Unexercised: a formed relationship's name and countdown (all pairs were
   Neutral). The game's right-click shortcut to the partner's character sheet is unmodeled.
+- **Inn Upgrades** (`InnUpgradesScreen` over `SubScreenInnUpgradeBhv`, Kingdoms only;
+  live-verified 2026-07-26 at Alpenglow): a tabbed screen - the category tab first,
+  Left/Right stepping the tab group's OWN association order via its click handler (the
+  prefab's page order differs from the panel's handler-method order, and the group's
+  m_activeIndex is not authoritative - its click loop overwrites it per association - so
+  the current tab is read off the visibly active page; both directions verified symmetric),
+  the game's materials line, then the active category's tree as `InnUpgradeNodeElement`s
+  (shared with the map inn panel's tree). A node reads: name, owned or the game's composed
+  cost, then WHY it cannot be bought, mirroring what the tree shows - "needs X, Y" from the
+  prerequisite wiring (verified: single and multi-prereq chains), the game's own
+  Insufficient Funds line for a red cost (verified), and the level-restriction banner text
+  for out-of-tier rows (code path present; this inn had no level gate to observe).
+  Description in the buffer, plus the category's verbose flavour on the ultimate node
+  (verified: the Barracks "extensive training regimen" text). Enter purchases through the
+  node's own gated Unlock. Escape closes through the station's sub-screen flow.
+  Unexercised: an actual purchase (commits the save).
 - **Select Route** (`SubScreenBiomeChoiceBhv`): one element per offered route - the
   destination's own name, "selected" state, goal/modifier/reward tooltips in the buffer,
   Enter marking the choice through the game's own submit - or "empty" when the inn offers

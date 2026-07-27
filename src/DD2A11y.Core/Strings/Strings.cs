@@ -154,6 +154,7 @@ namespace DD2A11y.Core.Strings {
             // The currently chosen entry (a tab, a hero already in the party).
             D("StatusSelected", "selected"),
             D("StatusOwned", "owned"),
+            D("RequiresUpgrade", "needs {0}"),
             // An ordained enemy (carrying the confession boss's blessing).
             D("StatusBlessed", "blessed"),
             // A control present but not usable right now (a grayed-out button). Adjective.
@@ -499,6 +500,7 @@ namespace DD2A11y.Core.Strings {
         public static string StatusMaximum => T("StatusMaximum");
         public static string StatusSelected => T("StatusSelected");
         public static string StatusOwned => T("StatusOwned");
+        public static string RequiresUpgrade(string names) => F("RequiresUpgrade", names);
         public static string StatusBlessed => T("StatusBlessed");
         public static string StatusUnavailable => T("StatusUnavailable");
         public static string ValuePercent(int value) => F("ValuePercent", value);
