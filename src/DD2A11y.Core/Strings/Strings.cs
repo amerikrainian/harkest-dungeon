@@ -76,6 +76,25 @@ namespace DD2A11y.Core.Strings {
             D("MapSafeRoad", "safe road"),
             // A tooltip that yielded no text (the game's shape changed).
             D("MapUnknown", "unknown"),
+
+            // The kingdoms overworld map cursor. Cell names, day labels, siege durations, and
+            // tooltips come from the game; these are the mod's own overlay words.
+            D("ScreenKingdomMap", "kingdom map"),
+            D("KingdomStagecoach", "stagecoach here"),
+            D("KingdomReachable", "reachable"),
+            D("KingdomTravelScheduled", "travel scheduled"),
+            D("KingdomBoss", "boss"),
+            D("KingdomSiege", "siege"),
+            D("KingdomSiegeMedium", "medium strength"),
+            D("KingdomSiegeHigh", "high strength"),
+            D("KingdomTreasure", "treasure"),
+            D("KingdomReward", "reward offered"),
+            D("KingdomUpgraded", "upgraded"),
+            D("KingdomCursed", "cursed"),
+            D("KingdomQuest", "quest"),
+            D("KingdomCell", "row {0} of {1}, column {2} of {3}"),
+            D("KingdomMovingHero", "moving {0}, activate a destination inn"),
+            D("ScreenKingdomEvent", "kingdom event"),
             // The road-fork route menu, shown while the coach waits at a junction.
             D("ScreenFork", "fork"),
             // The inn hub, when the inn's own name is unavailable. Noun.
@@ -134,6 +153,7 @@ namespace DD2A11y.Core.Strings {
             D("StatusMaximum", "maximum"),
             // The currently chosen entry (a tab, a hero already in the party).
             D("StatusSelected", "selected"),
+            D("StatusOwned", "owned"),
             // An ordained enemy (carrying the confession boss's blessing).
             D("StatusBlessed", "blessed"),
             // A control present but not usable right now (a grayed-out button). Adjective.
@@ -430,6 +450,22 @@ namespace DD2A11y.Core.Strings {
         public static string MapVia(string route) => F("MapVia", route);
         public static string MapSafeRoad => T("MapSafeRoad");
         public static string MapUnknown => T("MapUnknown");
+        public static string ScreenKingdomMap => T("ScreenKingdomMap");
+        public static string KingdomStagecoach => T("KingdomStagecoach");
+        public static string KingdomReachable => T("KingdomReachable");
+        public static string KingdomTravelScheduled => T("KingdomTravelScheduled");
+        public static string KingdomBoss => T("KingdomBoss");
+        public static string KingdomSiege => T("KingdomSiege");
+        public static string KingdomSiegeMedium => T("KingdomSiegeMedium");
+        public static string KingdomSiegeHigh => T("KingdomSiegeHigh");
+        public static string KingdomTreasure => T("KingdomTreasure");
+        public static string KingdomReward => T("KingdomReward");
+        public static string KingdomUpgraded => T("KingdomUpgraded");
+        public static string KingdomCursed => T("KingdomCursed");
+        public static string KingdomQuest => T("KingdomQuest");
+        public static string KingdomCell(int row, int rows, int col, int cols) => F("KingdomCell", row, rows, col, cols);
+        public static string KingdomMovingHero(string hero) => F("KingdomMovingHero", hero);
+        public static string ScreenKingdomEvent => T("ScreenKingdomEvent");
         public static string ScreenFork => T("ScreenFork");
         public static string ScreenInn => T("ScreenInn");
         public static string ScreenAltar => T("ScreenAltar");
@@ -462,6 +498,7 @@ namespace DD2A11y.Core.Strings {
         public static string StatusMinimum => T("StatusMinimum");
         public static string StatusMaximum => T("StatusMaximum");
         public static string StatusSelected => T("StatusSelected");
+        public static string StatusOwned => T("StatusOwned");
         public static string StatusBlessed => T("StatusBlessed");
         public static string StatusUnavailable => T("StatusUnavailable");
         public static string ValuePercent(int value) => F("ValuePercent", value);

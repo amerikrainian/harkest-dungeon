@@ -85,6 +85,17 @@ namespace DD2A11y {
             Router.Register(new StoryScreen());
             Router.Register(new BossSelectScreen());
             Router.Register(new InnResultsScreen());
+            // The kingdom map's cell panels are stack screens over the map; the map itself
+            // stands down to any pushed screen, so these register ahead of it and of the inn.
+            Router.Register(new KingdomEventPanelScreen());
+            Router.Register(new KingdomInnPanelScreen());
+            Router.Register(new KingdomBiomePanelScreen());
+            Router.Register(new KingdomMapScreen(Navigator, speak, () => {
+                uiBuffer.SetSource(Navigator.Current == null
+                    ? (Func<System.Collections.Generic.IEnumerable<string>>)null
+                    : Navigator.Current.GetBufferLines);
+                Buffers.SetCurrent("ui");
+            }));
             // The inn hub reads THROUGH its own inventory stack entry, so it must outrank the
             // generic floor that would otherwise take that entry.
             _inn = new InnScreen(speak, Navigator);

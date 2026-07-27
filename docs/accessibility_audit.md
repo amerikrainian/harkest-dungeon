@@ -528,6 +528,58 @@ speak the inn's name once - known cosmetic race). All close through their own
   mid-inn) or choices that appear after an inn step; the populated reader is model-built
   and untested. **If departure refuses, this zero-choice state is why.**
 
+### Kingdom overworld map (`KingdomMapScreen` + `KingdomInnPanelScreen`,
+`KingdomBiomePanelScreen`, `KingdomEventPanelScreen`)
+Status: **works** (live-verified 2026-07-26 on the Drakia save, day 1); actions that commit
+the save (travel, pass day, engage siege, hero transfer, boss travel) are wired through the
+game's own handlers but deliberately unexercised.
+- The map is NOT a stack screen: opening it pops the inn's inventory entry and shows its own
+  presentation layer. `KingdomMapScreen` matches `KingdomBhv.IsMapOpen()` with no SCREEN
+  stack top (any pushed screen - cell panel, hero sheet, storage - covers the map and reads
+  instead), registered above `InnScreen`. Escape = `KingdomPresentationBhv.CloseMap()`,
+  which the game itself refuses during day-turn cinematics (spoken "unavailable").
+- **Grid cursor** (first Tab stop, Panel root - Tab crosses cursor / header / sieges /
+  heroes): arrows step the 9x9 cell grid, Home returns to the stagecoach, landings mirror
+  into the game's own selection (camera pan, highlight, travel-arrow preview - all
+  presentational) when the cell is selectable. A cell reads view-first, so hidden content
+  cannot leak by construction: the pre-reveal boss cell and its 8-neighbour ring deactivate
+  their view objects and read as "empty"; treasure reads from the cell's own bindings (the
+  game hides it on the occupied cell); siege strength speaks only the 3-band bucket the icon
+  shows; a boss-subtype biome is nameless on screen and stays so. Cell line: name,
+  stagecoach here / travel scheduled / reachable (user-input states only), stationed hero
+  names, siege (band + days), treasure (+ duration), biome markers (cursed/quest, kill
+  contract title, reward offered, upgraded). Buffer: the cell's own tooltips ("The
+  Stagecoach is here", hero classes), fast-travel state, hero name+class lines, grid
+  position. Enter = the game's `EventKingdomActivateMapCell` (gated on
+  `IsInUserInputState`): inn/camp opens the inn panel, biome the biome panel, boss travels
+  or shows the game's blocked dialog.
+- **Header** readouts: day, PASS DAY button, current-event button (opens the event panel),
+  escalation level (widget tooltip as buffer), timeline (last-day line; buffer = the marked
+  days only: escalation surges, quest steps, final day). **Sieges**: one element per active
+  siege - inn name + days; Enter jumps the cursor to the cell. **Heroes**: party + reserve
+  rows (name, class, travel-scheduled state; Enter on a reserve hero enters the game's own
+  hero-travel mode, gated to WAIT_ON_PLAYER).
+- **Inn/camp cell panel** (`ScreenKingdomMapInnPanel`), named by the inn from the model:
+  garrison (hero name+class, militia class slots, travel/immobile status tooltips in the
+  buffer), defenseless label, travel / fast travel / engage siege / storage buttons as the
+  game shows them, the five upgrade tabs (loc-named: Barracks etc.), treasure rewards.
+  Enter on a tab opens the **upgrade tree** view: one element per node - name, owned or the
+  game's composed cost ("materials 5"), unavailable when locked/unaffordable, description
+  in the buffer; Enter purchases via the node's own gated `Unlock()` (the sighted gesture
+  is a hold). Escape folds the tree first, then closes (the panel's own two-stage back).
+- **Biome cell panel**: name + enemy roster, expedition rewards, upgrades/modifier text and
+  kill contract gated on the model (the labels keep template text when unbound), reward
+  tooltips in buffers. Informational only - the game offers no actions here.
+- **Event panel** (`ScreenKingdomMapEventPanel`, day/event notification): day + title +
+  effect + flavour as one element, rewards, close button; Escape via TryCloseScreen (the
+  game swallows it during the slow day-intro). Model-built, NOT yet seen live (needs a day
+  to pass).
+- Known cosmetic race: a cell panel's entry announce can say "screen" one frame before the
+  panel populates; the landing line that follows carries the full content. Known gaps: the
+  kingdoms Inn Storage screen opened from the panel is floor-read only (bare buttons); inn
+  panel hero REORDERING (drag/axis-poll gesture) is unmodeled; sidebar cursed-regions
+  counter unread; travel-path preview for hero transfers is visual only.
+
 ### Driving (`RoadSense` + `RouteChoiceScreen`, DRIVING mode)
 Status: **built**; cues live-verified by ear (pickup ping confirmed audible), fork menu not
 yet reached in play
