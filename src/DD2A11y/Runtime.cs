@@ -99,6 +99,7 @@ namespace DD2A11y {
             Router.Register(new StoreScreen(Navigator));
             Router.Register(new MasteryScreen());
             Router.Register(new WainwrightScreen());
+            Router.Register(new RelationshipMatrixScreen());
             Router.Register(new RouteSelectScreen());
             // The standalone player inventory (road, crossroads, loot); the inn hub above
             // already took its own inline copy.

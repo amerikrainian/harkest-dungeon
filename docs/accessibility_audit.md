@@ -471,7 +471,7 @@ full inventory walk, item tooltip buffers)
   be the background director's loop; deliberately skipped as cosmetic).
 
 ### Inn stations (`StoreScreen`, `MasteryScreen`, `WainwrightScreen`,
-`RouteSelectScreen`)
+`RouteSelectScreen`, `RelationshipMatrixScreen`)
 Status: **works** (live-verified 2026-07-24 at the first Denial inn), each named by the inn
 header's own station title (which retitles a beat after entry, so the entry announce can
 speak the inn's name once - known cosmetic race). All close through their own
@@ -509,6 +509,17 @@ speak the inn's name once - known cosmetic race). All close through their own
   the authored "baubles", no game string spells it), the livery cycler, and the upgrade
   slots as equip slots (altar-locked ones carry their lock text). Live-verified: full
   walk. Unexercised: a repair press (stats were full), equip/unequip on this sheet.
+- **Relationships** (`RelationshipMatrixScreen` over `SubScreenRelationshipMatrixBhv`,
+  Kingdoms only): the anchor hero first (name and class - the panel the portrait grid pivots
+  around), then one element per other roster hero - name and class from the actor model (the
+  tiles' identity is portrait-only, no text), then the anchor's relationship as the tile
+  draws it: the band word with the affinity meter ("Neutral, 11/20"), plus the formed
+  relationship's remaining days while the tile shows them. Enter re-anchors the matrix
+  through the tile's own click; the pooled rebuild re-lands on the anchor readout, which
+  names the new anchor. Live-verified 2026-07-26 at the Alpenglow inn: walk, a re-anchor
+  (readout renamed, tiles pivoted to the new anchor), Escape to the hub, reopen from the
+  hub's button. Unexercised: a formed relationship's name and countdown (all pairs were
+  Neutral). The game's right-click shortcut to the partner's character sheet is unmodeled.
 - **Select Route** (`SubScreenBiomeChoiceBhv`): one element per offered route - the
   destination's own name, "selected" state, goal/modifier/reward tooltips in the buffer,
   Enter marking the choice through the game's own submit - or "empty" when the inn offers
