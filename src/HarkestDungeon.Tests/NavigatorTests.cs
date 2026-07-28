@@ -29,6 +29,39 @@ namespace DD2A11y.Tests {
         }
     }
 
+    /// <summary>A dropdown-style element: activation opens a popup of its options, committing an
+    /// option updates <see cref="Choice"/>.</summary>
+    internal sealed class TestDropdown : UIElement {
+        public readonly string[] Options;
+        public int Choice;
+        public int PopupCloses;
+
+        public TestDropdown(params string[] options) => Options = options;
+
+        public override string Label => "Window Mode";
+        public override string? Role => "dropdown";
+        public override string? Value => Options[Choice];
+
+        public override Popup BuildPopup() {
+            var list = new Container(ContainerShape.VerticalList, Label);
+            for (int i = 0; i < Options.Length; i++) {
+                int index = i;
+                list.Add(new PopupOption(Options[index], () => Choice = index));
+            }
+            return new Popup(list, () => PopupCloses++);
+        }
+
+        private sealed class PopupOption : UIElement {
+            private readonly string _label;
+            private readonly Action _commit;
+            public PopupOption(string label, Action commit) { _label = label; _commit = commit; }
+            public override string Label => _label;
+            public override IEnumerable<ElementAction> GetActions() {
+                yield return new ElementAction(ActionIds.Activate, _commit);
+            }
+        }
+    }
+
     public class NavigatorTests {
         private readonly List<string> _spoken = new();
         private readonly TraditionalNavigator _nav;
@@ -167,6 +200,94 @@ namespace DD2A11y.Tests {
             Assert.Equal("A", settled!.Label);
             _nav.Handle(UiActions.Down);
             Assert.Equal("B", settled!.Label);
+        }
+
+        [Fact]
+        public void EnterOnDropdownOpensPopup_LandingOnFirstOptionUnmarked() {
+            var dropdown = new TestDropdown("Windowed", "Fullscreen") { Choice = 1 };
+            _nav.Attach(VerticalMenu(dropdown));
+            _spoken.Clear();
+
+            Assert.True(_nav.Handle(UiActions.Activate));
+            Assert.True(_nav.PopupOpen);
+            // The popup announces like a screen entry: its label, then the landing - always the
+            // first option, never the current choice nor any selected marker on it.
+            Assert.Equal(new[] { "Window Mode", "Windowed" }, _spoken);
+            Assert.Equal("Windowed", _nav.Current!.Label);
+        }
+
+        [Fact]
+        public void EnterOnPopupOptionCommits_ClosingAndReadingBackTheNewValue() {
+            var dropdown = new TestDropdown("Windowed", "Fullscreen");
+            _nav.Attach(VerticalMenu(dropdown));
+            _nav.Handle(UiActions.Activate);
+            _nav.Handle(UiActions.Down);
+            _spoken.Clear();
+
+            Assert.True(_nav.Handle(UiActions.Activate));
+            Assert.Equal(1, dropdown.Choice);
+            Assert.False(_nav.PopupOpen);
+            Assert.Equal(1, dropdown.PopupCloses);
+            Assert.Same(dropdown, _nav.Current);
+            // The restored dropdown line is the whole feedback; it carries the new value.
+            Assert.Equal("Window Mode, dropdown, Fullscreen", Assert.Single(_spoken));
+        }
+
+        [Fact]
+        public void EscapeCancelsPopup_RestoringAndReannouncingTheDropdown() {
+            var dropdown = new TestDropdown("Windowed", "Fullscreen");
+            _nav.Attach(VerticalMenu(dropdown));
+            _nav.Handle(UiActions.Activate);
+            _nav.Handle(UiActions.Down);
+            _spoken.Clear();
+
+            Assert.True(_nav.Handle(UiActions.Back));
+            Assert.Equal(0, dropdown.Choice);
+            Assert.False(_nav.PopupOpen);
+            Assert.Equal(1, dropdown.PopupCloses);
+            Assert.Same(dropdown, _nav.Current);
+            Assert.Equal("Window Mode, dropdown, Windowed", Assert.Single(_spoken));
+        }
+
+        [Fact]
+        public void PopupFocusRestoresByReference_NotToTheFirstElement() {
+            var dropdown = new TestDropdown("Windowed", "Fullscreen");
+            var root = VerticalMenu(new TestElement("Resolution"), dropdown);
+            _nav.Attach(root);
+            _nav.Handle(UiActions.Down); // onto the dropdown, second in the list
+            _nav.Handle(UiActions.Activate);
+
+            _nav.Handle(UiActions.Back);
+            Assert.Same(dropdown, _nav.Current);
+        }
+
+        [Fact]
+        public void AttachClosesAnOpenPopup_RunningItsCloseHook() {
+            var dropdown = new TestDropdown("Windowed", "Fullscreen");
+            _nav.Attach(VerticalMenu(dropdown));
+            _nav.Handle(UiActions.Activate);
+            Assert.True(_nav.PopupOpen);
+
+            _nav.Attach(VerticalMenu(new TestElement("Elsewhere")));
+            Assert.False(_nav.PopupOpen);
+            Assert.Equal(1, dropdown.PopupCloses);
+        }
+
+        [Fact]
+        public void PopupBoundsClampWithoutSpillingIntoTheScreen() {
+            var dropdown = new TestDropdown("Windowed", "Fullscreen");
+            var root = VerticalMenu(new TestElement("Resolution"), dropdown, new TestElement("VSync"));
+            _nav.Attach(root);
+            _nav.Handle(UiActions.Down);
+            _nav.Handle(UiActions.Activate);
+            _spoken.Clear();
+
+            _nav.Handle(UiActions.Up); // top edge: must not spill onto the screen behind
+            Assert.True(_nav.PopupOpen);
+            Assert.Equal("Windowed", _nav.Current!.Label);
+            _nav.Handle(UiActions.Down);
+            _nav.Handle(UiActions.Down); // bottom edge: clamped
+            Assert.Equal("Fullscreen", _nav.Current!.Label);
         }
 
         [Fact]

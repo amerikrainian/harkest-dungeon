@@ -37,6 +37,20 @@ namespace DD2A11y.Core.Nav {
                     if (Current == null) {
                         return false;
                     }
+                    // Inside a popup, activating an option commits it: the option's action runs
+                    // and the popup closes, the restored focus reading back the new value.
+                    if (PopupOpen) {
+                        if (!Current.InvokeAction(ActionIds.Activate)) {
+                            return false;
+                        }
+                        ClosePopup();
+                        return true;
+                    }
+                    var popup = Current.BuildPopup();
+                    if (popup != null) {
+                        OpenPopup(popup);
+                        return true;
+                    }
                     // Consume only when something actually activated; a focused element with no
                     // Activate action leaves the key unconsumed rather than silently eating it.
                     bool activated = Current.InvokeAction(ActionIds.Activate);
@@ -46,6 +60,10 @@ namespace DD2A11y.Core.Nav {
                     return activated;
                 }
                 case UiActions.Back:
+                    if (PopupOpen) {
+                        ClosePopup();
+                        return true;
+                    }
                     // Screen-level back/close: consume only if the root advertises a back action.
                     return Root != null && Root.InvokeAction(ActionIds.Back);
                 default:

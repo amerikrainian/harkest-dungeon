@@ -32,6 +32,11 @@ namespace DD2A11y.Core.Nav {
         /// <summary>The actions this element advertises. Navigators invoke them by id.</summary>
         public virtual IEnumerable<ElementAction> GetActions() { yield break; }
 
+        /// <summary>The option menu activating this element opens (a dropdown's choices), built
+        /// fresh per open, or null for an element that activates in place. When non-null, the
+        /// navigator opens it instead of invoking the activate action.</summary>
+        public virtual Popup? BuildPopup() => null;
+
         /// <summary>Find an advertised action by id and run it. Returns true if found.</summary>
         public bool InvokeAction(string id) {
             foreach (var a in GetActions()) {

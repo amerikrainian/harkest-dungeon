@@ -2,6 +2,8 @@
 
 ## V0.2.0
 
+- Dropdowns now open a menu on Enter: Up/Down move through the choices, Enter picks one,
+  Escape closes without changing anything. Left/Right no longer change a dropdown in place.
 - Patch notes are now supported, whoops?
 - We now have an installer and a release system.
 

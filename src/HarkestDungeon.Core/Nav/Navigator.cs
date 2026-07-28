@@ -17,6 +17,13 @@ namespace DD2A11y.Core.Nav {
         protected readonly List<UIElement> Path = new List<UIElement>();
         protected Container? Root { get; private set; }
 
+        // The open popup, with the screen tree it replaced saved for restore on close.
+        private Popup? _popup;
+        private Container? _savedRoot;
+        private List<UIElement>? _savedPath;
+
+        public bool PopupOpen => _popup != null;
+
         protected Navigator(Action<string, bool> speak) => _speak = speak;
 
         public UIElement? Current => Path.Count > 0 ? Path[Path.Count - 1] : null;
@@ -62,6 +69,15 @@ namespace DD2A11y.Core.Nav {
         /// screen name and then <see cref="AnnounceCurrent"/> for the landing. A null root detaches
         /// (no nav).</summary>
         public void Attach(Container? root) {
+            // A screen change closes any open popup; its game-side view dies with the screen,
+            // but the close hook still runs so a surviving one is torn down.
+            if (_popup != null) {
+                var closing = _popup;
+                _popup = null;
+                _savedRoot = null;
+                _savedPath = null;
+                closing.OnClosed?.Invoke();
+            }
             Root = root;
             Path.Clear();
             if (root != null) {
@@ -74,6 +90,52 @@ namespace DD2A11y.Core.Nav {
         }
 
         protected abstract void BuildInitialFocus();
+
+        /// <summary>Open a popup over the current tree: the focus path is saved, the popup
+        /// becomes the whole navigable tree, and the entry is announced like a screen entry -
+        /// the popup's label, then the landing (its first option; the cursor does not seek the
+        /// current choice, and no option is marked as it).</summary>
+        public void OpenPopup(Popup popup) {
+            ClosePopupState();
+            _savedRoot = Root;
+            _savedPath = new List<UIElement>(Path);
+            _popup = popup;
+            Root = popup.Root;
+            Path.Clear();
+            BuildInitialFocus();
+            Speak(popup.Root.Label ?? "", interrupt: true);
+            AnnounceCurrent();
+        }
+
+        /// <summary>Close the open popup and restore the saved focus path, re-announcing the
+        /// restored focus - the sole feedback for commit and cancel alike (a commit's new value
+        /// reads back as part of the restored line).</summary>
+        public void ClosePopup() {
+            if (_popup == null) {
+                return;
+            }
+            ClosePopupState();
+            if (Current != null) {
+                Speak(Current.GetFocusText(), interrupt: true);
+            }
+            SettleFocus();
+        }
+
+        private void ClosePopupState() {
+            if (_popup == null) {
+                return;
+            }
+            var closing = _popup;
+            _popup = null;
+            Root = _savedRoot;
+            Path.Clear();
+            if (_savedPath != null) {
+                Path.AddRange(_savedPath);
+            }
+            _savedRoot = null;
+            _savedPath = null;
+            closing.OnClosed?.Invoke();
+        }
 
         /// <summary>Recover focus after a dynamic rebuild: if the focused leaf was removed from the
         /// tree (its parent no longer lists it) or there is none, re-land on the root's first

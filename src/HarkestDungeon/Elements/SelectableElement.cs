@@ -13,8 +13,8 @@ namespace DD2A11y.Elements {
     /// A generic wrapper over a live uGUI <see cref="Selectable"/>: role and value follow the
     /// concrete type (button, toggle, slider, dropdown), activation goes through the uGUI submit
     /// handler so the game's own logic runs (Button.onClick, HighlightableButtonBhv submit
-    /// actions), and Left/Right adjust sliders and dropdowns in place. Tooltips in the row scope
-    /// become buffer lines.
+    /// actions), Left/Right adjust sliders in place, and Enter on a dropdown opens its choices
+    /// as an option popup. Tooltips in the row scope become buffer lines.
     /// </summary>
     public class SelectableElement : UIElement {
         protected readonly Selectable Selectable;
@@ -88,20 +88,36 @@ namespace DD2A11y.Elements {
                 yield break;
             }
             if (Selectable is TMP_Dropdown) {
-                yield return new ElementAction(ActionIds.Increase, () => AdjustDropdown(+1));
-                yield return new ElementAction(ActionIds.Decrease, () => AdjustDropdown(-1));
-                yield return new ElementAction(ActionIds.Activate, Submit);
-                yield break;
+                yield break; // Enter opens the option popup via BuildPopup
             }
             yield return new ElementAction(ActionIds.Activate, Submit);
         }
 
-        // A dropdown's ends are not a magnitude: on a clamped adjust, re-read the choice.
-        public override string GetAdjustText(string actionId, bool changed) {
-            if (!changed && Selectable is TMP_Dropdown) {
-                return GetValueText();
+        /// <summary>A dropdown's choices as an option popup: one action per option (committing
+        /// fires the game's own onValueChanged), read live from the dropdown. The game's own list
+        /// is shown alongside so the screen matches what the popup reads.</summary>
+        public override Popup BuildPopup() {
+            if (!(Selectable is TMP_Dropdown dropdown) || !dropdown.interactable) {
+                return null;
             }
-            return base.GetAdjustText(actionId, changed);
+            int count = dropdown.options?.Count ?? 0;
+            if (count == 0) {
+                return null;
+            }
+            var list = new Container(ContainerShape.VerticalList, Label);
+            for (int i = 0; i < count; i++) {
+                int index = i;
+                list.Add(new ActionElement(
+                    () => dropdown.options[index].text,
+                    null,
+                    () => dropdown.value = index)); // fires the game's onValueChanged
+            }
+            dropdown.Show();
+            return new Popup(list, () => {
+                if (dropdown != null) {
+                    dropdown.Hide();
+                }
+            });
         }
 
         private void AdjustSlider(int direction) {
@@ -111,18 +127,6 @@ namespace DD2A11y.Elements {
                 slider.value = Mathf.Clamp(slider.value + direction, slider.minValue, slider.maxValue);
             } else {
                 slider.normalizedValue = Mathf.Clamp01(slider.normalizedValue + direction * 0.05f);
-            }
-        }
-
-        private void AdjustDropdown(int direction) {
-            var dropdown = (TMP_Dropdown)Selectable;
-            int count = dropdown.options?.Count ?? 0;
-            if (count == 0) {
-                return;
-            }
-            int next = Mathf.Clamp(dropdown.value + direction, 0, count - 1);
-            if (next != dropdown.value) {
-                dropdown.value = next; // fires the game's onValueChanged
             }
         }
 

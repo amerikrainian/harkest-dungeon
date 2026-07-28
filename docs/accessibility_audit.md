@@ -73,6 +73,12 @@ Status: **works** (live-verified 2026-07-23)
 - Tab selector + active tab's rows in one vertical flow; rows: `OptionsItemBhv`
   toggles/sliders (labels/tooltips from loc keys), bespoke widgets (language dropdown verified)
   generically. Toggle round-trip and value re-announce verified.
+- Dropdowns open an option popup on Enter (live-verified 2026-07-28 on the graphics tab,
+  logical and device-level key paths): the dropdown label then the first option (the current
+  choice is never marked or sought), Up/Down move with no wrap, Enter commits (the game's own
+  onValueChanged) and Escape cancels - both close by re-reading the restored dropdown row, so
+  a commit reads back its new value. The game's own list is shown/hidden alongside
+  (`TMP_Dropdown.Show`/`Hide`), and a screen change tears an open popup down.
 - Remembered tab verified across close/reopen, including the corrective re-announce after the
   game's open animation stomps the tab back to the first one.
 - Escape closes in one press from both the title menu and pause (the game's own Escape is
