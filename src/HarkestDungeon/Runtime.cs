@@ -94,6 +94,7 @@ namespace DD2A11y {
             Router.Register(new BossSelectScreen());
             Router.Register(new TokenGlossaryScreen());
             Router.Register(new TutorialArchiveScreen());
+            Router.Register(new PatchNotesScreen());
             Router.Register(new InnResultsScreen());
             // The kingdom map's cell panels are stack screens over the map; the map itself
             // stands down to any pushed screen, so these register ahead of it and of the inn.

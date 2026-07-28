@@ -820,6 +820,26 @@ player-driven candle spends)
   including) the exit. The reroll variant of the item panel (`m_isRerollScreen`, after full
   completion) shares the class and should read identically but is decades of candles away.
 
+### Patch notes (`PatchNotesScreen`)
+Status: **works** (live-verified 2026-07-27; previously the generic floor, which swept only the
+Close button and never reached the notes themselves)
+- The patch notes overlay (`PatchNotesWidgetBhv`, a Modal-layer stack entry from the main menu
+  and PauseModal from pause - both routes verified), named by its own title label.
+- The pages are one element, not a text dump: the focus line is the current page's header (the
+  version heading), **Left/Right flip pages** through the widget's own `TryPreviousPage`/
+  `TryNextPage` (newest page first, so Right walks back through history; an end refuses and
+  reads "minimum"/"maximum"), and the whole page is the buffer, one line per note. Rich-text
+  style tags are stripped by the pipeline.
+- The prefab ships placeholder page text and the widget writes the real page during the
+  screen's own open step, so the page reads as nothing until `ScreenState == Open` and the
+  settle asks for one re-announce - the entry reads "Patch Notes" then the real version only.
+  The same gate covers a reopen, which would otherwise read the page left from last time
+  before the widget resets to the first (verified: paged deep, closed, reopened, read page 1).
+- Escape/Close close through the screen's own `TryCloseScreen`; the main menu re-announces.
+- Known gaps: the caption-less prev/next arrow buttons are deliberately out of the tree
+  (paging lives on the page element); no way to jump to a specific version; the Feedback flow
+  (controller-only Submit in the game's own handler) is unexplored.
+
 ### Token glossary (`TokenGlossaryScreen`)
 Status: **deployed, needs live pass** (previously the generic floor: a flat list of
 "button"-role rows named after the legend's first label, with no category info)
