@@ -38,7 +38,22 @@ Status: **works** (live-verified 2026-07-27)
 - Known gaps: the profile button reads the profile name (its "Change Profile" caption is a
   buffer line); list order is the game's serialized order, not visual.
 
-### Kingdoms menu (`KingdomMenuScreen`, kingdoms scene over MAIN_MENU)
+### Cinematics panel (`CinematicsPanelScreen`, on the title menu)
+Status: **works** (live-verified 2026-07-28)
+- The Watch Cinematics panel is a timeline-animated panel on the menu itself (no stack entry;
+  it locks every menu button while up - previously it read as the stale menu tree, bare
+  unavailable buttons). A dedicated screen outranks both menu readers while
+  `IsCinematicPanelActive()`: named from the game's own title, one vertical list of the
+  unlocked cinematic buttons then the panel's Back. The takeover holds until the landing
+  button is interactable and labeled (the open timeline fades the buttons in).
+- Escape closes through the game's own `CloseCinematicPanel`; the menu re-announces once its
+  close animation unlocks the buttons.
+- Playing a cinematic switches the game to CINEMATIC mode: the screen stands down and the
+  keyboard is released for the game's own skip flow (any key shows the skip dialog, holding
+  Space for a second skips - device-verified). On the revert the game itself has closed the
+  panel, so the menu re-announces.
+- Known gaps: the End cinematic button (unlocked by a "body" boss victory) is swept
+  generically but was inactive on the dev profile, so it is unverified.
 Status: **works** (live-verified 2026-07-26; save select built, untested - no kingdom save on
 the dev install)
 - The kingdoms scene loads additively over the title menu (the mode stays MAIN_MENU, nothing

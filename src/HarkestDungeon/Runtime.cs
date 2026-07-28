@@ -135,6 +135,9 @@ namespace DD2A11y {
             // The floor for any other pushed screen (node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());
+            // The title menu's cinematics panel overlays the menu inside the same MAIN_MENU
+            // mode, so it must outrank both menu readers.
+            Router.Register(new CinematicsPanelScreen());
             // The kingdoms scene overlays the title menu inside the same MAIN_MENU mode.
             Router.Register(new KingdomMenuScreen(speak));
             Router.Register(new MainMenuScreen());
