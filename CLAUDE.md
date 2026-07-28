@@ -77,7 +77,8 @@ that copies `HarkestDungeon.dll` + `HarkestDungeon.Core.dll` + `prism.dll` + `Mo
 `lang/*.txt` + `assets/audio` into `<GameDir>\BepInEx\plugins\HarkestDungeon\`. **Close the game
 first** or the dll copy is skipped (file locked) and you'll run a stale build.
 
-- `dotnet build HarkestDungeon.slnx -c Debug` - build all three projects and deploy.
+- `dotnet build HarkestDungeon.slnx -c Debug` - build all three projects and deploy (build.ps1
+  wraps this with game-dir checks; setup-bepinex.ps1 installs the vendored loader first).
 - `dotnet test HarkestDungeon.slnx` - run the unit suite (Core only; no game, no Unity).
 - `dotnet build -c Release` compiles without deploying.
 
@@ -108,6 +109,13 @@ update/repair/uninstall restore the dir exactly. Installer UI strings live in `i
   libclang + ninja for the wxWidgets build; both probed from Visual Studio installs).
 - `test-installer.ps1` - the installer unit suite (`cargo test`; tests live in the lib target
   because the exe embeds a requireAdministrator manifest).
+- `build_release.ps1` - the distributable `releases\HarkestDungeon-v<version>.zip` (vendored
+  BepInEx layout + Release plugin output; the zip root is the game folder).
+- `create-release.ps1 v<version>` - `gh release create` for a pushed tag with the zip + installer
+  exe, notes lifted from that version's `CHANGELOG.md` section.
+- End-to-end without a published release: `HARKEST_DUNGEON_INSTALLER_RELEASES_URL` points the
+  installer at a locally served releases JSON, and `cargo run --release --example cli` runs the
+  CLI without the exe's elevation manifest (the dev game dir is user-writable).
 
 ## Dev driver (in-process HTTP server) - for iteration, not a player feature
 

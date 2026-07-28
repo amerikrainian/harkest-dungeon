@@ -50,6 +50,10 @@ impl Asset {
 }
 
 pub fn fetch_releases() -> Result<Vec<ReleaseInfo>, String> {
+    // HARKEST_DUNGEON_INSTALLER_RELEASES_URL overrides the feed so an end-to-end
+    // test can point at a locally served release.
+    let url = std::env::var("HARKEST_DUNGEON_INSTALLER_RELEASES_URL")
+        .unwrap_or_else(|_| GITHUB_RELEASES_URL.to_string());
     let client = Client::builder()
         .user_agent("HarkestDungeonInstaller")
         .timeout(std::time::Duration::from_secs(30))
@@ -57,7 +61,7 @@ pub fn fetch_releases() -> Result<Vec<ReleaseInfo>, String> {
         .map_err(|e| format!("Failed to create HTTP client: {e}"))?;
 
     let response = client
-        .get(GITHUB_RELEASES_URL)
+        .get(&url)
         .send()
         .map_err(|e| format!("Failed to connect to GitHub: {e}"))?;
 

@@ -1,0 +1,141 @@
+# Publish a GitHub release for an existing, pushed tag: uploads the mod zip and the
+# installer exe from releases\ with notes taken from the tag's CHANGELOG.md section.
+# Run build_release.ps1 and build-installer.ps1 first.
+#
+# Adapted from the Non-Visual Calculus installer by Rashad Naqeeb (MIT),
+# https://github.com/rashadnaqeeb/NonVisualCalculus
+
+param(
+    [Parameter(Mandatory = $true, Position = 0)]
+    [ValidateNotNullOrEmpty()]
+    [string]$VersionTag
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+function Fail {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Message
+    )
+
+    [Console]::Error.WriteLine($Message)
+    exit 1
+}
+
+function Invoke-Checked {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Description,
+
+        [Parameter(Mandatory = $true)]
+        [scriptblock]$Command
+    )
+
+    & $Command
+    if ($LASTEXITCODE -ne 0) {
+        Fail "$Description failed with exit code $LASTEXITCODE."
+    }
+}
+
+function Get-ChangelogSection {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ChangelogPath,
+
+        [Parameter(Mandatory = $true)]
+        [string]$ReleaseTitle
+    )
+
+    $lines = Get-Content -LiteralPath $ChangelogPath
+    $heading = "## $ReleaseTitle"
+    $startIndex = -1
+
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i].Trim() -eq $heading) {
+            $startIndex = $i
+            break
+        }
+    }
+
+    if ($startIndex -lt 0) {
+        Fail "Could not find changelog section '$heading' in $ChangelogPath."
+    }
+
+    $endIndex = $lines.Count
+    for ($i = $startIndex + 1; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '^##\s+') {
+            $endIndex = $i
+            break
+        }
+    }
+
+    $sectionLines = @()
+    if ($endIndex -gt ($startIndex + 1)) {
+        $sectionLines = $lines[($startIndex + 1)..($endIndex - 1)]
+    }
+
+    $section = ($sectionLines -join [Environment]::NewLine).Trim()
+    if ([string]::IsNullOrWhiteSpace($section)) {
+        Fail "Changelog section '$heading' is empty."
+    }
+
+    return $section
+}
+
+# The installer finds the mod zip by the asset name pattern HarkestDungeon-v<maj>.<min>.<patch>.zip
+# and parses that version with semver, so only a strict three-part tag produces a release it can consume.
+if ($VersionTag -notmatch '^v\d+\.\d+\.\d+$') {
+    Fail "Version tag must be lowercase 'v' plus a three-part version, for example v1.0.0."
+}
+
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$releaseDir = Join-Path $scriptDir "releases"
+$changelogPath = Join-Path $scriptDir "CHANGELOG.md"
+$zipPath = Join-Path $releaseDir "HarkestDungeon-$VersionTag.zip"
+$installerPath = Join-Path $releaseDir "HarkestDungeonInstaller.exe"
+$releaseTitle = "V$($VersionTag.Substring(1))"
+
+Push-Location $scriptDir
+try {
+    $null = & git rev-parse --verify --quiet "refs/tags/$VersionTag"
+    if ($LASTEXITCODE -ne 0) {
+        Fail "Tag '$VersionTag' does not exist in the local repository."
+    }
+
+    if (-not (Test-Path -LiteralPath $zipPath -PathType Leaf)) {
+        Fail "Release zip not found: $zipPath"
+    }
+
+    if (-not (Test-Path -LiteralPath $installerPath -PathType Leaf)) {
+        Fail "Installer not found: $installerPath"
+    }
+
+    $null = & git ls-remote --exit-code --tags origin "refs/tags/$VersionTag"
+    if ($LASTEXITCODE -ne 0) {
+        Fail "Tag '$VersionTag' does not exist on remote 'origin'."
+    }
+
+    $releaseNotes = Get-ChangelogSection -ChangelogPath $changelogPath -ReleaseTitle $releaseTitle
+    $notesFile = Join-Path ([System.IO.Path]::GetTempPath()) "HarkestDungeon-$VersionTag-release-notes.md"
+    Set-Content -LiteralPath $notesFile -Value $releaseNotes -Encoding UTF8
+
+    try {
+        if ($null -eq (Get-Command gh -ErrorAction SilentlyContinue)) {
+            Fail "GitHub CLI executable 'gh' was not found on PATH."
+        }
+
+        Invoke-Checked "GitHub release creation" {
+            & gh release create $VersionTag $zipPath $installerPath --title $releaseTitle --notes-file $notesFile
+        }
+    }
+    finally {
+        if (Test-Path -LiteralPath $notesFile) {
+            Remove-Item -LiteralPath $notesFile -Force
+        }
+    }
+}
+finally {
+    Pop-Location
+}
