@@ -15,7 +15,7 @@ namespace DD2A11y {
         private void Awake() {
             Log = Logger;
             try {
-                Runtime = new Runtime(Path.GetDirectoryName(Info.Location), Version);
+                Runtime = new Runtime(Path.GetDirectoryName(Info.Location), Version, Config);
             } catch (Exception ex) {
                 Logger.LogError("Harkest Dungeon failed to initialize: " + ex);
                 return;

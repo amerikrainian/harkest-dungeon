@@ -4,8 +4,12 @@ using System.Text;
 namespace DD2A11y.Core.Text {
     /// <summary>Joins the non-empty parts of one spoken line.</summary>
     public static class SpokenLine {
-        /// <summary>Non-empty parts joined with ", " (the standard announcement separator).</summary>
-        public static string Join(params string?[] parts) => Join(", ", parts);
+        /// <summary>The standard announcement separator, player-configurable through the mod
+        /// settings (<see cref="Settings.ModSettings.Separator"/>).</summary>
+        public static string Separator = ", ";
+
+        /// <summary>Non-empty parts joined with the standard announcement separator.</summary>
+        public static string Join(params string?[] parts) => Join(Separator, parts);
 
         public static string Join(string separator, IEnumerable<string?> parts) {
             var sb = new StringBuilder();

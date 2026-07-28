@@ -175,6 +175,13 @@ namespace DD2A11y.Core.Strings {
             // Echo of an erased character; {0} = the character.
             D("EditDeleted", "{0} deleted"),
 
+            // The mod's own tab on the game's settings screen.
+            D("TabModSettings", "mod settings"),
+            // The separator joining the parts of a spoken line ("Exit game, button"). Noun phrase.
+            D("SettingSeparator", "announcement separator"),
+            // Spoken when committing an empty value returns a setting to its default.
+            D("SettingReset", "reset to default"),
+
             // Crossroads (the pre-run hub). Section names for the two hero strips; the game shows
             // these visually with no header string to reuse. Nouns.
             D("CrossroadsParty", "party"),
@@ -503,6 +510,9 @@ namespace DD2A11y.Core.Strings {
         public static string EditStarted => T("EditStarted");
         public static string EditSpace => T("EditSpace");
         public static string EditDeleted(string character) => F("EditDeleted", character);
+        public static string TabModSettings => T("TabModSettings");
+        public static string SettingSeparator => T("SettingSeparator");
+        public static string SettingReset => T("SettingReset");
         public static string RoleDropdown => T("RoleDropdown");
         public static string RoleTab => T("RoleTab");
         public static string RoleHero => T("RoleHero");

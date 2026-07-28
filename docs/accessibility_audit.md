@@ -77,8 +77,24 @@ Status: **works** (live-verified 2026-07-23)
   game's open animation stomps the tab back to the first one.
 - Escape closes in one press from both the title menu and pause (the game's own Escape is
   two-stage on mouse+keyboard; we fold it).
+- **Mod settings tab** appended after the game's tabs (live-verified 2026-07-27): mod-authored
+  rows instead of swept widgets, currently the announcement separator - a free-text field
+  (`TextEntryElement` + `ModTextEdit`). Enter opens the mod's own typing mode - "editing,
+  enter when done" then the bare-Enter outcome spoken as a hint (the suggested value is spoken
+  rather than prefilled, so typing starts clean) - with layout-aware characters echoed,
+  Backspace erasing, and Escape cancelling with a full row re-read. Enter commits and the new
+  separator applies to every announcement immediately; committing nothing resets to the
+  default (", "). The session dies silently with its owner (closing the screen under an open
+  edit never wedges the keys - live-verified), and the IME is enabled per session so CJK
+  composition can type into the mod-drawn field (composition owns Enter/Escape; not yet
+  live-verified with a CJK IME).
+  Persisted through BepInEx config (values quote-wrapped so a separator's edge spaces survive
+  the config parser's trim), verified across a game restart. The value reads spelled character
+  by character (a separator is punctuation, inaudible whole). While the mod tab is up the
+  game's own tab state is untouched; a mouse click on a game tab leaves it.
 - Known gaps: keybind rows read as bare buttons (no rebind flow); DEBUG-tab filter field
-  unhandled; sliders speak normalized percent, not the game's display value.
+  unhandled; sliders speak normalized percent, not the game's display value; the mod tab is
+  invisible to sighted users (no game-side tab button is injected).
 
 ### Pause menu (`PauseScreen`)
 Status: **works** (live-verified 2026-07-23)

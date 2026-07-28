@@ -43,8 +43,11 @@ namespace DD2A11y {
         private string _lastTickError;
         private float _lastTickErrorTime;
         private bool _wasTyping;
+        private readonly ModTextEdit _textEdit;
 
-        public Runtime(string pluginDir, string version) {
+        public Core.Settings.ModSettings Settings { get; }
+
+        public Runtime(string pluginDir, string version, BepInEx.Configuration.ConfigFile config) {
             _backend = new PrismBackend();
             if (Environment.GetEnvironmentVariable("DD2A11Y_NO_SPEECH") == "1") {
                 Plugin.Log.LogInfo("speech: skipped (DD2A11Y_NO_SPEECH=1)");
@@ -72,6 +75,9 @@ namespace DD2A11y {
 
             Core.Text.SpriteText.Resolver = Game.SpriteWords.Resolve;
 
+            Settings = new Core.Settings.ModSettings(new Settings.BepInExSettingsStore(config));
+            _textEdit = new ModTextEdit(speak, () => Router.Active);
+
             _audioEngine = new Audio.NAudioEngine(Path.Combine(pluginDir, "assets", "audio"));
             Audio = _audioEngine;
             _roadSense = new Game.RoadSense(Audio, speak, Gate);
@@ -80,7 +86,7 @@ namespace DD2A11y {
             _crossroads = new CrossroadsScreen(speak);
             Router.Register(new ConfirmationScreen());
             Router.Register(new UiModalScreen());
-            Router.Register(new OptionsScreen());
+            Router.Register(new OptionsScreen(Settings, _textEdit, speak));
             Router.Register(new PauseScreen());
             Router.Register(new CharacterSheetScreen());
             Router.Register(new LootScreen());
@@ -167,7 +173,7 @@ namespace DD2A11y {
             // earlier in the same frame, so that key is still this frame's press and would
             // otherwise immediately re-fire as ours (reopening the edit it just closed).
             Input.SuppressAll = () => {
-                bool typing = Game.TextEntry.IsTyping;
+                bool typing = Game.TextEntry.IsTyping || _textEdit.Active;
                 bool suppress = typing || _wasTyping;
                 _wasTyping = typing;
                 return suppress;
@@ -275,6 +281,7 @@ namespace DD2A11y {
                 Router.Tick();
                 _roadSense.Tick();
                 Gate.Reassert();
+                _textEdit.Tick();
                 Input.Tick(Time.unscaledTimeAsDouble);
             } catch (Exception ex) {
                 // Log loudly but without flooding: a fault here repeats every frame.
