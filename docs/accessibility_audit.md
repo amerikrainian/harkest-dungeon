@@ -825,11 +825,17 @@ Status: **works** (live-verified 2026-07-27; previously the generic floor, which
 Close button and never reached the notes themselves)
 - The patch notes overlay (`PatchNotesWidgetBhv`, a Modal-layer stack entry from the main menu
   and PauseModal from pause - both routes verified), named by its own title label.
-- The pages are one element, not a text dump: the focus line is the current page's header (the
-  version heading), **Left/Right flip pages** through the widget's own `TryPreviousPage`/
-  `TryNextPage` (newest page first, so Right walks back through history; an end refuses and
-  reads "minimum"/"maximum"), and the whole page is the buffer, one line per note. Rich-text
-  style tags are stripped by the pipeline.
+- Not a text dump: the page's header (the version heading) is the first row and **each note is
+  its own row**, arrowed through like any list, so the player can walk the changes at their own
+  pace instead of stepping a buffer. Rows read their line live by index off the widget's label;
+  a page flip rebuilds them.
+- **Left/Right flip pages from anywhere on the screen** (the screen's own `HandleAction`, not
+  an element's adjust) through the widget's `TryPreviousPage`/`TryNextPage` - newest page
+  first, so Right walks back through history. A page runs to dozens of notes, so paging must
+  not mean arrowing back to the top. A flip lands focus on the new page's header, the only
+  honest place to leave it (every note below belongs to a page that is now gone); at either
+  end the refused flip re-reads the current header. Rich-text style tags are stripped by the
+  pipeline.
 - The prefab ships placeholder page text and the widget writes the real page during the
   screen's own open step, so the page reads as nothing until `ScreenState == Open` and the
   settle asks for one re-announce - the entry reads "Patch Notes" then the real version only.
@@ -837,8 +843,10 @@ Close button and never reached the notes themselves)
   before the widget resets to the first (verified: paged deep, closed, reopened, read page 1).
 - Escape/Close close through the screen's own `TryCloseScreen`; the main menu re-announces.
 - Known gaps: the caption-less prev/next arrow buttons are deliberately out of the tree
-  (paging lives on the page element); no way to jump to a specific version; the Feedback flow
-  (controller-only Submit in the game's own handler) is unexplored.
+  (paging is the screen's); no way to jump to a specific version; the Feedback flow
+  (controller-only Submit in the game's own handler) is unexplored; Home/End move within the
+  focused list rather than the whole screen, so End from the notes reaches Close but Home from
+  them lands on the first note, not the header.
 
 ### Token glossary (`TokenGlossaryScreen`)
 Status: **deployed, needs live pass** (previously the generic floor: a flat list of

@@ -7,11 +7,9 @@ using TMPro;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// The patch notes pages as one control: the focus line is the current page's header line
-    /// (the version heading), Left/Right flip pages through the widget's own methods (newest
-    /// page first, so Right goes further back), and the buffer carries the whole page a line at
-    /// a time. Both flip actions are always advertised - the widget refuses at the ends and the
-    /// unchanged header reads back as "minimum"/"maximum".
+    /// The header row at the top of the patch notes: the current page's version heading, and
+    /// the line source the screen reads its note rows from. Paging itself lives on the screen
+    /// (Left/Right anywhere), so this element carries no actions.
     /// </summary>
     public sealed class PatchNotesPageElement : UIElement {
         private static readonly AccessTools.FieldRef<PatchNotesWidgetBhv, TextMeshProUGUI> TextField =
@@ -30,16 +28,23 @@ namespace DD2A11y.Elements {
 
         public override bool CanFocus => _widget != null && _widget.gameObject.activeInHierarchy;
 
-        public override string Value {
-            get {
-                foreach (var line in SpokenLine.NonEmptyLines(PageText())) {
+        public override string Value => Line(0);
+
+        /// <summary>The page's line at <paramref name="index"/> (0 = the version header), or null
+        /// past its end. Read live, so a row always speaks the page currently shown.</summary>
+        public string Line(int index) {
+            int i = 0;
+            foreach (var line in SpokenLine.NonEmptyLines(PageText())) {
+                if (i++ == index) {
                     return line;
                 }
-                return null;
             }
+            return null;
         }
 
-        private string PageText() {
+        /// <summary>The raw page text, for the screen's rebuild check. Null until the widget has
+        /// written the page it settles on.</summary>
+        public string PageText() {
             if (!_ready()) {
                 return null;
             }
@@ -47,15 +52,9 @@ namespace DD2A11y.Elements {
             return text == null ? null : text.text;
         }
 
+        // No adjust actions: paging is the screen's, live from anywhere on it.
         public override IEnumerable<ElementAction> GetActions() {
-            yield return new ElementAction(ActionIds.Increase, _widget.TryNextPage);
-            yield return new ElementAction(ActionIds.Decrease, _widget.TryPreviousPage);
-        }
-
-        public override IEnumerable<string> GetBufferLines() {
-            foreach (var line in SpokenLine.NonEmptyLines(PageText())) {
-                yield return line;
-            }
+            yield break;
         }
     }
 }
