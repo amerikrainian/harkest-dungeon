@@ -43,7 +43,9 @@ namespace DD2A11y.Dev {
             public void Dispose() { }
         }
 
+        // Debug builds only: a shipped release must not carry a loopback eval server.
         public static DevServer TryStart(Runtime runtime) {
+#if DEBUG
             if (Environment.GetEnvironmentVariable("DD2A11Y_NO_DEV") == "1") {
                 return null;
             }
@@ -60,6 +62,9 @@ namespace DD2A11y.Dev {
                 Plugin.Log.LogError("dev http: failed to start: " + ex.Message);
                 return null;
             }
+#else
+            return null;
+#endif
         }
 
         private DevServer(Runtime runtime, int port) {
