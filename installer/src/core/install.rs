@@ -319,7 +319,7 @@ mod tests {
         assert!(safe_zip_entry_name("../../evil.dll").is_none());
         assert!(safe_zip_entry_name("C:/evil.dll").is_none());
         assert!(safe_zip_entry_name("/evil.dll").is_none());
-        assert!(safe_zip_entry_name("BepInEx/plugins/DD2A11y/DD2A11y.dll").is_some());
+        assert!(safe_zip_entry_name("BepInEx/plugins/HarkestDungeon/HarkestDungeon.dll").is_some());
     }
 
     #[test]
@@ -358,8 +358,8 @@ mod tests {
             &zip_path,
             &[
                 (paths::PLUGIN_REL, "plugin"),
-                ("BepInEx/plugins/DD2A11y/lang/en.txt", "strings"),
-                ("BepInEx/plugins/DD2A11y/prism.dll", "speech"),
+                ("BepInEx/plugins/HarkestDungeon/lang/en.txt", "strings"),
+                ("BepInEx/plugins/HarkestDungeon/prism.dll", "speech"),
                 ("winhttp.dll", "loader"),
             ],
         );
@@ -375,7 +375,7 @@ mod tests {
 
         assert!(manifest.backups.is_empty());
         assert!(dir.path().join(paths::PLUGIN_REL).exists());
-        assert!(dir.path().join("BepInEx/plugins/DD2A11y/prism.dll").exists());
+        assert!(dir.path().join("BepInEx/plugins/HarkestDungeon/prism.dll").exists());
         assert!(matches!(
             classify_install(dir.path()),
             InstallState::Managed(_)
@@ -521,7 +521,7 @@ mod tests {
             &zip1,
             &[
                 (paths::PLUGIN_REL, "plugin"),
-                ("BepInEx/plugins/DD2A11y/Mono.CSharp.dll", "eval"),
+                ("BepInEx/plugins/HarkestDungeon/Mono.CSharp.dll", "eval"),
             ],
         );
         let m1 = install_from_zip(
@@ -544,7 +544,7 @@ mod tests {
         )
         .unwrap();
 
-        assert!(!dir.path().join("BepInEx/plugins/DD2A11y/Mono.CSharp.dll").exists());
+        assert!(!dir.path().join("BepInEx/plugins/HarkestDungeon/Mono.CSharp.dll").exists());
         assert_eq!(
             fs::read_to_string(dir.path().join(paths::PLUGIN_REL)).unwrap(),
             "plugin v2"

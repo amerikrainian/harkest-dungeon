@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="src/DD2A11y.Core/DD2A11y.Core.csproj" />
-  <Project Path="src/DD2A11y/DD2A11y.csproj" />
-  <Project Path="src/DD2A11y.Tests/DD2A11y.Tests.csproj" />
-</Solution>

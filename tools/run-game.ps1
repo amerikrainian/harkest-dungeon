@@ -7,7 +7,7 @@ $ErrorActionPreference = 'Continue'
 try { Stop-Process -Name 'Darkest Dungeon II' -Force -ErrorAction Stop; Start-Sleep -Seconds 2 } catch {}
 
 if (-not $NoBuild) {
-    dotnet build "$PSScriptRoot\..\DD2A11y.slnx" -c Debug
+    dotnet build "$PSScriptRoot\..\HarkestDungeon.slnx" -c Debug
     if ($LASTEXITCODE -ne 0) { exit 1 }
 }
 

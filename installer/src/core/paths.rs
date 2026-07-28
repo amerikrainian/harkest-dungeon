@@ -16,9 +16,9 @@ pub const GAME_FOLDERS: &[&str] = &["Darkest Dungeon\u{ae} II", "Darkest Dungeon
 // The game is Mono: IronCrown.dll is the game-code assembly, in the managed dir
 // of every install, so together with the exe it identifies the game dir.
 pub const GAME_ASSEMBLY_MARKER: &str = "Darkest Dungeon II_Data/Managed/IronCrown.dll";
-pub const PLUGIN_REL: &str = "BepInEx/plugins/DD2A11y/DD2A11y.dll";
-pub const MANIFEST_REL: &str = "BepInEx/config/DD2A11y/install.json";
-pub const BACKUPS_REL: &str = "BepInEx/config/DD2A11y/backups";
+pub const PLUGIN_REL: &str = "BepInEx/plugins/HarkestDungeon/HarkestDungeon.dll";
+pub const MANIFEST_REL: &str = "BepInEx/config/HarkestDungeon/install.json";
+pub const BACKUPS_REL: &str = "BepInEx/config/HarkestDungeon/backups";
 
 pub fn manifest_path(game_dir: &Path) -> PathBuf {
     game_dir.join(MANIFEST_REL)

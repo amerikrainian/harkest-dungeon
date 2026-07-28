@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <!-- Namespaces keep the DD2A11y working name. -->
     <RootNamespace>DD2A11y.Core</RootNamespace>
   </PropertyGroup>
 </Project>

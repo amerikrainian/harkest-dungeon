@@ -58,7 +58,7 @@ namespace DD2A11y.Tests {
 
         private static string RepoRoot() {
             var dir = new DirectoryInfo(AppContext.BaseDirectory);
-            while (dir != null && !File.Exists(Path.Combine(dir.FullName, "DD2A11y.slnx"))) {
+            while (dir != null && !File.Exists(Path.Combine(dir.FullName, "HarkestDungeon.slnx"))) {
                 dir = dir.Parent;
             }
             Assert.NotNull(dir);

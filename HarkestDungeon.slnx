@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/HarkestDungeon.Core/HarkestDungeon.Core.csproj" />
+  <Project Path="src/HarkestDungeon/HarkestDungeon.csproj" />
+  <Project Path="src/HarkestDungeon.Tests/HarkestDungeon.Tests.csproj" />
+</Solution>

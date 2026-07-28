@@ -5,7 +5,7 @@ using BepInEx.Logging;
 using UnityEngine;
 
 namespace DD2A11y {
-    [BepInPlugin("dd2a11y", "Harkest Dungeon", Version)]
+    [BepInPlugin("harkestdungeon", "Harkest Dungeon", Version)]
     public sealed class Plugin : BaseUnityPlugin {
         public const string Version = "0.2.0";
 
@@ -17,7 +17,7 @@ namespace DD2A11y {
             try {
                 Runtime = new Runtime(Path.GetDirectoryName(Info.Location), Version);
             } catch (Exception ex) {
-                Logger.LogError("DD2A11y failed to initialize: " + ex);
+                Logger.LogError("Harkest Dungeon failed to initialize: " + ex);
                 return;
             }
 
@@ -28,7 +28,7 @@ namespace DD2A11y {
                 Runtime?.Dispose();
                 Runtime = null;
             };
-            Logger.LogInfo("DD2A11y " + Version + " loaded.");
+            Logger.LogInfo("Harkest Dungeon " + Version + " loaded.");
         }
 
         private void OnDestroy() {

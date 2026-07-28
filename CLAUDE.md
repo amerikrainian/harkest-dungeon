@@ -1,9 +1,10 @@
 # Harkest Dungeon - Claude Code Instructions
 
-**Harkest Dungeon** (code identifiers keep the working name DD2A11y - projects, namespaces, DLLs,
-the plugin folder, the BepInEx GUID) makes **Darkest Dungeon II** playable by blind users. Speech
-is the sole interface, so if something fails silently, speaks stale data, or omits information,
-the player has no way to know. A logged failure is actionable; a silent one is invisible.
+**Harkest Dungeon** (namespaces and the dev env vars keep the working name DD2A11y; projects,
+DLLs, the plugin folder, and the BepInEx GUID carry the public name) makes **Darkest Dungeon II**
+playable by blind users. Speech is the sole interface, so if something fails silently, speaks
+stale data, or omits information, the player has no way to know. A logged failure is actionable;
+a silent one is invisible.
 
 The mod owns the keyboard whenever a supported screen is up: it builds a navigable tree from the
 live game UI, moves a mod-side focus with the arrow keys, and speaks each landing tersely. Detail
@@ -21,7 +22,7 @@ screen's own methods), never synthetic OS input.
   `Directory.Build.local.props`). Steam app id **1940340**.
 - Loader: **BepInEx 5.4.23 win-x64** (vendored in `third_party/bepinex/`, already installed in the
   game dir). Plugins run on the game's Mono runtime, so all projects that load in-game target
-  **net472**; `DD2A11y.Core` targets netstandard2.0 so the net8 test project can consume it.
+  **net472**; `HarkestDungeon.Core` targets netstandard2.0 so the net8 test project can consume it.
 - UI middleware: **uGUI + TextMeshPro**, wrapped in the game's own screen framework (`UiScreenBhv`
   screens on a `ScreenStackBhv` stack, `GameModeMgr` modes for full-scene screens). Input is the
   **Unity Input System ONLY** - the legacy `UnityEngine.Input` API throws
@@ -31,7 +32,7 @@ screen's own methods), never synthetic OS input.
   Localization is the game's own `Localization` singleton (`GetString(locKey)`).
 - Speech backend is **Prism** (https://github.com/ethindp/prism), bound via hand-written P/Invoke
   against `prism.dll`, vendored in `third_party/prism/` and deployed into the plugin folder.
-- Logs: BepInEx logging with a `[DD2A11y]` source into `<game>\BepInEx\LogOutput.log` (truncated
+- Logs: BepInEx logging with a `[Harkest Dungeon]` source into `<game>\BepInEx\LogOutput.log` (truncated
   each launch).
 
 ## Decompiled reference
@@ -71,13 +72,13 @@ Key game surfaces (paths relative to `game/IronCrown`):
 
 ## Build & deploy
 
-`dotnet build` is the whole loop. The `DD2A11y` project has a post-build target (Debug only) that
-copies `DD2A11y.dll` + `DD2A11y.Core.dll` + `prism.dll` + `Mono.CSharp.dll` + `lang/*.txt` into
-`<GameDir>\BepInEx\plugins\DD2A11y\`. **Close the game first** or the dll copy is skipped (file
-locked) and you'll run a stale build.
+`dotnet build` is the whole loop. The `HarkestDungeon` project has a post-build target (Debug only)
+that copies `HarkestDungeon.dll` + `HarkestDungeon.Core.dll` + `prism.dll` + `Mono.CSharp.dll` +
+`lang/*.txt` + `assets/audio` into `<GameDir>\BepInEx\plugins\HarkestDungeon\`. **Close the game
+first** or the dll copy is skipped (file locked) and you'll run a stale build.
 
-- `dotnet build DD2A11y.slnx -c Debug` - build all three projects and deploy.
-- `dotnet test DD2A11y.slnx` - run the unit suite (Core only; no game, no Unity).
+- `dotnet build HarkestDungeon.slnx -c Debug` - build all three projects and deploy.
+- `dotnet test HarkestDungeon.slnx` - run the unit suite (Core only; no game, no Unity).
 - `dotnet build -c Release` compiles without deploying.
 
 **Build Debug to test.** Only Debug deploys; `-c Release` proves compilation but leaves a stale
@@ -99,7 +100,7 @@ https://github.com/rashadnaqeeb/NonVisualCalculus). It detects the Steam install
 `libraryfolders.vdf`; `DD2_DIR` overrides - `detect::game_candidates` keeps a per-store framework,
 Steam being the only store the game is sold on), downloads the newest `HarkestDungeon-vX.Y.Z.zip`
 asset from the GitHub releases, verifies its sha256 digest, extracts it over the game dir backing
-up any overwritten file, and records everything in `BepInEx/config/DD2A11y/install.json` so
+up any overwritten file, and records everything in `BepInEx/config/HarkestDungeon/install.json` so
 update/repair/uninstall restore the dir exactly. Installer UI strings live in `installer/src/i18n.rs`
 (English only, matching `lang/`).
 
@@ -143,14 +144,14 @@ so an unattended session doesn't depend on a running screen reader.
 
 Three projects:
 
-- **`DD2A11y.Core`** (netstandard2.0) - engine-agnostic logic: the speech pipeline, text filter,
+- **`HarkestDungeon.Core`** (netstandard2.0, namespace `DD2A11y.Core`) - engine-agnostic logic: the speech pipeline, text filter,
   the authored-strings table + translations, the navigator/container model, the input registry,
   and the **buffer system**. References nothing external (no Unity, no BepInEx) so it stays
   unit-testable off-engine. If a piece of code decides what words the user hears, it belongs here.
-- **`DD2A11y`** (net472) - the BepInEx plugin: entry (`Plugin`), the Prism P/Invoke backend, the
+- **`HarkestDungeon`** (net472, namespace `DD2A11y`) - the BepInEx plugin: entry (`Plugin`), the Prism P/Invoke backend, the
   one pump MonoBehaviour, the input gate, the dev server, and the game-coupled side of every
   screen: adapters that read live game state and screen classes that build navigable trees.
-- **`DD2A11y.Tests`** (net8.0 + xUnit) - references Core only. No Unity, no game launch.
+- **`HarkestDungeon.Tests`** (net8.0 + xUnit) - references Core only. No Unity, no game launch.
 
 **Screen model.** `ScreenRouter` (plugin) resolves the active surface once per frame, in priority
 order: topmost modal (a live `ConfirmationDialogBhv`/`UiModalBhv`) -> topmost supported
