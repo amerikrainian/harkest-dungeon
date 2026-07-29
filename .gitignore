@@ -3,6 +3,6 @@ bin/
 obj/
 .vs/
 *.user
-game/
+/game/
 installer/target/
 releases/

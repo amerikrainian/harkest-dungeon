@@ -1,0 +1,459 @@
+using System.Collections.Generic;
+using Assets.Code.Actor;
+using Assets.Code.Actor.Events;
+using Assets.Code.Affinity.Events;
+using Assets.Code.Bark.Events;
+using Assets.Code.Buff;
+using Assets.Code.Buff.Events;
+using Assets.Code.Combat;
+using Assets.Code.Combat.Events;
+using Assets.Code.Dot;
+using Assets.Code.Dot.Events;
+using Assets.Code.Events;
+using Assets.Code.Game;
+using Assets.Code.Library;
+using Assets.Code.Quirk;
+using Assets.Code.Quirk.Events;
+using Assets.Code.Run.Events;
+using Assets.Code.Skill;
+using Assets.Code.Skill.Events;
+using Assets.Code.Source;
+using Assets.Code.Token;
+using Assets.Code.Token.Events;
+using Assets.Code.Utils;
+using DD2A11y.Core.Text;
+using S = DD2A11y.Core.Strings.Strings;
+
+namespace DD2A11y.Game {
+    /// <summary>
+    /// Battle-event lines: game events compose a spoken line the moment they fire (names read
+    /// while the state is current) into a pending queue; the combat screen's pump drains it,
+    /// announcing each line and appending it to the combat log. Covered: damage (with crits),
+    /// heals, stress, meltdowns, misses and dodges, death's door falls and survivals, deaths,
+    /// retreat outcomes, wave starts, the final round, wounds, token/dot/buff/quirk gains and
+    /// losses, affinity changes, barks, objective completions, and what enemies do - never the
+    /// player's own skill picks. Display gates mirror the game's own pop-text handlers, so
+    /// what a sighted player sees pop is what gets spoken.
+    /// </summary>
+    public static class CombatEvents {
+        private static readonly List<string> _pending = new List<string>();
+        private static bool _attached;
+
+        /// <summary>Idempotent; first called when the combat screen resolves.</summary>
+        public static void Attach() {
+            if (_attached) {
+                return;
+            }
+            _attached = true;
+            EventManager.AddListener<EventActorHealthDamage>(HandleDamage);
+            EventManager.AddListener<EventActorHealthHeal>(HandleHeal);
+            EventManager.AddListener<EventActorDeath>(HandleDeath);
+            EventManager.AddListener<EventSelectActor>(HandleActorPick);
+            EventManager.AddListener<EventTokenAdded>(HandleTokenAdded);
+            EventManager.AddListener<EventTokenConsumed>(HandleTokenConsumed);
+            EventManager.AddListener<EventTokenNegated>(HandleTokenNegated);
+            EventManager.AddListener<EventDotAdded>(HandleDotAdded);
+            EventManager.AddListener<EventBuffAdded>(HandleBuffAdded);
+            EventManager.AddListener<EventQuirkAdded>(HandleQuirkAdded);
+            EventManager.AddListener<EventActorResist>(HandleResist);
+            EventManager.AddListener<EventStressDamage>(HandleStressDamage);
+            EventManager.AddListener<EventStressHeal>(HandleStressHeal);
+            EventManager.AddListener<EventActorOverstress>(HandleOverstress);
+            EventManager.AddListener<EventActorSurviveDeathsDoor>(HandleSurviveDeathsDoor);
+            EventManager.AddListener<EventActorWoundApplied>(HandleWound);
+            EventManager.AddListener<EventSkillFinalizeResults>(HandleSkillResults);
+            EventManager.AddListener<EventBattleRetreat>(HandleRetreat);
+            EventManager.AddListener<EventBattleRetreatFailed>(HandleRetreatFailed);
+            EventManager.AddListener<EventBattleBegin>(HandleBattleBegin);
+            EventManager.AddListener<EventFinalRound>(HandleFinalRound);
+            EventManager.AddListener<EventAffinityTickTriggerApplied>(HandleAffinityTick);
+            EventManager.AddListener<EventBark>(HandleBark);
+            EventManager.AddListener<EventRunGoalCompleted>(HandleGoalCompleted);
+            ToastEvents.Attach();
+        }
+
+        public static IReadOnlyList<string> Drain() {
+            if (_pending.Count == 0) {
+                return null;
+            }
+            var drained = new List<string>(_pending);
+            _pending.Clear();
+            return drained;
+        }
+
+        public static void Clear() => _pending.Clear();
+
+        /// <summary>An already-composed line for the pump to announce (the toast patches feed
+        /// through here too).</summary>
+        internal static void Enqueue(string line) {
+            if (!string.IsNullOrWhiteSpace(line)) {
+                _pending.Add(line);
+            }
+        }
+
+        private static bool InCombat => GameModeMgr.CurrentMode == GameModeType.COMBAT;
+
+        private static void HandleDamage(EventActorHealthDamage evt) {
+            if (!InCombat) {
+                return;
+            }
+            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            int damage = (int)evt.m_HealthDamage;
+            if (name == null || damage <= 0) {
+                return;
+            }
+            if (evt.m_IsCrit) {
+                _pending.Add(S.CombatTookDamageCrit(name, damage));
+            } else {
+                _pending.Add(damage == 1 ? S.CombatTookDamageOne(name) : S.CombatTookDamage(name, damage));
+            }
+            if (evt.IsEnteringDeathsDoor) {
+                _pending.Add(S.CombatDeathsDoor(name));
+            }
+        }
+
+        // The model event fires once per heal regardless of which of the game's two display
+        // paths shows it, so no HasDisplayed gate here - every heal speaks exactly once.
+        private static void HandleHeal(EventActorHealthHeal evt) {
+            if (!InCombat || evt.m_SourceType == SourceType.DEBUG) {
+                return;
+            }
+            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            int amount = (int)System.Math.Ceiling(evt.m_HealthHeal);
+            if (name == null || amount <= 0) {
+                return;
+            }
+            _pending.Add(evt.m_IsCrit ? S.CombatHealedCrit(name, amount) : S.CombatHealed(name, amount));
+        }
+
+        private static void HandleDeath(EventActorDeath evt) {
+            if (!InCombat) {
+                return;
+            }
+            string name = Actors.Name(Actors.Get(evt.m_DyingActorGuid)) ?? GameLoc.TryGet(evt.m_DyingActorDataId);
+            if (name != null) {
+                _pending.Add(S.CombatDied(name));
+            }
+        }
+
+        // A token landed on someone ("Audrey gained Weak"), honoring the game's own pop-text
+        // visibility gate so hidden or load-restored applications stay silent. The name is the
+        // game's own token string (a glyph, spoken through the sprite words) with the game's own
+        // count format when stacked.
+        private static void HandleTokenAdded(EventTokenAdded evt) {
+            if (!InCombat || !evt.m_IsPopTextValid) {
+                return;
+            }
+            string owner = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string token = TokenDescription.GetNameString(evt.m_TokenId);
+            if (owner == null || string.IsNullOrEmpty(token)) {
+                return;
+            }
+            if (evt.m_AddAmount > 1) {
+                string plural = GameLoc.TryGet("token_amount_format_plural");
+                if (plural != null) {
+                    token = string.Format(plural, token, evt.m_AddAmount);
+                }
+            }
+            _pending.Add(S.CombatGained(owner, token));
+        }
+
+        // A token was used up powering its effect ("Dismas spent Block" explains why a hit dealt
+        // half damage). Only instant consumes speak, and only for tokens the game itself pops.
+        private static void HandleTokenConsumed(EventTokenConsumed evt) {
+            if (!InCombat || evt.m_TokenConsumeType != TokenConsumeType.INSTANT) {
+                return;
+            }
+            var definition = SingletonMonoBehaviour<Library<string, TokenDefinition>>.Instance
+                .GetLibraryElement(evt.m_TokenId);
+            if (definition != null && !definition.m_ShowConsumePopText) {
+                return;
+            }
+            string owner = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string token = TokenDescription.GetNameString(evt.m_TokenId);
+            if (owner != null && !string.IsNullOrEmpty(token)) {
+                _pending.Add(S.CombatSpent(owner, token));
+            }
+        }
+
+        // A token was destroyed by an effect ("Widow lost Stealth").
+        private static void HandleTokenNegated(EventTokenNegated evt) {
+            if (!InCombat || !evt.m_IsPopTextValid) {
+                return;
+            }
+            string owner = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string token = TokenDescription.GetNameString(evt.m_NegatedTokenId);
+            if (owner != null && !string.IsNullOrEmpty(token)) {
+                _pending.Add(S.CombatLost(owner, token));
+            }
+        }
+
+        // A damage-over-time landed ("Dismas gained stress").
+        private static void HandleDotAdded(EventDotAdded evt) {
+            if (!InCombat) {
+                return;
+            }
+            string owner = Actors.Name(evt.m_Actor);
+            string dot = evt.m_DotDefinition == null ? null : DotDescription.GetName(evt.m_DotDefinition.m_Type);
+            if (owner != null && !string.IsNullOrEmpty(dot)) {
+                _pending.Add(S.CombatGained(owner, dot));
+            }
+        }
+
+        // A stat buff or debuff landed; the spoken line carries the game's own stat text
+        // ("Audrey gained +25% DMG") with the full breakdown living in her combatant buffer.
+        private static void HandleBuffAdded(EventBuffAdded evt) {
+            if (!InCombat || !evt.SourceType.m_IsPopTextEligible || !evt.Buff.m_showPopText) {
+                return;
+            }
+            bool isBuff = evt.Buff.IsEligibleToShowAsBuffPopText;
+            if (!isBuff && !evt.Buff.IsEligibleToShowAsDebuffPopText) {
+                return;
+            }
+            string owner = Actors.Name(Actors.Get(evt.TargetActorGuid));
+            if (owner == null) {
+                return;
+            }
+            string text = BuffDescription.GetDescription(evt.Buff, addLineOnActorDataEffect: false);
+            if (string.IsNullOrWhiteSpace(text)) {
+                text = isBuff ? S.SpriteBuff : S.SpriteDebuff;
+            } else {
+                text = SpokenLine.Join(", ", text.Split('\n'));
+            }
+            _pending.Add(S.CombatGained(owner, text));
+        }
+
+        // A quirk contracted mid-battle (a meltdown's aftermath); the source gate is the game's
+        // own pop-text condition.
+        private static void HandleQuirkAdded(EventQuirkAdded evt) {
+            if (!InCombat) {
+                return;
+            }
+            bool hasSource = !string.IsNullOrEmpty(evt.m_SourceId);
+            bool shown = evt.m_SourceType == SourceType.SKILL || evt.m_SourceType == SourceType.RETREAT
+                || evt.m_SourceType == SourceType.REST_ITEM || evt.m_SourceType == SourceType.INN
+                || evt.m_SourceType == SourceType.STORY || evt.m_SourceType == SourceType.OVERSTRESS
+                || (evt.m_SourceType == SourceType.QUIRK && hasSource)
+                || (evt.m_SourceType == SourceType.DISEASE && hasSource)
+                || (evt.m_SourceType == SourceType.CURSE && hasSource)
+                || (evt.m_SourceType == SourceType.TRINKET && hasSource);
+            if (!shown) {
+                return;
+            }
+            var actor = Actors.Get(evt.m_ActorGuid);
+            string owner = Actors.Name(actor);
+            var definition = SingletonMonoBehaviour<Library<string, QuirkDefinition>>.Instance
+                .GetLibraryElement(evt.m_QuirkId);
+            if (owner == null || definition == null) {
+                return;
+            }
+            _pending.Add(S.CombatGained(owner, QuirkDescription.GetNameString(definition, actor, appendRareIcon: false)));
+        }
+
+        // An applied effect bounced off ("Woodsman resisted Blight") - without this line, a
+        // skill whose rider fails reads as unexplained silence after its damage.
+        private static void HandleResist(EventActorResist evt) {
+            if (!InCombat || !evt.m_IsPopTextValid) {
+                return;
+            }
+            string owner = Actors.Name(Actors.Get(evt.m_TargetActorGuid));
+            if (owner == null) {
+                return;
+            }
+            string what = GameLoc.TryGet("dot_name_" + evt.m_ResistId)
+                ?? GameLoc.TryGet("token_name_" + evt.m_ResistId)
+                ?? evt.m_ResistId;
+            _pending.Add(S.CombatResisted(owner, what));
+        }
+
+        private static void HandleStressDamage(EventStressDamage evt) {
+            if (!InCombat) {
+                return;
+            }
+            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            int amount = (int)evt.m_StressDamageAmount;
+            if (name != null && amount > 0) {
+                _pending.Add(S.CombatStressed(name, amount));
+            }
+        }
+
+        // Overstress-sourced stress restores are the meltdown's own reset; the meltdown lines
+        // already cover that moment.
+        private static void HandleStressHeal(EventStressHeal evt) {
+            if (!InCombat || evt.m_SourceType == SourceType.OVERSTRESS) {
+                return;
+            }
+            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            int amount = (int)evt.m_StressHealAmount;
+            if (name != null && amount > 0) {
+                _pending.Add(S.CombatStressHealed(name, amount));
+            }
+        }
+
+        // Stress hit its cap: the game's own "resolve is tested" line, then the outcome by the
+        // game's name for it ("Dismas gained Meltdown").
+        private static void HandleOverstress(EventActorOverstress evt) {
+            if (!InCombat || evt.m_OverstressDefinition == null) {
+                return;
+            }
+            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            if (name == null) {
+                return;
+            }
+            string tested = GameLoc.TryGet("actor_resolve_is_tested_label");
+            if (tested != null) {
+                _pending.Add(string.Format(tested, name));
+            }
+            string outcome = GameLoc.TryGet("overstress_" + evt.m_OverstressDefinition.m_Id)
+                ?? evt.m_OverstressDefinition.m_Id;
+            _pending.Add(S.CombatGained(name, outcome));
+        }
+
+        private static void HandleSurviveDeathsDoor(EventActorSurviveDeathsDoor evt) {
+            if (!InCombat) {
+                return;
+            }
+            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            if (name != null) {
+                _pending.Add(S.CombatDeathBlowResisted(name));
+            }
+        }
+
+        private static void HandleWound(EventActorWoundApplied evt) {
+            if (!InCombat || !evt.m_SourceType.m_IsPopTextEligible) {
+                return;
+            }
+            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            if (name != null) {
+                _pending.Add(evt.m_WoundPercentChange > 0f ? S.CombatWounded(name) : S.CombatWoundHealed(name));
+            }
+        }
+
+        // The finalized skill outcome carries the whiffs: a miss is the attacker's failure, a
+        // dodge the target's save - the same split the game's MISS/DODGE pop text draws. Damage,
+        // heals, and riders speak from their own events.
+        private static void HandleSkillResults(EventSkillFinalizeResults evt) {
+            if (!InCombat || evt.ActorResults == null) {
+                return;
+            }
+            foreach (var result in evt.ActorResults) {
+                if (result == null || result.IsHit) {
+                    continue;
+                }
+                string target = Actors.Name(Actors.Get(result.m_TargetActorGuid));
+                if (target == null) {
+                    continue;
+                }
+                if (result.IsMiss) {
+                    string performer = Actors.Name(Actors.Get(evt.PerformerGuid));
+                    if (performer != null) {
+                        _pending.Add(S.CombatMissed(performer, target));
+                    }
+                } else {
+                    _pending.Add(S.CombatDodged(target));
+                }
+            }
+        }
+
+        private static void HandleRetreat(EventBattleRetreat evt) {
+            if (!InCombat) {
+                return;
+            }
+            Enqueue(GameLoc.TryGet("pop_text_retreat_success"));
+        }
+
+        private static void HandleRetreatFailed(EventBattleRetreatFailed evt) {
+            if (!InCombat) {
+                return;
+            }
+            Enqueue(GameLoc.TryGet("pop_text_retreat_fail"));
+        }
+
+        // A follow-up wave of a chained fight opened ("Battle 2"), with the game's own label.
+        private static void HandleBattleBegin(EventBattleBegin evt) {
+            if (!InCombat || evt.m_battleIndex <= 0) {
+                return;
+            }
+            string format = GameLoc.TryGet("battle_number_start_label");
+            if (format != null) {
+                _pending.Add(string.Format(format, evt.m_battleIndex + 1));
+            }
+        }
+
+        private static void HandleFinalRound(EventFinalRound evt) {
+            if (!InCombat) {
+                return;
+            }
+            Enqueue(GameLoc.TryGet("final_round_label"));
+        }
+
+        // The relationship meter between two heroes moved ("Dismas and Audrey, affinity +1").
+        private static void HandleAffinityTick(EventAffinityTickTriggerApplied evt) {
+            if (!InCombat || evt.m_AffinityTickTriggerInstance == null) {
+                return;
+            }
+            var instance = evt.m_AffinityTickTriggerInstance;
+            var guids = instance.m_Connection?.ActorGuids;
+            if (guids == null || guids.Count < 2) {
+                return;
+            }
+            string first = Actors.Name(Actors.Get(guids[0]));
+            string second = Actors.Name(Actors.Get(guids[1]));
+            if (first == null || second == null || instance.m_LeaningChange == 0) {
+                return;
+            }
+            string change = instance.m_LeaningChange > 0
+                ? "+" + instance.m_LeaningChange : instance.m_LeaningChange.ToString();
+            _pending.Add(S.CombatAffinity(first, second, change));
+        }
+
+        // A speech bubble ("Dismas: I've had worse odds"); the key is already resolved to the
+        // specific line by the game's bark selection.
+        private static void HandleBark(EventBark evt) {
+            if (!InCombat) {
+                return;
+            }
+            string speaker = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string text = GameLoc.TryGet(evt.m_BarkKey);
+            if (text == null) {
+                Plugin.Log.LogWarning($"CombatEvents: bark key \"{evt.m_BarkKey}\" has no localized text");
+                return;
+            }
+            _pending.Add(speaker == null ? text : S.BarkLine(speaker, text));
+        }
+
+        private static void HandleGoalCompleted(EventRunGoalCompleted evt) {
+            if (!InCombat) {
+                return;
+            }
+            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            if (name != null) {
+                _pending.Add(S.ToastObjective(name));
+            }
+        }
+
+        // An AI target pick: the same event a player click sends, distinguished by
+        // isUserInput=false with an enemy holding the turn. Announces what the enemy does; the
+        // player's own picks stay silent (their outcomes speak instead).
+        private static void HandleActorPick(EventSelectActor evt) {
+            if (!InCombat || evt.m_IsUserInput || !SingletonMonoBehaviour<CombatBhv>.HasInstance()) {
+                return;
+            }
+            var combat = SingletonMonoBehaviour<CombatBhv>.Instance;
+            if (combat.CurrentBattleState == BattleState.INACTIVE) {
+                return;
+            }
+            var performer = Actors.Get(combat.CurrentActorGuid);
+            if (performer == null || performer.TeamIndex == 0) {
+                return;
+            }
+            string skillId = performer.SelectedSkillId;
+            var skill = Actors.Skill(skillId);
+            string skillName = skill == null ? null : SkillDescription.GetNameText(skill);
+            string target = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            if (skillName != null && target != null) {
+                _pending.Add(S.CombatUsedSkill(Actors.Name(performer), skillName, target));
+            }
+        }
+    }
+}
