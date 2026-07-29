@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Assets.Code.UI.Screens;
 using DD2A11y.Core.Nav;
 using DD2A11y.Core.Text;
 
@@ -11,12 +10,12 @@ namespace DD2A11y.Elements {
     /// reveal - the game's own Submit step.
     /// </summary>
     public sealed class AltarRevealElement : UIElement {
-        private readonly AltarItemSubScreenBhv _panel;
+        private readonly Action _resume;
         private readonly Func<string> _name;
         private readonly Func<string> _description;
 
-        public AltarRevealElement(AltarItemSubScreenBhv panel, Func<string> name, Func<string> description) {
-            _panel = panel;
+        public AltarRevealElement(Action resume, Func<string> name, Func<string> description) {
+            _resume = resume;
             _name = name;
             _description = description;
         }
@@ -37,7 +36,7 @@ namespace DD2A11y.Elements {
         }
 
         public override IEnumerable<ElementAction> GetActions() {
-            yield return new ElementAction(ActionIds.Activate, () => _panel.OnTimelineResume());
+            yield return new ElementAction(ActionIds.Activate, _resume);
         }
 
         private IEnumerable<string> DescriptionLines() {

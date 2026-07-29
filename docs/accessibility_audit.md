@@ -835,7 +835,10 @@ player-driven candle spends; Living City 2026-07-28, purchases unexercised)
   profile has not earned reads its state plus "unavailable" and carries the game's own
   unlock-requirement line in the buffer (the game swaps it into the row's tooltip binding
   on `SetLocked`); an earned row toggles with Enter and reads back its new state. The
-  profile saves through the panel's own close (Escape).
+  profile saves through the panel's own close (Escape). The option rows spawn a beat after
+  the stack entry appears, so the screen follows an instance-id signature and re-announces
+  when the first fill lands late - a one-shot build entered on the entry frame stayed
+  empty forever (observed live 2026-07-28).
 - **The Living City reads as hero rows** (`AltarClassScreen` over
   `AltarClassSubScreenBhv`): the candle balance, then one horizontal row per roster hero -
   the hero's icon button first (name + the track's spent/total binding), then the track's
@@ -886,9 +889,19 @@ player-driven candle spends; Living City 2026-07-28, purchases unexercised)
   mid-reroll Escape answers "unavailable" because a paid reroll must pick an offer.
   Unexercised live: an actual memory purchase, the reroll flow, and a natural locked slot
   (all need a run-survived hero on the profile).
-- Known gaps: the cosmetics region sub-screen (The Mountain) is unbuilt - profile-locked
-  until all heroes unlock; reuse the recollection pattern (`AltarItemRewardButtonBhv`
-  categories + reveal) when it opens. The hub's milestone pool
+- **The Mountain reads as the cosmetic panel** (`AltarCosmeticScreen` +
+  `AltarCosmeticRevealScreen` over `AltarCosmeticSubScreenBhv`; browse side live-verified
+  2026-07-28 via the game's own unlock-cosmetic-altar dev pref - the profile has it
+  legitimately locked): the candle balance, then one reward button per hero ("Man-at-Arms,
+  0/6, 3 candles") named by the class string of the button's unlock-track id (the sighted
+  button is a bare portrait), through the shared `AltarUnlockButtonElement` (now
+  generalized over presenting/resume delegates instead of the item panel type). A
+  DLC-locked hero button reads "unavailable" with the game's caption in the buffer and
+  Enter raises the game's own store dialog (the game's release handler). The reveal screen
+  mirrors the recollection's but needs no name-match gate: the cosmetic panel writes
+  item_name/item_desc synchronously when a purchase lands, so presenting plus a non-empty
+  description is current by construction. Unexercised live: purchases, the reveal, and the
+  DLC-locked read. The hub's milestone pool
   readouts (candle-threshold rewards) were empty on the intro altar and are unread. Embark's press is verified only up to (not
   including) the exit. The reroll variant of the item panel (`m_isRerollScreen`, after full
   completion) shares the class and should read identically but is decades of candles away.

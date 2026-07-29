@@ -10,6 +10,10 @@
   tooltip in the buffer). Enter on an empty slot lists the memory choices with costs; Enter
   buys and assigns, Escape backs out. Rerolling a filled memory is Enter on it once the
   reroll milestone is bought.
+- The Altar of Hope's Mountain (cosmetics, once unlocked) now reads: one button per hero
+  with unlock progress and cost, Enter pulls a random weapon kit or palette, and the reveal
+  reads like the Working Fields one.
+- The Dam no longer risks opening empty when its option rows arrive late.
 - A locked Altar of Hope region ("The Mountain") now carries its unlock requirement in the
   buffer instead of a bare "unavailable".
 - Up from the top hero row of an altar track panel now reaches the candle balance; it used

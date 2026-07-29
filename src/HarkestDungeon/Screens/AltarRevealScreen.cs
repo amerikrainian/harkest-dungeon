@@ -51,7 +51,7 @@ namespace DD2A11y.Screens {
         public override Container BuildRoot(object target) {
             var panel = (AltarItemSubScreenBhv)target;
             var root = new RootContainer(ContainerShape.VerticalList, back: panel.OnTimelineResume);
-            root.Add(new AltarRevealElement(panel,
+            root.Add(new AltarRevealElement(panel.OnTimelineResume,
                 () => {
                     var context = PanelContextField(panel);
                     return context == null ? null : Core.Text.TextFilter.Clean(context.GetStringValue("item_name"));

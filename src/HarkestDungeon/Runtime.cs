@@ -117,7 +117,9 @@ namespace DD2A11y {
             // The altar's reveal modal outranks its recollection panel, which outranks the
             // floor (label-only buttons, no reveals).
             Router.Register(new AltarRevealScreen());
+            Router.Register(new AltarCosmeticRevealScreen());
             Router.Register(new AltarRecollectionScreen());
+            Router.Register(new AltarCosmeticScreen());
             Router.Register(new AltarClassScreen());
             Router.Register(new AltarGeneralScreen());
             Router.Register(new AltarMemoryScreen());
