@@ -797,8 +797,7 @@ unexercised - it fires once per run, early in the drive)
   assumes a boss, so the run dead-ends with End Expedition as the only exit (observed live
   2026-07-24).
 
-### Altar of Hope (`AltarScreen` + `AltarRecollectionScreen` + `AltarRevealScreen` +
-`AltarClassScreen`, ALTAR_OF_HOPE mode)
+### Altar of Hope (`AltarScreen` hub + one screen per panel, ALTAR_OF_HOPE mode)
 Status: **works** (live-verified 2026-07-24 on the first-visit intro altar, including
 player-driven candle spends; Living City 2026-07-28, purchases unexercised)
 - The hub (previously dead air - the altar is a mode surface with no stack entry): the
@@ -807,10 +806,24 @@ player-driven candle spends; Living City 2026-07-28, purchases unexercised)
   `altar_region_<key>_name` strings; a region the game has disabled reads "unavailable" -
   the game locks by disabling the Selectable COMPONENT, which a generic sweep misses - with
   the sub-screen's own unlock requirement in the buffer, the text the sighted lock tooltip
-  shows: "Unlock all heroes to gain access to The Mountain"), then Embark. Enter on a
-  region is the game's own submit (opens its sub-screen); Embark drives `OnEmbark` with its
-  spend-your-candles-first reminder dialog; Escape opens the pause menu.
-- A recollection panel (`AltarItemSubScreenBhv`, "The Working Fields") reads: balance, the
+  shows: "Unlock all heroes to gain access to The Mountain"), then **The Recollection**
+  (the collection gallery has NO region marker - the sighted path is the panel tab bar, so
+  the hub lists it after the regions, opening through the collection's own
+  `ToggleSubScreenElement`; hidden on the intro altar like its bar button), then Embark.
+  Enter on a region is the game's own submit (opens its sub-screen); Embark drives
+  `OnEmbark` with its spend-your-candles-first reminder dialog; Escape opens the pause menu.
+- **The Recollection reads as the collection gallery** (`AltarCollectionScreen` over
+  `AltarCollectionSubscreenBhv`, live-verified 2026-07-28; always unlocked): a filter tab
+  selector first (All Items, Combat Items, Trinkets, ... - Left/Right switch via the
+  panel's own `OnInventoryFilterPressed`, rebuilding the list), then every collected item
+  as a browse-only row - title, "New" while the game's unviewed marker shows (the game
+  clears it for the next visit as it lists the item), full item tooltip in the buffer. The
+  game lists items one per frame, so the tree follows the live set by instance-id
+  signature, reusing elements so focus holds while rows fill in below.
+- The item-unlock panel (`AltarItemScreen` - renamed from AltarRecollectionScreen; the
+  game's "The Recollection" is the gallery above, while this panel's progress line merely
+  says "Recollection: 9/163") over `AltarItemSubScreenBhv`, "The Working Fields", reads:
+  balance, the
   total line ("Recollection: 3/163"), and the unlock-category buttons with progress and
   cost composed from their bindings ("Trinkets, 1/73, 1 candle" - authored plural for the
   cost the game shows as icon+number). Enter purchases in ONE press by driving the game's

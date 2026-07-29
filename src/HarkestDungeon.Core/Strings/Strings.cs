@@ -212,8 +212,8 @@ namespace DD2A11y.Core.Strings {
             // A tab or panel with nothing in it yet (the relationships tab before a run), where
             // the game shows blank space. Adjective.
             D("PanelEmpty", "empty"),
-            // Prefix on an archive tutorial the game marks with its unviewed notification
-            // icon. Adjective.
+            // Prefix on an entry the game marks with its unviewed notification icon (an
+            // archive tutorial, a collection item). Adjective.
             D("TutorialNew", "New"),
 
             // Combat. The battle status line, spoken on turn changes and as the header readout;

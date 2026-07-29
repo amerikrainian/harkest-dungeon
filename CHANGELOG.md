@@ -10,6 +10,10 @@
   tooltip in the buffer). Enter on an empty slot lists the memory choices with costs; Enter
   buys and assigns, Escape backs out. Rerolling a filled memory is Enter on it once the
   reroll milestone is bought.
+- The Altar of Hope's Recollection (the collection gallery of every item you have
+  unlocked) is now reachable: it sits after the six regions on the altar list, since the
+  game gives it no map marker of its own. Left/Right on its filter tab switch categories;
+  each item reads its name, "New" on first viewing, and its full tooltip in the buffer.
 - The Altar of Hope's Mountain (cosmetics, once unlocked) now reads: one button per hero
   with unlock progress and cost, Enter pulls a random weapon kit or palette, and the reveal
   reads like the Working Fields one.

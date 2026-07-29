@@ -9,16 +9,18 @@ using UnityEngine.UI;
 
 namespace DD2A11y.Screens {
     /// <summary>
-    /// An altar recollection panel (an <c>AltarItemSubScreenBhv</c> pushed by a region -
-    /// "The Working Fields" spends candles on random item unlocks). Layout: the candle
+    /// The altar's item-unlock panel (<c>AltarItemSubScreenBhv</c> - "The Working Fields"
+    /// spends candles on random item unlocks; not to be confused with "The Recollection",
+    /// the browse-only gallery on <see cref="AltarCollectionScreen"/>). Layout: the candle
     /// balance, the total progress line ("Recollection: 0/163"), then the unlock-category
     /// buttons with their progress and cost ("Trinkets, 0/73, 1 candle"). Enter purchases in
     /// one press; the reveal that follows is read by its modal screen, and on return focus
-    /// lands back on the purchased category with its updated counts. Escape closes the panel
-    /// through its own close flow (a raw stack pop would leave the altar's region markers
-    /// disabled).
+    /// lands back on the purchased category with its updated counts. Also matches the
+    /// panel's reroll variant, which replaces it once all items are collected. Escape closes
+    /// the panel through its own close flow (a raw stack pop would leave the altar's region
+    /// markers disabled).
     /// </summary>
-    public sealed class AltarRecollectionScreen : GameScreen {
+    public sealed class AltarItemScreen : GameScreen {
         private static readonly AccessTools.FieldRef<AltarItemSubScreenBhv, DataContextBhv> PanelContextField =
             AccessTools.FieldRefAccess<AltarItemSubScreenBhv, DataContextBhv>("m_dataContextBhv");
 
