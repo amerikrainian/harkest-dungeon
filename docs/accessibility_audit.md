@@ -859,6 +859,15 @@ player-driven candle spends; Living City 2026-07-28, purchases unexercised)
   the tree follows an instance-id signature, reusing built rows to keep focus. Escape
   closes through `CloseSubscreen` (the same region-marker trap as the recollection panel).
   Purchase paths are code-verified only (candle spends not exercised live).
+- **The Intrepid Coast reads as upgrade-track rows** (`AltarGeneralScreen` over
+  `AltarGeneralSubScreenBhv`, live-verified 2026-07-28): the candle balance, then one
+  horizontal row per stat track (Journey, Resourcefulness, Companionship, Renown, The
+  Infernal Flame) - the track's icon button first (name + spent/total; the game binds the
+  loc KEY `altar_upgrade_<id>` as the raw context value, so the mod localizes it), then the
+  milestone diamonds with reward names, costs, and buffer descriptions, all through the
+  shared `AltarTrackElement`/`AltarMilestoneElement`. Enter on the icon banks one candle
+  (`OnTrackSpendAttempt`), Enter on a diamond buys up to it; spends not exercised live.
+  Escape closes through `CloseSubscreen` (region markers re-enable, verified).
 - Known gaps: the remaining region sub-screens (hero memories, cosmetics - further
   progress-track surfaces) are unbuilt; build them as they unlock, reusing
   `AltarMilestoneElement` where they carry milestone diamonds. The hub's milestone pool

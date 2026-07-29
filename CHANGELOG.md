@@ -2,6 +2,9 @@
 
 ## V0.2.0
 
+- The Altar of Hope's Intrepid Coast now reads as upgrade-track rows, same layout as the
+  Living City: Up/Down pick a stat track, Left/Right walk its milestones, Enter invests or
+  buys.
 - A locked Altar of Hope region ("The Mountain") now carries its unlock requirement in the
   buffer instead of a bare "unavailable".
 - Up from the top hero row of an altar track panel now reaches the candle balance; it used
@@ -9,9 +12,7 @@
 - The Altar of Hope's Living City now reads as hero rows: Up/Down pick a hero, Left/Right
   walk that hero's milestone track (each reward named with its candle cost, "unlocked" once
   bought, details in the buffer). Enter on a milestone buys everything up to it in one
-  press; Enter on the hero invests one candle at a time. Previously the milestones read as
-  an undifferentiated list of "New Skill" buttons and no purchase was possible at all (the
-  game only sold them through click-and-hold).
+  press; Enter on the hero invests one candle at a time.
 - Tooltip layout spacer lines no longer land in the buffer as silent presses.
 - Dropdowns now open a menu on Enter: Up/Down move through the choices, Enter picks one,
   Escape closes without changing anything. Left/Right no longer change a dropdown in place.

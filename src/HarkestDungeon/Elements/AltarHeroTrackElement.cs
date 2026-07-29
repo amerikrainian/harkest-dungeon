@@ -1,31 +1,21 @@
 using System.Collections.Generic;
-using Assets.Code.Data;
 using Assets.Code.UI;
 using DD2A11y.Core.Nav;
-using DD2A11y.Core.Speech;
-using DD2A11y.Core.Text;
-using HarmonyLib;
-using S = DD2A11y.Core.Strings.Strings;
 using UnityEngine.UI;
 
 namespace DD2A11y.Elements {
     /// <summary>
     /// A hero's icon button heading the hero's milestone row on the altar's Living City
     /// panel: the game's own hero name, with the track's spent/total candles. Enter is the
-    /// game's own icon click - one candle into the track (partial progress banks toward the
-    /// next milestone), or the store dialog on a DLC hero - and reads back the moved total,
-    /// or "unavailable" when the spend no-ops (no candles, track full). A hero locked behind
-    /// their quest reads "unavailable" from the game-disabled button, with the game's own
-    /// lock caption in the buffer.
+    /// game's own icon click - one candle into the track, or the store dialog on a DLC hero.
+    /// A hero locked behind their quest reads "unavailable" from the game-disabled button,
+    /// with the game's own lock caption in the buffer.
     /// </summary>
-    public sealed class AltarHeroTrackElement : SelectableElement {
-        private static readonly AccessTools.FieldRef<AltarProgressTrackBaseBhv, DataContextBhv> ContextField =
-            AccessTools.FieldRefAccess<AltarProgressTrackBaseBhv, DataContextBhv>("m_dataContextBhv");
-
+    public sealed class AltarHeroTrackElement : AltarTrackElement {
         private readonly AltarClassHeroBhv _hero;
 
         public AltarHeroTrackElement(AltarClassHeroBhv hero, Selectable selectable)
-            : base(selectable, () => HeroName(hero)) {
+            : base(hero, selectable, () => HeroName(hero)) {
             _hero = hero;
         }
 
@@ -37,31 +27,13 @@ namespace DD2A11y.Elements {
             return string.IsNullOrEmpty(name) ? context.GetStringValue("locked_label") : name;
         }
 
-        private string Total => ContextField(_hero).GetStringValue("track_total_spent");
-
-        public override string Value {
-            get {
-                string total = Total;
-                return Selectable != null && !Selectable.interactable
-                    ? SpokenLine.Join(total, S.StatusUnavailable)
-                    : total;
+        protected override void Spend() {
+            string before = Total;
+            _hero.OnIconClick();
+            if (string.IsNullOrEmpty(ContextField(_hero).GetStringValue("actor_name"))) {
+                return; // a DLC row's click opens the store dialog, which announces itself
             }
-        }
-
-        public override IEnumerable<ElementAction> GetActions() {
-            if (Selectable == null || !Selectable.interactable) {
-                yield break;
-            }
-            yield return new ElementAction(ActionIds.Activate, () => {
-                string before = Total;
-                _hero.OnIconClick();
-                if (string.IsNullOrEmpty(ContextField(_hero).GetStringValue("actor_name"))) {
-                    return; // a DLC row's click opens the store dialog, which announces itself
-                }
-                string after = Total;
-                SpeechPipeline.Instance?.Speak(after != before ? after : S.StatusUnavailable,
-                    interrupt: true);
-            });
+            SpeakSpendResult(before);
         }
 
         public override IEnumerable<string> GetBufferLines() {
