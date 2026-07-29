@@ -20,6 +20,8 @@ namespace DD2A11y.Elements {
     public class AltarTrackElement : SelectableElement {
         internal static readonly AccessTools.FieldRef<AltarProgressTrackBaseBhv, DataContextBhv> ContextField =
             AccessTools.FieldRefAccess<AltarProgressTrackBaseBhv, DataContextBhv>("m_dataContextBhv");
+        private static readonly AccessTools.FieldRef<AltarProgressTrackBaseBhv, Assets.Code.Unlock.UnlockTrackDefinition> DefinitionField =
+            AccessTools.FieldRefAccess<AltarProgressTrackBaseBhv, Assets.Code.Unlock.UnlockTrackDefinition>("m_unlockTrackDefinition");
 
         private readonly AltarProgressTrackBaseBhv _track;
 
@@ -29,6 +31,13 @@ namespace DD2A11y.Elements {
         }
 
         protected string Total => ContextField(_track).GetStringValue("track_total_spent");
+
+        /// <summary>The game's display name for a track: the loc string of its unlock-track
+        /// id ("altar_upgrade_memory" is "Memory") - the same key family the stat panel binds.</summary>
+        internal static string TrackName(AltarProgressTrackBaseBhv track) {
+            var definition = DefinitionField(track);
+            return definition == null ? null : Game.GameLoc.TryGet("altar_upgrade_" + definition.m_Id);
+        }
 
         public override string Value {
             get {

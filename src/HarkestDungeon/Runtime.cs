@@ -120,6 +120,7 @@ namespace DD2A11y {
             Router.Register(new AltarRecollectionScreen());
             Router.Register(new AltarClassScreen());
             Router.Register(new AltarGeneralScreen());
+            Router.Register(new AltarMemoryScreen());
             Router.Register(new AltarOptionsScreen());
             // The inn's station sub-screens, each outranking the floor's label-only sweep.
             // The store screen also serves road merchants (the Hoarder).

@@ -4,7 +4,6 @@ using DD2A11y.Core.Nav;
 using DD2A11y.Elements;
 using DD2A11y.Game;
 using S = DD2A11y.Core.Strings.Strings;
-using UnityEngine;
 
 namespace DD2A11y.Screens {
     /// <summary>
@@ -22,8 +21,7 @@ namespace DD2A11y.Screens {
 
         public override string Name {
             get {
-                var anchor = FindChild(_panel != null ? _panel.transform : null, "exit_anchor");
-                string title = anchor == null ? null : UiText.FirstLabel(anchor.gameObject);
+                string title = UiText.ChildLabel(_panel != null ? _panel.gameObject : null, "exit_anchor");
                 return string.IsNullOrEmpty(title) ? S.ScreenGeneric : title;
             }
         }
@@ -44,18 +42,6 @@ namespace DD2A11y.Screens {
                 }
             }
             return _root;
-        }
-
-        private static Transform FindChild(Transform root, string name) {
-            if (root == null) {
-                return null;
-            }
-            foreach (var child in root.GetComponentsInChildren<Transform>(includeInactive: false)) {
-                if (child.name == name) {
-                    return child;
-                }
-            }
-            return null;
         }
     }
 }

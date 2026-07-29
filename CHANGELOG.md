@@ -5,6 +5,11 @@
 - The Altar of Hope's Intrepid Coast now reads as upgrade-track rows, same layout as the
   Living City: Up/Down pick a stat track, Left/Right walk its milestones, Enter invests or
   buys.
+- The Altar of Hope's Timeless Wood now reads fully: the Memory track, then one row per
+  hero with a memory slot per confession ("I. Denial, empty" or the held memory with its
+  tooltip in the buffer). Enter on an empty slot lists the memory choices with costs; Enter
+  buys and assigns, Escape backs out. Rerolling a filled memory is Enter on it once the
+  reroll milestone is bought.
 - A locked Altar of Hope region ("The Mountain") now carries its unlock requirement in the
   buffer instead of a bare "unavailable".
 - Up from the top hero row of an altar track panel now reaches the candle balance; it used

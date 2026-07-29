@@ -114,6 +114,9 @@ namespace DD2A11y.Core.Strings {
             D("AltarCandleCost", "{0} candle|{0} candles"),
             // The altar's item reveal modal, spoken before the unlocked item's name.
             D("AltarUnlocked", "unlocked"),
+            // A filled memory slot the profile can reroll, as the slot's state; {0} = the
+            // candle cost. The game shows only a button-prompt icon and the cost.
+            D("AltarMemoryReroll", "reroll {0} candle|reroll {0} candles"),
             // A skill the hero has already mastered, on the inn's Mastery Trainer. Adjective.
             D("SkillMastered", "mastered"),
             // The Mastery Trainer's remaining points readout; {0} = the number.
@@ -493,6 +496,7 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenEmbark => T("ScreenEmbark");
         public static string AltarCandleCost(int count) => P("AltarCandleCost", count);
         public static string AltarUnlocked => T("AltarUnlocked");
+        public static string AltarMemoryReroll(int count) => P("AltarMemoryReroll", count);
         public static string SkillMastered => T("SkillMastered");
         public static string MasteryPoints(int count) => F("MasteryPoints", count);
         public static string StationRepair(string cost) => F("StationRepair", cost);

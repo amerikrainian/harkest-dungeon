@@ -61,6 +61,20 @@ namespace DD2A11y.Game {
                 || root.GetComponentInChildren<Assets.Code.UI.Tooltips.TooltipUiBhv>(includeInactive: false) != null;
         }
 
+        /// <summary>The label under a named active child of <paramref name="root"/> (an altar
+        /// sub-screen's "exit_anchor" carries the panel title), or null when absent.</summary>
+        public static string ChildLabel(GameObject root, string childName) {
+            if (root == null) {
+                return null;
+            }
+            foreach (var child in root.GetComponentsInChildren<Transform>(includeInactive: false)) {
+                if (child.name == childName) {
+                    return FirstLabel(child.gameObject);
+                }
+            }
+            return null;
+        }
+
         /// <summary>All non-empty active TMP text under a root, joined as one line (a disclaimer,
         /// a modal body spread over several labels).</summary>
         public static string AllText(GameObject root) {

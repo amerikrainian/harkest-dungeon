@@ -26,7 +26,7 @@ namespace DD2A11y.Screens {
 
         public override string Name {
             get {
-                string title = UiText.FirstLabel(_panel != null ? _panel.gameObject : null);
+                string title = UiText.ChildLabel(_panel != null ? _panel.gameObject : null, "exit_anchor");
                 return string.IsNullOrEmpty(title) ? S.ScreenGeneric : title;
             }
         }

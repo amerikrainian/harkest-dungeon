@@ -868,9 +868,27 @@ player-driven candle spends; Living City 2026-07-28, purchases unexercised)
   shared `AltarTrackElement`/`AltarMilestoneElement`. Enter on the icon banks one candle
   (`OnTrackSpendAttempt`), Enter on a diamond buys up to it; spends not exercised live.
   Escape closes through `CloseSubscreen` (region markers re-enable, verified).
-- Known gaps: the remaining region sub-screens (hero memories, cosmetics - further
-  progress-track surfaces) are unbuilt; build them as they unlock, reusing
-  `AltarMilestoneElement` where they carry milestone diamonds. The hub's milestone pool
+- **The Timeless Wood reads as the memory panel** (`AltarMemoryScreen` over
+  `AltarMemorySubScreenBhv`, live-verified 2026-07-28 - hero rows via the game's own
+  all-memories dev pref, since the dev profile has no run-survived hero): the candle
+  balance, the Memory unlock track as a shared track row (icon + milestones - the track's
+  milestones spawn a beat after the stack entry, so the rebuild signature includes them),
+  the game's "Heroes with memories are required" notice when it shows, then one horizontal
+  row per memoried hero. Each memory slot is keyed to a confession boss and named by the
+  game's own `boss_choice_<id>_label` ("I. Denial") - the identity the sighted slot carries
+  as a boss sprite - reading "empty" (Enter opens the game's selection list), "unavailable"
+  (Enter shows the game's run-locked dialog), or the held memory's item name with its
+  tooltip in the buffer and, once earned, "reroll N candles" on Enter (the game's own paid
+  reroll). The open selection list swaps the tree modal-style: one element per offer (item
+  name + candle cost, tooltip in the buffer), Enter committing through the game's own
+  select-and-buy pre-gated on the cost (the game's own failure path would close the whole
+  list), Escape closing back to the opened slot, whose re-announce is the dismissal read;
+  mid-reroll Escape answers "unavailable" because a paid reroll must pick an offer.
+  Unexercised live: an actual memory purchase, the reroll flow, and a natural locked slot
+  (all need a run-survived hero on the profile).
+- Known gaps: the cosmetics region sub-screen (The Mountain) is unbuilt - profile-locked
+  until all heroes unlock; reuse the recollection pattern (`AltarItemRewardButtonBhv`
+  categories + reveal) when it opens. The hub's milestone pool
   readouts (candle-threshold rewards) were empty on the intro altar and are unread. Embark's press is verified only up to (not
   including) the exit. The reroll variant of the item panel (`m_isRerollScreen`, after full
   completion) shares the class and should read identically but is decades of candles away.
