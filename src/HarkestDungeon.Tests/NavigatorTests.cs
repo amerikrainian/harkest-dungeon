@@ -166,6 +166,30 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
+        public void VerticalSpillClimbsPastAnInnerListAtItsEdge() {
+            // The altar track panels: a readout above an inner list of horizontal hero rows.
+            // Up from the first row must climb out of the inner list to reach the readout.
+            var row = new Container(ContainerShape.HorizontalList, "hero");
+            row.Add(new TestElement("Icon"));
+            row.Add(new TestElement("Milestone"));
+            var rows = new Container(ContainerShape.VerticalList);
+            rows.Add(row);
+            var root = new Container(ContainerShape.VerticalList);
+            var balance = new TestElement("Candles");
+            root.Add(balance);
+            root.Add(rows);
+
+            _nav.Attach(root);
+            _nav.Handle(UiActions.Down); // into the row
+            _nav.Handle(UiActions.Right); // off the row head, so the climb starts deep
+            Assert.Equal("Milestone", _nav.Current!.Label);
+            Assert.True(_nav.Handle(UiActions.Up));
+            Assert.Same(balance, _nav.Current);
+            Assert.True(_nav.Handle(UiActions.Down)); // and back into the remembered row spot
+            Assert.Equal("Milestone", _nav.Current!.Label);
+        }
+
+        [Fact]
         public void ContainerEntryAnnouncesItsLabelBeforeTheLanding() {
             var strip = new Container(ContainerShape.HorizontalList, "roster");
             strip.Add(new TestElement("Hero"));

@@ -805,9 +805,11 @@ player-driven candle spends; Living City 2026-07-28, purchases unexercised)
   candle balance ("Candle of Hope, 5" - the game's own item name over the profile's live
   CANDLES value), the six region markers of the altar map as one list (named by the game's
   `altar_region_<key>_name` strings; a region the game has disabled reads "unavailable" -
-  the game locks by disabling the Selectable COMPONENT, which a generic sweep misses), then
-  Embark. Enter on a region is the game's own submit (opens its sub-screen); Embark drives
-  `OnEmbark` with its spend-your-candles-first reminder dialog; Escape opens the pause menu.
+  the game locks by disabling the Selectable COMPONENT, which a generic sweep misses - with
+  the sub-screen's own unlock requirement in the buffer, the text the sighted lock tooltip
+  shows: "Unlock all heroes to gain access to The Mountain"), then Embark. Enter on a
+  region is the game's own submit (opens its sub-screen); Embark drives `OnEmbark` with its
+  spend-your-candles-first reminder dialog; Escape opens the pause menu.
 - A recollection panel (`AltarItemSubScreenBhv`, "The Working Fields") reads: balance, the
   total line ("Recollection: 3/163"), and the unlock-category buttons with progress and
   cost composed from their bindings ("Trinkets, 1/73, 1 candle" - authored plural for the
@@ -841,7 +843,10 @@ player-driven candle spends; Living City 2026-07-28, purchases unexercised)
   candles still needed ("New Skill, button, 8 candles") or "unlocked" once bought, the
   reward description in the buffer. Up/Down move between heroes announcing the hero as row
   context (the row label dedupes against the icon element on the row head); rows remember
-  their column. The generic floor previously read this panel as a flat list of
+  their column, and Up from the top row climbs out to the candle balance (the navigator's
+  vertical spill previously stopped at the first enclosing vertical list, stranding the
+  balance above the row block - user-caught). The generic floor previously read this panel
+  as a flat list of
   identical-label diamonds with a dead Enter: `ProgressTrackMilestoneBhv` has no submit
   handler - the game sells only through a pointer/Submit-action HOLD gated on the diamond
   being the EventSystem selection. Enter instead drives `AttemptToPurchaseMilestone`

@@ -2,6 +2,10 @@
 
 ## V0.2.0
 
+- A locked Altar of Hope region ("The Mountain") now carries its unlock requirement in the
+  buffer instead of a bare "unavailable".
+- Up from the top hero row of an altar track panel now reaches the candle balance; it used
+  to be stuck (the balance was only heard on entry).
 - The Altar of Hope's Living City now reads as hero rows: Up/Down pick a hero, Left/Right
   walk that hero's milestone track (each reward named with its candle cost, "unlocked" once
   bought, details in the buffer). Enter on a milestone buys everything up to it in one

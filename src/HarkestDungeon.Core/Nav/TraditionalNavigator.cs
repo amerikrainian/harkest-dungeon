@@ -104,33 +104,38 @@ namespace DD2A11y.Core.Nav {
         }
 
         // Vertical movement that cannot proceed inside the current block spills into the adjacent
-        // block of an enclosing VerticalList. Climbs to the block that is a direct child of that
-        // list, steps to the neighbor in the move direction (empty blocks skipped), and enters it:
-        // Down lands on its first focusable, Up on its remembered child. Returns false at the outer
-        // edge so the caller consumes without wrapping.
+        // block of an enclosing VerticalList. Climbs to the block that is a direct child of such a
+        // list, steps to the neighbor in the move direction, and enters it: Down lands on its first
+        // focusable, Up on its remembered child. A list at its own edge keeps climbing - a
+        // horizontal row at the top of an inner list still spills to whatever sits above that list.
+        // Returns false at the outer edge so the caller consumes without wrapping.
         private bool TrySpillVertical(NavDirection dir) {
             UIElement? block = Current;
-            while (block != null && (block.Parent == null || block.Parent.Shape != ContainerShape.VerticalList)) {
-                block = block.Parent;
-            }
-            if (block == null) {
-                return false;
-            }
-            var list = block.Parent!;
-            var neighbor = list.GetNeighbor(block, dir);
-            if (neighbor == null) {
-                return false;
-            }
+            while (block != null) {
+                while (block != null && (block.Parent == null || block.Parent.Shape != ContainerShape.VerticalList)) {
+                    block = block.Parent;
+                }
+                if (block == null) {
+                    return false;
+                }
+                var list = block.Parent!;
+                var neighbor = list.GetNeighbor(block, dir);
+                if (neighbor == null) {
+                    block = list;
+                    continue;
+                }
 
-            var snapshot = new List<UIElement>(Path);
-            int idx = Path.IndexOf(block);
-            if (idx >= 0) {
-                Path.RemoveRange(idx, Path.Count - idx);
+                var snapshot = new List<UIElement>(Path);
+                int idx = Path.IndexOf(block);
+                if (idx >= 0) {
+                    Path.RemoveRange(idx, Path.Count - idx);
+                }
+                AppendWithDescend(neighbor);
+                list.SetFocusedChild(neighbor);
+                AnnounceDelta(snapshot, interrupt: true);
+                return true;
             }
-            AppendWithDescend(neighbor);
-            list.SetFocusedChild(neighbor);
-            AnnounceDelta(snapshot, interrupt: true);
-            return true;
+            return false;
         }
 
         // Arrow movement within list-shaped containers, spilling into a same-shape parent at the edge.
