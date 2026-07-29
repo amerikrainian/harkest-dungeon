@@ -84,7 +84,9 @@ namespace DD2A11y.Screens {
                     if (!collection.HasAnySubScreensOpen()) {
                         collection.ToggleSubScreenElement(captured);
                     }
-                }));
+                },
+                    // The bar button's notification dot: unviewed items wait inside.
+                    value: () => captured.GetShouldShowNotificationIcon() ? S.TutorialNew : null));
             }
 
             _root.Add(new ActionElement(() => GameLoc.TryGet("embark_continue_label"),
