@@ -797,10 +797,10 @@ unexercised - it fires once per run, early in the drive)
   assumes a boss, so the run dead-ends with End Expedition as the only exit (observed live
   2026-07-24).
 
-### Altar of Hope (`AltarScreen` + `AltarRecollectionScreen` + `AltarRevealScreen`,
-ALTAR_OF_HOPE mode)
+### Altar of Hope (`AltarScreen` + `AltarRecollectionScreen` + `AltarRevealScreen` +
+`AltarClassScreen`, ALTAR_OF_HOPE mode)
 Status: **works** (live-verified 2026-07-24 on the first-visit intro altar, including
-player-driven candle spends)
+player-driven candle spends; Living City 2026-07-28, purchases unexercised)
 - The hub (previously dead air - the altar is a mode surface with no stack entry): the
   candle balance ("Candle of Hope, 5" - the game's own item name over the profile's live
   CANDLES value), the six region markers of the altar map as one list (named by the game's
@@ -834,10 +834,30 @@ player-driven candle spends)
   unlock-requirement line in the buffer (the game swaps it into the row's tooltip binding
   on `SetLocked`); an earned row toggles with Enter and reads back its new state. The
   profile saves through the panel's own close (Escape).
-- Known gaps: the remaining region sub-screens (class/hero tracks, memories, cosmetics -
-  the progress-track surfaces with hold-to-purchase milestones) are unbuilt; build them as
-  they unlock. The hub's milestone pool readouts (candle-threshold rewards) were
-  empty on the intro altar and are unread. Embark's press is verified only up to (not
+- **The Living City reads as hero rows** (`AltarClassScreen` over
+  `AltarClassSubScreenBhv`): the candle balance, then one horizontal row per roster hero -
+  the hero's icon button first (name + the track's spent/total binding), then the track's
+  milestone diamonds left to right, each named by its reward tooltip's headline with the
+  candles still needed ("New Skill, button, 8 candles") or "unlocked" once bought, the
+  reward description in the buffer. Up/Down move between heroes announcing the hero as row
+  context (the row label dedupes against the icon element on the row head); rows remember
+  their column. The generic floor previously read this panel as a flat list of
+  identical-label diamonds with a dead Enter: `ProgressTrackMilestoneBhv` has no submit
+  handler - the game sells only through a pointer/Submit-action HOLD gated on the diamond
+  being the EventSystem selection. Enter instead drives `AttemptToPurchaseMilestone`
+  (buy-up-to-this-milestone, the hold's meaning) behind the same full-affordability check
+  the game gates the hold on, answering "unavailable" when short or bought; Enter on the
+  hero icon is the game's own `OnIconClick` - one candle banked into the track (or the
+  store dialog on an unowned-DLC row), reading back the moved total. A quest-locked hero
+  (disabled icon button, no diamonds spawned, tooltips suppressed) reads "unavailable" with
+  the game's lock caption in the buffer. The panel spawns rows one per frame on open, so
+  the tree follows an instance-id signature, reusing built rows to keep focus. Escape
+  closes through `CloseSubscreen` (the same region-marker trap as the recollection panel).
+  Purchase paths are code-verified only (candle spends not exercised live).
+- Known gaps: the remaining region sub-screens (hero memories, cosmetics - further
+  progress-track surfaces) are unbuilt; build them as they unlock, reusing
+  `AltarMilestoneElement` where they carry milestone diamonds. The hub's milestone pool
+  readouts (candle-threshold rewards) were empty on the intro altar and are unread. Embark's press is verified only up to (not
   including) the exit. The reroll variant of the item panel (`m_isRerollScreen`, after full
   completion) shares the class and should read identically but is decades of candles away.
 

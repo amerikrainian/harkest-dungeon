@@ -40,14 +40,16 @@ namespace DD2A11y.Game {
             }
         }
 
-        /// <summary>One tooltip's text as buffer lines: one line per paragraph.</summary>
+        /// <summary>One tooltip's text as buffer lines: one line per paragraph. A markup-only
+        /// line (a layout spacer) would land in the buffer as a silent press, so lines are
+        /// kept only when something of them survives the speech filter.</summary>
         public static IEnumerable<string> LinesOf(TooltipUiBhv tooltip) {
             string text = tooltip == null ? null : TextOf(tooltip);
             if (string.IsNullOrWhiteSpace(text)) {
                 yield break;
             }
             foreach (var line in text.Split('\n')) {
-                if (!string.IsNullOrWhiteSpace(line)) {
+                if (!string.IsNullOrWhiteSpace(Core.Text.TextFilter.Clean(line))) {
                     yield return line;
                 }
             }

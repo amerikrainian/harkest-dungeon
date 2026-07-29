@@ -118,6 +118,7 @@ namespace DD2A11y {
             // floor (label-only buttons, no reveals).
             Router.Register(new AltarRevealScreen());
             Router.Register(new AltarRecollectionScreen());
+            Router.Register(new AltarClassScreen());
             Router.Register(new AltarOptionsScreen());
             // The inn's station sub-screens, each outranking the floor's label-only sweep.
             // The store screen also serves road merchants (the Hoarder).
