@@ -3,7 +3,9 @@ using Assets.Code.Actor;
 using Assets.Code.Actor.Events;
 using Assets.Code.UI.Banter;
 using DD2A11y.Core.Nav;
+using DD2A11y.Core.Text;
 using DD2A11y.Game;
+using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Elements {
     /// <summary>
@@ -29,7 +31,15 @@ namespace DD2A11y.Elements {
 
         public override string Label => Actors.Name(Actor);
 
-        public override string Value => Actors.StatusLine(Actor);
+        // The ribbon's notification dot (unviewed character-sheet notifications) reads as the
+        // shared "New" marker, cleared the same way the game clears it - by viewing the sheet.
+        public override string Value {
+            get {
+                var actor = Actor;
+                return SpokenLine.Join(Actors.StatusLine(actor),
+                    actor != null && !actor.ViewedCharacterSheetNotifications ? S.TutorialNew : null);
+            }
+        }
 
         public override IEnumerable<ElementAction> GetActions() {
             yield return new ElementAction(ActionIds.Activate,
