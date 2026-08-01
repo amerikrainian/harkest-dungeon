@@ -14,13 +14,17 @@ using UnityEngine.UI;
 
 namespace DD2A11y.Screens {
     /// <summary>
-    /// The inn's Wainwright (the <c>StageCoachConfigUiBhv</c> stagecoach sheet), named by the
-    /// inn header's station title. Layout: the coach's name (from the model; renaming is
+    /// The stagecoach sheet (<c>StageCoachConfigUiBhv</c>) in both its contexts: the inn's
+    /// Wainwright station, and the read-only view the road opens on the Z hotkey.
+    /// Named by the sheet's own title value, which the game sets per context ("The
+    /// Wainwright" / "The Stagecoach"). Layout: the coach's name (from the model; renaming is
     /// unmodeled), the wallet, the cargo/armor/wheel stat lines the game composes ("Armor:
     /// 1/2", damage explanations in the buffer), a repair button per damaged stat ("repair,
     /// faction 8" - the game's own transaction, its insufficient-funds line on failure), the
     /// livery cycler, then the upgrade slots (equip/unequip through the shared slot flow;
-    /// altar-locked slots carry their lock text in the buffer). Escape closes the sheet.
+    /// altar-locked slots carry their lock text in the buffer). The road variant carries no
+    /// wallet, repairs, or livery cycler, and its slots refuse edits through the widget's own
+    /// editable gate. Escape closes the sheet.
     /// </summary>
     public sealed class WainwrightScreen : GameScreen {
         private static readonly AccessTools.FieldRef<StageCoachConfigUiBhv, DataContextBhv> ContextField =
@@ -30,7 +34,21 @@ namespace DD2A11y.Screens {
         private Container _root;
         private int _builtSignature;
 
-        public override string Name => InnStations.Title() ?? S.ScreenGeneric;
+        // The game stamps the sheet's per-context title ("The Wainwright" / "The Stagecoach")
+        // into its DataContext in OnScreenPushed, after the object already tops the stack; on
+        // the entry frame the same title is derived from the game's own keys by the condition
+        // OnScreenPushed uses.
+        public override string Name {
+            get {
+                var context = _sheet == null ? null : ContextField(_sheet);
+                var title = context == null ? null : context.GetStringValue("stagecoach_title");
+                if (string.IsNullOrEmpty(title)) {
+                    title = GameLoc.TryGet(GameModeMgr.CurrentMode == GameModeType.INN
+                        ? "inn_screen_name_stage_coach" : "stagecoach_sheet_driving_title");
+                }
+                return string.IsNullOrEmpty(title) ? S.ScreenGeneric : title;
+            }
+        }
 
         public override object ResolveTarget() {
             var top = StackTop.Object();

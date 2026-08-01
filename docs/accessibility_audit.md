@@ -571,6 +571,12 @@ speak the inn's name once - known cosmetic race). All close through their own
   the authored "baubles", no game string spells it), the livery cycler, and the upgrade
   slots as equip slots (altar-locked ones carry their lock text). Live-verified: full
   walk. Unexercised: a repair press (stats were full), equip/unequip on this sheet.
+  The same class covers the read-only sheet the road opens on Z ("The Stagecoach" - the
+  screen is named by the game's own per-context title, derived from the game's loc keys
+  on the entry frame since the sheet stamps its DataContext a frame after topping the
+  stack): no wallet, repairs, or livery there, and slot edits are refused by the widget's
+  own editable gate. Live-verified on the road 2026-07-31: entry announce, full walk
+  (name, stats, all seven slots with their unlock/lock tooltips in the buffer), Escape.
 - **Relationships** (`RelationshipMatrixScreen` over `SubScreenRelationshipMatrixBhv`,
   Kingdoms only): the anchor hero first (name and class - the panel the portrait grid pivots
   around), then one element per other roster hero - name and class from the actor model (the
