@@ -861,7 +861,14 @@ ride the shared KeyboardBinding path)
   (same override mechanism as the road map - generalized `DrivingKeySuppressor`) so list
   navigation cannot steer, Interact, or flash the glossary; WASD and the letter hotkeys
   stay live everywhere. On-area everything restores (verified in the live input asset,
-  both directions). Escape stays the game's pause everywhere; our caption-hotkey handlers
+  both directions). GOTCHA (user-caught 2026-07-31, probe-confirmed): applying or
+  removing a binding override re-resolves the whole action state, and the game's
+  InputSystem re-fires still-held Button actions in the process - the physical G that
+  summoned the goals panel toggled it straight back closed when the focus jump engaged
+  the off-area claim mid-press ("the sound twice"; invisible to /input and eval tests,
+  which hold no key). Suppressor transitions now wait out any held toggle-class key,
+  retried by the per-frame reassert/restore loops; WASD and arrows deliberately do not
+  defer (their continuous actions re-fire harmlessly, and cruising holds W). Escape stays the game's pause everywhere; our caption-hotkey handlers
   (M/I/C) stand down whenever the gate is not captured, so shared-keyboard screens never
   double-fire the game's own keys.
 - Coexistence live-verified: hero sheet (Enter) in and out, minimap over driving (map

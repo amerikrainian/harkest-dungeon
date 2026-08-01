@@ -23,6 +23,17 @@ namespace DD2A11y.Input {
             "/upArrow", "/downArrow", "/leftArrow", "/rightArrow",
         };
 
+        // Applying or removing a binding override re-resolves the whole action state, and the
+        // game's InputSystem re-fires still-held Button actions in the process: the G that
+        // summoned the goals panel toggled it a second time the moment the focus jump engaged
+        // the off-area claim. Transitions therefore wait out any held toggle-class key - the
+        // per-frame callers retry once it lifts. WASD and arrow holds do not defer: their
+        // continuous driving actions re-fire harmlessly.
+        private static readonly Key[] TransitionUnsafeKeys = {
+            Key.G, Key.M, Key.Z, Key.I, Key.C, Key.E, Key.Q, Key.R, Key.X, Key.V, Key.Y,
+            Key.T, Key.Space, Key.Enter, Key.NumpadEnter, Key.Escape, Key.LeftAlt, Key.RightAlt,
+        };
+
         private readonly string[] _keyPaths;
         private readonly bool _bareCtrl;
         private readonly bool _navigationEvents;
@@ -53,6 +64,9 @@ namespace DD2A11y.Input {
             if (_overridden.Count > 0 && IsStillOverridden(_overridden[0])) {
                 return;
             }
+            if (TransitionUnsafe()) {
+                return; // deferred; the per-frame reassert retries once the key lifts
+            }
             _overridden.Clear();
             var asset = Asset();
             if (asset == null) {
@@ -80,9 +94,15 @@ namespace DD2A11y.Input {
             }
         }
 
-        public void Restore() {
+        /// <summary>Release the claim. Per-frame callers pass <paramref name="immediate"/>
+        /// false so the removal also waits out a held toggle key; one-shot callers (a
+        /// screen's leave) restore unconditionally.</summary>
+        public void Restore(bool immediate = true) {
             if (!_active) {
                 return;
+            }
+            if (!immediate && TransitionUnsafe()) {
+                return; // deferred; the per-frame caller retries once the key lifts
             }
             _active = false;
             foreach (var (action, index) in _overridden) {
@@ -100,6 +120,19 @@ namespace DD2A11y.Input {
         private static bool IsStillOverridden((InputAction Action, int Index) entry)
             => entry.Index < entry.Action.bindings.Count
                && entry.Action.bindings[entry.Index].overridePath == string.Empty;
+
+        private static bool TransitionUnsafe() {
+            var keyboard = Keyboard.current;
+            if (keyboard == null) {
+                return false;
+            }
+            foreach (var key in TransitionUnsafeKeys) {
+                if (keyboard[key].isPressed) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         private bool IsClaimedKey(string path) {
             foreach (var key in _keyPaths) {

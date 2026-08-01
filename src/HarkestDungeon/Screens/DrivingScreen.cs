@@ -144,7 +144,7 @@ namespace DD2A11y.Screens {
             var hud = (GameUIBhv)target;
             _tabKey.Reassert();
             if (_navigator.Current == _drivingArea) {
-                _listKeys.Restore();
+                _listKeys.Restore(immediate: false);
             } else {
                 _listKeys.Reassert();
             }
