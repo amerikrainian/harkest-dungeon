@@ -85,6 +85,12 @@ namespace DD2A11y.Game {
         private bool OnRoad => GameModeMgr.CurrentMode == GameModeType.DRIVING
             && !Singleton<GameModeMgr>.Instance.IsChangingState();
 
+        /// <summary>Queue a spoken line for the next road tick - the delivery route the toast
+        /// patches use on the road.</summary>
+        public void Post(string line) {
+            _pending.Add(new KeyValuePair<AudioCue?, string>(null, line));
+        }
+
         // A pickup rolled over: its title speaks (the game's own item name; the game's own
         // pickup sfx already marks the moment, so no mod cue). A road grant surfaces ONLY as
         // the corner loot toast - road pickups never raise the inventory widgets' loot event -
