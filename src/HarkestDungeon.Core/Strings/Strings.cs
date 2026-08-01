@@ -53,6 +53,11 @@ namespace DD2A11y.Core.Strings {
             D("DrivingRoad", "road"),
             // The flame meter; {0} = the current value. The game captions it with the glyph only.
             D("DrivingFlame", "Flame {0}"),
+            // The node-arrival prompt (every roadside stop halts the coach on it).
+            D("ScreenNodePrompt", "road stop"),
+            // Appended to the prompt's button when entering also feeds a hero goal; the game
+            // shows a candle icon only.
+            D("NodeCandleReward", "candle reward"),
             // The road map (M while driving) and its cursor lines. Node and road names come
             // from the game's own fog-gated tooltips; these frame them.
             D("ScreenMap", "map"),
@@ -465,6 +470,8 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenDriving => T("ScreenDriving");
         public static string DrivingRoad => T("DrivingRoad");
         public static string DrivingFlame(string value) => F("DrivingFlame", value);
+        public static string ScreenNodePrompt => T("ScreenNodePrompt");
+        public static string NodeCandleReward => T("NodeCandleReward");
         public static string ScreenMap => T("ScreenMap");
         public static string MapClosed => T("MapClosed");
         public static string MapWagon(string from, string to) => F("MapWagon", from, to);
