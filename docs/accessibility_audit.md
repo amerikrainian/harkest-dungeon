@@ -739,6 +739,39 @@ yet reached in play
   stagecoach items, so a count poll is the likely wire; barricades want live confirmation
   of what spawns as force-stop obstacles).
 
+**Roadside nodes (curios), mapped from the trigger architecture 2026-07-31.** Every node
+executes a serialized trigger list, and every interactive one funnels through ONE shared
+prompt - `CommonUiBhv.ShowEnterNodeScreen` (`EnterNodeScreenWidgetBhv`, a pushed stack
+screen: a single "Search the Cache"-style button plus an icon-only candle marker bound as
+`candle_reward` when entering feeds a hero goal) - then branches to its surface. Both the
+prompt and the Field Hospital open synthetically via code and close through their own
+teardown (probed live: `ShowEnterNodeScreen((Action)null, key, true)` reads through the
+floor and dismisses clean; `ShowHospital(empty list)` opens, closes, and additionally
+reveals the player-inventory entry it raises beneath for its Pharmacy tab - one extra
+close in a synthetic test). Where each node lands:
+- CACHE / CACHE_GANG -> prompt -> the loot screen. Covered, player-verified.
+- STORE (the Hoarder) -> prompt -> the shared store surface. Covered, live-verified.
+- STORY_ASSIST / RESIST / COSMIC / CULTIST (+ gang/coven variants) -> prompt -> the story
+  screen, sometimes into combat and loot. Covered surfaces; story commits mutate the run,
+  so exotic variants are left to organic play.
+- STORY_HERO (Shrine of Reflection) -> hero story intro + story combat. Covered,
+  player-verified. STORY_HERO_REPLACEMENT -> the replacement-hero screen. Covered.
+- WATCH_TOWER -> prompt -> `TriggerScouting.StartScoutPulse` only: NO further UI - the
+  reveal reads through the road map. Effectively covered.
+- HOSPITAL -> prompt -> **`HospitalScreenBhv` - the one uncovered roadside screen.** The
+  floor reads it as "N/A, button, unavailable". Shape (from the synthetic probe): title
+  "Field Hospital: Triage", three tooltip-captioned tabs (Triage / Wellness / Pharmacy),
+  a hero pager with HP bar and stress pips, minor-heal and full-heal buttons with cost
+  labels, a disease-cure button altar-locked behind "Upgrade Physician to unlock", the
+  done button, and the shared store panel behind Pharmacy. Costs read "N/A" in the
+  synthetic open - re-check bound values on a real node.
+- DUNGEON / GUARDIAN / CREATURE_DEN / kingdom gang bosses -> prompt -> combat chains
+  (covered) - not testable-with-undo, entering commits a fight.
+- OASIS / GATE / BRIDGE and the kingdoms node skins ride the same trigger set (prompt +
+  effect/loot/story/mode triggers); no bespoke screens found in code.
+Cross-cutting: the prompt's candle marker is icon-only and the floor drops it; the
+prompt's label binds a frame late (the entry reads the "Interact" placeholder once).
+
 ### Free driving HUD (`DrivingScreen`, the DRIVING-mode floor)
 Status: **live-verified 2026-07-31** (logical paths and binding suppression; physical keys
 ride the shared KeyboardBinding path)
