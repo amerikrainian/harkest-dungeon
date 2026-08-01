@@ -717,6 +717,17 @@ yet reached in play
   road - found live 2026-07-25 as "collection sound but no name"), so the item's own
   title speaks when the game's corner toast presents - speech only, no mod cue, because
   the game's own pickup sfx already marks the moment.
+- **Road transients** (all live-verified 2026-07-31 by firing the game's own paths):
+  tutorial and message toasts route by mode through the toast postfixes (combat queue in
+  battle, the road pending queue on the road; the patches attach at startup, not on the
+  first combat resolve). Hero barks (banter, act-outs - `EventBark`, the same event the
+  combat listener rides) speak speaker-prefixed on the road tick. The coach's
+  Loathing-resist pop speaks the game's own "LOATHING RESIST" text (the English template
+  carries no number slot); the low-flame ambush pop ("The Flame Exhausted") rides the
+  combat pending queue outright, because it plays as the ambush battle spins up, and so
+  speaks with the battle's opening (queue-level verified; a real ambush is unexercised).
+  The corner InkfireBanners carry no text or tooltip - decorative; the danger cues carry
+  that state.
 - **Road merchants (the Hoarder)** read through the shared `StoreScreen`: the game
   raises the player inventory panel above the `StoreUiBhv` screen and the pair reads as
   one store surface, named by the store's own title - wallet rows, store slots with
@@ -749,7 +760,9 @@ ride the shared KeyboardBinding path)
   (10%)"), read live from the panel's DataContext, which the game re-stamps on every
   torch change. Live-verified 2026-07-31 at flame 88.
 - **Party panel**: one element per ribbon hero in marching order - name, HP, stress (the
-  game's status-bar strings from the live actor), every ribbon tooltip in the buffer
+  game's status-bar strings from the live actor), the shared "New" marker while the
+  ribbon shows its notification dot (unviewed sheet notifications, live-verified), every
+  ribbon tooltip in the buffer
   (status effects, "Tense", diseases). Enter is the ribbon's own right-click inspect (the
   hero's sheet - verified it opens the FOCUSED hero). Space grabs for a marching-order
   move: place on another hero's slot runs the game's own drag (the hover-index field plus
