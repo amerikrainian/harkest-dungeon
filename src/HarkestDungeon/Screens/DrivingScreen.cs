@@ -20,8 +20,9 @@ namespace DD2A11y.Screens {
     /// Tab stop is the driving area, where every key stays the game's - arrows and WASD drive,
     /// M, I, C, Z, G, Alt, Ctrl, and Escape all work as shipped - and the mod claims only Tab
     /// (the game's second minimap key) for panel traversal. The other stops read the rest of
-    /// the HUD: the status readouts (distance, region, flame, armor, wheels, the Loathing
-    /// meter - tooltips in the buffer), the hero ribbons (name with HP and stress; Enter is
+    /// the HUD: the status readouts (distance, region, the flame with its Alt panel's state
+    /// and effects in the buffer, armor, wheels, the Loathing meter), the hero ribbons (name
+    /// with HP and stress; Enter is
     /// the ribbon's own inspect, Space grabs for a marching-order move that shifts slots the
     /// way the game's drag does), the goals panel while the game shows it (G toggles it), and
     /// the HUD buttons. Off the driving area the arrows, Space, Enter, and bare Ctrl rest so
@@ -41,6 +42,10 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<GameUIBhv, List<GameObject>>("m_heroObjectiveObjects");
         private static readonly AccessTools.FieldRef<BiomePanelHeroGoalBhv, TextMeshProUGUI> GoalTextField =
             AccessTools.FieldRefAccess<BiomePanelHeroGoalBhv, TextMeshProUGUI>("m_goalText");
+        private static readonly AccessTools.FieldRef<GameUIBhv, Assets.Code.UI.StageCoachTorchUiBhv> TorchField =
+            AccessTools.FieldRefAccess<GameUIBhv, Assets.Code.UI.StageCoachTorchUiBhv>("m_stageCoachTorch");
+        private static readonly AccessTools.FieldRef<Assets.Code.UI.StageCoachTorchUiBhv, Assets.Code.Data.DataContextBhv> TorchPanelField =
+            AccessTools.FieldRefAccess<Assets.Code.UI.StageCoachTorchUiBhv, Assets.Code.Data.DataContextBhv>("m_tooltipDataContext");
 
         private readonly Action<string, bool> _speak;
         private readonly TraditionalNavigator _navigator;
@@ -252,14 +257,17 @@ namespace DD2A11y.Screens {
             var transform = hud.transform;
             AddHudLabel(transform, "DistanceLabel");
             AddHudLabel(transform, "Region");
+            // The flame readout. Holding Alt only plays the visual intro of the torch panel;
+            // the panel's content - the state name and the per-side effects the game stamps
+            // into its DataContext on every torch change - reads here as the buffer.
             var torch = FindChild(transform, "StageCoachTorch");
-            if (torch != null) {
+            var torchUi = TorchField(hud);
+            if (torch != null && torchUi != null) {
                 var counterHost = FindChild(torch, "UI");
                 var counter = counterHost == null ? null : counterHost.GetComponentInChildren<TMP_Text>(false);
-                var torchScope = torch.gameObject;
                 _status.Add(new ReadoutElement(
                     () => counter == null ? null : S.DrivingFlame(counter.text),
-                    detail: () => TooltipReader.Lines(torchScope)));
+                    detail: () => FlameLines(torchUi)));
             }
             // The same game strings the stagecoach sheet composes, over the live run values.
             var armor = FindChild(transform, "ArmorContainer");
@@ -279,6 +287,40 @@ namespace DD2A11y.Screens {
                 _status.Add(new ReadoutElement(
                     () => FirstLine(TooltipReader.Lines(doomScope)),
                     detail: () => TooltipReader.Lines(doomScope)));
+            }
+        }
+
+        // The Alt panel's lines: the flame state name, then each side's effects under the
+        // game's own caption ("Heroes, +6% death RES"), one effect per line.
+        private static IEnumerable<string> FlameLines(Assets.Code.UI.StageCoachTorchUiBhv torchUi) {
+            var context = TorchPanelField(torchUi);
+            if (context == null) {
+                yield break;
+            }
+            string title = context.GetStringValue("torch_title");
+            if (!string.IsNullOrWhiteSpace(title)) {
+                yield return title;
+            }
+            foreach (var line in FlameSideLines(context, "party_heroes_label", "torch_effects_heroes")) {
+                yield return line;
+            }
+            foreach (var line in FlameSideLines(context, "party_enemies_label", "torch_effects_enemies")) {
+                yield return line;
+            }
+        }
+
+        private static IEnumerable<string> FlameSideLines(
+            Assets.Code.Data.DataContextBhv context, string captionKey, string valueKey) {
+            string effects = context.GetStringValue(valueKey);
+            if (string.IsNullOrWhiteSpace(effects)) {
+                yield break;
+            }
+            string caption = GameLoc.TryGet(captionKey);
+            foreach (var line in effects.Split('\n')) {
+                if (!string.IsNullOrWhiteSpace(line)) {
+                    yield return Core.Text.SpokenLine.Join(caption, line.Trim());
+                    caption = null; // the caption heads only its side's first line
+                }
             }
         }
 

@@ -740,9 +740,14 @@ ride the shared KeyboardBinding path)
   map). Arrows are consumed mod-side so focus stays parked.
 - **Status panel**: distance ("7 leagues to Inn") and region ("Regions: 1/3") from the
   HUD's own labels, the flame value (authored "Flame {0}" - the game captions it with the
-  glyph alone; torch tooltip in the buffer), armor and wheels (the stagecoach sheet's own
-  stat strings over the live run values, damage tooltips in the buffer), and the Loathing
-  meter (named by its own tooltip, "The Loathing Abates" + confession in the buffer).
+  glyph alone), armor and wheels (the stagecoach sheet's own stat strings over the live
+  run values, damage tooltips in the buffer), and the Loathing meter (named by its own
+  tooltip, "The Loathing Abates" + confession in the buffer). The flame's buffer IS the
+  game's hold-Alt torch panel (Alt only plays that panel's visual intro, so nothing
+  keyboard-side is lost): the state name ("Bright Light"), then each side's effects under
+  the game's own captions ("Heroes, +6% death RES" / "Enemies, Round Start: blind-line
+  (10%)"), read live from the panel's DataContext, which the game re-stamps on every
+  torch change. Live-verified 2026-07-31 at flame 88.
 - **Party panel**: one element per ribbon hero in marching order - name, HP, stress (the
   game's status-bar strings from the live actor), every ribbon tooltip in the buffer
   (status effects, "Tense", diseases). Enter is the ribbon's own right-click inspect (the
