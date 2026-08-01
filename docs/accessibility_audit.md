@@ -848,7 +848,12 @@ ride the shared KeyboardBinding path)
   the game's own row-to-party mapping (the row shows only a portrait), the goal's own
   text with progress count, the reward tooltip in the buffer ("Reward: candle 2").
   GOTCHA: the panel's sections activate a beat after IsBiomePanelActive flips (timeline
-  activation), so the rows ride the signature rebuild, not the toggle.
+  activation), AND row active-states keep flickering through the open timeline - a tree
+  built over only-active rows churned rebuilds every flicker (each one orphaned focus and
+  re-fired the content-edge jump: "goals, The Valley, goals, ..." - user-caught
+  2026-07-31). The swept set therefore includes inactive rows (stable tree, stable
+  signature), elements are reused per row, each label answers null while its row is
+  hidden, and the focus jump keys to the game's own open flag - once per summon.
 - **Buttons panel**: Map (M), Goals & Conditions (G), Inventory (I), Stagecoach (Z) by
   their own tooltip captions, plus the last-chance trophy button (swept inactive, focus
   follows its live state; unexercised - none active this run).

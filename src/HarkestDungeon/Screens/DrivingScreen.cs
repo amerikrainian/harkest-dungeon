@@ -60,6 +60,8 @@ namespace DD2A11y.Screens {
             bareCtrl: true, navigationEvents: true);
         private readonly Dictionary<HeroRibbonBhv, DrivingHeroElement> _heroElements =
             new Dictionary<HeroRibbonBhv, DrivingHeroElement>();
+        private readonly Dictionary<UnityEngine.Object, UIElement> _goalRows =
+            new Dictionary<UnityEngine.Object, UIElement>();
 
         private GameUIBhv _hud;
         private HeroRibbonContainerBhv _ribbonContainer;
@@ -71,7 +73,7 @@ namespace DD2A11y.Screens {
         private UIElement _drivingArea;
         private HeroRibbonBhv _held;
         private int _builtSignature;
-        private bool _goalsHadContent;
+        private bool _goalsWereOpen;
 
         public DrivingScreen(Action<string, bool> speak, TraditionalNavigator navigator) {
             _speak = speak;
@@ -114,6 +116,7 @@ namespace DD2A11y.Screens {
 
             _heroes = new Container(ContainerShape.HorizontalList, S.CrossroadsParty);
             _heroElements.Clear();
+            _goalRows.Clear();
             PopulateHeroes();
             _root.Add(_heroes);
 
@@ -133,7 +136,7 @@ namespace DD2A11y.Screens {
 
             _builtSignature = Signature(hud);
             // Entering with the panel already open is not a summon; no focus jump then.
-            _goalsHadContent = _goals.FirstFocusable() != null;
+            _goalsWereOpen = hud.IsBiomePanelActive;
             return _root;
         }
 
@@ -150,18 +153,25 @@ namespace DD2A11y.Screens {
                 PopulateGoals(hud);
                 _builtSignature = Signature(hud);
             }
-            // The goals panel is player-summoned (G or its button), so the moment its rows
-            // arrive - a beat after the toggle, with the panel's timeline - focus jumps to
-            // its first row and the router reads the panel out; the close re-homes to the
-            // driving area through the orphan path.
-            bool goalsHaveContent = _goals.FirstFocusable() != null;
-            if (goalsHaveContent && !_goalsHadContent) {
-                _goalsHadContent = true;
-                _navigator.Focus(_goals.FirstFocusable(), announce: false);
-                _listKeys.Reassert();
-                return true;
+            // The goals panel is player-summoned (G or its button), so on the open's edge -
+            // once, when its rows become focusable a beat after the toggle - focus jumps to
+            // the first row and the router reads the panel out; the close re-homes to the
+            // driving area through the orphan path. The edge keys to the game's own open
+            // flag: row active-states flicker through the open timeline, and a content edge
+            // would re-fire on every flicker.
+            if (hud.IsBiomePanelActive) {
+                if (!_goalsWereOpen) {
+                    var first = _goals.FirstFocusable();
+                    if (first != null) {
+                        _goalsWereOpen = true;
+                        _navigator.Focus(first, announce: false);
+                        _listKeys.Reassert();
+                        return true;
+                    }
+                }
+            } else {
+                _goalsWereOpen = false;
             }
-            _goalsHadContent = goalsHaveContent;
             return false;
         }
 
@@ -359,6 +369,10 @@ namespace DD2A11y.Screens {
             }
         }
 
+        // The panel's rows keep their objects but flicker their active states through the
+        // open timeline, so the swept set includes inactive rows (a stable tree - no rebuild
+        // churn, focus survives the open), every element is reused per row, and each label
+        // answers null while its row is hidden so navigation skips it live.
         private void PopulateGoals(GameUIBhv hud) {
             _goals.Clear();
             if (!hud.IsBiomePanelActive) {
@@ -374,16 +388,23 @@ namespace DD2A11y.Screens {
             // Hero goal rows identify their hero by portrait only; the name comes through the
             // same row-to-party mapping the game's own populate writes. Completion shows in
             // the goal's own progress count; the reward is the row's tooltip.
-            foreach (var row in director.GetComponentsInChildren<BiomePanelHeroGoalBhv>(includeInactive: false)) {
-                var captured = row;
-                _goals.Add(new ReadoutElement(
-                    () => {
-                        var goalText = GoalTextField(captured);
-                        return Core.Text.SpokenLine.Join(
-                            Actors.Name(HeroForRow(hud, captured.gameObject)),
-                            goalText == null ? null : goalText.text);
-                    },
-                    detail: () => TooltipReader.Lines(captured.gameObject)));
+            foreach (var row in director.GetComponentsInChildren<BiomePanelHeroGoalBhv>(includeInactive: true)) {
+                if (!_goalRows.TryGetValue(row, out var element)) {
+                    var captured = row;
+                    element = new ReadoutElement(
+                        () => {
+                            if (!captured.gameObject.activeInHierarchy) {
+                                return null;
+                            }
+                            var goalText = GoalTextField(captured);
+                            return Core.Text.SpokenLine.Join(
+                                Actors.Name(HeroForRow(hud, captured.gameObject)),
+                                goalText == null ? null : goalText.text);
+                        },
+                        detail: () => TooltipReader.Lines(captured.gameObject));
+                    _goalRows[row] = element;
+                }
+                _goals.Add(element);
             }
         }
 
@@ -399,17 +420,18 @@ namespace DD2A11y.Screens {
         }
 
         private void AddGoalRows(GameObject container) {
-            if (container == null || !container.activeInHierarchy) {
+            if (container == null) {
                 return;
             }
             foreach (Transform row in container.transform) {
-                if (!row.gameObject.activeInHierarchy) {
-                    continue;
+                if (!_goalRows.TryGetValue(row, out var element)) {
+                    var scope = row.gameObject;
+                    element = new ReadoutElement(
+                        () => scope.activeInHierarchy ? UiText.AllText(scope) : null,
+                        detail: () => TooltipReader.Lines(scope));
+                    _goalRows[row] = element;
                 }
-                var scope = row.gameObject;
-                _goals.Add(new ReadoutElement(
-                    () => UiText.AllText(scope),
-                    detail: () => TooltipReader.Lines(scope)));
+                _goals.Add(element);
             }
         }
 
@@ -446,7 +468,7 @@ namespace DD2A11y.Screens {
                 signature = GoalSignature(GoalContainerField(hud), signature);
                 var director = DirectorField(hud);
                 if (director != null) {
-                    foreach (var row in director.GetComponentsInChildren<BiomePanelHeroGoalBhv>(includeInactive: false)) {
+                    foreach (var row in director.GetComponentsInChildren<BiomePanelHeroGoalBhv>(includeInactive: true)) {
                         signature = signature * 31 + row.GetInstanceID();
                     }
                 }
@@ -454,14 +476,14 @@ namespace DD2A11y.Screens {
             return signature;
         }
 
+        // Over ALL children: active states flicker through the panel's open timeline, and a
+        // signature that follows them would churn rebuilds every flicker.
         private static int GoalSignature(GameObject container, int signature) {
-            if (container == null || !container.activeInHierarchy) {
+            if (container == null) {
                 return signature;
             }
             foreach (Transform row in container.transform) {
-                if (row.gameObject.activeInHierarchy) {
-                    signature = signature * 31 + row.GetInstanceID();
-                }
+                signature = signature * 31 + row.GetInstanceID();
             }
             return signature;
         }
