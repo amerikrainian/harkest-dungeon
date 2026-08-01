@@ -20,8 +20,9 @@ namespace DD2A11y.Screens {
     /// a Map layer stack entry), named by the inn. The main view: the garrison - one element per
     /// stationed hero (name and class, travel status in the buffer) or militia defender - then
     /// the panel's live buttons (travel or fast travel, engage siege, storage), the five upgrade
-    /// tabs each carrying its category's purchase percentage, and the treasure rewards when the
-    /// cell holds any. Enter on a tab opens that category's upgrade tree, which reads instead:
+    /// tabs each carrying its category's purchase percentage, the treasure rewards when the
+    /// cell holds any, and the close button. Enter on a tab opens that category's upgrade tree,
+    /// which reads instead:
     /// one element per node - the upgrade's name, its owned/cost state, description in the
     /// buffer; Enter purchases through the game's own gated unlock. Escape folds the tree
     /// first, then closes (the screen's own two-stage back).
@@ -43,6 +44,8 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<ScreenKingdomMapInnPanel, GameObject>("m_innStorageBtn");
         private static readonly AccessTools.FieldRef<ScreenKingdomMapInnPanel, GameObject> DefenselessLabelField =
             AccessTools.FieldRefAccess<ScreenKingdomMapInnPanel, GameObject>("m_defenselessLabel");
+        private static readonly AccessTools.FieldRef<ScreenKingdomMapInnPanel, Button> CloseButtonField =
+            AccessTools.FieldRefAccess<ScreenKingdomMapInnPanel, Button>("m_closeButton");
 
         private static readonly (string Tab, string Context, string Loc)[] Tabs = {
             ("m_defenseTab", "defense_upgrades", "inn_upgrade_defense_label"),
@@ -225,6 +228,7 @@ namespace DD2A11y.Screens {
                     () => UiText.AllText(captured.gameObject),
                     detail: () => TooltipReader.Lines(captured.gameObject)));
             }
+            AddButton(CloseButtonField(panel));
         }
 
         // A stationed hero reads name and class from the model behind its portrait; a militia

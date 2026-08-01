@@ -118,6 +118,34 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
+        public void RebuildReLandOnAnIdenticalLineStaysSilent() {
+            var root = VerticalMenu(new TestElement("Set Route", "button"));
+            _nav.Attach(root);
+            _nav.AnnounceCurrent();
+            _spoken.Clear();
+            // The game populates a beat after entry: a rebuild replaces the element with a
+            // brand-new one carrying the same text.
+            root.Clear();
+            root.Add(new TestElement("Set Route", "button"));
+            Assert.True(_nav.EnsureFocusValid());
+            _nav.AnnounceCurrentIfChanged();
+            Assert.Empty(_spoken);
+        }
+
+        [Fact]
+        public void RebuildReLandOnAChangedLineAnnounces() {
+            var root = VerticalMenu(new TestElement("Enemies:"));
+            _nav.Attach(root);
+            _nav.AnnounceCurrent();
+            _spoken.Clear();
+            root.Clear();
+            root.Add(new TestElement("Enemies: Cadavers"));
+            Assert.True(_nav.EnsureFocusValid());
+            _nav.AnnounceCurrentIfChanged();
+            Assert.Equal("Enemies: Cadavers", Assert.Single(_spoken));
+        }
+
+        [Fact]
         public void EdgesConsumeWithoutWrapping() {
             _nav.Attach(VerticalMenu(new TestElement("A"), new TestElement("B")));
             Assert.False(_nav.Handle(UiActions.Up)); // top edge: no spill target

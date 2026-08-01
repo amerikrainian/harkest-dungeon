@@ -104,7 +104,8 @@ namespace DD2A11y.Core.Strings {
             D("KingdomUpgraded", "upgraded"),
             D("KingdomCursed", "cursed"),
             D("KingdomQuest", "quest"),
-            D("KingdomCell", "row {0} of {1}, column {2} of {3}"),
+            // Grid coordinates, bare numbers; {0} = row, {1} = column.
+            D("KingdomCell", "{0}, {1}"),
             D("KingdomMovingHero", "moving {0}, activate a destination inn"),
             D("ScreenKingdomEvent", "kingdom event"),
             // The road-fork route menu, shown while the coach waits at a junction.
@@ -502,7 +503,7 @@ namespace DD2A11y.Core.Strings {
         public static string KingdomUpgraded => T("KingdomUpgraded");
         public static string KingdomCursed => T("KingdomCursed");
         public static string KingdomQuest => T("KingdomQuest");
-        public static string KingdomCell(int row, int rows, int col, int cols) => F("KingdomCell", row, rows, col, cols);
+        public static string KingdomCell(int row, int col) => F("KingdomCell", row, col);
         public static string KingdomMovingHero(string hero) => F("KingdomMovingHero", hero);
         public static string ScreenKingdomEvent => T("ScreenKingdomEvent");
         public static string ScreenFork => T("ScreenFork");

@@ -659,14 +659,17 @@ game's own handlers but deliberately unexercised.
 - **Inn/camp cell panel** (`ScreenKingdomMapInnPanel`), named by the inn from the model:
   garrison (hero name+class, militia class slots, travel/immobile status tooltips in the
   buffer), defenseless label, travel / fast travel / engage siege / storage buttons as the
-  game shows them, the five upgrade tabs (loc-named: Barracks etc.), treasure rewards.
+  game shows them, the five upgrade tabs (loc-named: Barracks etc.), treasure rewards, and
+  the close button.
   Enter on a tab opens the **upgrade tree** view: one element per node - name, owned or the
   game's composed cost ("materials 5"), unavailable when locked/unaffordable, description
   in the buffer; Enter purchases via the node's own gated `Unlock()` (the sighted gesture
   is a hold). Escape folds the tree first, then closes (the panel's own two-stage back).
-- **Biome cell panel**: name + enemy roster, expedition rewards, upgrades/modifier text and
-  kill contract gated on the model (the labels keep template text when unbound), reward
-  tooltips in buffers. Informational only - the game offers no actions here.
+- **Biome cell panel**: the enemy roster under the game's own Enemies header (model-composed
+  so it is complete on the entry frame; the biome's name is the screen name), expedition
+  rewards, upgrades/modifier text and kill contract gated on the model (the labels keep
+  template text when unbound), reward tooltips in buffers, and the close button
+  (prefab-wired, found by a text-bearing button sweep).
 - **Event panel** (`ScreenKingdomMapEventPanel`, day/event notification): day + title +
   effect + flavour as one element, rewards, close button; Escape via TryCloseScreen (the
   game swallows it during the slow day-intro). Model-built, NOT yet seen live (needs a day
@@ -674,8 +677,10 @@ game's own handlers but deliberately unexercised.
 - **Grid Tab wraps** both directions (the map root sets the navigator's `WrapTabStops`),
   and Enter on a siege element hands focus straight back to the grid cursor at the jumped-to
   cell. Panel entry announces read the cell's name from the game's viewed-cell query (set
-  before the push), so they are correct from frame one; the landing can still speak one
-  transient line before the populate re-land (cosmetic).
+  before the push), so they are correct from frame one; the populate re-land a beat later
+  stays silent when its line matches the entry landing verbatim (the router's
+  AnnounceCurrentIfChanged), so only a genuinely different line (the inn panel's garrison
+  arriving) speaks twice.
 - **Garrison reordering** (live-verified: swap spoken as the new order, model confirmed):
   the grab key picks up a stationed hero and places it on another garrison slot - the two
   widgets swap slots and the order commits through `SetActorOrder` via the panel's own

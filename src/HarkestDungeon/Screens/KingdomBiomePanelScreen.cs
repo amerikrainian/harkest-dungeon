@@ -1,7 +1,6 @@
 using Assets.Code.Kingdom.UI;
 using Assets.Code.UI.Screens;
 using DD2A11y.Core.Nav;
-using DD2A11y.Core.Text;
 using DD2A11y.Elements;
 using DD2A11y.Game;
 using HarmonyLib;
@@ -11,9 +10,10 @@ using TMPro;
 namespace DD2A11y.Screens {
     /// <summary>
     /// The kingdom map's biome cell panel (a <c>ScreenKingdomMapBiomePanel</c> widget on a Map
-    /// layer stack entry) - purely informational: the biome's name with its enemy roster, the
-    /// expedition rewards, the active upgrades and modifier, and the kill contract with its
-    /// rewards when one is posted. The game offers no actions here; Escape closes it.
+    /// layer stack entry) - purely informational: the enemy roster under the game's own
+    /// Enemies header (the biome's name is the screen name), the expedition rewards, the
+    /// active upgrades and modifier, and the kill contract with its rewards when one is
+    /// posted, then the close button. Escape closes it too.
     /// </summary>
     public sealed class KingdomBiomePanelScreen : GameScreen {
         private static readonly AccessTools.FieldRef<ScreenKingdomMapBiomePanel, TextMeshProUGUI> UpgradesLabelField =
@@ -41,6 +41,26 @@ namespace DD2A11y.Screens {
                 return null;
             }
             return GameLoc.TryGet($"biome_name_{cell.BiomeType}");
+        }
+
+        // The game's own "Enemies:" header labels the roster - the biome's name is already the
+        // screen name. Composed from the model with the same loc key the panel binds, so the
+        // line is complete on the entry frame (the context binding lands a beat later).
+        private static string EnemiesLine(ScreenKingdomMapBiomePanel panel) {
+            var cell = panel.SelectedCell;
+            if (cell == null) {
+                cell = ViewedCell<Assets.Code.Kingdom.KingdomMapCellBiome>();
+            }
+            if (cell == null || !cell.HasBiomeType) {
+                return null;
+            }
+            string enemies = GameLoc.TryGet(
+                "kingdoms_map_panel_" + cell.BiomeType.ToString().ToLowerInvariant() + "_enemies");
+            string header = GameLoc.TryGet("kingdom_biome_panel_enemies_header");
+            if (string.IsNullOrEmpty(enemies)) {
+                return header;
+            }
+            return string.IsNullOrEmpty(header) ? enemies : header.TrimEnd() + " " + enemies;
         }
 
         internal static T ViewedCell<T>() where T : Assets.Code.Kingdom.KingdomMapCellBase {
@@ -79,11 +99,7 @@ namespace DD2A11y.Screens {
         }
 
         private void Populate(ScreenKingdomMapBiomePanel panel) {
-            var context = panel.GetComponent<Assets.Code.Data.DataContextBhv>();
-            _root.Add(new ReadoutElement(() => {
-                string enemies = context == null ? null : GameLoc.TryGet(context.GetStringValue("biome_enemies"));
-                return SpokenLine.Join(BiomeName(panel), enemies);
-            }));
+            _root.Add(new ReadoutElement(() => EnemiesLine(panel)));
             // The label keeps template text when unbound; the game populates it only for
             // active upgrades or a modifier, so that is the gate.
             var cell = panel.SelectedCell;
@@ -107,6 +123,12 @@ namespace DD2A11y.Screens {
                     detail: () => desc == null || !desc.gameObject.activeInHierarchy
                         ? (System.Collections.Generic.IEnumerable<string>)new string[0]
                         : new[] { desc.text }));
+            }
+            // The close button is prefab-wired (no serialized field), so a sweep finds it.
+            foreach (var button in panel.GetComponentsInChildren<UnityEngine.UI.Button>(includeInactive: false)) {
+                if (UiText.HasAnyTextSource(button.gameObject)) {
+                    _root.Add(new SelectableElement(button));
+                }
             }
             _builtSignature = Signature(panel);
         }

@@ -269,9 +269,7 @@ namespace DD2A11y.Screens {
             return contract == null ? null : contract.ActorDataId;
         }
 
-        private string PositionWords() =>
-            S.KingdomCell(_cursor.y + 1, Manager().KingdomMap.NumberOfRows,
-                          _cursor.x + 1, Manager().KingdomMap.NumberOfCols);
+        private string PositionWords() => S.KingdomCell(_cursor.y + 1, _cursor.x + 1);
 
         private IEnumerable<string> CursorDetail() {
             yield return CursorLine();

@@ -2,6 +2,8 @@
 
 ## V0.2.0
 
+- The kingdom map's cell panels (inns, camps, biomes like The Tundra) now read their Close
+  button.
 - The goals screen, accessible by pressing `g` while driving, has been fixed.
 - The driving UI has been mostly if not fully covered. We now support cycling through different UI panels with tab, hero reordering, party flame readouts and its effects, and the stage coach screen. That one actually read fine, but it wasn't quite as pretty.
 - The field hospital is now fully supported. No more driving by while having your heroes bleed out to death.

@@ -22,6 +22,10 @@ namespace DD2A11y.Core.Nav {
         private Container? _savedRoot;
         private List<UIElement>? _savedPath;
 
+        // The full focus-path line as of the last announcement, the reference
+        // AnnounceCurrentIfChanged compares against.
+        private string? _lastAnnouncedLine;
+
         public bool PopupOpen => _popup != null;
 
         protected Navigator(Action<string, bool> speak) => _speak = speak;
@@ -80,6 +84,7 @@ namespace DD2A11y.Core.Nav {
             }
             Root = root;
             Path.Clear();
+            _lastAnnouncedLine = null;
             if (root != null) {
                 BuildInitialFocus();
             } else {
@@ -118,6 +123,7 @@ namespace DD2A11y.Core.Nav {
             if (Current != null) {
                 Speak(Current.GetFocusText(), interrupt: true);
             }
+            _lastAnnouncedLine = ComposeLine(0);
             SettleFocus();
         }
 
@@ -245,6 +251,18 @@ namespace DD2A11y.Core.Nav {
             Path.AddRange(chain);
         }
 
+        /// <summary>Announce the full focus path unless it would repeat the previous announcement
+        /// verbatim. The rebuild re-land path: a screen the game populates a beat after entry
+        /// rebuilds and re-lands on every open, and an identical line spoken again tells the
+        /// player nothing.</summary>
+        public void AnnounceCurrentIfChanged() {
+            if (ComposeLine(0) == _lastAnnouncedLine) {
+                SettleFocus();
+                return;
+            }
+            AnnounceCurrent();
+        }
+
         /// <summary>Diff a pre-move snapshot against the settled path and speak the delta:
         /// newly-entered nodes in path order (descend/sibling), or just the new innermost element
         /// (ascend).</summary>
@@ -255,28 +273,32 @@ namespace DD2A11y.Core.Nav {
             }
 
             if (i < Path.Count) {
-                var parts = new List<string>();
-                for (int j = i; j < Path.Count; j++) {
-                    // Skip a container whose label just duplicates the node beneath it.
-                    if (j + 1 < Path.Count) {
-                        var label = Path[j].Label;
-                        if (!string.IsNullOrEmpty(label) && label == Path[j + 1].Label) {
-                            continue;
-                        }
-                    }
-                    var d = Path[j].GetFocusText();
-                    if (!string.IsNullOrEmpty(d)) {
-                        parts.Add(d);
-                    }
-                }
-                if (parts.Count > 0) {
-                    Speak(Text.SpokenLine.Join(", ", parts), interrupt);
-                }
+                Speak(ComposeLine(i), interrupt);
             } else if (Current != null) {
                 Speak(Current.GetFocusText(), interrupt); // ascended: announce the now-innermost focus
             }
 
+            _lastAnnouncedLine = ComposeLine(0);
             SettleFocus();
+        }
+
+        // The spoken form of the focus path from the given depth down to the leaf.
+        private string ComposeLine(int from) {
+            var parts = new List<string>();
+            for (int j = from; j < Path.Count; j++) {
+                // Skip a container whose label just duplicates the node beneath it.
+                if (j + 1 < Path.Count) {
+                    var label = Path[j].Label;
+                    if (!string.IsNullOrEmpty(label) && label == Path[j + 1].Label) {
+                        continue;
+                    }
+                }
+                var d = Path[j].GetFocusText();
+                if (!string.IsNullOrEmpty(d)) {
+                    parts.Add(d);
+                }
+            }
+            return Text.SpokenLine.Join(", ", parts);
         }
 
         // Focus has settled on a leaf - the one chokepoint every move, landing, and silent refocus

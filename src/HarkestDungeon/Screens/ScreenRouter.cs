@@ -58,7 +58,9 @@ namespace DD2A11y.Screens {
 
             bool announceRequested = _active.OnUpdate(_target);
             if (_navigator.EnsureFocusValid() || announceRequested) {
-                _navigator.AnnounceCurrent();
+                // Skipped when the re-landed line matches the last announcement verbatim - a
+                // screen the game populates a beat after entry rebuilds on every open.
+                _navigator.AnnounceCurrentIfChanged();
             }
         }
 
