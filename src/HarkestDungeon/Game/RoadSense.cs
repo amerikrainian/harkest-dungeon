@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.Code.Actor.Events;
+using Assets.Code.Bark.Events;
 using Assets.Code.Events;
 using Assets.Code.Game;
 using Assets.Code.Item;
@@ -80,6 +81,7 @@ namespace DD2A11y.Game {
             EventManager.AddListener<EventRoadEventExit>(HandleZoneExit);
             EventManager.AddListener<EventExecuteRoadEventStarted>(HandleRoadEventStarted);
             EventManager.AddListener<EventRunValueChanged>(HandleRunValue);
+            EventManager.AddListener<EventBark>(HandleBark);
         }
 
         private bool OnRoad => GameModeMgr.CurrentMode == GameModeType.DRIVING
@@ -145,6 +147,22 @@ namespace DD2A11y.Game {
                 return;
             }
             _pending.Add(new KeyValuePair<AudioCue?, string>(AudioCue.RoadAmbush, null));
+        }
+
+        // A hero's speech bubble while driving (banter, act-outs); same wording as battle -
+        // the key is already resolved to the specific line by the game's bark selection.
+        private void HandleBark(EventBark evt) {
+            if (!OnRoad) {
+                return;
+            }
+            string speaker = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string text = GameLoc.TryGet(evt.m_BarkKey);
+            if (text == null) {
+                Plugin.Log.LogWarning($"RoadSense: bark key \"{evt.m_BarkKey}\" has no localized text");
+                return;
+            }
+            _pending.Add(new KeyValuePair<AudioCue?, string>(
+                null, speaker == null ? text : S.BarkLine(speaker, text)));
         }
 
         // The Loathing meter (DOOM internally) advanced.
