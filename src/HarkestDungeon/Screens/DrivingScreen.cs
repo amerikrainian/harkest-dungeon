@@ -71,6 +71,7 @@ namespace DD2A11y.Screens {
         private UIElement _drivingArea;
         private HeroRibbonBhv _held;
         private int _builtSignature;
+        private bool _goalsHadContent;
 
         public DrivingScreen(Action<string, bool> speak, TraditionalNavigator navigator) {
             _speak = speak;
@@ -131,6 +132,8 @@ namespace DD2A11y.Screens {
             _root.Add(_buttons);
 
             _builtSignature = Signature(hud);
+            // Entering with the panel already open is not a summon; no focus jump then.
+            _goalsHadContent = _goals.FirstFocusable() != null;
             return _root;
         }
 
@@ -147,6 +150,18 @@ namespace DD2A11y.Screens {
                 PopulateGoals(hud);
                 _builtSignature = Signature(hud);
             }
+            // The goals panel is player-summoned (G or its button), so the moment its rows
+            // arrive - a beat after the toggle, with the panel's timeline - focus jumps to
+            // its first row and the router reads the panel out; the close re-homes to the
+            // driving area through the orphan path.
+            bool goalsHaveContent = _goals.FirstFocusable() != null;
+            if (goalsHaveContent && !_goalsHadContent) {
+                _goalsHadContent = true;
+                _navigator.Focus(_goals.FirstFocusable(), announce: false);
+                _listKeys.Reassert();
+                return true;
+            }
+            _goalsHadContent = goalsHaveContent;
             return false;
         }
 

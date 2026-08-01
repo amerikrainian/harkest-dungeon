@@ -770,7 +770,10 @@ ride the shared KeyboardBinding path)
   landing speaks the resulting order. Live-verified both directions and the model commit
   (TeamPositions), then restored.
 - **Goals panel** (only while the game's G panel is open; the game toggles, our tree
-  follows by signature): the biome's mutator and goal sections when the biome has them
+  follows by signature): the panel is player-summoned, so the moment its rows arrive
+  focus jumps to the first row and the panel reads out (live-verified both ways: the
+  close re-homes to the driving area; entering the screen with the panel already open
+  does not jump). Content: the biome's mutator and goal sections when the biome has them
   (unexercised - the Valley has neither), and one row per hero goal - hero name through
   the game's own row-to-party mapping (the row shows only a portrait), the goal's own
   text with progress count, the reward tooltip in the buffer ("Reward: candle 2").
