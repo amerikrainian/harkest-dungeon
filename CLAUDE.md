@@ -85,6 +85,12 @@ first** or the dll copy is skipped (file locked) and you'll run a stale build.
 **Build Debug to test.** Only Debug deploys; `-c Release` proves compilation but leaves a stale
 deployed build. There is no hot-reload on Mono - any change needs a game restart. Carry the whole
 cycle yourself: kill the game, `dotnet build`, relaunch, wait for boot (~20 s to MAIN_MENU).
+Gate the relaunch on build success (`if ($?)`) - `-applaunch` after a failed build boots the old
+dll, and `-applaunch` while the game runs is a silent no-op that keeps the stale assembly in
+memory even after a later deploy updates the file.
+
+**Zero warnings, zero errors.** Every build and test run must be completely clean. A new warning
+is a defect: fix it in the same change, never suppress it or leave it for later.
 
 - Launch: `steam.exe -applaunch 1940340` (the game must go through Steam).
 - Kill: `MSYS_NO_PATHCONV=1 taskkill.exe /F /IM "Darkest Dungeon II.exe"` from Bash, or

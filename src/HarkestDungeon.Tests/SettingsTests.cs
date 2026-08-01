@@ -31,7 +31,7 @@ namespace DD2A11y.Tests {
         [Fact]
         public void TextSetting_SetPersistsAndApplies() {
             var store = new MemoryStore();
-            string applied = null;
+            string? applied = null;
             var setting = new TextSetting("k", () => "label", "d", store, v => applied = v);
             Assert.Equal("d", applied); // the load applies too
 
