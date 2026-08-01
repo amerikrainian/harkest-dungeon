@@ -185,12 +185,30 @@ the main menu and PauseModal from pause - both routes verified. Named by its own
 focused list rather than the whole screen, so End from the notes reaches Close but Home from
 them lands on the first note, not the header.
 
-## 1.7 Profile Select and Save Management - NOT STARTED
+## 1.7 Profile Select (`ProfileSelectScreen`) - WORKS
 
-The profile flow beneath the main menu's profile button (`ProfileSelectBhv`,
-`ProfileSelectItemBhv`, `ProfileCreationWidgetBhv`, `ProfileSummaryWidgetBhv`): profile list,
-creation, rename, deletion, and save import. Today the profile button itself reads the active
-profile's name on the menu; everything past the press is unmodeled.
+Live-verified 2026-08-01. The panel under the title menu's profile button (`ProfileSelectBhv`),
+named by the game's own "Select Profile" title. Two phases:
+
+- The profile list: one flow per slot - the profile's name (the active one reads "selected";
+  the read-back after Enter is the selection feedback), its Rename Profile / Delete Profile
+  buttons (labels from their game tooltips), an empty slot as the game's "Create New" - then
+  the panel's Back button. Shift+Enter on a profile also opens the game's delete confirmation
+  (the confirmation screen takes over). Elements are keyed to the profile guid, so focus
+  survives the pooled row swap the game's every refresh performs (rename commits included).
+- The create window (Enter on an empty slot): title, name field, language dropdown, the GDPR
+  text around the analytics toggle, Continue/Cancel. The game auto-activates the name edit on
+  open, so entry reads the title then "editing, enter when done".
+- Name edits (create and rename) echo keystrokes and speak the accepted name when the edit
+  ends. The rename edit is invisible to the game's own `IsInputtingText`, so the input
+  manager asks the screen directly (`EditingName`) to pause the mod's keys for it.
+- Escape drives the game's own close (cancels a pending creation, drops the whole panel); the
+  title menu re-announces. Deleting the last profile is the game's own silent-refusal path
+  (an invalid-click sound, no text - parity).
+
+**Known gaps:** the level diamond (`ProfileLevelBtn`, absent on a fresh profile) is swept
+generically but unverified; the save-import flow (`ProfileSummaryWidgetBhv`, console-only
+surfaces) is unmodeled.
 
 ## 1.8 Mods Manager - NOT STARTED
 

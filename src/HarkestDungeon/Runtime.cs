@@ -34,6 +34,7 @@ namespace DD2A11y {
         private readonly Game.RoadSense _roadSense;
         private readonly LanguageSync _language;
         private CrossroadsScreen _crossroads;
+        private ProfileSelectScreen _profileSelect;
         private InnScreen _inn;
         private InventoryScreen _inventory;
         private InnStorageScreen _innStorage;
@@ -152,6 +153,9 @@ namespace DD2A11y {
             // The title menu's cinematics panel overlays the menu inside the same MAIN_MENU
             // mode, so it must outrank both menu readers.
             Router.Register(new CinematicsPanelScreen());
+            // The profile-select panel overlays the title menu inside the same MAIN_MENU mode.
+            _profileSelect = new ProfileSelectScreen(speak);
+            Router.Register(_profileSelect);
             // The kingdoms scene overlays the title menu inside the same MAIN_MENU mode.
             Router.Register(new KingdomMenuScreen(speak));
             Router.Register(new MainMenuScreen());
@@ -194,7 +198,9 @@ namespace DD2A11y {
             // earlier in the same frame, so that key is still this frame's press and would
             // otherwise immediately re-fire as ours (reopening the edit it just closed).
             Input.SuppressAll = () => {
-                bool typing = Game.TextEntry.IsTyping || _textEdit.Active;
+                // The profile rename edit is asked for directly - the game does not report it
+                // through IsInputtingText the way its other text fields are.
+                bool typing = Game.TextEntry.IsTyping || _textEdit.Active || _profileSelect.EditingName;
                 bool suppress = typing || _wasTyping;
                 _wasTyping = typing;
                 return suppress;

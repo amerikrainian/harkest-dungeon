@@ -32,6 +32,9 @@ namespace DD2A11y.Core.Strings {
             // "Kingdoms" caption is unavailable. Noun.
             D("ScreenKingdoms", "kingdoms"),
             D("ScreenSettings", "settings"),
+            // The profile-select panel under the title menu's profile button, when the game's
+            // own "Select Profile" title is unavailable.
+            D("ScreenProfileSelect", "select profile"),
             D("ScreenPauseMenu", "pause menu"),
             D("ScreenCrossroads", "crossroads"),
             // A generic confirmation dialog with no title of its own.
@@ -460,6 +463,7 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenMainMenu => T("ScreenMainMenu");
         public static string ScreenKingdoms => T("ScreenKingdoms");
         public static string ScreenSettings => T("ScreenSettings");
+        public static string ScreenProfileSelect => T("ScreenProfileSelect");
         public static string ScreenPauseMenu => T("ScreenPauseMenu");
         public static string ScreenCrossroads => T("ScreenCrossroads");
         public static string ScreenDialog => T("ScreenDialog");

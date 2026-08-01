@@ -56,17 +56,16 @@ namespace DD2A11y.Screens {
             return _instance != null && _instance.gameObject.activeInHierarchy ? _instance : null;
         }
 
-        private readonly Action<string, bool> _speak;
+        private readonly Core.Text.TypingEcho _echo;
         private KingdomMainMenuUIBhv _ui;
         private Container _root;
         private int _builtSignature;
         private KingdomNameElement _nameElement;
-        private bool _wasTyping;
-        private string _typed;
         private Dictionary<object, UIElement> _byWidget = new Dictionary<object, UIElement>();
 
         public KingdomMenuScreen(Action<string, bool> speak) {
-            _speak = speak;
+            _echo = new Core.Text.TypingEcho(
+                () => TextEntry.IsTyping && _nameElement != null, FieldText, speak);
         }
 
         public override string Name => GameLoc.TryGet("main_menu_kingdoms_label") ?? S.ScreenKingdoms;
@@ -88,7 +87,10 @@ namespace DD2A11y.Screens {
         }
 
         public override bool OnUpdate(object target) {
-            bool announce = TickTyping();
+            // The game's edit flow owns the keyboard while typing (the input manager pauses on
+            // IsTyping); the echo speaks what that flow changes, and the edit's end requests a
+            // re-announce so the name element reads back the accepted name.
+            bool announce = _echo.Tick();
             if (Signature() != _builtSignature) {
                 _root.Clear();
                 Populate();
@@ -96,43 +98,10 @@ namespace DD2A11y.Screens {
             return announce;
         }
 
-        // The game's edit flow owns the keyboard while typing (the input manager pauses on
-        // IsTyping); here the screen speaks what that flow changes: the edit start, each
-        // keystroke, and the accepted name when the edit ends (via a requested re-announce).
-        private bool TickTyping() {
-            bool typing = TextEntry.IsTyping && _nameElement != null;
-            if (typing == _wasTyping) {
-                if (typing && FieldText() != _typed) {
-                    EchoDiff(_typed, FieldText());
-                    _typed = FieldText();
-                }
-                return false;
-            }
-            _wasTyping = typing;
-            if (typing) {
-                _typed = FieldText();
-                _speak(S.EditStarted, false);
-                return false;
-            }
-            return true;
-        }
-
         private string FieldText() {
             var field = _nameElement != null ? _nameElement.Field : null;
             return field != null ? field.text : "";
         }
-
-        private void EchoDiff(string old, string now) {
-            if (now.Length == old.Length + 1 && now.StartsWith(old, StringComparison.Ordinal)) {
-                _speak(Echo(now[now.Length - 1]), true);
-            } else if (old.Length == now.Length + 1 && old.StartsWith(now, StringComparison.Ordinal)) {
-                _speak(S.EditDeleted(Echo(old[old.Length - 1])), true);
-            } else if (now.Length > 0) {
-                _speak(now, true); // a wholesale change (the edit start clearing the field is silent)
-            }
-        }
-
-        private static string Echo(char c) => c == ' ' ? S.EditSpace : c.ToString();
 
         private void Populate() {
             _builtSignature = Signature();

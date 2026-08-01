@@ -2,6 +2,9 @@
 
 ## V0.2.0
 
+- The profile panel behind the main menu's profile button is now fully readable: the
+  profile list with rename and delete, creating a profile (name, language, analytics
+  consent), and name edits echoing keystrokes and reading back the accepted name.
 - The kingdom map's cell panels (inns, camps, biomes like The Tundra) now read their Close
   button.
 - The goals screen, accessible by pressing `g` while driving, has been fixed.
