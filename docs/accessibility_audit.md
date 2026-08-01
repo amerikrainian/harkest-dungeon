@@ -726,8 +726,52 @@ yet reached in play
 - Known gaps: fork menu unexercised live; coach damage/break and barricade/cleared cues
   still have assets but no wiring (no dedicated game event surfaced - wheels/armor are
   stagecoach items, so a count poll is the likely wire; barricades want live confirmation
-  of what spawns as force-stop obstacles); the distance-to-Inn readout is unread (a
-  status readout key is the natural next step).
+  of what spawns as force-stop obstacles).
+
+### Free driving HUD (`DrivingScreen`, the DRIVING-mode floor)
+Status: **live-verified 2026-07-31** (logical paths and binding suppression; physical keys
+ride the shared KeyboardBinding path)
+- The road HUD as Tab panels around a pass-through driving area, kingdom-map style (Panel
+  root, wrapping Tab). Entry announces "driving" then the biome name (the minimap's own
+  label; authored "road" when absent). The screen never captures the keyboard.
+- **Driving area** (first stop): every key stays the game's - arrows/WASD drive, M, I, C,
+  Z, G, Alt, Ctrl, Escape as shipped. The mod claims only Tab (the game's second minimap
+  key - its tab binding rests via an empty binding override the whole stand; M keeps the
+  map). Arrows are consumed mod-side so focus stays parked.
+- **Status panel**: distance ("7 leagues to Inn") and region ("Regions: 1/3") from the
+  HUD's own labels, the flame value (authored "Flame {0}" - the game captions it with the
+  glyph alone; torch tooltip in the buffer), armor and wheels (the stagecoach sheet's own
+  stat strings over the live run values, damage tooltips in the buffer), and the Loathing
+  meter (named by its own tooltip, "The Loathing Abates" + confession in the buffer).
+- **Party panel**: one element per ribbon hero in marching order - name, HP, stress (the
+  game's status-bar strings from the live actor), every ribbon tooltip in the buffer
+  (status effects, "Tense", diseases). Enter is the ribbon's own right-click inspect (the
+  hero's sheet - verified it opens the FOCUSED hero). Space grabs for a marching-order
+  move: place on another hero's slot runs the game's own drag (the hover-index field plus
+  OnHeroRibbonDrag/OnHeroRibbonRelease, so locked-ribbon shifts stay the game's), and the
+  landing speaks the resulting order. Live-verified both directions and the model commit
+  (TeamPositions), then restored.
+- **Goals panel** (only while the game's G panel is open; the game toggles, our tree
+  follows by signature): the biome's mutator and goal sections when the biome has them
+  (unexercised - the Valley has neither), and one row per hero goal - hero name through
+  the game's own row-to-party mapping (the row shows only a portrait), the goal's own
+  text with progress count, the reward tooltip in the buffer ("Reward: candle 2").
+  GOTCHA: the panel's sections activate a beat after IsBiomePanelActive flips (timeline
+  activation), so the rows ride the signature rebuild, not the toggle.
+- **Buttons panel**: Map (M), Goals & Conditions (G), Inventory (I), Stagecoach (Z) by
+  their own tooltip captions, plus the last-chance trophy button (swept inactive, focus
+  follows its live state; unexercised - none active this run).
+- **Off the driving area** the game's arrow, Space, Enter, and bare-Ctrl bindings rest
+  (same override mechanism as the road map - generalized `DrivingKeySuppressor`) so list
+  navigation cannot steer, Interact, or flash the glossary; WASD and the letter hotkeys
+  stay live everywhere. On-area everything restores (verified in the live input asset,
+  both directions). Escape stays the game's pause everywhere; our caption-hotkey handlers
+  (M/I/C) stand down whenever the gate is not captured, so shared-keyboard screens never
+  double-fire the game's own keys.
+- Coexistence live-verified: hero sheet (Enter) in and out, minimap over driving (map
+  screen takes over, "map closed" then the driving re-announce), goals toggle in and out,
+  the stagecoach sheet and inventory keep outranking via the stack. Combat/inn/etc.
+  unaffected (mode-gated).
 
 ### Road map (`MapScreen`, M while driving)
 Status: **new, deployed 2026-07-25, awaiting live verification**

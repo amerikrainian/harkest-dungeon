@@ -46,6 +46,13 @@ namespace DD2A11y.Core.Strings {
             D("ScreenInspector", "inspector"),
             // The standalone player-inventory screen (road, crossroads, loot).
             D("ScreenInventory", "inventory"),
+            // The free-driving screen (the road HUD as Tab panels). Biome, distance, and
+            // hero lines come from the game; these are the mod's own frame words.
+            D("ScreenDriving", "driving"),
+            // The driving area's label while the game shows no biome name to reuse.
+            D("DrivingRoad", "road"),
+            // The flame meter; {0} = the current value. The game captions it with the glyph only.
+            D("DrivingFlame", "Flame {0}"),
             // The road map (M while driving) and its cursor lines. Node and road names come
             // from the game's own fog-gated tooltips; these frame them.
             D("ScreenMap", "map"),
@@ -455,6 +462,9 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenCombat => T("ScreenCombat");
         public static string ScreenInspector => T("ScreenInspector");
         public static string ScreenInventory => T("ScreenInventory");
+        public static string ScreenDriving => T("ScreenDriving");
+        public static string DrivingRoad => T("DrivingRoad");
+        public static string DrivingFlame(string value) => F("DrivingFlame", value);
         public static string ScreenMap => T("ScreenMap");
         public static string MapClosed => T("MapClosed");
         public static string MapWagon(string from, string to) => F("MapWagon", from, to);

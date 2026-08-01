@@ -71,6 +71,21 @@ namespace DD2A11y.Game {
             return visible;
         }
 
+        /// <summary>HP and stress the way the game's status bars caption them
+        /// ("HP 30/30, Stress 2/10"); monsters have no stress bar and read HP only.</summary>
+        public static string StatusLine(ActorInstance actor) {
+            if (actor == null) {
+                return null;
+            }
+            string hpFormat = GameLoc.TryGet("status_bar_health");
+            string hp = hpFormat == null ? (int)actor.DisplayedHp + "/" + (int)actor.DisplayedHpMax
+                : string.Format(hpFormat, (int)actor.DisplayedHp, (int)actor.DisplayedHpMax);
+            string stressFormat = GameLoc.TryGet("status_bar_stress");
+            string stress = stressFormat == null ? null
+                : string.Format(stressFormat, (int)actor.Stress, (int)actor.StressMax);
+            return SpokenLine.Join(hp, stress);
+        }
+
         public static ActorInstance Get(uint actorGuid) {
             if (!SingletonMonoBehaviour<Library<uint, ActorInstance>>.HasInstance()) {
                 return null;

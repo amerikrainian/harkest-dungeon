@@ -1,6 +1,5 @@
 using Assets.Code.Actor;
 using Assets.Code.UI.Widgets;
-using DD2A11y.Core.Text;
 using DD2A11y.Game;
 using UnityEngine.UI;
 
@@ -27,20 +26,6 @@ namespace DD2A11y.Elements {
 
         public override string Role => null;
 
-        public override string Value {
-            get {
-                var actor = Actor;
-                if (actor == null) {
-                    return null;
-                }
-                string hpFormat = GameLoc.TryGet("status_bar_health");
-                string hp = hpFormat == null ? (int)actor.DisplayedHp + "/" + (int)actor.DisplayedHpMax
-                    : string.Format(hpFormat, (int)actor.DisplayedHp, (int)actor.DisplayedHpMax);
-                string stressFormat = GameLoc.TryGet("status_bar_stress");
-                string stress = stressFormat == null ? null
-                    : string.Format(stressFormat, (int)actor.Stress, (int)actor.StressMax);
-                return SpokenLine.Join(hp, stress);
-            }
-        }
+        public override string Value => Actors.StatusLine(Actor);
     }
 }

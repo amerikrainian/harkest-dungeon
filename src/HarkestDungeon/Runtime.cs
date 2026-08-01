@@ -40,6 +40,7 @@ namespace DD2A11y {
         private KingdomInnPanelScreen _kingdomInnPanel;
         private CombatScreen _combat;
         private AcademicScreen _academic;
+        private DrivingScreen _driving;
         private string _lastTickError;
         private float _lastTickErrorTime;
         private bool _wasTyping;
@@ -166,6 +167,9 @@ namespace DD2A11y {
                     : Navigator.Current.GetBufferLines);
                 Buffers.SetCurrent("ui");
             }));
+            // The free-driving floor: the HUD as Tab panels around a pass-through driving area.
+            _driving = new DrivingScreen(speak, Navigator);
+            Router.Register(_driving);
             // Target-select feedback: validity beeps fire on focus landings, not per frame.
             Navigator.FocusSettled += element => {
                 if (Router.Active == _combat) {
@@ -229,17 +233,24 @@ namespace DD2A11y {
             // combat). C, matching the game's own "Hero Sheet (C)" hint; where the focused
             // element has no inspect, a button captioned "(C)" takes the press instead.
             Reg("ui.inspect", S.InputInspect, () => {
-                if (Navigator.Current?.InvokeAction("inspect") != true) {
+                if (Navigator.Current?.InvokeAction("inspect") != true && Gate.Captured) {
                     Navigator.ActivateCaptionHotkey("(C)");
                 }
             }).AddBinding(K(Key.C));
             // The game captions its screen shortcuts on the buttons themselves ("Map (M)",
             // "Inventory (I)"); a captured screen swallows those keys, so the advertised key
-            // presses the advertising button.
-            Reg("ui.hotkey.map", S.InputHotkeyMap, () => Navigator.ActivateCaptionHotkey("(M)"))
-                .AddBinding(K(Key.M));
-            Reg("ui.hotkey.inventory", S.InputHotkeyInventory, () => Navigator.ActivateCaptionHotkey("(I)"))
-                .AddBinding(K(Key.I));
+            // presses the advertising button. On a shared-keyboard screen (driving) the game's
+            // own key already fires - pressing the button too would double-toggle.
+            Reg("ui.hotkey.map", S.InputHotkeyMap, () => {
+                if (Gate.Captured) {
+                    Navigator.ActivateCaptionHotkey("(M)");
+                }
+            }).AddBinding(K(Key.M));
+            Reg("ui.hotkey.inventory", S.InputHotkeyInventory, () => {
+                if (Gate.Captured) {
+                    Navigator.ActivateCaptionHotkey("(I)");
+                }
+            }).AddBinding(K(Key.I));
             // The combat inspector (the game's academic view): I toggles it on the focused
             // combatant; while it is up, A/D cycle combatants - the game's own keys for it.
             Reg("combat.inspector", S.InputInspector, () => _academic.Toggle(Router, Navigator))
@@ -280,6 +291,10 @@ namespace DD2A11y {
             } else if (Router.Active == _kingdomInnPanel) {
                 if (!takeOne) { // heroes have no stacks to split
                     _kingdomInnPanel.ToggleGrab(Navigator.Current);
+                }
+            } else if (Router.Active == _driving) {
+                if (!takeOne) { // heroes have no stacks to split
+                    _driving.ToggleGrab(Navigator.Current);
                 }
             }
         }
