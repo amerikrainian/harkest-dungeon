@@ -5,6 +5,9 @@
 - The profile panel behind the main menu's profile button is now fully readable: the
   profile list with rename and delete, creating a profile (name, language, analytics
   consent), and name edits echoing keystrokes and reading back the accepted name.
+- Key rebinding now works: the settings controls tab's Bindings button opens the binding
+  list (Up/Down pick a command, Left/Right its two key slots), Enter listens for the new
+  key and reads back the result, Shift+Enter clears a slot.
 - The kingdom map's cell panels (inns, camps, biomes like The Tundra) now read their Close
   button.
 - The goals screen, accessible by pressing `g` while driving, has been fixed.

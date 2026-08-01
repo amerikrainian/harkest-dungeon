@@ -271,14 +271,31 @@ widgets, currently the announcement separator - a free-text field (`TextEntryEle
 - While the mod tab is up the game's own tab state is untouched; a mouse click on a game tab
   leaves it.
 
-**Known gaps:** keybind rows read as bare buttons (no rebind flow - see 2.1.2); DEBUG-tab
-filter field unhandled; sliders speak normalized percent, not the game's display value; the
-mod tab is invisible to sighted users (no game-side tab button is injected).
+**Known gaps:** DEBUG-tab filter field unhandled; sliders speak normalized percent, not the
+game's display value; the mod tab is invisible to sighted users (no game-side tab button is
+injected).
 
-### 2.1.2 Key Rebinding Flow - NOT STARTED
+### 2.1.2 Key Bindings (`KeyBindingsScreen`) - WORKS
 
-The controls tab's keybind rows currently read as bare buttons; the listening/rebind
-interaction is unmodeled.
+Live-verified 2026-08-01. The controls tab's Bindings button opens the game's key-bindings
+panel (`InputBindingsWidgetBhv`), which takes over as its own screen named by that button's
+caption.
+
+- One row per rebindable command, labeled with the command name from the row's data context:
+  Up/Down walk commands ("Inventory, Key 1, button, I"), Left/Right its two key slots, with
+  the game's action-map headers (General, Driving, Combat) in the flow; the column-header row
+  is skipped (the slot labels carry Key 1/Key 2). Close and Default Bindings close the list.
+- Enter starts the game's interactive rebind; its "Setting Key" prompt reads back as the
+  activation feedback. While the listen is up EVERY mod key pauses (`RebindActive` in the
+  input manager's suppression), so the next key pressed becomes the binding - arrows, Enter,
+  Tab included. The end of the listen reads the slot's outcome: the new key, or the kept one
+  after Escape (which the game's own rebind consumes; the panel stays open).
+- Shift+Enter clears the slot ("Not Set" read back); the game's duplicate-removal on a
+  completed rebind clears colliding slots silently, read when visited (parity - the game
+  shows the same without fanfare).
+- Header and key labels read from the rows' data contexts, not their TMP labels - the pooled
+  header still shows its placeholder on the entry announcement.
+- Escape closes the panel through the game's own toggle; the settings screen re-announces.
 
 ## 2.2 Pause Menu (`PauseScreen`) - WORKS
 

@@ -35,6 +35,7 @@ namespace DD2A11y {
         private readonly LanguageSync _language;
         private CrossroadsScreen _crossroads;
         private ProfileSelectScreen _profileSelect;
+        private KeyBindingsScreen _keyBindings;
         private InnScreen _inn;
         private InventoryScreen _inventory;
         private InnStorageScreen _innStorage;
@@ -91,6 +92,10 @@ namespace DD2A11y {
             _crossroads = new CrossroadsScreen(speak);
             Router.Register(new ConfirmationScreen());
             Router.Register(new UiModalScreen());
+            // The key-bindings panel overlays the settings screen's controls tab, so it must
+            // outrank the settings reader.
+            _keyBindings = new KeyBindingsScreen(Navigator, speak);
+            Router.Register(_keyBindings);
             Router.Register(new OptionsScreen(Settings, _textEdit, speak));
             Router.Register(new PauseScreen());
             Router.Register(new CharacterSheetScreen());
@@ -199,8 +204,10 @@ namespace DD2A11y {
             // otherwise immediately re-fire as ours (reopening the edit it just closed).
             Input.SuppressAll = () => {
                 // The profile rename edit is asked for directly - the game does not report it
-                // through IsInputtingText the way its other text fields are.
-                bool typing = Game.TextEntry.IsTyping || _textEdit.Active || _profileSelect.EditingName;
+                // through IsInputtingText the way its other text fields are. A listening key
+                // rebind pauses the same way: the pressed key must become the binding.
+                bool typing = Game.TextEntry.IsTyping || _textEdit.Active || _profileSelect.EditingName
+                    || _keyBindings.RebindActive;
                 bool suppress = typing || _wasTyping;
                 _wasTyping = typing;
                 return suppress;

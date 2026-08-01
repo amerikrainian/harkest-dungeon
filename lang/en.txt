@@ -8,6 +8,7 @@ ScreenMainMenu = main menu
 ScreenKingdoms = kingdoms
 ScreenSettings = settings
 ScreenProfileSelect = select profile
+ScreenKeyBindings = key bindings
 ScreenPauseMenu = pause menu
 ScreenCrossroads = crossroads
 ScreenDialog = dialog
