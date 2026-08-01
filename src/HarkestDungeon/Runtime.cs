@@ -138,6 +138,10 @@ namespace DD2A11y {
             Router.Register(new InnUpgradesScreen());
             Router.Register(new InnReplacementScreen());
             Router.Register(new RouteSelectScreen());
+            // The road's node-arrival prompt, then the surfaces it opens: the Field Hospital
+            // (also the inn physician; its Pharmacy tab hands off to the store screen above).
+            Router.Register(new EnterNodeScreen(speak));
+            Router.Register(new HospitalScreen());
             // The standalone player inventory (road, crossroads, loot); the inn hub above
             // already took its own inline copy.
             _inventory = new InventoryScreen(speak, Navigator);

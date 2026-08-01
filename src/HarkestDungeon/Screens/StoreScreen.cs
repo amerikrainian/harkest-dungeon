@@ -86,7 +86,16 @@ namespace DD2A11y.Screens {
         private static void Close(Component store) {
             if (store is InnStoreUiBhv inn) {
                 inn.CloseSubscreen();
-            } else if (store is StoreUiBhv road) {
+                return;
+            }
+            // The hospital's embedded Pharmacy leaves through the hospital's first tab; its
+            // done button only hides the inventory panel and would strand an empty store.
+            var hospital = store.GetComponentInParent<Assets.Code.UI.Screens.HospitalScreenBhv>();
+            if (hospital != null) {
+                HospitalScreen.LeaveEmbeddedStore(hospital);
+                return;
+            }
+            if (store is StoreUiBhv road) {
                 road.HandleDoneButton();
             }
         }

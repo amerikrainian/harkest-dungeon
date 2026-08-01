@@ -758,19 +758,56 @@ close in a synthetic test). Where each node lands:
   player-verified. STORY_HERO_REPLACEMENT -> the replacement-hero screen. Covered.
 - WATCH_TOWER -> prompt -> `TriggerScouting.StartScoutPulse` only: NO further UI - the
   reveal reads through the road map. Effectively covered.
-- HOSPITAL -> prompt -> **`HospitalScreenBhv` - the one uncovered roadside screen.** The
-  floor reads it as "N/A, button, unavailable". Shape (from the synthetic probe): title
-  "Field Hospital: Triage", three tooltip-captioned tabs (Triage / Wellness / Pharmacy),
-  a hero pager with HP bar and stress pips, minor-heal and full-heal buttons with cost
-  labels, a disease-cure button altar-locked behind "Upgrade Physician to unlock", the
-  done button, and the shared store panel behind Pharmacy. Costs read "N/A" in the
-  synthetic open - re-check bound values on a real node.
+- HOSPITAL -> prompt -> the Field Hospital, now a dedicated screen (see its own section).
 - DUNGEON / GUARDIAN / CREATURE_DEN / kingdom gang bosses -> prompt -> combat chains
   (covered) - not testable-with-undo, entering commits a fight.
 - OASIS / GATE / BRIDGE and the kingdoms node skins ride the same trigger set (prompt +
   effect/loot/story/mode triggers); no bespoke screens found in code.
-Cross-cutting: the prompt's candle marker is icon-only and the floor drops it; the
-prompt's label binds a frame late (the entry reads the "Interact" placeholder once).
+**SYNTHETIC-TEST RULE learned the hard way (2026-07-31): wait for the run to settle
+before any synthetic screen push.** The run's managers (`GameTypeMgr.RunValues` and
+friends) start a beat AFTER `CurrentMode == DRIVING` flips; a synthetic push inside that
+gap stalled the run start for the whole session (dead RunValues, the game's own
+UpdateHealCost NRE-ing, "N/A" costs everywhere) - broken until restart, with no log
+line. Gate on `RunValues != null`, not just the mode.
+
+### Node-arrival prompt (`EnterNodeScreen`)
+Status: **live-verified 2026-07-31** (synthetic opens; a real node arrival is organic)
+- The one screen every roadside stop halts on (`EnterNodeScreenWidgetBhv`), named by the
+  authored "road stop": a single button reading the interaction's own loc key through the
+  push params ("Search the Cache", "The Field Hospital"), with the authored "candle
+  reward" value while the game shows its icon-only candle marker (entering feeds a hero
+  goal). The push params land a frame after the object tops the stack, so the entry reads
+  a bare "button" once and the label's arrival requests the one re-announce (the shared
+  LabelArrived pattern). Enter is the button's own press; the game refuses to close the
+  prompt, so Escape answers "unavailable".
+
+### Field Hospital (`HospitalScreen`)
+Status: **live-verified 2026-07-31 on a real run** (synthetic open, damaged party for
+real costs; an actual node visit and a treatment purchase remain organic; the same class
+should serve the inn physician - unverified there)
+- The road node's `HospitalScreenBhv`, named by its own composed title ("Field Hospital:
+  Triage" / Wellness / Pharmacy - it retitles per tab). Layout: the hero pager
+  (Left/Right page the party through the browser's own stepping, name + HP + stress,
+  status tooltip in the buffer), the tab selector (the tab buttons' own captions; the
+  game disables the active tab's button, which is how the current one reads; Left/Right
+  click the game's own buttons), then the active tab's rows.
+- **Triage**: the cure-disease button (its own texts; "Upgrade Physician to unlock" rides
+  the tooltip into the buffer), then minor and full heal - each reading its own amount
+  label ("+8 HP", "+MAX") with the price composed from the model exactly as the store
+  composes it (CostDescription, strikethrough off - the game's own bound text carries a
+  crossed-out original price that would read as two numbers).
+- **Wellness**: treatable quirks by their own names ("selected" on the one the commands
+  would treat; Enter is the row's own click, spoken back), then the lock/remove commands
+  captioned by their tooltips with the cost following ("Remove, relic 16") - the visible
+  row is icon plus cost only. The game's "No Treatable Quirks" notice reads when shown.
+  Rows are reused per button across the game's per-selection rebuilds so focus never
+  re-homes mid-flow.
+- **Pharmacy** hands the surface to the shared store screen (the embedded `StoreUiBhv`
+  matches it); Escape there returns to Triage through the hospital's own first tab - the
+  embedded store's done button is a husk (it only hides the inventory panel and would
+  strand an empty store; found live, fixed in the store screen's back). Escape on the
+  hospital itself closes through the widget's own close-button handler; the synthetic
+  flow also reveals the player-inventory entry beneath (one extra Escape).
 
 ### Free driving HUD (`DrivingScreen`, the DRIVING-mode floor)
 Status: **live-verified 2026-07-31** (logical paths and binding suppression; physical keys
