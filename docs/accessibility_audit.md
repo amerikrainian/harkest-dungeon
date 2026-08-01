@@ -24,9 +24,21 @@ Statuses: **works** (live-verified), **built** (code exists, not yet live-verifi
 
 ### Main menu (`MainMenuScreen`)
 Status: **works** (live-verified 2026-07-27)
-- Disclaimer text + continue control (drives `OnMainMenuPress`); then the game's own ordered
-  selectable list. Icon-only footer buttons (Exit Game, Patch Notes, Cinematics, Mailing List)
-  read via their tooltip; the Confessions/Kingdoms tooltips land in the buffer.
+- Disclaimer text + continue control (drives `OnMainMenuPress`); then the buttons in VISUAL
+  order (user-caught 2026-07-31: the serialized selectable list groups the footer first, so
+  the menu read upside down - Exit Game first, Confessions near the end). The sweep sorts by
+  screen position: rows top to bottom, left to right within a row (grouping by a quarter of
+  a button's world height - the footer buttons sit 3px apart in Y, one row; the Origin Pack
+  side promo rides 25px below the stack's Kingdoms and must not merge into its row). The
+  open animation slides buttons in, so a changed order signature rebuilds only after holding
+  two frames and elements are reused per button - the settle re-sorts silently, and the
+  Confessions submenu swap (which deactivates the main stack a frame before its own buttons
+  arrive) re-homes onto "Continue Confession" rather than a mid-swap transient. Verified
+  order: Confessions, Kingdoms, Origin Pack, Mods, then Exit Game / Mailing List / Patch
+  Notes / Cinematics left to right, the Journal (bottom-right corner) last; submenu:
+  Continue Confession, New Confession. Icon-only footer buttons (Exit Game, Patch Notes,
+  Cinematics, Mailing List) read via their tooltip; the Confessions/Kingdoms tooltips land
+  in the buffer.
 - Through the open animation (after the disclaimer press, or entering the menu mid-pan) the
   game holds every button disabled with its tooltip caption off and unlocks them staggered
   across frames, so the tree holds until the landing button is interactable and labeled - the
@@ -36,7 +48,8 @@ Status: **works** (live-verified 2026-07-27)
 - Escape opens settings (the game's own Escape behavior at the title).
 - The Confessions submenu is a container swap the count-rebuild picks up.
 - Known gaps: the profile button reads the profile name (its "Change Profile" caption is a
-  buffer line); list order is the game's serialized order, not visual.
+  buffer line); the entry landing can speak the transient phase once before settling (the
+  game briefly presents the continue state on boot).
 
 ### Cinematics panel (`CinematicsPanelScreen`, on the title menu)
 Status: **works** (live-verified 2026-07-28)

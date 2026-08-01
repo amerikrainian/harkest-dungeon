@@ -14,8 +14,9 @@ namespace DD2A11y.Screens {
     /// <summary>
     /// The title menu (MAIN_MENU game mode; the menu is not on the screen stack). Two phases: the
     /// startup disclaimer (its text plus one continue control - the game unlocks the menu only via
-    /// <c>OnMainMenuPress</c>, which the AnyKey listener would normally call), then the button
-    /// list, read from the menu's own ordered selectable list.
+    /// <c>OnMainMenuPress</c>, which the AnyKey listener would normally call), then the buttons in
+    /// their VISUAL order - the main stack top to bottom, then the footer row left to right. The
+    /// menu's serialized selectable list groups the footer first, which read the menu upside down.
     /// </summary>
     public sealed class MainMenuScreen : GameScreen {
         private static readonly AccessTools.FieldRef<MainMenuUiScreenBhv, List<Selectable>> SelectablesField =
@@ -30,7 +31,9 @@ namespace DD2A11y.Screens {
         private MainMenuUiScreenBhv _menu;
         private Container _root;
         private bool _builtDisclaimer;
-        private int _builtCount;
+        private int _builtOrder;
+        private int _lastSeenOrder;
+        private readonly Dictionary<Selectable, UIElement> _elements = new Dictionary<Selectable, UIElement>();
 
         public override string Name => S.ScreenMainMenu;
 
@@ -55,6 +58,7 @@ namespace DD2A11y.Screens {
                     SingletonMonoBehaviour<Assets.Code.UI.Managers.CommonUiBhv>.Instance.ShowOptionsMenu(isPrimaryPauseMenu: true);
                 }
             });
+            _elements.Clear();
             Populate(menu);
             return _root;
         }
@@ -62,7 +66,17 @@ namespace DD2A11y.Screens {
         public override bool OnUpdate(object target) {
             var menu = (MainMenuUiScreenBhv)target;
             bool disclaimerNow = !DisclaimerShownField(menu);
-            if (disclaimerNow != _builtDisclaimer || (!disclaimerNow && CountActive(menu) != _builtCount)) {
+            // The order signature covers the active set AND its visual order: the open
+            // animation slides the buttons in, so the entry build can sort transient
+            // positions - the settle re-sorts silently (elements are reused per button, so
+            // focus holds and nothing re-announces). A changed signature rebuilds only once
+            // it holds for two frames: the Confessions submenu swap deactivates the main
+            // stack a frame before its own buttons arrive, and a rebuild caught mid-swap
+            // re-homed onto the side promo instead of the submenu's first entry.
+            int order = disclaimerNow ? 0 : OrderSignature(menu);
+            bool orderSettled = order == _lastSeenOrder;
+            _lastSeenOrder = order;
+            if (disclaimerNow != _builtDisclaimer || (!disclaimerNow && orderSettled && order != _builtOrder)) {
                 // Through the menu's open animation the buttons are disabled with their tooltip
                 // captions off, and the unlock staggers across frames, so a rebuild would land
                 // on a bare "button, unavailable". Hold the tree until the landing button is
@@ -90,20 +104,47 @@ namespace DD2A11y.Screens {
                     () => UiText.FirstLabel(continueButton != null ? continueButton.gameObject : null),
                     S.RoleButton,
                     menu.OnMainMenuPress));
-                _builtCount = 0;
+                _builtOrder = 0;
                 return;
             }
 
             if (!LandingReady(menu)) {
                 // Entered mid-animation (returning from a run pans back into the menu with the
-                // buttons locked); leave the tree empty - the count mismatch re-runs this once
-                // the buttons unlock.
-                _builtCount = -1;
+                // buttons locked); leave the tree empty - the signature mismatch re-runs this
+                // once the buttons unlock.
+                _builtOrder = -1;
                 _awaitingLabel = false;
                 return;
             }
 
-            int count = 0;
+            foreach (var selectable in Swept(menu)) {
+                if (!_elements.TryGetValue(selectable, out var element)) {
+                    element = new SelectableElement(selectable);
+                    _elements[selectable] = element;
+                }
+                _root.Add(element);
+            }
+            _builtOrder = OrderSignature(menu);
+            var first = _root.FirstFocusable();
+            _awaitingLabel = first != null && string.IsNullOrEmpty(first.Label);
+        }
+
+        private static int OrderSignature(MainMenuUiScreenBhv menu) {
+            int signature = 17;
+            foreach (var selectable in Swept(menu)) {
+                signature = signature * 31 + selectable.GetInstanceID();
+            }
+            return signature;
+        }
+
+        /// <summary>The menu's readable controls in visual order. The serialized selectable
+        /// list groups the footer row before the main stack, so the sweep re-sorts by screen
+        /// position: rows top to bottom, left to right within a row. Row grouping uses a
+        /// QUARTER of a button's world height: the footer buttons sit a few pixels apart in
+        /// Y (one row), while the side promo rides only a third of a button below the stack's
+        /// Kingdoms entry and must not merge into its row.</summary>
+        private static List<Selectable> Swept(MainMenuUiScreenBhv menu) {
+            var swept = new List<Selectable>();
             foreach (var selectable in SelectablesField(menu)) {
                 if (selectable == null || !selectable.gameObject.activeInHierarchy) {
                     continue;
@@ -114,42 +155,41 @@ namespace DD2A11y.Screens {
                 if (!UiText.HasAnyTextSource(selectable.gameObject)) {
                     continue; // decorative hover target with nothing to ever read
                 }
-                _root.Add(new SelectableElement(selectable));
-                count++;
+                swept.Add(selectable);
             }
-            _builtCount = count;
-            var first = _root.FirstFocusable();
-            _awaitingLabel = first != null && string.IsNullOrEmpty(first.Label);
+            swept.Sort(VisualOrder);
+            return swept;
         }
 
-        /// <summary>Whether the button the rebuilt tree lands on (the first entry the sweep
-        /// keeps) reads cleanly: interactable (<c>IsInteractable()</c> also covers the
-        /// CanvasGroup locks) with its label available. The open animation holds every button
-        /// disabled with its tooltip caption off, and the unlock staggers across frames, so
-        /// readiness of other buttons proves nothing about the landing.</summary>
+        private static int VisualOrder(Selectable a, Selectable b) {
+            Vector3 positionA = a.transform.position;
+            Vector3 positionB = b.transform.position;
+            float rowTolerance = Mathf.Min(WorldHeight(a), WorldHeight(b)) * 0.25f;
+            if (Mathf.Abs(positionA.y - positionB.y) > rowTolerance) {
+                return positionB.y.CompareTo(positionA.y); // higher on screen first
+            }
+            return positionA.x.CompareTo(positionB.x); // same row: left to right
+        }
+
+        private static float WorldHeight(Selectable selectable) {
+            var rect = selectable.transform as RectTransform;
+            return rect == null ? 0f : rect.rect.height * rect.lossyScale.y;
+        }
+
+        /// <summary>Whether the button the rebuilt tree lands on (the sorted sweep's first)
+        /// reads cleanly: interactable (<c>IsInteractable()</c> also covers the CanvasGroup
+        /// locks) with its label available. The open animation holds every button disabled
+        /// with its tooltip caption off, and the unlock staggers across frames, so readiness
+        /// of other buttons proves nothing about the landing.</summary>
         private static bool LandingReady(MainMenuUiScreenBhv menu) {
-            foreach (var selectable in SelectablesField(menu)) {
-                if (selectable == null || !selectable.gameObject.activeInHierarchy
-                    || selectable.GetComponent<SelectOnEmptyFallbackBhv>() != null
-                    || !UiText.HasAnyTextSource(selectable.gameObject)) {
-                    continue;
-                }
-                return selectable.IsInteractable()
-                    && !string.IsNullOrEmpty(UiText.FirstLabel(selectable.gameObject));
+            var swept = Swept(menu);
+            if (swept.Count == 0) {
+                return false;
             }
-            return false;
+            var first = swept[0];
+            return first.IsInteractable()
+                && !string.IsNullOrEmpty(UiText.FirstLabel(first.gameObject));
         }
 
-        private static int CountActive(MainMenuUiScreenBhv menu) {
-            int count = 0;
-            foreach (var selectable in SelectablesField(menu)) {
-                if (selectable != null && selectable.gameObject.activeInHierarchy
-                    && selectable.GetComponent<SelectOnEmptyFallbackBhv>() == null
-                    && UiText.HasAnyTextSource(selectable.gameObject)) {
-                    count++;
-                }
-            }
-            return count;
-        }
     }
 }
