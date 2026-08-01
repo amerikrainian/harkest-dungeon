@@ -82,6 +82,7 @@ namespace DD2A11y.Game {
             EventManager.AddListener<EventExecuteRoadEventStarted>(HandleRoadEventStarted);
             EventManager.AddListener<EventRunValueChanged>(HandleRunValue);
             EventManager.AddListener<EventBark>(HandleBark);
+            EventManager.AddListener<EventRunResist>(HandleRunResist);
         }
 
         private bool OnRoad => GameModeMgr.CurrentMode == GameModeType.DRIVING
@@ -163,6 +164,21 @@ namespace DD2A11y.Game {
             }
             _pending.Add(new KeyValuePair<AudioCue?, string>(
                 null, speaker == null ? text : S.BarkLine(speaker, text)));
+        }
+
+        // A Loathing advance resisted: the same pop text the coach shows, the game's own
+        // format over the live resistance stat.
+        private void HandleRunResist(EventRunResist evt) {
+            if (!OnRoad || evt.m_ResistId != "doom") {
+                return;
+            }
+            string format = GameLoc.TryGet("driving_doom_resist_label");
+            if (format == null) {
+                return;
+            }
+            int percent = Assets.Code.Math.MathUtils.RoundToInt(Singleton<GameTypeMgr>.Instance
+                .RunDataManager.GetStatValue(RunStatType.RESISTANCE, "doom") * 100f);
+            _pending.Add(new KeyValuePair<AudioCue?, string>(null, string.Format(format, percent)));
         }
 
         // The Loathing meter (DOOM internally) advanced.

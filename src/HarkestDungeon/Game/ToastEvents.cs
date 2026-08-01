@@ -6,12 +6,14 @@ using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Game {
     /// <summary>
-    /// Corner-toast announcements: the game's ToastManager has no display event, so its show
-    /// methods carry postfixes that route a spoken line by mode - in combat into the combat
-    /// pending queue, on the road into the road sense's pending queue, each spoken from the
-    /// pump. Tutorial toasts speak the game's tutorial title; message toasts speak their own
-    /// localized text. Objective toasts ride the model event instead (handled in CombatEvents);
-    /// loot toasts ride the loot event (RoadSense).
+    /// Announcements for eventless UI surfaces, wired as postfixes. The toast manager's show
+    /// methods route a spoken line by mode - in combat into the combat pending queue, on the
+    /// road into the road sense's pending queue, each spoken from the pump. Tutorial toasts
+    /// speak the game's tutorial title; message toasts speak their own localized text. The
+    /// coach's low-flame ambush pop rides the combat queue outright: it plays as the ambush
+    /// battle spins up, so its line speaks with the battle's opening. Objective toasts ride
+    /// the model event instead (handled in CombatEvents); loot toasts ride the loot event
+    /// (RoadSense).
     /// </summary>
     public static class ToastEvents {
         private static bool _attached;
@@ -28,14 +30,16 @@ namespace DD2A11y.Game {
             }
             _attached = true;
             var harmony = new Harmony("dd2a11y.toasts");
-            PatchPostfix(harmony, nameof(ToastManager.ShowTutorialToast), nameof(TutorialShown));
-            PatchPostfix(harmony, nameof(ToastManager.ShowMessageToast), nameof(MessageShown));
+            PatchPostfix(harmony, typeof(ToastManager), nameof(ToastManager.ShowTutorialToast), nameof(TutorialShown));
+            PatchPostfix(harmony, typeof(ToastManager), nameof(ToastManager.ShowMessageToast), nameof(MessageShown));
+            PatchPostfix(harmony, typeof(StageCoachTorchUiBhv),
+                nameof(StageCoachTorchUiBhv.ShowLowTorchAmbushPopText), nameof(AmbushPopShown));
         }
 
-        private static void PatchPostfix(Harmony harmony, string original, string postfix) {
-            var target = AccessTools.Method(typeof(ToastManager), original);
+        private static void PatchPostfix(Harmony harmony, System.Type type, string original, string postfix) {
+            var target = AccessTools.Method(type, original);
             if (target == null) {
-                Plugin.Log.LogError($"ToastEvents: ToastManager.{original} not found; that toast kind will not speak");
+                Plugin.Log.LogError($"ToastEvents: {type.Name}.{original} not found; that surface will not speak");
                 return;
             }
             harmony.Patch(target, postfix: new HarmonyMethod(AccessTools.Method(typeof(ToastEvents), postfix)));
@@ -67,6 +71,13 @@ namespace DD2A11y.Game {
 
         private static void MessageShown(string toastLocKey) {
             Deliver(GameLoc.TryGet(toastLocKey));
+        }
+
+        private static void AmbushPopShown() {
+            string line = GameLoc.TryGet("driving_torch_ambush_label");
+            if (line != null) {
+                CombatEvents.Enqueue(line);
+            }
         }
     }
 }
