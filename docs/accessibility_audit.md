@@ -1275,7 +1275,10 @@ Top to bottom:
   live; a monster's name is its data id's loc string, the same source as the game's turn-order
   tooltips). Corpses and prop monsters (battle-complete classes) are in the strips like any
   combatant - they hold a rank, take hits, and are targets for corpse-clearing - matching the
-  game's own hoverable battlefield entities (unverified live).
+  game's own hoverable battlefield entities (unverified live). Kingdoms militia allies
+  (`kingdoms_ally` classes fighting AI-driven in the party's line) are in the party strip the
+  same way - the game's character sheet excludes them from its pager only because they have
+  no hero sheet (unverified live, needs a siege).
 - The skills row (horizontal), with the game's own "Uses: N" limit text and the game's
   `invalid_skill_reason_<type>` wording when a skill cannot be used - wrong rank, cooldown,
   out of uses - instead of a bare "unavailable". When the game grants an always-equipped copy
@@ -1326,7 +1329,9 @@ gates mirror the game's own pop-text handlers. Covered:
 - Stress damage and relief ("Dismas gained 2 stress" / "Audrey lost 1 stress"), meltdowns (the
   game's "resolve is tested" line plus the outcome's own name), deaths, death's-door falls and
   survivals ("Woodsman resisted the death blow").
-- What enemies do ("Lost Soul used Chomp on Paracelsus") - never the player's own skill picks.
+- What AI combatants do ("Lost Soul used Chomp on Paracelsus") - keyed to the performer's
+  controller, so kingdoms militia allies announce their actions too - never the picks of a
+  player-controlled hero.
 - Token, dot, buff, and quirk applications ("Dismas gained Crit", the game's own names and
   count format, honoring its pop-text visibility gates; buffs speak their stat text), token
   consumption and negation ("Sahar spent Speed" / "Sahar lost Weak"), resisted effects
@@ -1350,7 +1355,10 @@ unverified with an active relationship; a combat item rides the skill bar as a r
 button but no hero had one equipped to verify; a token id with no name key anywhere
 ("blind-line") reads as its humanized id; Move is untested against position targeting; Pass
 briefly announces "select target" before auto-resolving; the retreat element only (dis)appears
-on turn-boundary rebuilds; stealth/summon edge cases and the corpse rows unexercised; the **gang
+on turn-boundary rebuilds; stealth/summon edge cases and the corpse and militia rows
+unexercised; the inspector reads a militia through its hero-shaped branch (the game's
+academic view has a dedicated militia section showing their one combat item) - needs a
+siege to design against, like the **gang
 escalation tooltip** (Kingdoms sieges, `m_escalationTooltip` on `BattleInfoUiBhv`, shown via
 the More Info hold) is not modeled - Kingdoms-only, needs a siege to design against; target
 beeps, invalid-target reasons, and the hit/crit preview are unverified against friendly skills

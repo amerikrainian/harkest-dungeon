@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Assets.Code.Actor;
+using Assets.Code.Actor.ActorController;
 using Assets.Code.Actor.Events;
 using Assets.Code.Affinity.Events;
 using Assets.Code.Audio;
@@ -450,8 +451,10 @@ namespace DD2A11y.Game {
         }
 
         // An AI target pick: the same event a player click sends, distinguished by
-        // isUserInput=false with an enemy holding the turn. Announces what the enemy does; the
-        // player's own picks stay silent (their outcomes speak instead).
+        // isUserInput=false with an AI-controlled performer holding the turn - the enemy
+        // team, but also kingdoms militia allies fighting AI-driven on the party's side.
+        // Announces what the AI does; a player-controlled hero's picks stay silent (their
+        // outcomes speak instead), including the game's own non-user default-target selects.
         private static void HandleActorPick(EventSelectActor evt) {
             if (!InCombat || evt.m_IsUserInput || !SingletonMonoBehaviour<CombatBhv>.HasInstance()) {
                 return;
@@ -461,7 +464,8 @@ namespace DD2A11y.Game {
                 return;
             }
             var performer = Actors.Get(combat.CurrentActorGuid);
-            if (performer == null || performer.TeamIndex == 0) {
+            if (performer?.Controller == null
+                || performer.Controller.m_ActorControllerType == ActorControllerType.INPUT) {
                 return;
             }
             string skillId = performer.SelectedSkillId;

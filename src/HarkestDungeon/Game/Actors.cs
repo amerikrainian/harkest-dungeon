@@ -40,13 +40,14 @@ namespace DD2A11y.Game {
 
         /// <summary>One side of the battle in rank order, as the game keeps the team: living
         /// combatants plus the battle-complete classes that still hold a rank and take hits
-        /// (corpses, prop monsters). Kingdoms siege allies stay out - the game presents them
-        /// as their own uncontrolled gang, not party members.</summary>
+        /// (corpses, prop monsters), plus kingdoms militia allies fighting in the party's
+        /// line. The game's character sheet excludes militia and corpses from its pager -
+        /// they have no hero sheet - but on the battlefield they are ordinary combatants.</summary>
         public static List<ActorInstance> Team(bool friendly) {
             var actors = new List<ActorInstance>();
             foreach (uint guid in QueryTeamActors.Trigger(0, friendly).m_TeamActorGuids) {
                 var actor = Get(guid);
-                if (actor == null || actor.ActorDataClass.ContainsTag("kingdoms_ally")) {
+                if (actor == null) {
                     continue;
                 }
                 actors.Add(actor);
