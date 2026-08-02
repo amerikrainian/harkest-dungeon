@@ -38,6 +38,7 @@ namespace DD2A11y {
         private KeyBindingsScreen _keyBindings;
         private InnScreen _inn;
         private FeedbackScreen _feedback;
+        private PartyLoadoutScreen _partyLoadouts;
         private InventoryScreen _inventory;
         private InnStorageScreen _innStorage;
         private KingdomInnPanelScreen _kingdomInnPanel;
@@ -184,6 +185,8 @@ namespace DD2A11y {
             // The hero-select canvas overlays are not stack screens; they match off the game's
             // own panel flags and must outrank the crossroads beneath them.
             Router.Register(new PathSelectScreen());
+            _partyLoadouts = new PartyLoadoutScreen(speak);
+            Router.Register(_partyLoadouts);
             Router.Register(_crossroads);
             Router.Register(new EmbarkScreen());
             Router.Register(new AltarScreen());
@@ -229,7 +232,8 @@ namespace DD2A11y {
                 // rebind pauses the same way, the game's and the mod's own alike: the pressed
                 // key must become the binding.
                 bool typing = Game.TextEntry.IsTyping || _textEdit.Active || _profileSelect.EditingName
-                    || _keyBindings.RebindActive || _rebind.Active || _feedback.Editing;
+                    || _keyBindings.RebindActive || _rebind.Active || _feedback.Editing
+                    || _partyLoadouts.EditingName;
                 bool suppress = typing || _wasTyping;
                 _wasTyping = typing;
                 return suppress;

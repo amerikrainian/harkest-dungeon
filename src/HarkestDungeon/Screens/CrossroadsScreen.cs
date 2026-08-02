@@ -31,6 +31,8 @@ namespace DD2A11y.Screens {
         // The canvas overlays' opener buttons, each surfaced now that its panel reads.
         private static readonly AccessTools.FieldRef<HeroSelectBhv, GameObject> PathButtonField =
             AccessTools.FieldRefAccess<HeroSelectBhv, GameObject>("m_pathSelectionButton");
+        private static readonly AccessTools.FieldRef<HeroSelectBhv, Button> LoadoutButtonField =
+            AccessTools.FieldRefAccess<HeroSelectBhv, Button>("m_partyLoadoutButton");
         private static readonly System.Reflection.MethodInfo IsDropValidMethod =
             AccessTools.Method(typeof(HeroSelectActorUIBhv), "IsDropValid");
         private static readonly System.Reflection.MethodInfo IsDropAcceptedMethod =
@@ -148,6 +150,11 @@ namespace DD2A11y.Screens {
             if (pathButton != null && pathButton.activeInHierarchy) {
                 actions.Add(new ActionElement(() => S.ScreenPathSelect, S.RoleButton,
                     _heroSelect.TogglePathSelectionPanel));
+            }
+
+            var loadoutButton = LoadoutButtonField(_heroSelect);
+            if (loadoutButton != null && loadoutButton.gameObject.activeInHierarchy) {
+                actions.Add(new SelectableElement(loadoutButton));
             }
 
             var confirm = ConfirmButtonField(_heroSelect);

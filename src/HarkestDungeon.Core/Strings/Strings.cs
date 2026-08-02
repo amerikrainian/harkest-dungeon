@@ -302,6 +302,13 @@ namespace DD2A11y.Core.Strings {
             // The readout carrying the previewed path's full card (flavour, rank and target
             // lines, effects) in its buffer. Noun phrase naming that section.
             D("PathDetails", "path details"),
+            // The crossroads party-loadout overlay, when the game's own panel title is
+            // unavailable. Noun phrase.
+            D("ScreenPartyLoadouts", "party loadouts"),
+            // The icon-only buttons on a saved loadout's row (no text or tooltip in the game's
+            // own UI): rename the loadout, delete it. Verb phrases.
+            D("LoadoutRename", "rename"),
+            D("LoadoutDelete", "delete"),
             // A hero slot with no hero in it.
             D("CrossroadsEmptySlot", "empty slot"),
             // A party slot's battle position, spoken before the occupant ("rank 1, Highwayman");
@@ -680,6 +687,9 @@ namespace DD2A11y.Core.Strings {
         public static string CrossroadsRoster => T("CrossroadsRoster");
         public static string ScreenPathSelect => T("ScreenPathSelect");
         public static string PathDetails => T("PathDetails");
+        public static string ScreenPartyLoadouts => T("ScreenPartyLoadouts");
+        public static string LoadoutRename => T("LoadoutRename");
+        public static string LoadoutDelete => T("LoadoutDelete");
         public static string CrossroadsEmptySlot => T("CrossroadsEmptySlot");
         public static string CrossroadsRank(int rank) => F("CrossroadsRank", rank);
         public static string CrossroadsInParty => T("CrossroadsInParty");
