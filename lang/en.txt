@@ -147,6 +147,7 @@ KeyDefault = default {0}
 CrossroadsParty = party
 CrossroadsRoster = roster
 CrossroadsEmptySlot = empty slot
+CrossroadsRank = rank {0}
 CrossroadsInParty = in party
 Grabbed = grabbed {0}
 GrabCancelled = grab cancelled

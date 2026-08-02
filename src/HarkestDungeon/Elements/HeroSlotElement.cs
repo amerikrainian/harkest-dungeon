@@ -44,7 +44,9 @@ namespace DD2A11y.Elements {
         /// draggability rule: a real, unlocked hero).</summary>
         public bool CanGrab => Slot.IsOccupied && !Slot.IsLocked();
 
-        public override string Label {
+        /// <summary>The occupant's name alone (or the empty/locked stand-in), without the rank
+        /// prefix - what a grab announces and what the buffer dedupes tooltip lines against.</summary>
+        public string HeroName {
             get {
                 if (Slot.IsOccupied) {
                     var instance = Slot.ActorInstance;
@@ -62,6 +64,14 @@ namespace DD2A11y.Elements {
                 return UiText.FirstLabel(Slot.gameObject);
             }
         }
+
+        // A party slot leads with its battle position ("rank 1, Highwayman"): rank 1 is the
+        // front line, the same numbering combat uses, and it is what tells the four otherwise
+        // identical empty slots apart. Pool heroes have no rank.
+        public override string Label
+            => Slot.IsRosterSlot
+                ? SpokenLine.Join(S.CrossroadsRank(Slot.RosterIndex + 1), HeroName)
+                : HeroName;
 
         public override string Status {
             get {
@@ -119,7 +129,7 @@ namespace DD2A11y.Elements {
 
         public override IEnumerable<string> GetBufferLines() {
             yield return GetFocusText();
-            string label = TextFilter.Clean(Label);
+            string label = TextFilter.Clean(HeroName);
             string hoverHint = GameLoc.TryGet("hero_select_actor_hover_label");
             foreach (var tooltip in new[] { TooltipField(Slot), LockedTooltipField(Slot) }) {
                 string text = tooltip == null ? null : TooltipReader.TextOf(tooltip);

@@ -93,7 +93,7 @@ namespace DD2A11y.Screens {
                     return;
                 }
                 _grabbed = hero;
-                _speak(S.Grabbed(hero.Label), true);
+                _speak(S.Grabbed(hero.HeroName), true); // the hero, not their rank
                 return;
             }
             if (_grabbed.Slot == hero.Slot) {
