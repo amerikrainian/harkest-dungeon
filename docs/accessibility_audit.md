@@ -1336,8 +1336,9 @@ escalation tooltip** (Kingdoms sieges, `m_escalationTooltip` on `BattleInfoUiBhv
 the More Info hold) is not modeled - Kingdoms-only, needs a siege to design against; target
 beeps, invalid-target reasons, and the hit/crit preview are unverified against friendly skills
 and stealth (guard interception and riposte verified live against the preview cache, spoken as
-suffixes); battle-end cleanup fires "Corpse died" lines (real death events for the corpse
-entities - noise at the end of a won fight, informative mid-fight).
+suffixes); death lines follow the game's death presentation, so the battle-end cleanup that
+sweeps leftover corpses off a finished team (Detach) and capture teardowns (None) stay silent
+while mid-fight corpse kills and decay still speak.
 
 ## 7.2 Inspector (`AcademicScreen`, over combat) - BUILT
 

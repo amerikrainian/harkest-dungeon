@@ -126,8 +126,14 @@ namespace DD2A11y.Game {
             _pending.Add(evt.m_IsCrit ? S.CombatHealedCrit(name, amount) : S.CombatHealed(name, amount));
         }
 
+        // The spoken line stands in for the game's visible death presentation, so deaths shown
+        // as one speak and deaths that are mere removals stay silent: Detach is the battle-end
+        // sweep that clears leftover corpses off a finished team, and None is a capture's
+        // teardown of the taken hero.
         private static void HandleDeath(EventActorDeath evt) {
-            if (!InCombat) {
+            if (!InCombat
+                || evt.m_DeathType.m_DeathPresentationType == DeathPresentationType.Detach
+                || evt.m_DeathType.m_DeathPresentationType == DeathPresentationType.None) {
                 return;
             }
             string name = Actors.Name(Actors.Get(evt.m_DyingActorGuid)) ?? GameLoc.TryGet(evt.m_DyingActorDataId);
