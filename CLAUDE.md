@@ -27,8 +27,9 @@ screen's own methods), never synthetic OS input.
   screens on a `ScreenStackBhv` stack, `GameModeMgr` modes for full-scene screens). Input is the
   **Unity Input System ONLY** - the legacy `UnityEngine.Input` API throws
   `InvalidOperationException` at runtime (the few game files referencing it are dead code). Our
-  key reader polls `UnityEngine.InputSystem.Keyboard.current` device state directly; the game's
-  own action layer is `InputSystemBhv` (action names like "Submit", "ExitMenu", "PauseMenu").
+  key reader polls `UnityEngine.InputSystem.Keyboard.current` (and `Gamepad.current`) device
+  state directly; the game's own action layer is `InputSystemBhv` (action names like "Submit",
+  "ExitMenu", "PauseMenu").
   Localization is the game's own `Localization` singleton (`GetString(locKey)`).
 - Speech backend is **Prism** (https://github.com/ethindp/prism), bound via hand-written P/Invoke
   against `prism.dll`, vendored in `third_party/prism/` and deployed into the plugin folder.

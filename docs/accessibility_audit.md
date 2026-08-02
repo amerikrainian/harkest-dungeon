@@ -362,7 +362,19 @@ each carrying a LIST of keys ("Activate control, Enter, NumpadEnter").
 - The shared-keyboard screens' game-key suppression follows the LIVE bindings: rebinding both
   panel keys off Tab hands Tab back to the game (its minimap opened on Tab on the road,
   verified), the new key's game binding rests instead, and a reset re-claims Tab the same
-  frame - the road map's arrow/bare-Ctrl claim derives the same way.
+  frame - the road map's arrow/bare-Ctrl claim derives the same way, pad paths included.
+- CONTROLLER (verified 2026-08-02 with a synthetic Input System gamepad; no real hardware
+  pass yet): the game supports pads (InputDeviceHandlingType, the Device Handling dropdown),
+  but the input gate disables its action maps under a captured screen, so the game's own pad
+  navigation is dead there - the mod's pad defaults are what makes captured screens
+  controller-usable: dpad navigates, A activates, B backs out, shoulders cross panels, the
+  right stick reviews buffers (say-the-spire2's layout). Rows list pad combos beside keys
+  ("Navigate down, DownArrow, DpadDown"); "add button" appears in the row menu while a pad
+  is connected and captures on RELEASE, so a held trigger becomes the combo's modifier
+  ("LeftTrigger+X"); trigger state must match exactly (bare X never fires a LeftTrigger+X
+  combo). Mixed lists persist typed ("DownArrow;pad:DpadDown;pad:X|LeftTrigger"). Any pad
+  press silences ongoing speech (say-the-spire2's behavior), ahead of the input tick so the
+  press's own announcement is not the thing cut.
 
 ## 2.2 Pause Menu (`PauseScreen`) - WORKS
 

@@ -23,6 +23,7 @@ namespace DD2A11y.Elements {
         // Set while the listen this row started is live; the row's focus text becomes the
         // prompt, so the popup close's restored-row re-read IS the prompt (no speech race).
         private bool _listening;
+        private string _prompt;
 
         public KeyRebindElement(InputAction action, ModKeymap keymap, ModRebind rebind,
                                 System.Action<string, bool> speak) {
@@ -37,15 +38,21 @@ namespace DD2A11y.Elements {
         public override string Value => Display(_action.Bindings);
 
         public override string GetFocusText()
-            => _listening && _rebind.Active ? S.KeyPressNew : base.GetFocusText();
+            => _listening && _rebind.Active ? _prompt : base.GetFocusText();
 
         public override Popup BuildPopup() {
             var root = new Container(ContainerShape.VerticalList, _action.Label);
-            root.Add(new ActionElement(() => S.KeyAddBinding, null, () => StartListen(replacing: null)));
+            root.Add(new ActionElement(() => S.KeyAddBinding, null,
+                () => StartListen(ListenMode.Keyboard, replacing: null)));
+            if (UnityEngine.InputSystem.Gamepad.current != null) {
+                root.Add(new ActionElement(() => S.KeyAddPadBinding, null,
+                    () => StartListen(ListenMode.Pad, replacing: null)));
+            }
             foreach (var binding in _action.Bindings) {
                 var existing = binding;
+                var mode = existing is PadBinding ? ListenMode.Pad : ListenMode.Keyboard;
                 root.Add(new ActionElement(() => S.KeyReplaceBinding(existing.DisplayName), null,
-                    () => StartListen(existing)));
+                    () => StartListen(mode, existing)));
                 root.Add(new ActionElement(() => S.KeyDeleteBinding(existing.DisplayName), null,
                     () => _keymap.Remove(_action, existing)));
             }
@@ -61,11 +68,13 @@ namespace DD2A11y.Elements {
             yield return S.KeyDefault(Display(_keymap.DefaultsOf(_action)));
         }
 
-        // Add a captured key, or swap it in for <paramref name="replacing"/>. A key the command
-        // already carries reads the row back unchanged (capturing the replaced key included).
-        private void StartListen(Core.Input.InputBinding replacing) {
+        // Add a captured key or pad input, or swap it in for <paramref name="replacing"/>. A
+        // combo the command already carries reads the row back unchanged (capturing the
+        // replaced one included).
+        private void StartListen(ListenMode mode, Core.Input.InputBinding replacing) {
             _listening = true;
-            _rebind.Start(
+            _prompt = mode == ListenMode.Pad ? S.KeyPressNewPad : S.KeyPressNew;
+            _rebind.Start(mode,
                 captured => {
                     _listening = false;
                     if (_keymap.Carries(_action, captured)) {

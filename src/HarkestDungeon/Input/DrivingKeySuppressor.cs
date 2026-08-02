@@ -48,8 +48,9 @@ namespace DD2A11y.Input {
         }
 
         /// <summary>A claim over the LIVE bindings of the named mod actions: one path per bound
-        /// key, bare Ctrl joined when any of them chords with Ctrl (the game's Ctrl is a hold).
-        /// Evaluated per reassert, so a rebind moves the suppression with the key.</summary>
+        /// key or pad input, bare Ctrl joined when any keyboard binding chords with Ctrl (the
+        /// game's Ctrl is a hold). Evaluated per reassert, so a rebind moves the suppression
+        /// with the key.</summary>
         public static (string[] KeyPaths, bool BareCtrl) ClaimFor(
             Core.Input.InputManager input, params string[] actionKeys) {
             var paths = new List<string>();
@@ -59,12 +60,17 @@ namespace DD2A11y.Input {
                     continue;
                 }
                 foreach (var binding in action.Bindings) {
-                    if (!(binding is KeyboardBinding keyboard)) {
+                    string path;
+                    if (binding is KeyboardBinding keyboard) {
+                        bareCtrl |= keyboard.Ctrl;
+                        path = keyboard.ControlPath;
+                    } else if (binding is PadBinding pad) {
+                        path = pad.ControlPath;
+                    } else {
                         continue;
                     }
-                    bareCtrl |= keyboard.Ctrl;
-                    if (!paths.Contains(keyboard.ControlPath)) {
-                        paths.Add(keyboard.ControlPath);
+                    if (!paths.Contains(path)) {
+                        paths.Add(path);
                     }
                 }
             }

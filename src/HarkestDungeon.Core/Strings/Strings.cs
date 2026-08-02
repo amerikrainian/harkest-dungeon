@@ -265,6 +265,9 @@ namespace DD2A11y.Core.Strings {
             D("TabModKeys", "mod keys"),
             // The row-menu choice that starts listening for a key to add. Verb phrase.
             D("KeyAddBinding", "add key"),
+            // The row-menu choice that starts listening for a controller button to add, shown
+            // only while a gamepad is connected. Verb phrase.
+            D("KeyAddPadBinding", "add button"),
             // The row-menu choice swapping one of the command's keys for a newly listened one;
             // {0} = the key combo being replaced.
             D("KeyReplaceBinding", "replace {0}"),
@@ -273,6 +276,10 @@ namespace DD2A11y.Core.Strings {
             // Spoken while listening: the next key pressed (with any Ctrl/Shift/Alt held) is
             // added to the command; Escape keeps things as they are.
             D("KeyPressNew", "press the new key"),
+            // Spoken while listening for a controller input: the next button RELEASED is added
+            // (a trigger can be held first as the combo's modifier); Escape keeps things as
+            // they are.
+            D("KeyPressNewPad", "press the new button"),
             // A command with every key deleted.
             D("KeyNotSet", "not set"),
             // A captured key refused because another command holds it (delete it there first);
@@ -632,6 +639,8 @@ namespace DD2A11y.Core.Strings {
 
         public static string TabModKeys => T("TabModKeys");
         public static string KeyAddBinding => T("KeyAddBinding");
+        public static string KeyAddPadBinding => T("KeyAddPadBinding");
+        public static string KeyPressNewPad => T("KeyPressNewPad");
         public static string KeyReplaceBinding(string keys) => F("KeyReplaceBinding", keys);
         public static string KeyDeleteBinding(string keys) => F("KeyDeleteBinding", keys);
         public static string KeyPressNew => T("KeyPressNew");

@@ -85,7 +85,7 @@ namespace DD2A11y {
             Settings = new Core.Settings.ModSettings(new Settings.BepInExSettingsStore(config));
             Sounds = new Core.Settings.SoundVolumes(new Settings.BepInExSettingsStore(config, "Sounds"));
             Keymap = new Core.Input.ModKeymap(Input, new Settings.BepInExSettingsStore(config, "Keys"),
-                KeyboardBinding.TryDeserialize, message => Plugin.Log.LogWarning(message));
+                ParseBinding, message => Plugin.Log.LogWarning(message));
             _textEdit = new ModTextEdit(speak, () => Router.Active);
 
             _audioEngine = new Audio.NAudioEngine(Path.Combine(pluginDir, "assets", "audio"));
@@ -237,32 +237,50 @@ namespace DD2A11y {
             Speech.Speak(S.ModLoaded(version));
         }
 
+        // "pad:" entries deserialize as pad combos, everything else as keyboard - the untagged
+        // keyboard form predates the pad side, so stored configs keep parsing.
+        private static Core.Input.InputBinding ParseBinding(string text)
+            => text.StartsWith("pad:", StringComparison.Ordinal)
+                ? (Core.Input.InputBinding)PadBinding.TryDeserialize(text)
+                : KeyboardBinding.TryDeserialize(text);
+
         private void RegisterInputs() {
             InputAction Reg(string key, string label, Action handler = null)
                 => Input.Register(key, label, InputCategory.UI, handler);
             KeyboardBinding K(UnityEngine.InputSystem.Key key, bool ctrl = false, bool shift = false)
                 => new KeyboardBinding(key, ctrl, shift);
+            PadBinding P(PadInput input) => new PadBinding(input);
 
-            Reg(UiActions.Up, S.InputNavigateUp).AddBinding(K(Key.UpArrow)).Repeating();
-            Reg(UiActions.Down, S.InputNavigateDown).AddBinding(K(Key.DownArrow)).Repeating();
-            Reg(UiActions.Left, S.InputNavigateLeft).AddBinding(K(Key.LeftArrow)).Repeating();
-            Reg(UiActions.Right, S.InputNavigateRight).AddBinding(K(Key.RightArrow)).Repeating();
-            Reg(UiActions.Next, S.InputNextPanel).AddBinding(K(Key.Tab)).Repeating();
-            Reg(UiActions.Prev, S.InputPrevPanel).AddBinding(K(Key.Tab, shift: true)).Repeating();
+            // Pad defaults mirror say-the-spire2's layout: dpad navigates, A activates, B backs
+            // out, shoulders cross panels, the right stick reviews buffers. The game's own pad
+            // input is dead under a captured screen (the input gate disables its action maps),
+            // so these are what makes captured screens controller-usable at all.
+            Reg(UiActions.Up, S.InputNavigateUp).AddBinding(K(Key.UpArrow))
+                .AddBinding(P(PadInput.DpadUp)).Repeating();
+            Reg(UiActions.Down, S.InputNavigateDown).AddBinding(K(Key.DownArrow))
+                .AddBinding(P(PadInput.DpadDown)).Repeating();
+            Reg(UiActions.Left, S.InputNavigateLeft).AddBinding(K(Key.LeftArrow))
+                .AddBinding(P(PadInput.DpadLeft)).Repeating();
+            Reg(UiActions.Right, S.InputNavigateRight).AddBinding(K(Key.RightArrow))
+                .AddBinding(P(PadInput.DpadRight)).Repeating();
+            Reg(UiActions.Next, S.InputNextPanel).AddBinding(K(Key.Tab))
+                .AddBinding(P(PadInput.RightShoulder)).Repeating();
+            Reg(UiActions.Prev, S.InputPrevPanel).AddBinding(K(Key.Tab, shift: true))
+                .AddBinding(P(PadInput.LeftShoulder)).Repeating();
             Reg(UiActions.Activate, S.InputActivate)
-                .AddBinding(K(Key.Enter)).AddBinding(K(Key.NumpadEnter));
-            Reg(UiActions.Back, S.InputBack).AddBinding(K(Key.Escape));
+                .AddBinding(K(Key.Enter)).AddBinding(K(Key.NumpadEnter)).AddBinding(P(PadInput.A));
+            Reg(UiActions.Back, S.InputBack).AddBinding(K(Key.Escape)).AddBinding(P(PadInput.B));
             Reg(UiActions.Home, S.InputJumpFirst).AddBinding(K(Key.Home));
             Reg(UiActions.End, S.InputJumpLast).AddBinding(K(Key.End));
 
             Reg("buffer.next", S.InputBufferNext, BufferCtl.NextBuffer)
-                .AddBinding(K(Key.RightArrow, ctrl: true));
+                .AddBinding(K(Key.RightArrow, ctrl: true)).AddBinding(P(PadInput.RightStickRight));
             Reg("buffer.prev", S.InputBufferPrev, BufferCtl.PreviousBuffer)
-                .AddBinding(K(Key.LeftArrow, ctrl: true));
+                .AddBinding(K(Key.LeftArrow, ctrl: true)).AddBinding(P(PadInput.RightStickLeft));
             Reg("buffer.line.next", S.InputBufferLineNext, BufferCtl.NextLine)
-                .AddBinding(K(Key.UpArrow, ctrl: true)).Repeating();
+                .AddBinding(K(Key.UpArrow, ctrl: true)).AddBinding(P(PadInput.RightStickUp)).Repeating();
             Reg("buffer.line.prev", S.InputBufferLinePrev, BufferCtl.PreviousLine)
-                .AddBinding(K(Key.DownArrow, ctrl: true)).Repeating();
+                .AddBinding(K(Key.DownArrow, ctrl: true)).AddBinding(P(PadInput.RightStickDown)).Repeating();
 
             // The focused element's inspect action (the hero sheet at the crossroads and in
             // combat). C, matching the game's own "Hero Sheet (C)" hint; where the focused
@@ -343,6 +361,12 @@ namespace DD2A11y {
                 Gate.Reassert();
                 _textEdit.Tick();
                 _rebind.Tick();
+                // Any controller press silences ongoing speech (say-the-spire2's behavior):
+                // the player acted, so whatever was being said is stale. Ahead of the input
+                // tick, so an announcement the press itself causes is not the thing cut.
+                if (PadBinding.AnyJustPressed()) {
+                    Speech.Stop();
+                }
                 Input.Tick(Time.unscaledTimeAsDouble);
             } catch (Exception ex) {
                 // Log loudly but without flooding: a fault here repeats every frame.
