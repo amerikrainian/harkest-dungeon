@@ -69,6 +69,10 @@
       <HintPath>$(ManagedDir)\Unity.InputSystem.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="FMODUnity">
+      <HintPath>$(ManagedDir)\FMODUnity.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
   <!-- Debug builds deploy straight into the game so `dotnet build` is the whole loop. -->

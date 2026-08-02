@@ -334,7 +334,7 @@ namespace DD2A11y.Screens {
                 string.Format(GameLoc.TryGet("kingdom_day_label") ?? "{0}",
                     SingletonMonoBehaviour<KingdomBhv>.Instance.KingdomManager.Day)));
             if (ui != null) {
-                AddNamedButton(header, ui, "DayPassButton");
+                AddPassDayButton(header, ui);
                 AddNamedButton(header, ui, "Raycast");
             }
             var escalation = UnityEngine.Object.FindObjectOfType<KingdomMapGangEscalationBhv>();
@@ -384,6 +384,17 @@ namespace DD2A11y.Screens {
                 }
             }
             _builtSignature = Signature();
+        }
+
+        // The pass-day button is a hold gesture with no onClick; its element runs the game's
+        // own commit.
+        private static void AddPassDayButton(Container container, KingdomUiBhv ui) {
+            foreach (var button in ui.GetComponentsInChildren<Button>(includeInactive: false)) {
+                if (button.gameObject.name == "DayPassButton") {
+                    container.Add(new KingdomPassDayElement(ui, button));
+                    return;
+                }
+            }
         }
 
         private static void AddNamedButton(Container container, KingdomUiBhv ui, string name) {

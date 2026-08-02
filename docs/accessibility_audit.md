@@ -1519,6 +1519,11 @@ which the game itself refuses during day-turn cinematics (spoken "unavailable").
 - **Header** readouts: day, PASS DAY button, current-event button (opens the event panel),
   escalation level (widget tooltip as buffer), timeline (last-day line; buffer = the marked
   days only: escalation surges, quest steps, final day).
+- **PASS DAY** commits in the game on a one-second pointer hold (`UIPointerDownBhv` into
+  `SetPassHeld`; the Button's onClick is unwired, so a submit press did nothing). Enter runs
+  the game's own `OnPassDay` behind the hold's gates (`CanPassDay`, alt view,
+  `WAIT_ON_PLAYER`) with the hold's confirm sound; a refused press answers "unavailable"
+  (day advance player-verified live 2026-08-01).
 - **Sieges**: one element per active siege - inn name + days; Enter jumps the cursor to the
   cell, handing focus straight back to the grid cursor at the jumped-to cell.
 - **Heroes**: party + reserve rows (name, class, travel-scheduled state; Enter on a reserve
