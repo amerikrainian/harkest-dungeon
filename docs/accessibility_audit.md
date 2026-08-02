@@ -232,12 +232,16 @@ name `Journalbutton`; its onClick is `OnProfileNameButtonPressed`) - the game dr
 profile as a leather journal. Its target surface is the profile select panel, covered under
 1.7; the button's read is covered under 1.1.
 
-## 1.10 Store Promos and Mailing List - NOT STARTED
+## 1.10 Store Promos and Mailing List - RESOLVED (in-game half covered; targets external)
 
-The Origin Pack / Supporter Pack promo buttons (each shown only while its DLC is unowned) and
-the Mailing List button. The buttons read on the menu; their target surfaces (DLC store
-dialogs, signup flow) are unaudited. The game's own store dialog also appears from Kingdoms
-gang cards and altar DLC rows (see 3.5, 3.8).
+Live-verified 2026-08-02. The Origin Pack / Supporter Pack promo buttons (each shown only
+while its DLC is unowned) open the game's own external-link confirmation dialog, which the
+dialog reader already covers ("External Link. Open external link to view DLC?" with
+Continue/Cancel); confirming opens the platform store page - the Steam overlay, outside any
+mod's reach. The Mailing List button opens the system browser directly
+(`Application.OpenURL`), where the player's screen reader takes over. Nothing further to
+model. The same store dialog appears from Kingdoms gang cards and altar DLC rows (see 3.5,
+3.8).
 
 ---
 
