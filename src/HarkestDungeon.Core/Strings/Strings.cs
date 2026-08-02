@@ -296,6 +296,12 @@ namespace DD2A11y.Core.Strings {
             // these visually with no header string to reuse. Nouns.
             D("CrossroadsParty", "party"),
             D("CrossroadsRoster", "roster"),
+            // The crossroads path-select overlay, when the game's own panel title is
+            // unavailable. Noun phrase.
+            D("ScreenPathSelect", "hero path"),
+            // The readout carrying the previewed path's full card (flavour, rank and target
+            // lines, effects) in its buffer. Noun phrase naming that section.
+            D("PathDetails", "path details"),
             // A hero slot with no hero in it.
             D("CrossroadsEmptySlot", "empty slot"),
             // A party slot's battle position, spoken before the occupant ("rank 1, Highwayman");
@@ -672,6 +678,8 @@ namespace DD2A11y.Core.Strings {
 
         public static string CrossroadsParty => T("CrossroadsParty");
         public static string CrossroadsRoster => T("CrossroadsRoster");
+        public static string ScreenPathSelect => T("ScreenPathSelect");
+        public static string PathDetails => T("PathDetails");
         public static string CrossroadsEmptySlot => T("CrossroadsEmptySlot");
         public static string CrossroadsRank(int rank) => F("CrossroadsRank", rank);
         public static string CrossroadsInParty => T("CrossroadsInParty");

@@ -89,5 +89,25 @@ namespace DD2A11y.Game {
             }
             return parts.Count == 0 ? null : string.Join(". ", parts);
         }
+
+        /// <summary>Every non-empty active TMP text under a root, ONE LINE PER LABEL - the
+        /// buffer's form of <see cref="AllText"/>, for a panel whose parts are reviewed
+        /// separately (a path's name, flavour, and effect lines).</summary>
+        public static System.Collections.Generic.IEnumerable<string> AllTextLines(GameObject root) {
+            if (root == null) {
+                yield break;
+            }
+            foreach (var tmp in root.GetComponentsInChildren<TMP_Text>(includeInactive: false)) {
+                if (string.IsNullOrWhiteSpace(tmp.text)) {
+                    continue;
+                }
+                foreach (var line in tmp.text.Split('\n')) {
+                    string clean = Core.Text.TextFilter.Clean(line);
+                    if (clean.Length > 0) {
+                        yield return clean;
+                    }
+                }
+            }
+        }
     }
 }

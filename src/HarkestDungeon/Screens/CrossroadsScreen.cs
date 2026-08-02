@@ -28,6 +28,9 @@ namespace DD2A11y.Screens {
         // game drives with a hold-to-confirm); it only activates once every party slot is filled.
         private static readonly AccessTools.FieldRef<HeroSelectBhv, UnityEngine.UI.Selectable> ConfirmButtonField =
             AccessTools.FieldRefAccess<HeroSelectBhv, UnityEngine.UI.Selectable>("m_ConfirmButton");
+        // The canvas overlays' opener buttons, each surfaced now that its panel reads.
+        private static readonly AccessTools.FieldRef<HeroSelectBhv, GameObject> PathButtonField =
+            AccessTools.FieldRefAccess<HeroSelectBhv, GameObject>("m_pathSelectionButton");
         private static readonly System.Reflection.MethodInfo IsDropValidMethod =
             AccessTools.Method(typeof(HeroSelectActorUIBhv), "IsDropValid");
         private static readonly System.Reflection.MethodInfo IsDropAcceptedMethod =
@@ -139,6 +142,14 @@ namespace DD2A11y.Screens {
                 actions.Add(new ReadoutElement(
                     () => partyName == null ? null : UiText.FirstLabel(partyName.gameObject)));
             }
+            // The focused hero's path seal: icon-only on the canvas, so it takes the panel's
+            // own name. Opens the path overlay, which reads as its own screen.
+            var pathButton = PathButtonField(_heroSelect);
+            if (pathButton != null && pathButton.activeInHierarchy) {
+                actions.Add(new ActionElement(() => S.ScreenPathSelect, S.RoleButton,
+                    _heroSelect.TogglePathSelectionPanel));
+            }
+
             var confirm = ConfirmButtonField(_heroSelect);
             _builtEmbarkVisible = confirm != null && confirm.gameObject.activeInHierarchy;
             if (_builtEmbarkVisible) {

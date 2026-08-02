@@ -181,6 +181,9 @@ namespace DD2A11y {
             // The kingdoms scene overlays the title menu inside the same MAIN_MENU mode.
             Router.Register(new KingdomMenuScreen(speak));
             Router.Register(new MainMenuScreen());
+            // The hero-select canvas overlays are not stack screens; they match off the game's
+            // own panel flags and must outrank the crossroads beneath them.
+            Router.Register(new PathSelectScreen());
             Router.Register(_crossroads);
             Router.Register(new EmbarkScreen());
             Router.Register(new AltarScreen());
