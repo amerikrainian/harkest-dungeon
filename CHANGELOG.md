@@ -2,6 +2,11 @@
 
 ## V0.2.0
 
+- A mod sounds glossary tab in settings, after the mod settings tab: one row per sound the
+  mod plays, named for what it is used for. Enter previews the sound on loop (Enter again,
+  moving away, or closing stops it), and Left/Right set that sound's volume as a percent of
+  its natural level - saved per sound and applied to every future playback of it.
+
 - The profile panel behind the main menu's profile button is now fully readable: the
   profile list with rename and delete, creating a profile (name, language, analytics
   consent), and name edits echoing keystrokes and reading back the accepted name.

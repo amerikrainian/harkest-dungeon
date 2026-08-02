@@ -270,9 +270,10 @@ Live-verified 2026-07-23; dropdowns 2026-07-28; mod tab 2026-07-27. The game's o
 
 ### 2.1.1 Mod Settings Tab - WORKS
 
-Appended after the game's tabs (live-verified 2026-07-27): mod-authored rows instead of swept
-widgets, currently the announcement separator - a free-text field (`TextEntryElement` +
-`ModTextEdit`).
+The first of the mod's own tabs appended after the game's (live-verified 2026-07-27; each tab
+is a `ModTab` under `Screens/Options/`, the screen handling them generically): mod-authored
+rows instead of swept widgets, currently the announcement separator - a free-text field
+(`TextEntryElement` + `ModTextEdit`).
 
 - Enter opens the mod's own typing mode - "editing, enter when done" then the bare-Enter
   outcome spoken as a hint (the suggested value is spoken rather than prefilled, so typing
@@ -289,7 +290,7 @@ widgets, currently the announcement separator - a free-text field (`TextEntryEle
   leaves it.
 
 **Known gaps:** DEBUG-tab filter field unhandled; sliders speak normalized percent, not the
-game's display value; the mod tab is invisible to sighted users (no game-side tab button is
+game's display value; the mod tabs are invisible to sighted users (no game-side tab button is
 injected).
 
 ### 2.1.2 Key Bindings (`KeyBindingsScreen`) - WORKS
@@ -313,6 +314,24 @@ caption.
 - Header and key labels read from the rows' data contexts, not their TMP labels - the pooled
   header still shows its placeholder on the entry announcement.
 - Escape closes the panel through the game's own toggle; the settings screen re-announces.
+
+### 2.1.3 Mod Sounds Tab (`ModSoundsTab`) - WORKS
+
+Live-verified 2026-08-02 (logical and device-level key paths, remembered-tab reopen across a
+game restart). The mod's sounds glossary, the second mod tab: one row per `AudioCue` naming
+what the sound is used for ("pickup nearby, 100 percent").
+
+- Enter loops the row's sound as a preview ("playing" leads the re-read); Enter again stops
+  it, as does moving focus off the row, switching tabs, and closing the screen. The preview
+  plays centered at the sound's saved volume.
+- Left/Right step the row's volume 0-100 in tens (percent of the sound's natural level,
+  "minimum"/"maximum" at the ends); a running preview re-aims live on each step. Values
+  persist per sound in the config's `[Sounds]` section (verified across a restart) and scale
+  every playback of that cue - one-shots and loops - through the volume-scaled engine, with
+  the natural dynamics (distance attenuation, pan) still the caller's.
+- The tab is remembered across close/reopen like the game's own, riding above the remembered
+  game tab; the game's late tab-index moves after the screen reports Open no longer read as
+  player clicks (only a change interrupting a settled index is).
 
 ## 2.2 Pause Menu (`PauseScreen`) - WORKS
 

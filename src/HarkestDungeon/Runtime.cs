@@ -49,6 +49,7 @@ namespace DD2A11y {
         private readonly ModTextEdit _textEdit;
 
         public Core.Settings.ModSettings Settings { get; }
+        public Core.Settings.SoundVolumes Sounds { get; }
 
         public Runtime(string pluginDir, string version, BepInEx.Configuration.ConfigFile config) {
             _backend = new PrismBackend();
@@ -79,10 +80,11 @@ namespace DD2A11y {
             Core.Text.SpriteText.Resolver = Game.SpriteWords.Resolve;
 
             Settings = new Core.Settings.ModSettings(new Settings.BepInExSettingsStore(config));
+            Sounds = new Core.Settings.SoundVolumes(new Settings.BepInExSettingsStore(config, "Sounds"));
             _textEdit = new ModTextEdit(speak, () => Router.Active);
 
             _audioEngine = new Audio.NAudioEngine(Path.Combine(pluginDir, "assets", "audio"));
-            Audio = _audioEngine;
+            Audio = new Core.Audio.VolumeScaledEngine(_audioEngine, Sounds);
             _roadSense = new Game.RoadSense(Audio, speak, Gate);
             // Eager: toasts pop on the road before any combat has resolved the lazy attach.
             Game.ToastEvents.RoadSink = _roadSense.Post;
@@ -96,7 +98,10 @@ namespace DD2A11y {
             // outrank the settings reader.
             _keyBindings = new KeyBindingsScreen(Navigator, speak);
             Router.Register(_keyBindings);
-            Router.Register(new OptionsScreen(Settings, _textEdit, speak));
+            Router.Register(new OptionsScreen(new Screens.Options.ModTab[] {
+                new Screens.Options.ModSettingsTab(Settings, _textEdit, speak),
+                new Screens.Options.ModSoundsTab(Sounds, Audio, Navigator),
+            }));
             Router.Register(new PauseScreen());
             Router.Register(new CharacterSheetScreen());
             Router.Register(new LootScreen());

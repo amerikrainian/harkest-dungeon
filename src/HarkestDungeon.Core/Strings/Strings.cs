@@ -211,6 +211,54 @@ namespace DD2A11y.Core.Strings {
             // The settings graphics tab's gamma reset button, icon-only in the game's own UI.
             D("OptionsGammaReset", "Reset Gamma Correction"),
 
+            // The mod's own sounds glossary tab on the game's settings screen: one row per sound
+            // the mod plays. Enter previews the row's sound on loop, Left/Right step its volume.
+            D("TabModSounds", "mod sounds"),
+            // State word leading the glossary row whose sound is previewing right now.
+            D("StatusPlaying", "playing"),
+            // Glossary row labels: when the mod plays each sound. Road driving events first.
+            // The repeating positional ping while a roadside pickup is in sensing range.
+            D("SoundRoadPickup", "pickup nearby"),
+            D("SoundRoadPickupTaken", "pickup collected"),
+            D("SoundRoadAmbush", "ambush"),
+            D("SoundRoadFork", "fork ahead"),
+            D("SoundRoadBarricade", "barricade ahead"),
+            D("SoundRoadBarricadeOpen", "barricade cleared"),
+            // Crossed into / out of a road event's trigger zone.
+            D("SoundRoadZoneEnter", "event zone entered"),
+            D("SoundRoadZoneExit", "event zone left"),
+            D("SoundRoadDangerEnter", "dangerous road entered"),
+            D("SoundRoadDangerExit", "dangerous road left"),
+            // The coach is drifting off the road's edge.
+            D("SoundRoadEdgeBump", "road edge"),
+            D("SoundRoadCoachDamage", "coach damaged"),
+            // A wheel or armor slot fully broke.
+            D("SoundRoadCoachBreak", "coach part broke"),
+            // A driven-over obstacle hurt the party.
+            D("SoundRoadPenalty", "party hurt by obstacle"),
+            // An opt-in roadside interaction stopped the coach and waits for the Interact key.
+            D("SoundRoadPrompt", "interaction waiting"),
+            D("SoundRoadLoathing", "loathing advanced"),
+            // Route and map-node identity ticks, one timbre per destination kind: played when a
+            // fork route gets focus and by the road map's cursor. "node" = a stop on the road.
+            D("SoundNodeCombat", "combat node"),
+            D("SoundNodeCache", "cache node"),
+            D("SoundNodeUnknown", "unrevealed node"),
+            D("SoundNodeInn", "inn node"),
+            D("SoundNodeHospital", "field hospital node"),
+            D("SoundNodeDungeon", "lair node"),
+            D("SoundNodeOasis", "oasis node"),
+            D("SoundNodeStore", "hoarder node"),
+            D("SoundNodeStory", "story node"),
+            D("SoundNodeWatchtower", "watchtower node"),
+            D("SoundNodeGuardian", "guardian node"),
+            D("SoundNodeDen", "creature den node"),
+            D("SoundNodeGate", "gate node"),
+            D("SoundNodeBridge", "bridge node"),
+            // Combat target-selection beeps: focus landed on a valid / invalid target.
+            D("SoundCombatTargetValid", "target valid"),
+            D("SoundCombatTargetInvalid", "target invalid"),
+
             // Crossroads (the pre-run hub). Section names for the two hero strips; the game shows
             // these visually with no header string to reuse. Nouns.
             D("CrossroadsParty", "party"),
@@ -553,6 +601,12 @@ namespace DD2A11y.Core.Strings {
         public static string SettingSeparator => T("SettingSeparator");
         public static string SettingReset => T("SettingReset");
         public static string OptionsGammaReset => T("OptionsGammaReset");
+        public static string TabModSounds => T("TabModSounds");
+        public static string StatusPlaying => T("StatusPlaying");
+
+        /// <summary>The glossary label of one mod sound, keyed "Sound{cue}" by convention; a test
+        /// pins every <see cref="Audio.AudioCue"/> value to a table entry.</summary>
+        public static string SoundLabel(Audio.AudioCue cue) => T("Sound" + cue);
         public static string RoleDropdown => T("RoleDropdown");
         public static string RoleTab => T("RoleTab");
         public static string RoleHero => T("RoleHero");
