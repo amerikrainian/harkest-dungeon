@@ -12,8 +12,8 @@ using UnityEngine.UI;
 
 namespace DD2A11y.Screens {
     /// <summary>
-    /// The settings screen. Layout: a tab selector first (Left/Right switch tabs, remembered
-    /// across close/reopen), then the active tab's rows in one vertical flow. Rows are the
+    /// The settings screen. Layout: a tab selector first (Left/Right switch tabs; entry follows
+    /// the game's own landing tab), then the active tab's rows in one vertical flow. Rows are the
     /// spawned <see cref="OptionsItemBhv"/> toggles/sliders plus the tab page's bespoke widgets
     /// (resolution/window/language dropdowns, keybind rows), read generically. The mod's own
     /// tabs (<see cref="ModTab"/>: settings, the sounds glossary) are appended after the game's;
@@ -29,12 +29,6 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<OptionsMenuUiBhv, GammaCorrectionOptionBhv>("gammaCorrectionOptionBhv");
         private static readonly AccessTools.FieldRef<GammaCorrectionOptionBhv, Button> GammaResetField =
             AccessTools.FieldRefAccess<GammaCorrectionOptionBhv, Button>("resetButton");
-
-        // The tab the player was on last time the screen was open, restored on reopen. A mod tab
-        // is remembered separately (by its index, -1 for none): it has no game tab index behind
-        // it, and the game-side memory keeps the last game tab for when the player returns.
-        private static int s_rememberedTab;
-        private static int s_rememberedModTab = -1;
 
         private readonly IReadOnlyList<ModTab> _modTabs;
 
@@ -67,10 +61,12 @@ namespace DD2A11y.Screens {
             var options = (OptionsMenuUiBhv)target;
             _root = new RootContainer(ContainerShape.VerticalList, back: () => Close(options));
             RebuildTabIndices(options);
-            _modTab = s_rememberedModTab < _modTabs.Count ? s_rememberedModTab : -1;
+            // The tab is never remembered across opens - the game itself resets to its first
+            // tab on every open, and the mod follows the game. A return from the bindings panel
+            // keeps its tab naturally: the screen never closed, so the live index still holds it.
+            _modTab = -1;
             _restoring = true;
             _settledFrames = 0;
-            EnforceRememberedTab(options);
 
             if (_tabIndices.Count > 0) {
                 _root.Add(new TabSelectorElement(
@@ -96,11 +92,11 @@ namespace DD2A11y.Screens {
             var options = (OptionsMenuUiBhv)target;
             bool announce = false;
 
-            // The game's own open sequence stomps the tab back to 0; keep enforcing the
-            // remembered tab until the screen settles Open, then re-announce if the settled tab
-            // is not the one the entry announcement read out.
+            // The game's own open sequence stomps the tab back to its first one, possibly after
+            // our entry read a stale index; once the screen settles Open, re-announce if the
+            // standing tab is not the one the entry announcement read out.
             if (_restoring) {
-                EnforceRememberedTab(options);
+                RebuildTabIndices(options); // tab buttons fade in during the open animation
                 if (options.ScreenState == UiScreenState.Open) {
                     _restoring = false;
                     announce = TabName(options, CurrentPosition(options)) != _entryTabName;
@@ -118,15 +114,11 @@ namespace DD2A11y.Screens {
                 _settledFrames = 0;
                 if (playerDriven && _modTab >= 0) {
                     _modTab = -1;
-                    s_rememberedModTab = -1;
                 }
                 if (_modTab >= 0) {
                     _builtTab = ButtonIndexField(options); // mod rows stand; just resync the index
                 } else {
                     RebuildItems(options);
-                }
-                if (playerDriven) {
-                    s_rememberedTab = CurrentPosition(options);
                 }
             } else if (options.ScreenState == UiScreenState.Open) {
                 _settledFrames++;
@@ -138,19 +130,6 @@ namespace DD2A11y.Screens {
             if (_shownModTab != null) {
                 _shownModTab.OnHidden();
                 _shownModTab = null;
-            }
-        }
-
-        // Re-asserts the remembered game-side tab against the open sequence's stomp, without
-        // touching which tab the player chose - a remembered mod tab rides above the game tab.
-        private void EnforceRememberedTab(OptionsMenuUiBhv options) {
-            RebuildTabIndices(options); // tab buttons fade in during the open animation
-            if (_tabIndices.Count == 0) {
-                return;
-            }
-            int wanted = s_rememberedTab < _tabIndices.Count ? s_rememberedTab : 0;
-            if (ButtonIndexField(options) != _tabIndices[wanted]) {
-                TabsField(options)[_tabIndices[wanted]].m_button.onClick.Invoke();
             }
         }
 
@@ -186,15 +165,12 @@ namespace DD2A11y.Screens {
         private void SelectTab(OptionsMenuUiBhv options, int position) {
             if (position >= _tabIndices.Count) {
                 _modTab = position - _tabIndices.Count;
-                s_rememberedModTab = _modTab;
                 return;
             }
             _modTab = -1;
-            s_rememberedModTab = -1;
             var tabs = TabsField(options);
             int actual = _tabIndices[position];
             tabs[actual].m_button.onClick.Invoke(); // the game's own tab switch (page + navigation)
-            s_rememberedTab = position;
         }
 
         private void RebuildItems(OptionsMenuUiBhv options) {

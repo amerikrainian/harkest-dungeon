@@ -263,8 +263,10 @@ Live-verified 2026-07-23; dropdowns 2026-07-28; mod tab 2026-07-27. The game's o
   the sweep like scrollbars; the bespoke graphics quality slider no longer reads a second
   "Graphics Quality, button" item (live-verified 2026-08-01). Left/Right on the slider row
   still adjust the value.
-- Remembered tab verified across close/reopen, including the corrective re-announce after the
-  game's open animation stomps the tab back to the first one.
+- The tab is not remembered across close/reopen - the game itself resets to its first tab on
+  every open and the mod follows it (corrective re-announce when the game's open animation
+  settles the tab after our entry read). Returning from the bindings panel keeps the controls
+  tab, because the screen never closed.
 - Escape closes in one press from both the title menu and pause (the game's own Escape is
   two-stage on mouse+keyboard; we fold it).
 
@@ -329,9 +331,9 @@ what the sound is used for ("pickup nearby, 100 percent").
   persist per sound in the config's `[Sounds]` section (verified across a restart) and scale
   every playback of that cue - one-shots and loops - through the volume-scaled engine, with
   the natural dynamics (distance attenuation, pan) still the caller's.
-- The tab is remembered across close/reopen like the game's own, riding above the remembered
-  game tab; the game's late tab-index moves after the screen reports Open no longer read as
-  player clicks (only a change interrupting a settled index is).
+- The game's late tab-index moves after the screen reports Open do not read as player clicks
+  (only a change interrupting a settled index is), so the mod tab stands through the open
+  sequence.
 
 ### 2.1.4 Mod Keys Tab (`ModKeysTab`) - WORKS
 
