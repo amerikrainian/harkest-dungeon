@@ -96,6 +96,7 @@ namespace DD2A11y {
             // Eager: toasts pop on the road before any combat has resolved the lazy attach.
             Game.ToastEvents.RoadSink = _roadSense.Post;
             Game.ToastEvents.Attach();
+            Game.CombatEvents.Settings = Settings;
 
             Router = new ScreenRouter(Navigator, Gate, speak);
             _crossroads = new CrossroadsScreen(speak);
@@ -107,6 +108,7 @@ namespace DD2A11y {
             Router.Register(_keyBindings);
             Router.Register(new OptionsScreen(new Screens.Options.ModTab[] {
                 new Screens.Options.ModSettingsTab(Settings, _textEdit, speak),
+                new Screens.Options.ModAnnouncementsTab(Settings),
                 new Screens.Options.ModSoundsTab(Sounds, Audio, Navigator),
                 new Screens.Options.ModKeysTab(Input, Keymap, _rebind, speak),
             }));

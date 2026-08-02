@@ -6,9 +6,9 @@ using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Screens.Options {
     /// <summary>
-    /// The mod settings tab: one row per <see cref="ModSettings"/> entry, in declaration order.
-    /// Free-text settings edit through the mod's own typing mode; committing an empty value
-    /// resets the setting to its default.
+    /// The mod settings tab: one row per <see cref="ModSettings.General"/> entry, in
+    /// declaration order. Free-text settings edit through the mod's own typing mode;
+    /// committing an empty value resets the setting to its default.
     /// </summary>
     public sealed class ModSettingsTab : ModTab {
         private readonly ModSettings _settings;
@@ -25,7 +25,7 @@ namespace DD2A11y.Screens.Options {
         public override string Name => S.TabModSettings;
 
         public override void Populate(Container items) {
-            foreach (var setting in _settings.All) {
+            foreach (var setting in _settings.General) {
                 // A numeric setting edits as typed text (any value within its bounds, clamped
                 // on commit); nothing commits on garbage, empty restores the default.
                 if (setting is IntSetting number) {

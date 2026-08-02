@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Assets.Code.Actor;
 using Assets.Code.Actor.Events;
 using Assets.Code.Affinity.Events;
+using Assets.Code.Audio;
 using Assets.Code.Bark.Events;
 using Assets.Code.Buff;
 using Assets.Code.Buff.Events;
@@ -38,6 +39,10 @@ namespace DD2A11y.Game {
     public static class CombatEvents {
         private static readonly List<string> _pending = new List<string>();
         private static bool _attached;
+
+        /// <summary>Wired by the runtime at startup; the announcement toggles are read live
+        /// per event, so a change in the settings tab applies to the next line.</summary>
+        internal static Core.Settings.ModSettings Settings;
 
         /// <summary>Idempotent; first called when the combat screen resolves.</summary>
         public static void Attach() {
@@ -129,14 +134,20 @@ namespace DD2A11y.Game {
         // The spoken line stands in for the game's visible death presentation, so deaths shown
         // as one speak and deaths that are mere removals stay silent: Detach is the battle-end
         // sweep that clears leftover corpses off a finished team, and None is a capture's
-        // teardown of the taken hero.
+        // teardown of the taken hero. A corpse's own destruction (smashed by a skill, crumbled
+        // on its round timer) speaks by the corpse-deaths toggle, judged by the game's own
+        // corpse test.
         private static void HandleDeath(EventActorDeath evt) {
             if (!InCombat
                 || evt.m_DeathType.m_DeathPresentationType == DeathPresentationType.Detach
                 || evt.m_DeathType.m_DeathPresentationType == DeathPresentationType.None) {
                 return;
             }
-            string name = Actors.Name(Actors.Get(evt.m_DyingActorGuid)) ?? GameLoc.TryGet(evt.m_DyingActorDataId);
+            var dying = Actors.Get(evt.m_DyingActorGuid);
+            if (!Settings.CorpseDeaths.Value && dying != null && AudioConditionUtils.IsCorpse(dying)) {
+                return;
+            }
+            string name = Actors.Name(dying) ?? GameLoc.TryGet(evt.m_DyingActorDataId);
             if (name != null) {
                 _pending.Add(S.CombatDied(name));
             }

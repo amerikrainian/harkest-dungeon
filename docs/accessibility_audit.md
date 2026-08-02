@@ -408,6 +408,23 @@ each carrying a LIST of keys ("Activate control, Enter, NumpadEnter").
   press silences ongoing speech (say-the-spire2's behavior), ahead of the input tick so the
   press's own announcement is not the thing cut.
 
+### 2.1.5 Mod Announcements Tab (`ModAnnouncementsTab`) - WORKS
+
+The mod announcements tab (second in the mod-tab row, after mod settings): one toggle per
+optional mod announcement, from `ModSettings.Announcements` (`BoolSetting` rows rendered by
+`ToggleSettingElement`, reading like the game's own toggles - "on, corpse deaths, toggle";
+Enter flips, persists through BepInEx config, and re-reads the new state). Toggles are read
+live at the gating site, so a change applies to the next line spoken. Current toggles:
+
+- **Corpse deaths** (default on): whether a corpse's own destruction speaks its died line in
+  battle (smashed by a skill, crumbled on its round timer), judged by the game's own corpse
+  test (`AudioConditionUtils.IsCorpse`). The battle-end sweep of leftover corpses and capture
+  teardowns stay silent regardless (no death presentation to stand in for).
+
+Live-verified 2026-08-02 (logical path): the tab reads in the row after mod settings, the
+toggle flips with the on/off re-announce, the value persists to the config, and the combat
+gate reads the live value. The gate's effect on an actual corpse death needs a fight.
+
 ## 2.2 Pause Menu (`PauseScreen`) - WORKS
 
 Live-verified 2026-07-23. A widget on a generic `UiScreenBhv` prefab
@@ -1340,7 +1357,8 @@ beeps, invalid-target reasons, and the hit/crit preview are unverified against f
 and stealth (guard interception and riposte verified live against the preview cache, spoken as
 suffixes); death lines follow the game's death presentation, so the battle-end cleanup that
 sweeps leftover corpses off a finished team (Detach) and capture teardowns (None) stay silent
-while mid-fight corpse kills and decay still speak.
+while mid-fight corpse kills and decay speak by the mod announcements tab's corpse-deaths
+toggle (default on).
 
 ## 7.2 Inspector (`AcademicScreen`, over combat) - BUILT
 

@@ -211,6 +211,11 @@ namespace DD2A11y.Core.Strings {
             D("SettingSensingRange", "sensing range"),
             // Spoken when committing an empty value returns a setting to its default.
             D("SettingReset", "reset to default"),
+            // The mod's own announcements tab on the game's settings screen: one toggle per
+            // optional mod announcement.
+            D("TabModAnnouncements", "mod announcements"),
+            // Toggle: whether a corpse's own destruction speaks a died line in battle. Noun phrase.
+            D("SettingCorpseDeaths", "corpse deaths"),
             // The settings graphics tab's gamma reset button, icon-only in the game's own UI.
             D("OptionsGammaReset", "Reset Gamma Correction"),
 
@@ -659,6 +664,8 @@ namespace DD2A11y.Core.Strings {
         public static string SettingSeparator => T("SettingSeparator");
         public static string SettingSensingRange => T("SettingSensingRange");
         public static string SettingReset => T("SettingReset");
+        public static string TabModAnnouncements => T("TabModAnnouncements");
+        public static string SettingCorpseDeaths => T("SettingCorpseDeaths");
         public static string OptionsGammaReset => T("OptionsGammaReset");
         public static string TabModSounds => T("TabModSounds");
         public static string StatusPlaying => T("StatusPlaying");

@@ -87,6 +87,46 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
+        public void BoolSetting_UsesDefaultWhenNothingStored_AndParsesStored() {
+            var store = new MemoryStore();
+            Assert.True(new BoolSetting("k", () => "label", true, store).Value);
+            Assert.False(new BoolSetting("k", () => "label", false, store).Value);
+
+            store.Values["k"] = "false";
+            Assert.False(new BoolSetting("k", () => "label", true, store).Value);
+
+            store.Values["k"] = "yes please";
+            Assert.True(new BoolSetting("k", () => "label", true, store).Value);
+        }
+
+        [Fact]
+        public void BoolSetting_TogglePersists_AndResetRestoresTheDefault() {
+            var store = new MemoryStore();
+            var setting = new BoolSetting("k", () => "label", true, store);
+
+            setting.Toggle();
+            Assert.False(setting.Value);
+            Assert.Equal("false", store.Values["k"]);
+
+            setting.Toggle();
+            Assert.True(setting.Value);
+            Assert.Equal("true", store.Values["k"]);
+
+            setting.Set(false);
+            setting.Reset();
+            Assert.True(setting.Value);
+            Assert.Equal("true", store.Values["k"]);
+        }
+
+        [Fact]
+        public void ModSettings_GroupsCarryTheirTabsRows() {
+            var settings = new ModSettings(new MemoryStore());
+            Assert.Equal(new ModSetting[] { settings.Separator, settings.SensingRange },
+                settings.General);
+            Assert.Equal(new ModSetting[] { settings.CorpseDeaths }, settings.Announcements);
+        }
+
+        [Fact]
         public void SeparatorSetting_DrivesSpokenLineJoin() {
             string before = SpokenLine.Separator;
             try {
