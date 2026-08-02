@@ -36,18 +36,23 @@ namespace DD2A11y.Elements {
         public HeroSelectActorUIBhv Slot { get; }
 
         private readonly System.Action<HeroSlotElement> _display;
+        private readonly System.Action<HeroSlotElement> _toggleGrab;
         private readonly System.Action _rename;
         private readonly System.Action _reroll;
 
         /// <param name="display">Makes this slot's hero the one the scene shows (the game's own
         /// selection). The name, path, and reroll controls all act on the SHOWN hero, so the
         /// hero-targeted actions here call it first.</param>
+        /// <param name="toggleGrab">Picks this hero up, or places a held one here. BOTH Enter
+        /// and the grab key run it, so the two are one move with one state.</param>
         public HeroSlotElement(HeroSelectActorUIBhv slot, Button button,
                                System.Action<HeroSlotElement> display = null,
+                               System.Action<HeroSlotElement> toggleGrab = null,
                                System.Action rename = null, System.Action reroll = null)
             : base(button, null, slot.gameObject) {
             Slot = slot;
             _display = display;
+            _toggleGrab = toggleGrab;
             _rename = rename;
             _reroll = reroll;
         }
@@ -112,13 +117,18 @@ namespace DD2A11y.Elements {
             }
         }
 
-        // Enter toggles party membership in place; speaking the status afterwards reads
-        // "in party" when a pool hero landed in the party.
-        public override bool ReannounceOnActivate => true;
+        // Every grab path speaks its own outcome (grabbed, cancelled, cannot place, or the
+        // landing slot read live), so the navigator must not re-announce over it.
+        public override bool ReannounceOnActivate => false;
 
         public override IEnumerable<ElementAction> GetActions() {
-            foreach (var action in base.GetActions()) {
-                yield return action;
+            // Enter and the grab key are the SAME move: pick this hero up, or place the held
+            // one here, through the game's own drop rules. The game's Enter is a two-step that
+            // arms hidden selection state and moves the game's own cursor, which desynced from
+            // our focus; this path holds all its state mod-side and commits in one call.
+            if (_toggleGrab != null) {
+                yield return new ElementAction(ActionIds.Activate, () => _toggleGrab(this));
+                yield return new ElementAction("grab", () => _toggleGrab(this));
             }
             if (Slot.IsOccupied && !Slot.IsLocked()) {
                 yield return new ElementAction("inspect", OpenSheet);

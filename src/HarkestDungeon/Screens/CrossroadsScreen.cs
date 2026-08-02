@@ -105,9 +105,11 @@ namespace DD2A11y.Screens {
             return confirm != null && confirm.gameObject.activeInHierarchy;
         }
 
-        /// <summary>The Space key: pick up the focused hero, or place a grabbed hero on the
-        /// focused slot through the game's own drop rules (into a rank, swapping ranks, or
-        /// back to the pool).</summary>
+        /// <summary>Enter and the grab key alike: pick up the focused hero, or place a grabbed
+        /// hero on the focused slot through the game's own drop rules (into a rank, swapping
+        /// ranks, or back to the pool). One move, one state - the game's own Enter two-step is
+        /// deliberately not used, because it armed hidden selection state that desynced from
+        /// our focus.</summary>
         public void ToggleGrab(UIElement current) {
             var hero = current as HeroSlotElement;
             if (hero == null) {
@@ -115,6 +117,9 @@ namespace DD2A11y.Screens {
             }
             if (_grabbed == null) {
                 if (!hero.CanGrab) {
+                    // An empty rank or a locked hero: nothing to pick up, and silence here
+                    // would read as a dropped keypress.
+                    _speak(S.StatusUnavailable, true);
                     return;
                 }
                 _grabbed = hero;
@@ -224,7 +229,7 @@ namespace DD2A11y.Screens {
             foreach (var slot in slots) {
                 var button = slot.GetComponent<Button>();
                 if (button != null && slot.gameObject.activeInHierarchy) {
-                    strip.Add(new HeroSlotElement(slot, button, Display,
+                    strip.Add(new HeroSlotElement(slot, button, Display, ToggleGrab,
                         rename: _heroSelect.OnEditNameButtonPressed,
                         reroll: RerollName));
                 }

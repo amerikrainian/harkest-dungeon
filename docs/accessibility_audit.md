@@ -726,10 +726,19 @@ Live-verified 2026-07-23. The pre-run hub (the HERO_SELECT mode - `HeroSelectBhv
   slot's buffer ends with the class blurb the sighted panel shows
   (`actor_verbose_description_*` / `actor_descriptors_*`: the flavor line and the "+ Front
   Rank + Guard..." descriptor list); the same lines lead the hero sheet header's buffer.
-- Enter = the game's own two-step (select a hero, then Enter on a rank places them).
-  **Space** = grab-and-place through the game's drop logic (specific rank, rank swap, back to
-  pool), with grabbed/cancelled/cannot-place feedback. **C** = the hero sheet (the mouse
-  right-click equivalent, matching the game's own "Hero Sheet (C)" hint); Escape closes it.
+- **Enter and Space are the same move** (unified 2026-08-02, live-verified both keys through
+  a full pool -> rank -> pool cycle): pick the focused hero up, then place them on the next
+  slot you press on, through the game's own drop logic (specific rank, rank swap, back to the
+  pool), with grabbed / cancelled / cannot-place feedback and the landing slot read live. On
+  a slot with nothing to pick up (an empty rank, a locked hero) it answers "unavailable"
+  rather than eating the press.
+  The game's own Enter two-step is deliberately NOT used: it armed hidden selection state
+  (`SelectingRosterSlot`, `SelectedHero`) and moved the game's own cursor, which desynced from
+  our focus - a stale armed state was caught live, and while it stood the game suppressed the
+  hero-display switch. All grab state is now mod-side and commits in one call, so nothing is
+  left armed (verified: `selectingRosterSlot` stays false across an Enter-driven move).
+- **C** = the hero sheet (the mouse right-click equivalent, matching the game's own "Hero
+  Sheet (C)" hint); Escape closes it.
 
 **Known gaps:** the Embark element is live-verified up to (not including) the press - pressing
 it starts the run. The party's aggregate Rank/Target pips are not read (each skill's exact

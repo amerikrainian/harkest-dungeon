@@ -23,6 +23,9 @@
 - The crossroads' hero-path and party-loadout panels now read, so their buttons are finally
   offered: paths list with the full path card in the buffer and a confirm that commits, and
   loadouts list with apply, rename, delete, and save.
+- At the crossroads, Enter and Space now do exactly the same thing: pick a hero up, then put
+  them down on the slot you press next. Enter used to run the game's own two-step, which left
+  invisible state behind and could stop the scene from following you.
 - Crossroads heroes can now be renamed where they stand: R renames the hero you are focused
   on and Shift+R rolls them a random name, whether they are in your party or the roster.
   Moving onto a hero also makes the scene show them, so the path panel and the rest of the

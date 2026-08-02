@@ -359,12 +359,6 @@ namespace DD2A11y {
             if (!takeOne && Navigator.Current?.InvokeAction("grab") == true) {
                 return;
             }
-            if (Navigator.Current is Elements.HeroSlotElement) {
-                if (!takeOne) { // heroes have no stacks to split
-                    _crossroads.ToggleGrab(Navigator.Current);
-                }
-                return;
-            }
             if (Router.Active == _inn) {
                 _inn.ToggleGrab(Navigator.Current, takeOne);
             } else if (Router.Active == _inventory) {
