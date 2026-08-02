@@ -50,15 +50,11 @@ namespace DD2A11y.Elements {
             }
         }
 
-        public override string Value {
+        public override string Status {
             get {
                 string state = null;
                 if (Selectable is Toggle toggle) {
                     state = toggle.isOn ? S.StatusOn : S.StatusOff;
-                } else if (Selectable is Slider slider) {
-                    state = S.ValuePercent(Mathf.RoundToInt(slider.normalizedValue * 100f));
-                } else if (Selectable is TMP_Dropdown dropdown) {
-                    state = DropdownChoice(dropdown);
                 }
                 // A locked control still shows its state (the altar's locked toggles keep their
                 // checkmark); both the state and the lock are gameplay-relevant.
@@ -66,6 +62,18 @@ namespace DD2A11y.Elements {
                     return Core.Text.SpokenLine.Join(state, S.StatusUnavailable);
                 }
                 return state;
+            }
+        }
+
+        public override string Value {
+            get {
+                if (Selectable is Slider slider) {
+                    return S.ValuePercent(Mathf.RoundToInt(slider.normalizedValue * 100f));
+                }
+                if (Selectable is TMP_Dropdown dropdown) {
+                    return DropdownChoice(dropdown);
+                }
+                return null;
             }
         }
 

@@ -17,7 +17,7 @@ namespace DD2A11y.Elements {
             _selected = selected;
         }
 
-        public override string Status => _selected() ? S.StatusSelected : null;
+        public override string Status => _selected() ? S.StatusSelected : base.Status;
 
         public override bool ReannounceOnActivate => true;
 

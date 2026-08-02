@@ -3,7 +3,6 @@ using Assets.Code.Data;
 using Assets.Code.UI;
 using DD2A11y.Core.Nav;
 using DD2A11y.Core.Speech;
-using DD2A11y.Core.Text;
 using HarmonyLib;
 using S = DD2A11y.Core.Strings.Strings;
 using UnityEngine.UI;
@@ -39,14 +38,7 @@ namespace DD2A11y.Elements {
             return definition == null ? null : Game.GameLoc.TryGet("altar_upgrade_" + definition.m_Id);
         }
 
-        public override string Value {
-            get {
-                string total = Total;
-                return Selectable != null && !Selectable.interactable
-                    ? SpokenLine.Join(total, S.StatusUnavailable)
-                    : total;
-            }
-        }
+        public override string Value => Total;
 
         public override IEnumerable<ElementAction> GetActions() {
             if (Selectable == null || !Selectable.interactable) {

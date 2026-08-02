@@ -11,8 +11,8 @@ using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// One node of a kingdom inn's upgrade tree: the upgrade's own name, then owned state or
-    /// the game's composed cost line, with the upgrade's description in the buffer. Enter
+    /// One node of a kingdom inn's upgrade tree: owned state ahead of the upgrade's own name,
+    /// or the game's composed cost line after it, with the upgrade's description in the buffer. Enter
     /// drives the game's gated unlock (the sighted gesture is a hold); an unaffordable or
     /// locked node speaks unavailable instead, matching the game's own refusal.
     /// </summary>
@@ -29,6 +29,16 @@ namespace DD2A11y.Elements {
 
         public override string Role => S.RoleButton;
 
+        public override string Status {
+            get {
+                if (_node == null) {
+                    return null;
+                }
+                return Singleton<InnBhv>.Instance.GetInnInstance().GetHasInnUpgrade(_node.InnUpgradeDefinition)
+                    ? S.StatusOwned : null;
+            }
+        }
+
         // The cost, then why the node cannot be bought, mirroring what the tree shows: the
         // level-restriction banner over out-of-tier rows, the prerequisite wiring (spoken as
         // the required upgrades' names), and the red cost for an unaffordable one.
@@ -40,7 +50,7 @@ namespace DD2A11y.Elements {
                 var definition = _node.InnUpgradeDefinition;
                 var inn = Singleton<InnBhv>.Instance.GetInnInstance();
                 if (inn.GetHasInnUpgrade(definition)) {
-                    return S.StatusOwned;
+                    return null;
                 }
                 string cost = CostDescription.GetStoreBuyDescription(definition.CostDefinition, 1f);
                 string reason = null;

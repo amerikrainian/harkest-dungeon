@@ -46,6 +46,9 @@ namespace DD2A11y.Elements {
         /// <summary>The live category widget, for restoring focus after a reveal.</summary>
         public AltarItemRewardButtonBhv Button => _button;
 
+        public override string Status
+            => _button != null && LockedField(_button) ? S.StatusUnavailable : null;
+
         public override string Value {
             get {
                 var context = _button == null ? null : _button.GetComponent<DataContextBhv>();
@@ -53,7 +56,7 @@ namespace DD2A11y.Elements {
                     return null;
                 }
                 if (LockedField(_button)) {
-                    return S.StatusUnavailable;
+                    return null;
                 }
                 string progress = context.GetStringValue("unlock_progress");
                 string cost = context.GetStringValue("cost_value");

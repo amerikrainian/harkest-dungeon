@@ -19,6 +19,11 @@
 > **Names:** mod screen classes appear as (`MainMenuScreen`); game classes as
 > (`MainMenuUiScreenBhv`) where the game's shape matters.
 
+> **Focus line order:** status words lead ("selected", "owned", "mastered", "blessed",
+> "in party", a toggle's on/off, "unavailable"), then label, role, and value (a slider's
+> percent, a dropdown's choice, costs). Refusal reasons (the game's insufficient-funds or
+> invalid-skill wording) trail as part of the value.
+
 ---
 
 # Phase 0: Shared Interaction Model
@@ -1134,8 +1139,8 @@ game's own show event so the camera, fog of war, and its gates follow.
   line opens their character sheet; Escape or I closes, and the game's own force-close (combat
   resuming) falls back to the combat screen, which re-announces.
 - Layout, top to bottom, all read live from the model through the game's own describers:
-  - The identity line (name, "blessed" on ordained enemies, HP, stress on heroes, speed;
-    death's door and the boss-blessing description as buffer lines).
+  - The identity line ("blessed" leading on ordained enemies, then name, HP, stress on
+    heroes, speed; death's door and the boss-blessing description as buffer lines).
   - The studied **skill list**. Enemies: round skills first, then turn skills, each with the
     game's own token-view card in the buffer - ranks/targets, the tokens and dots it applies,
     melee/ranged - plus flavor description, token ignores, and use conditions; the full effect
@@ -1415,7 +1420,8 @@ Live-verified 2026-07-26 at Alpenglow. Over `SubScreenInnUpgradeBhv`.
   overwrites it per association - so the current tab is read off the visibly active page; both
   directions verified symmetric), the game's materials line, then the active category's tree
   as `InnUpgradeNodeElement`s (shared with the map inn panel's tree, 10.2).
-- A node reads: name, owned or the game's composed cost, then WHY it cannot be bought,
+- A node reads: owned ahead of the name, or the name then the game's composed cost, then WHY
+  it cannot be bought,
   mirroring what the tree shows - "needs X, Y" from the prerequisite wiring (verified: single
   and multi-prereq chains), the game's own Insufficient Funds line for a red cost (verified),
   and the level-restriction banner text for out-of-tier rows (code path present; this inn had
@@ -1535,8 +1541,8 @@ is visual only.
   buffer), defenseless label, travel / fast travel / engage siege / storage buttons as the
   game shows them, the five upgrade tabs (loc-named: Barracks etc.), treasure rewards, and the
   close button.
-- Enter on a tab opens the **upgrade tree** view: one element per node - name, owned or the
-  game's composed cost ("materials 5"), unavailable when locked/unaffordable, description in
+- Enter on a tab opens the **upgrade tree** view: one element per node - owned leading, the
+  name, the game's composed cost ("materials 5"), unavailable when locked/unaffordable, description in
   the buffer; Enter purchases via the node's own gated `Unlock()` (the sighted gesture is a
   hold). Escape folds the tree first, then closes (the panel's own two-stage back).
 - **Garrison reordering** (live-verified: swap spoken as the new order, model confirmed): the

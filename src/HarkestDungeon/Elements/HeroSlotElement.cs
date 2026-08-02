@@ -63,7 +63,7 @@ namespace DD2A11y.Elements {
             }
         }
 
-        public override string Value {
+        public override string Status {
             get {
                 if (Slot.IsLocked()) {
                     return S.StatusUnavailable;
@@ -78,7 +78,7 @@ namespace DD2A11y.Elements {
             }
         }
 
-        // Enter toggles party membership in place; speaking the value afterwards reads
+        // Enter toggles party membership in place; speaking the status afterwards reads
         // "in party" when a pool hero landed in the party.
         public override bool ReannounceOnActivate => true;
 

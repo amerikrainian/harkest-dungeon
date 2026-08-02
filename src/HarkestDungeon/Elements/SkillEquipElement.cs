@@ -40,7 +40,7 @@ namespace DD2A11y.Elements {
 
         public override string Role => S.RoleToggle;
 
-        public override string Value {
+        public override string Status {
             get {
                 var actor = Actors.Get(_sheet.ActorGuid);
                 if (actor == null) {

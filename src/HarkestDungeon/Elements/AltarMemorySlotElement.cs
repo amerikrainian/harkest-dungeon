@@ -70,11 +70,14 @@ namespace DD2A11y.Elements {
 
         public override string Role => S.RoleButton;
 
+        public override string Status
+            => ContextField(_slot).GetBoolValue("memory_locked") ? S.StatusUnavailable : null;
+
         public override string Value {
             get {
                 var context = ContextField(_slot);
                 if (context.GetBoolValue("memory_locked")) {
-                    return S.StatusUnavailable;
+                    return null;
                 }
                 if (context.GetBoolValue("memory_selectable")) {
                     return S.PanelEmpty;

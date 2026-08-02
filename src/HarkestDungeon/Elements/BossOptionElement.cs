@@ -24,7 +24,7 @@ namespace DD2A11y.Elements {
             _option = option;
         }
 
-        public override string Status => SelectedField(_widget) == _option ? S.StatusSelected : null;
+        public override string Status => SelectedField(_widget) == _option ? S.StatusSelected : base.Status;
 
         public override bool ReannounceOnActivate => true;
     }

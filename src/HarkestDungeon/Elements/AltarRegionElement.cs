@@ -23,7 +23,7 @@ namespace DD2A11y.Elements {
 
         // The game locks a region by disabling its Selectable COMPONENT (not the object and
         // not interactable), which the base reads do not see.
-        public override string Value => Selectable != null && !Selectable.enabled ? S.StatusUnavailable : null;
+        public override string Status => Selectable != null && !Selectable.enabled ? S.StatusUnavailable : base.Status;
 
         public override IEnumerable<ElementAction> GetActions() {
             if (Selectable == null || !Selectable.enabled) {

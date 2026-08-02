@@ -12,7 +12,7 @@ namespace DD2A11y.Elements {
             _item = item;
         }
 
-        public override string Status => _item.IsActivated ? S.StatusSelected : null;
+        public override string Status => _item.IsActivated ? S.StatusSelected : base.Status;
 
         public override bool ReannounceOnActivate => true;
     }

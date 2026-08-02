@@ -74,7 +74,7 @@ namespace DD2A11y.Screens {
                     embark.OnEmbarkSubmit();
                     embark.OnEmbark();
                 },
-                value: () => embark.HasRelationshipsApplied ? null : S.StatusUnavailable));
+                status: () => embark.HasRelationshipsApplied ? null : S.StatusUnavailable));
             return _root;
         }
 

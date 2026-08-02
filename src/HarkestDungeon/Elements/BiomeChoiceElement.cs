@@ -29,7 +29,7 @@ namespace DD2A11y.Elements {
         }
 
         public override string Status
-            => Singleton<InnBhv>.Instance.GetSelectedBiomeChoiceIndex() == _index ? S.StatusSelected : null;
+            => Singleton<InnBhv>.Instance.GetSelectedBiomeChoiceIndex() == _index ? S.StatusSelected : base.Status;
 
         public override bool ReannounceOnActivate => true;
     }
