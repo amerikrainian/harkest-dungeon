@@ -721,8 +721,8 @@ Live-verified 2026-07-23. The pre-run hub (the HERO_SELECT mode - `HeroSelectBhv
   right-click equivalent, matching the game's own "Hero Sheet (C)" hint); Escape closes it.
 
 **Known gaps:** the Embark element is live-verified up to (not including) the press - pressing
-it starts the run. Stagecoach config from the crossroads not started (4.3); the party's
-aggregate Rank/Target pips are not read (each skill's exact ranks are in the hero sheet).
+it starts the run. The party's aggregate Rank/Target pips are not read (each skill's exact
+ranks are in the hero sheet).
 
 ## 4.2 Hero Sheet (`CharacterSheetScreen`) - WORKS
 
@@ -819,10 +819,23 @@ the Party Loadouts button, named by the panel's title.
 - Save Loadout stores the current party (needs at least one hero); the panel's Continue
   button and Escape both close.
 
-### 4.3.3 Still not started
+### 4.3.3 Infernal Flame Vitrine - WORKS (generic floor)
 
-- **Stagecoach config from the crossroads** (`StageCoachConfigUiBhv` - the Wainwright reader
-  in 8.5 covers the inn and road variants of this class; the crossroads entry is unexplored).
+Live-verified 2026-08-02. The run's boss-blessing modifier gallery, opened at the crossroads
+by the game's "StageCoach" key (Z) - `HeroSelectBhv.HandleInputVitrine` routes that key to
+`CommonUiBhv.ToggleTorchCompletionScreen`, NOT to a stagecoach panel. Read by the generic
+floor and complete as-is: the screen names itself, one row per flame ("The Fragile Flame",
+"The Doom Candle", ...), each row's buffer carrying the whole modifier card - flavour, then
+the mechanics line by line ("+20% Traveling Flame Drain", "Loathing Max: -1", the per-flame-
+level hero and enemy effects). Escape returns to the crossroads.
+
+**Known gaps:** the currently active flame is not marked (unverified - the test run has no
+blessing set).
+
+**There is NO stagecoach config at the crossroads.** An earlier audit pass listed one; live
+probing found no `StageCoachConfigUiBhv` in the hero-select scene and no coach field on
+`HeroSelectBhv`. That panel exists only at the inn (the Wainwright) and on the road, both
+covered in 8.5.
 
 ## 4.4 Embark Staging (`EmbarkScreen`, EMBARK mode) - PARTIAL
 
@@ -1832,7 +1845,6 @@ danger, Loathing (5.2); combat target-validity beeps (7.1.2); map cursor node ti
 - Mods manager panel details (1.8: Enable/Disable All toggles, mod rows, Browse Mods target)
 - Key rebinding flow (2.1.2)
 - Credits (2.8)
-- Crossroads stagecoach config (4.3.3)
 - Combat intros, REALTIME_CINEMATIC (7.4)
 - The Mountain's boss-specific presentation (9.2)
 - Kingdoms siege gang-escalation tooltip (7.1.4 gap)
