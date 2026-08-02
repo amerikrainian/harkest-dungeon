@@ -35,9 +35,33 @@ namespace DD2A11y.Elements {
 
         public HeroSelectActorUIBhv Slot { get; }
 
-        public HeroSlotElement(HeroSelectActorUIBhv slot, Button button)
+        private readonly System.Action<HeroSlotElement> _display;
+        private readonly System.Action _rename;
+        private readonly System.Action _reroll;
+
+        /// <param name="display">Makes this slot's hero the one the scene shows (the game's own
+        /// selection). The name, path, and reroll controls all act on the SHOWN hero, so the
+        /// hero-targeted actions here call it first.</param>
+        public HeroSlotElement(HeroSelectActorUIBhv slot, Button button,
+                               System.Action<HeroSlotElement> display = null,
+                               System.Action rename = null, System.Action reroll = null)
             : base(button, null, slot.gameObject) {
             Slot = slot;
+            _display = display;
+            _rename = rename;
+            _reroll = reroll;
+        }
+
+        /// <summary>Whether this slot holds a hero the scene can display.</summary>
+        public bool HasHero => Slot.IsOccupied && !Slot.IsLocked() && Slot.ActorInstance != null;
+
+        // Landing on a hero shows them: the canvas model, the stat block, and the targets of
+        // the name/path/reroll controls all follow the game's own selection, which our browsing
+        // otherwise never moves. Display-only - it never touches the party.
+        public override void OnFocused() {
+            if (HasHero) {
+                _display?.Invoke(this);
+            }
         }
 
         /// <summary>Whether the grab-and-place move can pick this slot up (the game's own
@@ -98,6 +122,21 @@ namespace DD2A11y.Elements {
             }
             if (Slot.IsOccupied && !Slot.IsLocked()) {
                 yield return new ElementAction("inspect", OpenSheet);
+            }
+            // Rename and reroll act on the SHOWN hero, so each shows this one first - the
+            // hero under focus is always the one they affect, from a party rank or the roster
+            // alike.
+            if (HasHero && _rename != null) {
+                yield return new ElementAction("rename", () => {
+                    _display?.Invoke(this);
+                    _rename();
+                });
+            }
+            if (HasHero && _reroll != null) {
+                yield return new ElementAction("reroll", () => {
+                    _display?.Invoke(this);
+                    _reroll();
+                });
             }
         }
 

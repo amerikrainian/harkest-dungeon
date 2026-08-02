@@ -706,10 +706,21 @@ Live-verified 2026-07-23. The pre-run hub (the HERO_SELECT mode - `HeroSelectBhv
   live-verified 2026-08-02) - rank 1 is the front line, the same numbering combat uses, and
   it is what tells the four otherwise identical empty slots apart. Pool heroes keep their
   bare name, and a grab announces the hero, not the rank.
-- The shown hero's name reads as an edit row ("hero name, edit, Bigby") whose Enter runs the
-  game's own rename flow (keystrokes echo, the accepted name reads back), beside "roll a new
-  name" and, on a run survivor, "reset hero" - all icon-only in the game, so they take
-  authored labels.
+- **Landing on a hero shows them** (the game's own `OnActorSelected`, silent - `playAudio`
+  false): the canvas model, the stat block, and the targets of the name, reroll, and path
+  controls all follow our focus. Display-only; it never touches the party. Without it those
+  controls acted on whichever hero the game happened to display on entry, which no keyboard
+  move could change. Empty ranks and locked heroes hold the previous hero (no actor to show).
+- **R renames the focused hero, Shift+R rolls them a new name** (live-verified 2026-08-02,
+  from a party rank and from the roster). Hero-targeted like the inspect key, mirroring the
+  game's own controller model, where rename is a hotkey on the shown hero rather than a field
+  to navigate to - the game puts both on one key by tap-versus-hold, which a hold makes poor
+  for a screen-reader user, so each gets a key. The rename runs the game's edit flow
+  (keystrokes echo, the accepted name reads back, the mod's keys pause meanwhile); the reroll
+  speaks the new name, which the game otherwise changes silently. A non-hero element answers
+  "unavailable" rather than going quiet.
+- "reset hero" (a run survivor's cosmetics/memories restore, the game asking to confirm)
+  stays in the actions block; it is icon-only in the game, so it takes an authored label.
 - Hero labels are the game's own class-name loc keys; locked heroes say "unavailable" with
   their flavor/unlock text as buffer lines; drafted pool heroes read "in party". Every hero
   slot's buffer ends with the class blurb the sighted panel shows

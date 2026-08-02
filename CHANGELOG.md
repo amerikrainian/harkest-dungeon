@@ -23,8 +23,11 @@
 - The crossroads' hero-path and party-loadout panels now read, so their buttons are finally
   offered: paths list with the full path card in the buffer and a confirm that commits, and
   loadouts list with apply, rename, delete, and save.
-- The crossroads hero name now reads and can be changed: the name field itself, "roll a new
-  name", and "reset hero" on a run survivor.
+- Crossroads heroes can now be renamed where they stand: R renames the hero you are focused
+  on and Shift+R rolls them a random name, whether they are in your party or the roster.
+  Moving onto a hero also makes the scene show them, so the path panel and the rest of the
+  hero controls always mean the hero you are on - they used to act on whichever hero the game
+  happened to be showing, which no keyboard move could change.
 - The road's sensing range is now a mod setting (mod settings tab, next to the separator):
   type any value from 20 to 200 road units, 80 being the mod's original reach. It governs
   everything the road senses - pickup pings, and node identity ticks at their usual half-

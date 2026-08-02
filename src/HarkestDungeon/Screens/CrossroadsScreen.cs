@@ -164,16 +164,6 @@ namespace DD2A11y.Screens {
                 actions.Add(new ReadoutElement(
                     () => partyName == null ? null : UiText.FirstLabel(partyName.gameObject)));
             }
-            // The shown hero's name, with the canvas controls that change it. The scene shows
-            // ONE hero at a time (the game's own selection), so this block follows that hero,
-            // not our focus.
-            var nameField = NameFieldRef(_heroSelect);
-            if (nameField != null && nameField.gameObject.activeInHierarchy) {
-                actions.Add(new ActionElement(() => S.HeroNameField, S.RoleEdit,
-                    _heroSelect.OnEditNameButtonPressed, value: HeroName));
-                actions.Add(new ActionElement(() => S.HeroNameReroll, S.RoleButton,
-                    _heroSelect.RollNewActorName));
-            }
             // Restores the shown hero's cosmetics and memories; the game asks to confirm.
             // Only present on a run survivor, hence the live active check.
             var reset = ResetButtonField(_heroSelect);
@@ -234,12 +224,30 @@ namespace DD2A11y.Screens {
             foreach (var slot in slots) {
                 var button = slot.GetComponent<Button>();
                 if (button != null && slot.gameObject.activeInHierarchy) {
-                    strip.Add(new HeroSlotElement(slot, button));
+                    strip.Add(new HeroSlotElement(slot, button, Display,
+                        rename: _heroSelect.OnEditNameButtonPressed,
+                        reroll: RerollName));
                 }
             }
             if (!strip.IsEmptyContainer) {
                 _root.Add(strip);
             }
+        }
+
+        // Make a hero the one the scene shows, through the game's own selection call - the
+        // display, stats, path panel, and the name/reroll targets all follow it. Silent
+        // (playAudio false): the mod already announces the landing, and the game's hero sting
+        // on every arrow press would bury it. A no-op when the game is mid-selection, which is
+        // its own guard.
+        private void Display(HeroSlotElement hero) {
+            _heroSelect.OnActorSelected(hero.Slot, playAudio: false);
+        }
+
+        // The game rolls a new name onto the shown hero without a word; speak the result, and
+        // the hero it landed on, since nothing else would.
+        private void RerollName() {
+            _heroSelect.RollNewActorName();
+            _speak(Core.Text.SpokenLine.Join(S.HeroNameField, HeroName()), true);
         }
 
         private static int BySiblingIndex(HeroSelectActorUIBhv a, HeroSelectActorUIBhv b)

@@ -323,6 +323,20 @@ namespace DD2A11y {
                 .AddBinding(K(Key.A));
             Reg("combat.inspector.next", S.InputInspectorNext, () => _academic.Cycle(Router, +1))
                 .AddBinding(K(Key.D));
+            // Rename the focused hero, and roll them a random name. The game puts both on one
+            // key by tap-versus-hold; a hold is poor for a screen-reader user, so they get a
+            // key each. Only hero elements advertise these, so anything else answers
+            // "unavailable" rather than silence.
+            Reg("ui.rename", S.InputRename, () => {
+                if (Navigator.Current?.InvokeAction("rename") != true) {
+                    Speech.Speak(S.StatusUnavailable, interrupt: true);
+                }
+            }).AddBinding(K(Key.R));
+            Reg("ui.reroll", S.InputReroll, () => {
+                if (Navigator.Current?.InvokeAction("reroll") != true) {
+                    Speech.Speak(S.StatusUnavailable, interrupt: true);
+                }
+            }).AddBinding(K(Key.R, shift: true));
             // Discard the focused item (the game's shift-click); the element advertises the
             // action only where the game allows the discard, so anything else answers
             // "unavailable" rather than silence.
