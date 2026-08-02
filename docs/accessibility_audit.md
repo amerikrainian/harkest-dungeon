@@ -336,20 +336,26 @@ what the sound is used for ("pickup nearby, 100 percent").
 ### 2.1.4 Mod Keys Tab (`ModKeysTab`) - WORKS
 
 Live-verified 2026-08-02 (physical keys and device-level injection, chords included, plus the
-driving handover below). Rebinding for the mod's own commands, one row per registered input
-action in registration order ("Navigate up, UpArrow").
+driving handover below; the add/delete menu re-verified same day). Rebinding for the mod's own
+commands, say-the-spire2's model: one row per registered input action in registration order,
+each carrying a LIST of keys ("Activate control, Enter, NumpadEnter").
 
-- Enter listens ("press the new key"): the next non-modifier key pressed becomes the binding,
-  with whatever Ctrl/Shift/Alt are held at that moment, so chords like Ctrl+PageUp capture
-  naturally. Escape keeps the current key. While listening every mod key pauses (the same
-  suppression as text entry and the game's own rebind listen).
-- A captured key already bound to another command is pulled off it, spoken as "taken from
-  {command}"; the stripped command reads "not set" until rebound or reset, and stays stripped
-  across restarts (the stored "none" sentinel). Shift+Enter (the discard chord) restores a
-  row's authored defaults, spoken with the restored keys.
-- Bindings persist per command in the config's `[Keys]` section ("F1", "F1|shift"); empty
-  means the defaults stand, and an entry that does not parse is dropped with a log warning so
-  a stale config never bricks a key.
+- Enter opens the row's menu as a popup: "add key" plus one "delete {key}" choice per current
+  key; Escape backs out with the row re-read. Choosing "add key" listens ("press the new
+  key" - delivered as the restored row's own focus text, so the popup close cannot talk over
+  it): the next non-modifier key pressed joins the set, with whatever Ctrl/Shift/Alt are held
+  at that moment, so chords like Ctrl+PageUp capture naturally. Escape keeps things as they
+  are. While listening every mod key pauses (the same suppression as text entry and the
+  game's own rebind listen).
+- A captured key another command holds is REFUSED and named ("DownArrow, already bound to
+  Navigate down") - delete it off that command first; no command is ever stripped behind the
+  player's back. A key the command already carries reads the row back unchanged.
+- Shift+Enter (the discard chord) restores a row's authored defaults, spoken with the
+  restored keys. A row with every key deleted reads "not set" and stays that way across
+  restarts (the stored "none" sentinel).
+- Bindings persist per command in the config's `[Keys]` section ("F1", "F1|shift",
+  "Enter;NumpadEnter"); empty means the defaults stand, and an entry that does not parse is
+  dropped with a log warning so a stale config never bricks a key.
 - The shared-keyboard screens' game-key suppression follows the LIVE bindings: rebinding both
   panel keys off Tab hands Tab back to the game (its minimap opened on Tab on the road,
   verified), the new key's game binding rests instead, and a reset re-claims Tab the same

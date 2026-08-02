@@ -8,9 +8,10 @@
   its natural level - saved per sound and applied to every future playback of it.
 - Roadside pickup pings each play at a slightly different pitch, so several pickups in
   range no longer blend into one sound.
-- The mod's own keys are now rebindable from a mod keys tab in settings: Enter listens for
-  the new key (modifier chords like Ctrl+arrows work), Shift+Enter restores the default, and
-  a key taken from another mod command says so. While driving, the game keys the mod rests
+- The mod's own keys are now rebindable from a mod keys tab in settings. Each command holds
+  a list of keys: Enter opens its menu to add a key (modifier chords like Ctrl+arrows work)
+  or delete one, a key another command holds is refused by name rather than silently stolen,
+  and Shift+Enter restores a command's defaults. While driving, the game keys the mod rests
   follow your bindings - move panel cycling off Tab and Tab opens the game's minimap again.
 - The profile panel behind the main menu's profile button is now fully readable: the
   profile list with rename and delete, creating a profile (name, language, analytics

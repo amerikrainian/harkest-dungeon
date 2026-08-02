@@ -7,11 +7,12 @@ namespace DD2A11y.Core.Input {
     /// Player rebinding of the mod's own keys. Holds every action's authored default bindings
     /// (snapshotted at <see cref="Load"/>, before overrides apply) and persists per-action
     /// overrides through the settings store: empty = the defaults stand, the
-    /// <see cref="Unbound"/> sentinel = the action was stripped of its keys by a displacement,
-    /// anything else = serialized bindings. A rebind installs exactly one binding and removes
-    /// the same chord from every other action (the game's own duplicate-removal behavior), so
-    /// one chord never fires two commands. Parsing and serialization are delegated so this
-    /// stays engine-free.
+    /// <see cref="Unbound"/> sentinel = every binding was deleted, anything else = serialized
+    /// bindings. An action carries a LIST of bindings, grown and shrunk one at a time
+    /// (say-the-spire2's model); a chord held by another action is surfaced via
+    /// <see cref="Holder"/> so the caller refuses the add - one chord never fires two
+    /// commands, and no command is ever stripped behind the player's back. Parsing and
+    /// serialization are delegated so this stays engine-free.
     /// </summary>
     public sealed class ModKeymap {
         private const string Unbound = "none";
@@ -70,30 +71,49 @@ namespace DD2A11y.Core.Input {
             }
         }
 
-        /// <summary>Install <paramref name="binding"/> as the action's one binding and remove
-        /// the same chord from every other action. Returns the actions that lost a key to the
-        /// change, for the caller to speak.</summary>
-        public IReadOnlyList<InputAction> Rebind(InputAction action, InputBinding binding) {
-            var displaced = new List<InputAction>();
+        /// <summary>The action holding this chord, excluding <paramref name="except"/>, or null
+        /// when the chord is free. The caller refuses an add whose chord has a holder.</summary>
+        public InputAction? Holder(InputBinding binding, InputAction except) {
             foreach (var other in _input.Actions) {
-                if (other == action) {
+                if (other == except) {
                     continue;
                 }
-                var kept = new List<InputBinding>();
                 foreach (var existing in other.Bindings) {
-                    if (existing.Chord != binding.Chord) {
-                        kept.Add(existing);
+                    if (existing.Chord == binding.Chord) {
+                        return other;
                     }
                 }
-                if (kept.Count != other.Bindings.Count) {
-                    other.ReplaceBindings(kept);
-                    Persist(other);
-                    displaced.Add(other);
+            }
+            return null;
+        }
+
+        /// <summary>Whether the action already carries this chord (an add of it is a no-op).</summary>
+        public bool Carries(InputAction action, InputBinding binding) {
+            foreach (var existing in action.Bindings) {
+                if (existing.Chord == binding.Chord) {
+                    return true;
                 }
             }
-            action.ReplaceBindings(new[] { binding });
+            return false;
+        }
+
+        /// <summary>Append a binding to the action's set and persist.</summary>
+        public void Add(InputAction action, InputBinding binding) {
+            var grown = new List<InputBinding>(action.Bindings) { binding };
+            action.ReplaceBindings(grown);
             Persist(action);
-            return displaced;
+        }
+
+        /// <summary>Delete one binding (by chord) from the action's set and persist.</summary>
+        public void Remove(InputAction action, InputBinding binding) {
+            var kept = new List<InputBinding>();
+            foreach (var existing in action.Bindings) {
+                if (existing.Chord != binding.Chord) {
+                    kept.Add(existing);
+                }
+            }
+            action.ReplaceBindings(kept);
+            Persist(action);
         }
 
         /// <summary>Restore the action's authored default bindings.</summary>

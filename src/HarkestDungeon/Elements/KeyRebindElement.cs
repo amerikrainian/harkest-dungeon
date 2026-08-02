@@ -7,16 +7,22 @@ using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// One mod-keys row: the command's name and its current key or keys. Enter listens for the
-    /// new key (the next non-modifier press, chord-aware; Escape keeps the current one) and
-    /// reads back the result, naming any command the key was pulled off. Shift+Enter (the
-    /// discard action) restores the command's default keys. The buffer carries the default.
+    /// One mod-keys row: the command's name and its current key or keys. A command carries a
+    /// LIST of bindings; Enter opens the row's menu - add a key (listens for the next
+    /// non-modifier press, chord-aware; Escape keeps things as they are) or delete one of the
+    /// current keys. A captured key another command holds is refused by name (delete it there
+    /// first), so no command is ever stripped behind the player's back. Shift+Enter (the
+    /// discard action) restores the command's authored defaults. The buffer carries the
+    /// default.
     /// </summary>
     public sealed class KeyRebindElement : UIElement {
         private readonly InputAction _action;
         private readonly ModKeymap _keymap;
         private readonly ModRebind _rebind;
         private readonly System.Action<string, bool> _speak;
+        // Set while the listen this row started is live; the row's focus text becomes the
+        // prompt, so the popup close's restored-row re-read IS the prompt (no speech race).
+        private bool _listening;
 
         public KeyRebindElement(InputAction action, ModKeymap keymap, ModRebind rebind,
                                 System.Action<string, bool> speak) {
@@ -30,8 +36,21 @@ namespace DD2A11y.Elements {
 
         public override string Value => Display(_action.Bindings);
 
+        public override string GetFocusText()
+            => _listening && _rebind.Active ? S.KeyPressNew : base.GetFocusText();
+
+        public override Popup BuildPopup() {
+            var root = new Container(ContainerShape.VerticalList, _action.Label);
+            root.Add(new ActionElement(() => S.KeyAddBinding, null, StartListen));
+            foreach (var binding in _action.Bindings) {
+                var doomed = binding;
+                root.Add(new ActionElement(() => S.KeyDeleteBinding(doomed.DisplayName), null,
+                    () => _keymap.Remove(_action, doomed)));
+            }
+            return new Popup(root);
+        }
+
         public override IEnumerable<ElementAction> GetActions() {
-            yield return new ElementAction(ActionIds.Activate, StartListen);
             yield return new ElementAction("discard", ResetToDefault);
         }
 
@@ -41,17 +60,26 @@ namespace DD2A11y.Elements {
         }
 
         private void StartListen() {
-            _speak(S.KeyPressNew, true);
+            _listening = true;
             _rebind.Start(
                 captured => {
-                    var displaced = _keymap.Rebind(_action, captured);
-                    string line = Value;
-                    foreach (var other in displaced) {
-                        line = SpokenLine.Join(line, S.KeyTakenFrom(other.Label));
+                    _listening = false;
+                    if (_keymap.Carries(_action, captured)) {
+                        _speak(GetFocusText(), true); // already here; nothing changed
+                        return;
                     }
-                    _speak(line, true);
+                    var holder = _keymap.Holder(captured, _action);
+                    if (holder != null) {
+                        _speak(SpokenLine.Join(captured.DisplayName, S.KeyAlreadyBound(holder.Label)), true);
+                        return;
+                    }
+                    _keymap.Add(_action, captured);
+                    _speak(GetFocusText(), true);
                 },
-                () => _speak(GetFocusText(), true));
+                () => {
+                    _listening = false;
+                    _speak(GetFocusText(), true);
+                });
         }
 
         private void ResetToDefault() {

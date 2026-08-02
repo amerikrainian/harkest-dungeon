@@ -75,29 +75,53 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
-        public void Rebind_Persists_AndDisplacesTheChordFromOtherActions() {
+        public void Add_AppendsToTheSet_AndPersists() {
             var (input, store, _, keymap) = Make();
+            var action = input.Register("a", "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
+            keymap.Load();
+
+            keymap.Add(action, new FakeBinding("Y"));
+
+            Assert.Equal(new[] { "X", "Y" }, action.Bindings.Select(b => b.Serialize()));
+            Assert.Equal("X;Y", store.Values["a"]);
+        }
+
+        [Fact]
+        public void Remove_DeletesByChord_AndTheLastDeletePersistsAsUnbound() {
+            var (input, store, _, keymap) = Make();
+            var action = input.Register("a", "A", InputCategory.UI)
+                .AddBinding(new FakeBinding("X")).AddBinding(new FakeBinding("Y"));
+            keymap.Load();
+
+            keymap.Remove(action, new FakeBinding("X"));
+            Assert.Equal(new[] { "Y" }, action.Bindings.Select(b => b.Serialize()));
+            Assert.Equal("Y", store.Values["a"]);
+
+            keymap.Remove(action, new FakeBinding("Y"));
+            Assert.Empty(action.Bindings);
+            Assert.Equal("none", store.Values["a"]);
+        }
+
+        [Fact]
+        public void Holder_NamesTheOtherActionOnTheChord_AndIgnoresTheAsker() {
+            var (input, _, _, keymap) = Make();
             var up = input.Register("up", "Up", InputCategory.UI).AddBinding(new FakeBinding("X"));
             var down = input.Register("down", "Down", InputCategory.UI).AddBinding(new FakeBinding("Y"));
             keymap.Load();
 
-            var displaced = keymap.Rebind(up, new FakeBinding("Y"));
-
-            Assert.Equal(new[] { down }, displaced);
-            Assert.Equal(new[] { "Y" }, up.Bindings.Select(b => b.Serialize()));
-            Assert.Empty(down.Bindings);
-            Assert.Equal("Y", store.Values["up"]);
-            Assert.Equal("none", store.Values["down"]);
+            Assert.Equal(down, keymap.Holder(new FakeBinding("Y"), except: up));
+            Assert.Null(keymap.Holder(new FakeBinding("X"), except: up)); // its own chord
+            Assert.Null(keymap.Holder(new FakeBinding("Z"), except: up)); // free chord
         }
 
         [Fact]
-        public void Rebind_ToItsOwnChord_DisplacesNothing() {
+        public void Carries_MatchesByChord() {
             var (input, _, _, keymap) = Make();
             var action = input.Register("a", "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
             keymap.Load();
 
-            Assert.Empty(keymap.Rebind(action, new FakeBinding("X")));
-            Assert.Equal(new[] { "X" }, action.Bindings.Select(b => b.Serialize()));
+            Assert.True(keymap.Carries(action, new FakeBinding("X")));
+            Assert.False(keymap.Carries(action, new FakeBinding("Y")));
         }
 
         [Fact]
@@ -106,7 +130,7 @@ namespace DD2A11y.Tests {
             var action = input.Register("a", "A", InputCategory.UI)
                 .AddBinding(new FakeBinding("X")).AddBinding(new FakeBinding("X2"));
             keymap.Load();
-            keymap.Rebind(action, new FakeBinding("Y"));
+            keymap.Add(action, new FakeBinding("Y"));
 
             keymap.Reset(action);
 
@@ -115,22 +139,19 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
-        public void RoundTrip_AStrippedActionStaysStrippedAcrossALoad() {
+        public void RoundTrip_ADeletedSetStaysDeletedAcrossALoad() {
             var (input, store, _, keymap) = Make();
-            var up = input.Register("up", "Up", InputCategory.UI).AddBinding(new FakeBinding("X"));
-            var down = input.Register("down", "Down", InputCategory.UI).AddBinding(new FakeBinding("Y"));
+            var action = input.Register("a", "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
             keymap.Load();
-            keymap.Rebind(up, new FakeBinding("Y"));
+            keymap.Remove(action, new FakeBinding("X"));
 
-            // A fresh session over the same store: the displaced action must not resurrect its
-            // default (which would silently re-conflict with the rebind).
+            // A fresh session over the same store: the emptied action must not resurrect its
+            // default behind the player's back.
             var input2 = new InputManager();
-            var up2 = input2.Register("up", "Up", InputCategory.UI).AddBinding(new FakeBinding("X"));
-            var down2 = input2.Register("down", "Down", InputCategory.UI).AddBinding(new FakeBinding("Y"));
+            var action2 = input2.Register("a", "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
             new ModKeymap(input2, store, Parse, _ => { }).Load();
 
-            Assert.Equal(new[] { "Y" }, up2.Bindings.Select(b => b.Serialize()));
-            Assert.Empty(down2.Bindings);
+            Assert.Empty(action2.Bindings);
         }
     }
 }

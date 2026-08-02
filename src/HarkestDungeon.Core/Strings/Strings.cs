@@ -260,17 +260,21 @@ namespace DD2A11y.Core.Strings {
             D("SoundCombatTargetInvalid", "target invalid"),
 
             // The mod's own key-rebinding tab on the game's settings screen: one row per mod
-            // command showing its current keys. Enter listens for the new key, Shift+Enter
-            // restores the default.
+            // command showing its current keys. Enter opens the row's menu (add a key, delete
+            // one), Shift+Enter restores the default keys.
             D("TabModKeys", "mod keys"),
-            // Spoken when a row starts listening: the next key pressed (with any Ctrl/Shift/Alt
-            // held) becomes the command's key; Escape keeps the current one.
+            // The row-menu choice that starts listening for a key to add. Verb phrase.
+            D("KeyAddBinding", "add key"),
+            // The row-menu choice deleting one of the command's keys; {0} = the key combo.
+            D("KeyDeleteBinding", "delete {0}"),
+            // Spoken while listening: the next key pressed (with any Ctrl/Shift/Alt held) is
+            // added to the command; Escape keeps things as they are.
             D("KeyPressNew", "press the new key"),
-            // A command whose keys were all taken by rebinds of other commands.
+            // A command with every key deleted.
             D("KeyNotSet", "not set"),
-            // Appended after a rebind when the key was pulled off another command; {0} = that
-            // command's name.
-            D("KeyTakenFrom", "taken from {0}"),
+            // A captured key refused because another command holds it (delete it there first);
+            // spoken after the key's name. {0} = the holding command's name.
+            D("KeyAlreadyBound", "already bound to {0}"),
             // Buffer line naming the command's authored default key or keys; {0} = the keys.
             D("KeyDefault", "default {0}"),
 
@@ -624,9 +628,11 @@ namespace DD2A11y.Core.Strings {
         public static string SoundLabel(Audio.AudioCue cue) => T("Sound" + cue);
 
         public static string TabModKeys => T("TabModKeys");
+        public static string KeyAddBinding => T("KeyAddBinding");
+        public static string KeyDeleteBinding(string keys) => F("KeyDeleteBinding", keys);
         public static string KeyPressNew => T("KeyPressNew");
         public static string KeyNotSet => T("KeyNotSet");
-        public static string KeyTakenFrom(string label) => F("KeyTakenFrom", label);
+        public static string KeyAlreadyBound(string label) => F("KeyAlreadyBound", label);
         public static string KeyDefault(string keys) => F("KeyDefault", keys);
         public static string RoleDropdown => T("RoleDropdown");
         public static string RoleTab => T("RoleTab");
