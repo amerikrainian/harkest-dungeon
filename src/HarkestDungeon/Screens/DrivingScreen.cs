@@ -58,8 +58,8 @@ namespace DD2A11y.Screens {
         private readonly DrivingKeySuppressor _listKeys = new DrivingKeySuppressor(
             new[] { "/upArrow", "/downArrow", "/leftArrow", "/rightArrow", "/space", "/enter" },
             bareCtrl: true, navigationEvents: true);
-        private readonly Dictionary<HeroRibbonBhv, DrivingHeroElement> _heroElements =
-            new Dictionary<HeroRibbonBhv, DrivingHeroElement>();
+        private readonly Dictionary<HeroRibbonBhv, HeroRibbonElement> _heroElements =
+            new Dictionary<HeroRibbonBhv, HeroRibbonElement>();
         private readonly Dictionary<UnityEngine.Object, UIElement> _goalRows =
             new Dictionary<UnityEngine.Object, UIElement>();
 
@@ -203,7 +203,7 @@ namespace DD2A11y.Screens {
         /// committing through the ribbon's SetSlot (the actor's team position); the landing
         /// speaks the resulting marching order.</summary>
         public void ToggleGrab(UIElement current) {
-            var element = current as DrivingHeroElement;
+            var element = current as HeroRibbonElement;
             if (element == null) {
                 return;
             }
@@ -362,7 +362,7 @@ namespace DD2A11y.Screens {
             _heroes.Clear();
             foreach (var ribbon in ActiveRibbons()) {
                 if (!_heroElements.TryGetValue(ribbon, out var element)) {
-                    element = new DrivingHeroElement(ribbon);
+                    element = new HeroRibbonElement(ribbon);
                     _heroElements[ribbon] = element;
                 }
                 _heroes.Add(element);

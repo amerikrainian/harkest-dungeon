@@ -935,7 +935,8 @@ shared prompt - `CommonUiBhv.ShowEnterNodeScreen` (6.1) - then branches to its s
   reveal reads through the road map. Effectively covered.
 - **HOSPITAL** -> prompt -> the Field Hospital (6.5).
 - **DUNGEON / GUARDIAN / CREATURE_DEN / kingdom gang bosses** -> prompt -> combat chains
-  (Phase 7) - not testable-with-undo, entering commits a fight.
+  (Phase 7) - not testable-with-undo, entering commits a fight. The advance-or-escape dialog
+  between a chain's battles is 6.7.
 - **OASIS / GATE / BRIDGE** and the kingdoms node skins ride the same trigger set (prompt +
   effect/loot/story/mode triggers); no bespoke screens found in code.
 
@@ -1015,6 +1016,31 @@ one store surface, named by the store's own title: wallet rows, store slots with
 stock, the bag with sell-per-press where the game allows selling (the Hoarder needs the
 altar's Enable Hoarder Selling option). Escape exits through the store's own done flow, which
 resumes the drive. Full store detail in 8.3 (the same screen serves the inn Provisioner).
+
+## 6.7 Lair Advance Dialog (`LairAdvanceScreen`) - BUILT
+
+The advance-or-escape dialog (`DungeonConfirmationDialogBhv`) the game raises between the
+battles of a multi-battle roadside node - lairs (the Library and its kin) and guardian nodes
+share it, retitling through its own `battle_advance_*_confirmation` loc keys. Named by the
+dialog's own title text (set directly, not databound, so the entry read never races a bind).
+
+- Reads as a modal: the description, one row per party ribbon (the shared `HeroRibbonElement`:
+  name + HP + stress, ribbon tooltips in the buffer, Enter = the ribbon's own right-click
+  inspect, which the game allows here on mouse+keyboard), the reward icons grouped under the
+  authored "looted" (secured by the cleared battles) and "next battle" (the next fight's
+  offer) section labels - each icon's name and stack from the widget model like the kingdom
+  panels' rewards, tooltips in the buffer - then the two choice buttons by their own captions.
+- The sighted commit is a one-second pointer HOLD on either button (`Submit`/`ExitMenu`
+  press-and-hold fills; the onClick path is unwired - the recurring hold-class commit). Enter
+  drives the widget's own `OnConfirm`/`OnDecline`, which invoke the game's stored commands and
+  close the screen; the surface that follows (the next battle, or the results flow) announces
+  itself. The game hides the escape button when escaping is not offered, and the sweep honors
+  that.
+- Escape answers "unavailable": the game refuses to close the dialog without a choice, and
+  folding Escape into the escape commit would abandon the lair on a reflex keypress.
+
+**Known gaps:** built offline, not yet seen live; the two buttons' captions may activate a
+beat into the open animation (the landing is the code-set description text, which is safe).
 
 ---
 

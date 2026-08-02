@@ -9,15 +9,16 @@ using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// One hero on the road's ribbon strip: name with HP and stress from the live actor, every
-    /// ribbon tooltip (the status bar's effects, diseases) as buffer lines. Enter is the
-    /// ribbon's own right-click inspect - the hero's character sheet; Space grabs the hero for
-    /// a marching-order move, which the driving screen routes.
+    /// One hero on a ribbon strip (the road's party bar, the lair advance dialog): name with HP
+    /// and stress from the live actor, every ribbon tooltip (the status bar's effects, diseases)
+    /// as buffer lines. Enter is the ribbon's own right-click inspect - the hero's character
+    /// sheet; on the road, Space grabs the hero for a marching-order move, which the driving
+    /// screen routes.
     /// </summary>
-    public sealed class DrivingHeroElement : UIElement {
+    public sealed class HeroRibbonElement : UIElement {
         private readonly HeroRibbonBhv _ribbon;
 
-        public DrivingHeroElement(HeroRibbonBhv ribbon) {
+        public HeroRibbonElement(HeroRibbonBhv ribbon) {
             _ribbon = ribbon;
         }
 

@@ -64,6 +64,11 @@ namespace DD2A11y.Core.Strings {
             // Appended to the prompt's button when entering also feeds a hero goal; the game
             // shows a candle icon only.
             D("NodeCandleReward", "candle reward"),
+            // The advance-or-escape dialog between a lair's battles: section label over the
+            // reward items its cleared battles already secured. Adjective.
+            D("LairLooted", "looted"),
+            // Same dialog: section label over the reward the next battle offers. Noun phrase.
+            D("LairNextLoot", "next battle"),
             // The road map (M while driving) and its cursor lines. Node and road names come
             // from the game's own fog-gated tooltips; these frame them.
             D("ScreenMap", "map"),
@@ -483,6 +488,8 @@ namespace DD2A11y.Core.Strings {
         public static string DrivingFlame(string value) => F("DrivingFlame", value);
         public static string ScreenNodePrompt => T("ScreenNodePrompt");
         public static string NodeCandleReward => T("NodeCandleReward");
+        public static string LairLooted => T("LairLooted");
+        public static string LairNextLoot => T("LairNextLoot");
         public static string ScreenMap => T("ScreenMap");
         public static string MapClosed => T("MapClosed");
         public static string MapWagon(string from, string to) => F("MapWagon", from, to);

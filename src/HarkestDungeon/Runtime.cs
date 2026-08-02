@@ -148,6 +148,8 @@ namespace DD2A11y {
             // (also the inn physician; its Pharmacy tab hands off to the store screen above).
             Router.Register(new EnterNodeScreen(speak));
             Router.Register(new HospitalScreen());
+            // The advance-or-escape dialog between a lair's (or guardian node's) battles.
+            Router.Register(new LairAdvanceScreen(speak));
             // The standalone player inventory (road, crossroads, loot); the inn hub above
             // already took its own inline copy.
             _inventory = new InventoryScreen(speak, Navigator);
