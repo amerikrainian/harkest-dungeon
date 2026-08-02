@@ -249,6 +249,10 @@ Live-verified 2026-07-23; dropdowns 2026-07-28; mod tab 2026-07-27. The game's o
 - A row holding a second control beside the one its title names reads that control's own
   caption: the resolution row's Update button reads "Update" (live-verified 2026-08-01), not
   as a second "Resolution" item.
+- The graphics tab's gamma reset button is icon-only in the game (no text or tooltip), the
+  one swept control with a mod-authored label: "Reset Gamma Correction" (live-verified
+  2026-08-01). Unavailable while gamma is at defaults, matching the game's interactable
+  state.
 - Remembered tab verified across close/reopen, including the corrective re-announce after the
   game's open animation stomps the tab back to the first one.
 - Escape closes in one press from both the title menu and pause (the game's own Escape is

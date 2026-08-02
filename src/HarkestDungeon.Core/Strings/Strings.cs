@@ -203,6 +203,8 @@ namespace DD2A11y.Core.Strings {
             D("SettingSeparator", "announcement separator"),
             // Spoken when committing an empty value returns a setting to its default.
             D("SettingReset", "reset to default"),
+            // The settings graphics tab's gamma reset button, icon-only in the game's own UI.
+            D("OptionsGammaReset", "Reset Gamma Correction"),
 
             // Crossroads (the pre-run hub). Section names for the two hero strips; the game shows
             // these visually with no header string to reuse. Nouns.
@@ -543,6 +545,7 @@ namespace DD2A11y.Core.Strings {
         public static string TabModSettings => T("TabModSettings");
         public static string SettingSeparator => T("SettingSeparator");
         public static string SettingReset => T("SettingReset");
+        public static string OptionsGammaReset => T("OptionsGammaReset");
         public static string RoleDropdown => T("RoleDropdown");
         public static string RoleTab => T("RoleTab");
         public static string RoleHero => T("RoleHero");

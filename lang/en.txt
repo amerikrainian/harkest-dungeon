@@ -96,6 +96,7 @@ EditDeleted = {0} deleted
 TabModSettings = mod settings
 SettingSeparator = announcement separator
 SettingReset = reset to default
+OptionsGammaReset = Reset Gamma Correction
 CrossroadsParty = party
 CrossroadsRoster = roster
 CrossroadsEmptySlot = empty slot

@@ -22,6 +22,10 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<OptionsMenuUiBhv, List<OptionsMenuUiBhv.OptionsTab>>("m_tabs");
         private static readonly AccessTools.FieldRef<OptionsMenuUiBhv, int> ButtonIndexField =
             AccessTools.FieldRefAccess<OptionsMenuUiBhv, int>("m_buttonIndex");
+        private static readonly AccessTools.FieldRef<OptionsMenuUiBhv, GammaCorrectionOptionBhv> GammaOptionField =
+            AccessTools.FieldRefAccess<OptionsMenuUiBhv, GammaCorrectionOptionBhv>("gammaCorrectionOptionBhv");
+        private static readonly AccessTools.FieldRef<GammaCorrectionOptionBhv, Button> GammaResetField =
+            AccessTools.FieldRefAccess<GammaCorrectionOptionBhv, Button>("resetButton");
 
         // The tab the player was on last time the screen was open, restored on reopen. The mod
         // tab is remembered separately: it has no game tab index behind it.
@@ -35,6 +39,7 @@ namespace DD2A11y.Screens {
         private OptionsMenuUiBhv _options;
         private Container _root;
         private Container _items;
+        private Button _gammaResetButton;
         private readonly List<int> _tabIndices = new List<int>(); // our position -> m_tabs index
         private int _builtTab = -1;
         private bool _restoring;
@@ -199,6 +204,7 @@ namespace DD2A11y.Screens {
                 return;
             }
             var tab = tabs[_builtTab];
+            _gammaResetButton = GammaResetField(GammaOptionField(options));
 
             var seen = new HashSet<Selectable>();
             if (tab.m_layout != null) {
@@ -242,6 +248,12 @@ namespace DD2A11y.Screens {
             }
             // Scroll plumbing and invisible anchors are not controls.
             if (selectable is Scrollbar || selectable.GetComponent<SelectOnEmptyFallbackBhv>() != null) {
+                return;
+            }
+            // The gamma reset button is icon-only in the game's own UI, with no text or tooltip
+            // anywhere under it or its row; it gets the one mod-authored label on this screen.
+            if (selectable == _gammaResetButton) {
+                _items.Add(new SelectableElement(selectable, () => S.OptionsGammaReset, rowScope));
                 return;
             }
             // A row can hold a second control beside the one its title names (the resolution
