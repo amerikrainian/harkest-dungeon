@@ -1272,8 +1272,9 @@ Top to bottom:
   - The **battle modifier** (title from `battle_modifier_title_<id>`, present only in fights
     that roll one; its tooltip title and effect/buff descriptions are buffer lines).
 - The enemy strip and the party strip (both rank-ordered; labels are name + Rank + HP read
-  live; a monster's name is its data id's loc string, the same source as the game's turn-order
-  tooltips). Corpses and prop monsters (battle-complete classes) are in the strips like any
+  live; the rank is the game's front rank, so a combatant behind a size-2 monster reads rank
+  3, not its team-list slot; a monster's name is its data id's loc string, the same source
+  as the game's turn-order tooltips). Corpses and prop monsters (battle-complete classes) are in the strips like any
   combatant - they hold a rank, take hits, and are targets for corpse-clearing - matching the
   game's own hoverable battlefield entities (unverified live). Kingdoms militia allies
   (`kingdoms_ally` classes fighting AI-driven in the party's line) are in the party strip the

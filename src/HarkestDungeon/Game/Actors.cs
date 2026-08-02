@@ -35,7 +35,7 @@ namespace DD2A11y.Game {
             foreach (var teammate in Team(friendly: actor.TeamIndex == 0)) {
                 teamNames.Add(Name(teammate));
             }
-            return CombatantNames.Spoken(name, actor.TeamPosition + 1, teamNames);
+            return CombatantNames.Spoken(name, actor.GetFrontRank() + 1, teamNames);
         }
 
         /// <summary>One side of the battle in rank order, as the game keeps the team: living

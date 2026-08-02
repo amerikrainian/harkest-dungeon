@@ -69,9 +69,11 @@ namespace DD2A11y.Elements {
                 && Targeting.TryGetPick(out performer, out skill);
         }
 
+        // The game's rank, not the team-list index - a size-2 monster spans two ranks, so the
+        // combatant behind it stands at rank 3, not slot 2.
         private static string RankText(ActorInstance actor) {
             string format = GameLoc.TryGet("effect_tooltip_position");
-            int rank = actor.TeamPosition + 1;
+            int rank = actor.GetFrontRank() + 1;
             return format == null ? rank.ToString() : string.Format(format, rank);
         }
 
