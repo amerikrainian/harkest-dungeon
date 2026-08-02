@@ -6,7 +6,8 @@
   mod plays, named for what it is used for. Enter previews the sound on loop (Enter again,
   moving away, or closing stops it), and Left/Right set that sound's volume as a percent of
   its natural level - saved per sound and applied to every future playback of it.
-
+- Roadside pickup pings each play at a slightly different pitch, so several pickups in
+  range no longer blend into one sound.
 - The profile panel behind the main menu's profile button is now fully readable: the
   profile list with rename and delete, creating a profile (name, language, analytics
   consent), and name edits echoing keystrokes and reading back the accepted name.

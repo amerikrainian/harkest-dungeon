@@ -20,6 +20,7 @@ namespace DD2A11y.Tests {
         private sealed class FakeLoop : IAudioLoop {
             public float Volume;
             public float Pan;
+            public float Pitch;
             public bool Stopped;
 
             public void Update(float volume, float pan) {
@@ -38,8 +39,8 @@ namespace DD2A11y.Tests {
 
             public void PlayCue(AudioCue cue, float volume, float pan) => Plays.Add((cue, volume, pan));
 
-            public IAudioLoop StartLoop(AudioCue cue, float volume, float pan) {
-                var loop = new FakeLoop { Volume = volume, Pan = pan };
+            public IAudioLoop StartLoop(AudioCue cue, float volume, float pan, float pitch = 1f) {
+                var loop = new FakeLoop { Volume = volume, Pan = pan, Pitch = pitch };
                 Loops.Add(loop);
                 return loop;
             }
@@ -135,9 +136,10 @@ namespace DD2A11y.Tests {
             var inner = new FakeEngine();
             var engine = new VolumeScaledEngine(inner, volumes);
 
-            var loop = engine.StartLoop(AudioCue.RoadPickup, 1f, 0f);
+            var loop = engine.StartLoop(AudioCue.RoadPickup, 1f, 0f, 1.06f);
             var voice = Assert.Single(inner.Loops);
             Assert.Equal(1f, voice.Volume, 3);
+            Assert.Equal(1.06f, voice.Pitch, 3); // pitch is the caller's, forwarded untouched
 
             volumes.All.First(v => v.Cue == AudioCue.RoadPickup).Adjust(-1);
             loop.Update(1f, 0.25f);

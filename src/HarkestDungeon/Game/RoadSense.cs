@@ -267,13 +267,22 @@ namespace DD2A11y.Game {
                     loop.Update(volume, pan);
                     _staleLoops.Remove(id);
                 } else {
-                    _pickupLoops[id] = _audio.StartLoop(AudioCue.RoadPickup, volume, pan);
+                    _pickupLoops[id] = _audio.StartLoop(AudioCue.RoadPickup, volume, pan, PickupPitch(id));
                 }
             }
             foreach (int id in _staleLoops) {
                 _pickupLoops[id].Stop();
                 _pickupLoops.Remove(id);
             }
+        }
+
+        // Overlapping pickups share one clip and would blend into a single ping; a per-pickup
+        // pitch spreads simultaneous pings within about a semitone either way. Hashed from the
+        // instance id (Unity hands them out near-sequentially) so a pickup keeps its voice
+        // across range exits and re-entries.
+        private static float PickupPitch(int id) {
+            uint hash = (uint)id * 2654435761u;
+            return 0.94f + hash % 256u / 255f * 0.12f;
         }
 
         // Every node in range loops its destination's identity timbre until the coach passes

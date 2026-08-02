@@ -17,8 +17,11 @@ namespace DD2A11y.Core.Audio {
         /// <summary>Start a cue looping and return its live handle: the caller re-aims it with
         /// <see cref="IAudioLoop.Update"/> as the world moves (every frame is fine - the voice
         /// smooths parameter steps itself) and ends it with <see cref="IAudioLoop.Stop"/>.
+        /// <paramref name="pitch"/> is a playback-rate multiplier (1 = as authored), fixed for
+        /// the loop's life; simultaneous copies of one cue start at slightly different pitches
+        /// so they stay distinguishable instead of blending into one.
         /// Missing device or asset returns an inert handle, never null and never a throw.</summary>
-        IAudioLoop StartLoop(AudioCue cue, float volume, float pan);
+        IAudioLoop StartLoop(AudioCue cue, float volume, float pan, float pitch = 1f);
     }
 
     /// <summary>A live looping voice. Never null; an engine without a device hands out an inert

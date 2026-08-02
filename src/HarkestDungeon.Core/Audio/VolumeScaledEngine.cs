@@ -22,8 +22,8 @@ namespace DD2A11y.Core.Audio {
         public void PlayCue(AudioCue cue, float volume, float pan)
             => _inner.PlayCue(cue, volume * _volumes.Gain(cue), pan);
 
-        public IAudioLoop StartLoop(AudioCue cue, float volume, float pan)
-            => new ScaledLoop(_inner.StartLoop(cue, volume * _volumes.Gain(cue), pan), _volumes, cue);
+        public IAudioLoop StartLoop(AudioCue cue, float volume, float pan, float pitch = 1f)
+            => new ScaledLoop(_inner.StartLoop(cue, volume * _volumes.Gain(cue), pan, pitch), _volumes, cue);
 
         private sealed class ScaledLoop : IAudioLoop {
             private readonly IAudioLoop _inner;

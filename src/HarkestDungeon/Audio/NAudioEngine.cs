@@ -74,7 +74,7 @@ namespace DD2A11y.Audio {
             _mixer.AddMixerInput(new CueVoice(clip, volume, pan));
         }
 
-        public IAudioLoop StartLoop(AudioCue cue, float volume, float pan) {
+        public IAudioLoop StartLoop(AudioCue cue, float volume, float pan, float pitch = 1f) {
             if (!EnsureStarted()) {
                 return NoopLoop.Instance;
             }
@@ -82,7 +82,7 @@ namespace DD2A11y.Audio {
             if (clip.Length == 0) {
                 return NoopLoop.Instance;
             }
-            var voice = new LoopVoice(clip, volume, pan);
+            var voice = new LoopVoice(clip, volume, pan, pitch);
             _mixer.AddMixerInput(voice);
             return voice;
         }
@@ -234,16 +234,20 @@ namespace DD2A11y.Audio {
         // re-aims it (volume/pan) at any rate, the audio thread eases the applied gains toward
         // the targets per sample (~5 ms), so movement tracks smoothly with no zipper noise. A
         // stop fades to silence first, then returns 0 so the shared mixer auto-removes it.
+        // The voice plays at a fixed rate (its pitch), stepping a fractional clip position with
+        // linear interpolation between samples.
         private sealed class LoopVoice : ISampleProvider, IAudioLoop {
             private const float Smooth = 0.004f;
             private readonly float[] _clip;
+            private readonly float _rate;
             private volatile bool _stopped;
             private float _targetL, _targetR;
             private float _gainL, _gainR;
-            private int _pos;
+            private double _pos;
 
-            public LoopVoice(float[] clip, float volume, float pan) {
+            public LoopVoice(float[] clip, float volume, float pan, float pitch) {
                 _clip = clip;
+                _rate = pitch;
                 PanGains(pan, out float l, out float r);
                 _targetL = volume * l;
                 _targetR = volume * r;
@@ -270,8 +274,14 @@ namespace DD2A11y.Audio {
                 float targetR = _stopped ? 0f : _targetR;
                 int frames = count / 2;
                 for (int f = 0; f < frames; f++) {
-                    float s = _clip[_pos];
-                    _pos = _pos + 1 == _clip.Length ? 0 : _pos + 1;
+                    int i0 = (int)_pos;
+                    int i1 = i0 + 1 == _clip.Length ? 0 : i0 + 1;
+                    float frac = (float)(_pos - i0);
+                    float s = _clip[i0] + (_clip[i1] - _clip[i0]) * frac;
+                    _pos += _rate;
+                    if (_pos >= _clip.Length) {
+                        _pos -= _clip.Length;
+                    }
                     _gainL += (targetL - _gainL) * Smooth;
                     _gainR += (targetR - _gainR) * Smooth;
                     buffer[offset + f * 2] = s * _gainL;
