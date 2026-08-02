@@ -17,6 +17,8 @@
   rebindable alongside keys ("add button" in a command's menu while a pad is connected; hold
   a trigger while releasing a button to make a trigger combo), and any controller press
   silences speech in progress.
+- The main menu's profile button (the bottom-right journal) now says what it is: it used to
+  read as just your profile's name; it now adds the game's own "Change Profile" caption.
 - The profile panel behind the main menu's profile button is now fully readable: the
   profile list with rename and delete, creating a profile (name, language, analytics
   consent), and name edits echoing keystrokes and reading back the accepted name.

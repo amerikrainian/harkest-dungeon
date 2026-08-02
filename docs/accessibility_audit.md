@@ -76,7 +76,10 @@ Live-verified 2026-07-27; visual-order fix user-caught and verified 2026-07-31. 
 - Disclaimer text + continue control (drives `OnMainMenuPress` - the AnyKey handler; uGUI
   clicks cannot dismiss it), then the buttons in VISUAL order: Confessions, Kingdoms, Origin
   Pack, Mods, then Exit Game / Mailing List / Patch Notes / Cinematics left to right, the
-  Journal (bottom-right corner) last.
+  profile button (the bottom-right journal art, prefab name `Journalbutton`) last.
+- The profile button labels itself with the CURRENT PROFILE'S NAME (its TMP text), so it
+  reads name first with the game's "Change Profile" tooltip as its value ("Darkest, button,
+  Change Profile" - live-verified 2026-08-02); it opens the profile select panel (1.7).
 - Confessions submenu (a container swap the count-rebuild picks up): Continue Confession, New
   Confession.
 - Icon-only footer buttons (Exit Game, Patch Notes, Cinematics, Mailing List) read via their
@@ -222,10 +225,12 @@ The main menu's Mods screen (`ModScreenWidgetBhv`, rows `ModItemBhv`, plus the
 `ModImportSaveWidgetBhv` / import-save-profile flows). Unmodeled; falls to whatever the floor
 can sweep.
 
-## 1.9 Journal - NOT STARTED
+## 1.9 Journal - RESOLVED (it is the profile button)
 
-The bottom-right main-menu button. The button itself reads in the menu order; its target
-surface is unaudited.
+The bottom-right "journal" is the profile select button (`m_profileSelectButton`, prefab
+name `Journalbutton`; its onClick is `OnProfileNameButtonPressed`) - the game draws the
+profile as a leather journal. Its target surface is the profile select panel, covered under
+1.7; the button's read is covered under 1.1.
 
 ## 1.10 Store Promos and Mailing List - NOT STARTED
 
@@ -1738,9 +1743,7 @@ danger, Loathing (5.2); combat target-validity beeps (7.1.2); map cursor node ti
 
 ## 12.5 Uncovered Surfaces (consolidated)
 
-- Profile select and save management (1.7)
 - Mods manager (1.8)
-- Journal (1.9)
 - Store promos / mailing list targets (1.10)
 - Key rebinding flow (2.1.2)
 - Feedback (2.7)

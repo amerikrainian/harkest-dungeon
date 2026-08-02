@@ -20,13 +20,19 @@ namespace DD2A11y.Elements {
         protected readonly Selectable Selectable;
         private readonly Func<string> _label;
         private readonly GameObject _rowScope;
+        private readonly Func<string> _value;
 
         /// <param name="rowScope">The object whose texts/tooltips describe this control (the row
         /// containing label + control), defaulting to the selectable's own object.</param>
-        public SelectableElement(Selectable selectable, Func<string> label = null, GameObject rowScope = null) {
+        /// <param name="value">Overrides the value slot (a button whose label alone does not say
+        /// what it does - the profile button reads the profile's name, its purpose rides here
+        /// from the game's tooltip).</param>
+        public SelectableElement(Selectable selectable, Func<string> label = null, GameObject rowScope = null,
+                                 Func<string> value = null) {
             Selectable = selectable;
             _label = label;
             _rowScope = rowScope;
+            _value = value;
         }
 
         protected GameObject RowScope => _rowScope != null ? _rowScope : Selectable != null ? Selectable.gameObject : null;
@@ -67,6 +73,9 @@ namespace DD2A11y.Elements {
 
         public override string Value {
             get {
+                if (_value != null) {
+                    return _value();
+                }
                 if (Selectable is Slider slider) {
                     return S.ValuePercent(Mathf.RoundToInt(slider.normalizedValue * 100f));
                 }
@@ -148,8 +157,11 @@ namespace DD2A11y.Elements {
         public override IEnumerable<string> GetBufferLines() {
             yield return GetFocusText();
             string label = Label;
+            string value = Value;
             foreach (var line in TooltipReader.Lines(RowScope)) {
-                if (line != label) { // an icon button's tooltip doubled as its label
+                // A tooltip doubling as the label (an icon button) or the value (the profile
+                // button's purpose) is already in the focus line.
+                if (line != label && line != value) {
                     yield return line;
                 }
             }

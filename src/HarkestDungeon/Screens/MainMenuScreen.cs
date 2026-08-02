@@ -25,6 +25,8 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<MainMenuUiScreenBhv, bool>("m_disclaimerShown");
         private static readonly AccessTools.FieldRef<MainMenuUiScreenBhv, Button> ContinueButtonField =
             AccessTools.FieldRefAccess<MainMenuUiScreenBhv, Button>("m_continueButton");
+        private static readonly AccessTools.FieldRef<MainMenuUiScreenBhv, Button> ProfileButtonField =
+            AccessTools.FieldRefAccess<MainMenuUiScreenBhv, Button>("m_profileSelectButton");
         private static readonly System.Reflection.FieldInfo DisclaimerDirectorField =
             AccessTools.Field(typeof(MainMenuUiScreenBhv), "m_disclaimerDirector");
 
@@ -117,9 +119,15 @@ namespace DD2A11y.Screens {
                 return;
             }
 
+            var profileButton = ProfileButtonField(menu);
             foreach (var selectable in Swept(menu)) {
                 if (!_elements.TryGetValue(selectable, out var element)) {
-                    element = new SelectableElement(selectable);
+                    // The profile button (the bottom-right journal) labels itself with the
+                    // CURRENT PROFILE'S NAME; its purpose lives only in its tooltip, so that
+                    // rides as the value ("Darkest, button, Change Profile").
+                    element = selectable == profileButton
+                        ? new SelectableElement(selectable, value: () => FirstTooltip(selectable))
+                        : new SelectableElement(selectable);
                     _elements[selectable] = element;
                 }
                 _root.Add(element);
@@ -127,6 +135,13 @@ namespace DD2A11y.Screens {
             _builtOrder = OrderSignature(menu);
             var first = _root.FirstFocusable();
             _awaitingLabel = first != null && string.IsNullOrEmpty(first.Label);
+        }
+
+        private static string FirstTooltip(Selectable selectable) {
+            foreach (var line in TooltipReader.Lines(selectable.gameObject)) {
+                return line;
+            }
+            return null;
         }
 
         private static int OrderSignature(MainMenuUiScreenBhv menu) {
