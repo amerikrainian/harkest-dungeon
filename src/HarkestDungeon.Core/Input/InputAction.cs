@@ -32,6 +32,13 @@ namespace DD2A11y.Core.Input {
             return this;
         }
 
+        /// <summary>Swap the whole binding set (a rebind); bindings are immutable, so a rebind
+        /// always installs fresh instances.</summary>
+        public void ReplaceBindings(IEnumerable<InputBinding> bindings) {
+            _bindings.Clear();
+            _bindings.AddRange(bindings);
+        }
+
         /// <summary>Whether this action auto-repeats while held (nav directions, Tab). Set via
         /// <see cref="Repeating"/>.</summary>
         public bool Repeats { get; private set; }

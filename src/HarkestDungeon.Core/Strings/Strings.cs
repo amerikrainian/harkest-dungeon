@@ -259,6 +259,21 @@ namespace DD2A11y.Core.Strings {
             D("SoundCombatTargetValid", "target valid"),
             D("SoundCombatTargetInvalid", "target invalid"),
 
+            // The mod's own key-rebinding tab on the game's settings screen: one row per mod
+            // command showing its current keys. Enter listens for the new key, Shift+Enter
+            // restores the default.
+            D("TabModKeys", "mod keys"),
+            // Spoken when a row starts listening: the next key pressed (with any Ctrl/Shift/Alt
+            // held) becomes the command's key; Escape keeps the current one.
+            D("KeyPressNew", "press the new key"),
+            // A command whose keys were all taken by rebinds of other commands.
+            D("KeyNotSet", "not set"),
+            // Appended after a rebind when the key was pulled off another command; {0} = that
+            // command's name.
+            D("KeyTakenFrom", "taken from {0}"),
+            // Buffer line naming the command's authored default key or keys; {0} = the keys.
+            D("KeyDefault", "default {0}"),
+
             // Crossroads (the pre-run hub). Section names for the two hero strips; the game shows
             // these visually with no header string to reuse. Nouns.
             D("CrossroadsParty", "party"),
@@ -607,6 +622,12 @@ namespace DD2A11y.Core.Strings {
         /// <summary>The glossary label of one mod sound, keyed "Sound{cue}" by convention; a test
         /// pins every <see cref="Audio.AudioCue"/> value to a table entry.</summary>
         public static string SoundLabel(Audio.AudioCue cue) => T("Sound" + cue);
+
+        public static string TabModKeys => T("TabModKeys");
+        public static string KeyPressNew => T("KeyPressNew");
+        public static string KeyNotSet => T("KeyNotSet");
+        public static string KeyTakenFrom(string label) => F("KeyTakenFrom", label);
+        public static string KeyDefault(string keys) => F("KeyDefault", keys);
         public static string RoleDropdown => T("RoleDropdown");
         public static string RoleTab => T("RoleTab");
         public static string RoleHero => T("RoleHero");

@@ -76,5 +76,41 @@ namespace DD2A11y.Input {
             }
             return mods.Count == 0 ? Key.ToString() : Key + "|" + string.Join(",", mods);
         }
+
+        /// <summary>Parse a <see cref="Serialize"/>d combo back into a binding, null when the
+        /// text does not parse (a stale or hand-mangled config entry).</summary>
+        public static KeyboardBinding TryDeserialize(string text) {
+            string keyPart = text;
+            bool ctrl = false, shift = false, alt = false;
+            int bar = text.IndexOf('|');
+            if (bar >= 0) {
+                keyPart = text.Substring(0, bar);
+                foreach (var mod in text.Substring(bar + 1).Split(',')) {
+                    switch (mod) {
+                        case "ctrl": ctrl = true; break;
+                        case "shift": shift = true; break;
+                        case "alt": alt = true; break;
+                        default: return null;
+                    }
+                }
+            }
+            if (!System.Enum.TryParse(keyPart, out Key key) || key == Key.None) {
+                return null;
+            }
+            return new KeyboardBinding(key, ctrl, shift, alt);
+        }
+
+        /// <summary>The Input System control-path suffix for this binding's key ("/tab"), for
+        /// suppressing the game bindings that share it. Digits bind as their bare character;
+        /// everything else follows the Key name with a lowered first letter.</summary>
+        public string ControlPath {
+            get {
+                if (Key >= Key.Digit1 && Key <= Key.Digit0) {
+                    return "/" + Key.ToString().Substring("Digit".Length);
+                }
+                string name = Key.ToString();
+                return "/" + char.ToLowerInvariant(name[0]) + name.Substring(1);
+            }
+        }
     }
 }

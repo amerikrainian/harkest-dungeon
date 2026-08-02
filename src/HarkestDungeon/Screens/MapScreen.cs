@@ -22,12 +22,22 @@ namespace DD2A11y.Screens {
         private readonly Action<string, bool> _speak;
         private readonly MapViewer _viewer;
         private readonly Action _cursorMoved;
-        private readonly DrivingKeySuppressor _suppressor = new DrivingKeySuppressor();
+        // The map claims its cursor keys (arrows/Home/End by default) and, through the buffer
+        // chords, bare Ctrl (the game's hold-to-show token glossary); WASD keeps driving. The
+        // claim follows the live bindings, so a rebind moves it.
+        private readonly DrivingKeySuppressor _suppressor;
 
-        public MapScreen(Action<string, bool> speak, Core.Audio.IAudioEngine audio, Action cursorMoved) {
+        public MapScreen(Action<string, bool> speak, Core.Audio.IAudioEngine audio, Action cursorMoved,
+                         Core.Input.InputManager input) {
             _speak = speak;
             _viewer = new MapViewer(speak, audio);
             _cursorMoved = cursorMoved;
+            _suppressor = new DrivingKeySuppressor(
+                () => DrivingKeySuppressor.ClaimFor(input,
+                    UiActions.Up, UiActions.Down, UiActions.Left, UiActions.Right,
+                    UiActions.Home, UiActions.End,
+                    "buffer.next", "buffer.prev", "buffer.line.next", "buffer.line.prev"),
+                navigationEvents: true);
         }
 
         public override string Name => S.ScreenMap;

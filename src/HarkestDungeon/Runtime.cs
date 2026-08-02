@@ -50,6 +50,9 @@ namespace DD2A11y {
 
         public Core.Settings.ModSettings Settings { get; }
         public Core.Settings.SoundVolumes Sounds { get; }
+        public Core.Input.ModKeymap Keymap { get; }
+
+        private readonly ModRebind _rebind = new ModRebind();
 
         public Runtime(string pluginDir, string version, BepInEx.Configuration.ConfigFile config) {
             _backend = new PrismBackend();
@@ -81,6 +84,8 @@ namespace DD2A11y {
 
             Settings = new Core.Settings.ModSettings(new Settings.BepInExSettingsStore(config));
             Sounds = new Core.Settings.SoundVolumes(new Settings.BepInExSettingsStore(config, "Sounds"));
+            Keymap = new Core.Input.ModKeymap(Input, new Settings.BepInExSettingsStore(config, "Keys"),
+                KeyboardBinding.TryDeserialize, message => Plugin.Log.LogWarning(message));
             _textEdit = new ModTextEdit(speak, () => Router.Active);
 
             _audioEngine = new Audio.NAudioEngine(Path.Combine(pluginDir, "assets", "audio"));
@@ -101,6 +106,7 @@ namespace DD2A11y {
             Router.Register(new OptionsScreen(new Screens.Options.ModTab[] {
                 new Screens.Options.ModSettingsTab(Settings, _textEdit, speak),
                 new Screens.Options.ModSoundsTab(Sounds, Audio, Navigator),
+                new Screens.Options.ModKeysTab(Input, Keymap, _rebind, speak),
             }));
             Router.Register(new PauseScreen());
             Router.Register(new CharacterSheetScreen());
@@ -189,9 +195,9 @@ namespace DD2A11y {
                     ? (Func<System.Collections.Generic.IEnumerable<string>>)null
                     : Navigator.Current.GetBufferLines);
                 Buffers.SetCurrent("ui");
-            }));
+            }, Input));
             // The free-driving floor: the HUD as Tab panels around a pass-through driving area.
-            _driving = new DrivingScreen(speak, Navigator);
+            _driving = new DrivingScreen(speak, Navigator, Input);
             Router.Register(_driving);
             // Target-select feedback: validity beeps fire on focus landings, not per frame.
             Navigator.FocusSettled += element => {
@@ -201,6 +207,7 @@ namespace DD2A11y {
             };
 
             RegisterInputs();
+            Keymap.Load();
             // Keys are live while the gate holds the keyboard, and also under a screen that
             // deliberately shares it (the road map claims arrows, the game keeps WASD).
             Input.ActiveCategoriesProvider = () =>
@@ -212,9 +219,10 @@ namespace DD2A11y {
             Input.SuppressAll = () => {
                 // The profile rename edit is asked for directly - the game does not report it
                 // through IsInputtingText the way its other text fields are. A listening key
-                // rebind pauses the same way: the pressed key must become the binding.
+                // rebind pauses the same way, the game's and the mod's own alike: the pressed
+                // key must become the binding.
                 bool typing = Game.TextEntry.IsTyping || _textEdit.Active || _profileSelect.EditingName
-                    || _keyBindings.RebindActive;
+                    || _keyBindings.RebindActive || _rebind.Active;
                 bool suppress = typing || _wasTyping;
                 _wasTyping = typing;
                 return suppress;
@@ -334,6 +342,7 @@ namespace DD2A11y {
                 _roadSense.Tick();
                 Gate.Reassert();
                 _textEdit.Tick();
+                _rebind.Tick();
                 Input.Tick(Time.unscaledTimeAsDouble);
             } catch (Exception ex) {
                 // Log loudly but without flooding: a fault here repeats every frame.

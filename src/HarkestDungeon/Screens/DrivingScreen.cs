@@ -49,15 +49,13 @@ namespace DD2A11y.Screens {
 
         private readonly Action<string, bool> _speak;
         private readonly TraditionalNavigator _navigator;
-        // Tab is the game's second minimap key and the mod's panel key everywhere, so the game's
-        // tab binding rests for the whole stand; M keeps the map.
-        private readonly DrivingKeySuppressor _tabKey = new DrivingKeySuppressor(
-            new[] { "/tab" }, bareCtrl: false, navigationEvents: false);
-        // Off the driving area the arrows walk our lists and Space/Enter work our elements, so
-        // their game bindings (steering, Interact, the Ctrl glossary hold) rest.
-        private readonly DrivingKeySuppressor _listKeys = new DrivingKeySuppressor(
-            new[] { "/upArrow", "/downArrow", "/leftArrow", "/rightArrow", "/space", "/enter" },
-            bareCtrl: true, navigationEvents: true);
+        // The panel-cycling keys (Tab by default, the game's second minimap key) are the mod's
+        // everywhere, so their game bindings rest for the whole stand; M keeps the map. The
+        // claim follows the live bindings, so a rebind hands the freed key back to the game.
+        private readonly DrivingKeySuppressor _tabKey;
+        // Off the driving area the list keys walk our elements, so their game bindings
+        // (steering, Interact, the Ctrl glossary hold) rest.
+        private readonly DrivingKeySuppressor _listKeys;
         private readonly Dictionary<HeroRibbonBhv, HeroRibbonElement> _heroElements =
             new Dictionary<HeroRibbonBhv, HeroRibbonElement>();
         private readonly Dictionary<UnityEngine.Object, UIElement> _goalRows =
@@ -75,9 +73,20 @@ namespace DD2A11y.Screens {
         private int _builtSignature;
         private bool _goalsWereOpen;
 
-        public DrivingScreen(Action<string, bool> speak, TraditionalNavigator navigator) {
+        public DrivingScreen(Action<string, bool> speak, TraditionalNavigator navigator,
+                             Core.Input.InputManager input) {
             _speak = speak;
             _navigator = navigator;
+            _tabKey = new DrivingKeySuppressor(
+                () => DrivingKeySuppressor.ClaimFor(input, UiActions.Next, UiActions.Prev),
+                navigationEvents: false);
+            _listKeys = new DrivingKeySuppressor(
+                () => DrivingKeySuppressor.ClaimFor(input,
+                    UiActions.Up, UiActions.Down, UiActions.Left, UiActions.Right,
+                    UiActions.Home, UiActions.End, UiActions.Activate,
+                    "ui.grab", "ui.place.one", "ui.discard",
+                    "buffer.next", "buffer.prev", "buffer.line.next", "buffer.line.prev"),
+                navigationEvents: true);
         }
 
         public override string Name => S.ScreenDriving;

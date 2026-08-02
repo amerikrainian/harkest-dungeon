@@ -333,6 +333,28 @@ what the sound is used for ("pickup nearby, 100 percent").
   game tab; the game's late tab-index moves after the screen reports Open no longer read as
   player clicks (only a change interrupting a settled index is).
 
+### 2.1.4 Mod Keys Tab (`ModKeysTab`) - WORKS
+
+Live-verified 2026-08-02 (physical keys and device-level injection, chords included, plus the
+driving handover below). Rebinding for the mod's own commands, one row per registered input
+action in registration order ("Navigate up, UpArrow").
+
+- Enter listens ("press the new key"): the next non-modifier key pressed becomes the binding,
+  with whatever Ctrl/Shift/Alt are held at that moment, so chords like Ctrl+PageUp capture
+  naturally. Escape keeps the current key. While listening every mod key pauses (the same
+  suppression as text entry and the game's own rebind listen).
+- A captured key already bound to another command is pulled off it, spoken as "taken from
+  {command}"; the stripped command reads "not set" until rebound or reset, and stays stripped
+  across restarts (the stored "none" sentinel). Shift+Enter (the discard chord) restores a
+  row's authored defaults, spoken with the restored keys.
+- Bindings persist per command in the config's `[Keys]` section ("F1", "F1|shift"); empty
+  means the defaults stand, and an entry that does not parse is dropped with a log warning so
+  a stale config never bricks a key.
+- The shared-keyboard screens' game-key suppression follows the LIVE bindings: rebinding both
+  panel keys off Tab hands Tab back to the game (its minimap opened on Tab on the road,
+  verified), the new key's game binding rests instead, and a reset re-claims Tab the same
+  frame - the road map's arrow/bare-Ctrl claim derives the same way.
+
 ## 2.2 Pause Menu (`PauseScreen`) - WORKS
 
 Live-verified 2026-07-23. A widget on a generic `UiScreenBhv` prefab

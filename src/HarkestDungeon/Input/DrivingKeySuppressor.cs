@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Assets.Code.Inputs;
 using Assets.Code.Utils;
@@ -8,20 +9,16 @@ using UnityEngine.InputSystem;
 namespace DD2A11y.Input {
     /// <summary>
     /// Disables chosen keyboard bindings in the game's input asset with empty binding overrides
-    /// while a shared-keyboard screen stands, restoring them when it leaves. The road map claims
-    /// the arrow keys and bare Ctrl (its hold-to-show token glossary) so WASD keeps driving the
-    /// coach while the map is browsed; the driving screen claims Tab for its whole stand and the
-    /// list keys only while focus is off the driving area. Composite ctrl+key combos stay live
-    /// except for their claimed-key halves. Re-asserted every frame - the game rebuilds input
-    /// state behind our back on device and mode changes.
+    /// while a shared-keyboard screen stands, restoring them when it leaves. The claim is a
+    /// PROVIDER over the mod's live bindings, re-evaluated on every reassert: rebinding a mod
+    /// key moves the suppression with it the same frame, handing the freed key back to the game
+    /// (Tab's minimap returns when panel cycling moves elsewhere). Composite ctrl+key combos
+    /// stay live except for their claimed-key halves. Re-asserted every frame - the game
+    /// rebuilds input state behind our back on device and mode changes.
     /// </summary>
     public sealed class DrivingKeySuppressor {
         private static readonly AccessTools.FieldRef<InputSystemBhv, InputActionAsset> AssetField =
             AccessTools.FieldRefAccess<InputSystemBhv, InputActionAsset>("m_defaultInputActions");
-
-        private static readonly string[] ArrowPaths = {
-            "/upArrow", "/downArrow", "/leftArrow", "/rightArrow",
-        };
 
         // Applying or removing a binding override re-resolves the whole action state, and the
         // game's InputSystem re-fires still-held Button actions in the process: the G that
@@ -34,23 +31,44 @@ namespace DD2A11y.Input {
             Key.T, Key.Space, Key.Enter, Key.NumpadEnter, Key.Escape, Key.LeftAlt, Key.RightAlt,
         };
 
-        private readonly string[] _keyPaths;
-        private readonly bool _bareCtrl;
+        private readonly Func<(string[] KeyPaths, bool BareCtrl)> _claim;
         private readonly bool _navigationEvents;
         private readonly List<(InputAction Action, int Index)> _overridden = new List<(InputAction, int)>();
+        private string[] _keyPaths = Array.Empty<string>();
+        private bool _bareCtrl;
+        private bool _scanned; // a scan ran for the applied claim, even one that found nothing
         private bool _active;
 
-        /// <summary>The road map's claim: the arrow keys and bare Ctrl, uGUI navigation
-        /// silenced.</summary>
-        public DrivingKeySuppressor() : this(ArrowPaths, bareCtrl: true, navigationEvents: true) { }
-
-        /// <summary>Claim the bindings whose paths end in <paramref name="keyPaths"/> ("/tab");
-        /// non-composite bare-Ctrl bindings and uGUI navigation events join the claim when
-        /// asked.</summary>
-        public DrivingKeySuppressor(string[] keyPaths, bool bareCtrl, bool navigationEvents) {
-            _keyPaths = keyPaths;
-            _bareCtrl = bareCtrl;
+        /// <summary>Claim the game bindings on the keys the provider names ("/tab"), plus
+        /// non-composite bare-Ctrl bindings when the claim asks; uGUI navigation events join
+        /// when <paramref name="navigationEvents"/>.</summary>
+        public DrivingKeySuppressor(Func<(string[] KeyPaths, bool BareCtrl)> claim, bool navigationEvents) {
+            _claim = claim;
             _navigationEvents = navigationEvents;
+        }
+
+        /// <summary>A claim over the LIVE bindings of the named mod actions: one path per bound
+        /// key, bare Ctrl joined when any of them chords with Ctrl (the game's Ctrl is a hold).
+        /// Evaluated per reassert, so a rebind moves the suppression with the key.</summary>
+        public static (string[] KeyPaths, bool BareCtrl) ClaimFor(
+            Core.Input.InputManager input, params string[] actionKeys) {
+            var paths = new List<string>();
+            bool bareCtrl = false;
+            foreach (var action in input.Actions) {
+                if (Array.IndexOf(actionKeys, action.Key) < 0) {
+                    continue;
+                }
+                foreach (var binding in action.Bindings) {
+                    if (!(binding is KeyboardBinding keyboard)) {
+                        continue;
+                    }
+                    bareCtrl |= keyboard.Ctrl;
+                    if (!paths.Contains(keyboard.ControlPath)) {
+                        paths.Add(keyboard.ControlPath);
+                    }
+                }
+            }
+            return (paths.ToArray(), bareCtrl);
         }
 
         public void Reassert() {
@@ -61,15 +79,29 @@ namespace DD2A11y.Input {
                     eventSystem.sendNavigationEvents = false;
                 }
             }
-            if (_overridden.Count > 0 && IsStillOverridden(_overridden[0])) {
+            var (keyPaths, bareCtrl) = _claim();
+            bool claimChanged = bareCtrl != _bareCtrl || !SamePaths(keyPaths);
+            if (!claimChanged && _scanned
+                && (_overridden.Count == 0 || IsStillOverridden(_overridden[0]))) {
                 return;
             }
             if (TransitionUnsafe()) {
                 return; // deferred; the per-frame reassert retries once the key lifts
             }
+            // A claim change (a rebind) swaps the whole override set: the old claim's keys go
+            // back to the game before the new claim's are taken.
+            foreach (var entry in _overridden) {
+                if (IsStillOverridden(entry)) {
+                    entry.Action.RemoveBindingOverride(entry.Index);
+                }
+            }
             _overridden.Clear();
+            _keyPaths = keyPaths;
+            _bareCtrl = bareCtrl;
+            _scanned = true;
             var asset = Asset();
             if (asset == null) {
+                _scanned = false; // the game's input singleton is not up yet; retry next frame
                 return;
             }
             foreach (var map in asset.actionMaps) {
@@ -88,9 +120,9 @@ namespace DD2A11y.Input {
                     }
                 }
             }
-            if (_overridden.Count == 0) {
-                Plugin.Log.LogWarning("suppressor: no bindings found for "
-                    + string.Join(" ", _keyPaths) + "; those game keys will fight ours");
+            if (_overridden.Count == 0 && _keyPaths.Length > 0) {
+                Plugin.Log.LogInfo("suppressor: no game bindings on "
+                    + string.Join(" ", _keyPaths) + "; nothing to rest");
             }
         }
 
@@ -105,6 +137,7 @@ namespace DD2A11y.Input {
                 return; // deferred; the per-frame caller retries once the key lifts
             }
             _active = false;
+            _scanned = false;
             foreach (var (action, index) in _overridden) {
                 action.RemoveBindingOverride(index);
             }
@@ -115,6 +148,18 @@ namespace DD2A11y.Input {
                     eventSystem.sendNavigationEvents = true;
                 }
             }
+        }
+
+        private bool SamePaths(string[] paths) {
+            if (paths.Length != _keyPaths.Length) {
+                return false;
+            }
+            for (int i = 0; i < paths.Length; i++) {
+                if (paths[i] != _keyPaths[i]) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private static bool IsStillOverridden((InputAction Action, int Index) entry)
@@ -136,7 +181,7 @@ namespace DD2A11y.Input {
 
         private bool IsClaimedKey(string path) {
             foreach (var key in _keyPaths) {
-                if (path.EndsWith(key, System.StringComparison.OrdinalIgnoreCase)) {
+                if (path.EndsWith(key, StringComparison.OrdinalIgnoreCase)) {
                     return true;
                 }
             }
@@ -144,9 +189,9 @@ namespace DD2A11y.Input {
         }
 
         private static bool IsBareCtrl(string path)
-            => path.EndsWith("/ctrl", System.StringComparison.OrdinalIgnoreCase)
-               || path.EndsWith("/leftCtrl", System.StringComparison.OrdinalIgnoreCase)
-               || path.EndsWith("/rightCtrl", System.StringComparison.OrdinalIgnoreCase);
+            => path.EndsWith("/ctrl", StringComparison.OrdinalIgnoreCase)
+               || path.EndsWith("/leftCtrl", StringComparison.OrdinalIgnoreCase)
+               || path.EndsWith("/rightCtrl", StringComparison.OrdinalIgnoreCase);
 
         private static InputActionAsset Asset() {
             if (!SingletonMonoBehaviour<InputSystemBhv>.HasInstance()) {
