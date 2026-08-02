@@ -38,14 +38,15 @@ namespace DD2A11y.Game {
             return CombatantNames.Spoken(name, actor.TeamPosition + 1, teamNames);
         }
 
-        /// <summary>The living combatants of one side, in rank order (the same filter the
-        /// game's own character sheet applies to the combat party).</summary>
+        /// <summary>One side of the battle in rank order, as the game keeps the team: living
+        /// combatants plus the battle-complete classes that still hold a rank and take hits
+        /// (corpses, prop monsters). Kingdoms siege allies stay out - the game presents them
+        /// as their own uncontrolled gang, not party members.</summary>
         public static List<ActorInstance> Team(bool friendly) {
             var actors = new List<ActorInstance>();
             foreach (uint guid in QueryTeamActors.Trigger(0, friendly).m_TeamActorGuids) {
                 var actor = Get(guid);
-                if (actor == null || actor.ActorDataClass.m_IsBattleComplete
-                    || actor.ActorDataClass.ContainsTag("kingdoms_ally")) {
+                if (actor == null || actor.ActorDataClass.ContainsTag("kingdoms_ally")) {
                     continue;
                 }
                 actors.Add(actor);

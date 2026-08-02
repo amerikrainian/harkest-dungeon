@@ -1256,7 +1256,9 @@ Top to bottom:
     that roll one; its tooltip title and effect/buff descriptions are buffer lines).
 - The enemy strip and the party strip (both rank-ordered; labels are name + Rank + HP read
   live; a monster's name is its data id's loc string, the same source as the game's turn-order
-  tooltips).
+  tooltips). Corpses and prop monsters (battle-complete classes) are in the strips like any
+  combatant - they hold a rank, take hits, and are targets for corpse-clearing - matching the
+  game's own hoverable battlefield entities (unverified live).
 - The skills row (horizontal), with the game's own "Uses: N" limit text and the game's
   `invalid_skill_reason_<type>` wording when a skill cannot be used - wrong rank, cooldown,
   out of uses - instead of a bare "unavailable". When the game grants an always-equipped copy
@@ -1331,7 +1333,7 @@ unverified with an active relationship; a combat item rides the skill bar as a r
 button but no hero had one equipped to verify; a token id with no name key anywhere
 ("blind-line") reads as its humanized id; Move is untested against position targeting; Pass
 briefly announces "select target" before auto-resolving; the retreat element only (dis)appears
-on turn-boundary rebuilds; stealth/corpse/summon edge cases unexercised; the **gang
+on turn-boundary rebuilds; stealth/summon edge cases and the corpse rows unexercised; the **gang
 escalation tooltip** (Kingdoms sieges, `m_escalationTooltip` on `BattleInfoUiBhv`, shown via
 the More Info hold) is not modeled - Kingdoms-only, needs a siege to design against; target
 beeps, invalid-target reasons, and the hit/crit preview are unverified against friendly skills
