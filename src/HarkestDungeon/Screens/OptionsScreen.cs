@@ -250,6 +250,11 @@ namespace DD2A11y.Screens {
             if (selectable is Scrollbar || selectable.GetComponent<SelectOnEmptyFallbackBhv>() != null) {
                 return;
             }
+            // A selectable nested inside a slider is its drag handle (a Button in the game's
+            // prefabs); the slider element itself adjusts the value with Left/Right.
+            if (!(selectable is Slider) && selectable.GetComponentInParent<Slider>() != null) {
+                return;
+            }
             // The gamma reset button is icon-only in the game's own UI, with no text or tooltip
             // anywhere under it or its row; it gets the one mod-authored label on this screen.
             if (selectable == _gammaResetButton) {

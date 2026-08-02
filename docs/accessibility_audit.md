@@ -253,6 +253,10 @@ Live-verified 2026-07-23; dropdowns 2026-07-28; mod tab 2026-07-27. The game's o
   one swept control with a mod-authored label: "Reset Gamma Correction" (live-verified
   2026-08-01). Unavailable while gamma is at defaults, matching the game's interactable
   state.
+- A slider's drag handle (a Button in the game's prefabs) is slider plumbing, filtered from
+  the sweep like scrollbars; the bespoke graphics quality slider no longer reads a second
+  "Graphics Quality, button" item (live-verified 2026-08-01). Left/Right on the slider row
+  still adjust the value.
 - Remembered tab verified across close/reopen, including the corrective re-announce after the
   game's open animation stomps the tab back to the first one.
 - Escape closes in one press from both the title menu and pause (the game's own Escape is
