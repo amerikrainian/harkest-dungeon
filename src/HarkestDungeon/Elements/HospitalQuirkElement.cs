@@ -17,10 +17,10 @@ namespace DD2A11y.Elements {
             _selected = selected;
         }
 
-        public override string Value => _selected() ? S.StatusSelected : null;
+        public override string Status => _selected() ? S.StatusSelected : null;
 
         public override bool ReannounceOnActivate => true;
 
-        public override string GetValueText() => SpokenLine.Join(Label, Value);
+        public override string GetValueText() => SpokenLine.Join(Status, Label);
     }
 }

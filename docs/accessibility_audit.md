@@ -190,9 +190,10 @@ them lands on the first note, not the header.
 Live-verified 2026-08-01. The panel under the title menu's profile button (`ProfileSelectBhv`),
 named by the game's own "Select Profile" title. Two phases:
 
-- The profile list: one flow per slot - the profile's name (the active one reads "selected";
-  the read-back after Enter is the selection feedback), its Rename Profile / Delete Profile
-  buttons (labels from their game tooltips), an empty slot as the game's "Create New" - then
+- The profile list: one flow per slot - the profile's name (the active one leads with
+  "selected"; the read-back after Enter is the selection feedback), its Rename Profile /
+  Delete Profile buttons (labels from their game tooltips), an empty slot as the game's
+  "Create New" - then
   the panel's Back button. Shift+Enter on a profile also opens the game's delete confirmation
   (the confirmation screen takes over). Elements are keyed to the profile guid, so focus
   survives the pooled row swap the game's every refresh performs (rename commits included).

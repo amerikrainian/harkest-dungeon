@@ -28,7 +28,7 @@ namespace DD2A11y.Elements {
             return GameLoc.TryGet(stored) ?? stored;
         }
 
-        public override string Value
+        public override string Status
             => Singleton<InnBhv>.Instance.GetSelectedBiomeChoiceIndex() == _index ? S.StatusSelected : null;
 
         public override bool ReannounceOnActivate => true;

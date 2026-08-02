@@ -1,5 +1,4 @@
 using Assets.Code.Kingdom.UI;
-using DD2A11y.Core.Text;
 using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Elements {
@@ -13,9 +12,7 @@ namespace DD2A11y.Elements {
             _item = item;
         }
 
-        public override string Value => _item.IsActivated
-            ? SpokenLine.Join(S.StatusSelected, base.Value)
-            : base.Value;
+        public override string Status => _item.IsActivated ? S.StatusSelected : null;
 
         public override bool ReannounceOnActivate => true;
     }

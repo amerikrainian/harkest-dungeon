@@ -34,6 +34,20 @@ namespace DD2A11y.Elements {
             }
         }
 
+        private bool IsSelected {
+            get {
+                var actor = _button.ActorInstance;
+                string id = _button.SkillId;
+                if (actor == null || string.IsNullOrEmpty(id)) {
+                    return false;
+                }
+                return _panel.IsSkillSelectedForUpgrade(actor, id) || _panel.IsSkillSelectedForUnlock(actor, id)
+                    || _panel.IsSkillSelectedForUpgrade(actor, id + "_u");
+            }
+        }
+
+        public override string Status => IsSelected ? S.StatusSelected : null;
+
         public override string Value {
             get {
                 var actor = _button.ActorInstance;
@@ -44,9 +58,9 @@ namespace DD2A11y.Elements {
                 if (actor.GetUpgradedCombatSkillIds().Contains(id)) {
                     return S.SkillMastered;
                 }
-                if (_panel.IsSkillSelectedForUpgrade(actor, id) || _panel.IsSkillSelectedForUnlock(actor, id)
-                    || _panel.IsSkillSelectedForUpgrade(actor, id + "_u")) {
-                    return S.StatusSelected;
+                // A queued skill is no longer upgradable, which is the queue at work, not a lock.
+                if (IsSelected) {
+                    return null;
                 }
                 bool pickable = (_panel.GetIsUpgradable(actor, id) || _panel.GetIsUnlockable(actor, id))
                     && _panel.CanAffordSkill;

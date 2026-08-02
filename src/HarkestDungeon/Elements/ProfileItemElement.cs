@@ -50,7 +50,7 @@ namespace DD2A11y.Elements {
 
         public override string Role => S.RoleButton;
 
-        public override string Value {
+        public override string Status {
             get {
                 var item = Item;
                 if (item == null || item.IsEmpty) {

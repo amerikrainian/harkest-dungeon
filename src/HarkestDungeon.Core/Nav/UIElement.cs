@@ -13,6 +13,10 @@ namespace DD2A11y.Core.Nav {
 
         public virtual bool CanFocus => true;
 
+        /// <summary>A state word spoken before everything else ("selected"), or null. Selection
+        /// state leads the line so a list scan lands on the current choice instantly.</summary>
+        public virtual string? Status => null;
+
         /// <summary>The element's name/text. Read live at announce time (never cached).</summary>
         public virtual string? Label => null;
 
@@ -48,15 +52,15 @@ namespace DD2A11y.Core.Nav {
             return false;
         }
 
-        /// <summary>The composed spoken focus message: label, role, value, joined by ", " (non-empty
-        /// only). Virtual so an element with a richer composition can override the default join.</summary>
+        /// <summary>The composed spoken focus message: status, label, role, value, joined by ", "
+        /// (non-empty only). Virtual so an element with a richer composition can override the
+        /// default join.</summary>
         public virtual string GetFocusText()
-            => Text.SpokenLine.Join(Label, Role, Value);
+            => Text.SpokenLine.Join(Status, Label, Role, Value);
 
-        /// <summary>Just the changed state, for re-announcing after an in-place activation.</summary>
         /// <summary>What a post-activation re-announce speaks. Virtual for elements whose
         /// activation changes their label rather than a value (an equip slot).</summary>
-        public virtual string GetValueText() => Value ?? "";
+        public virtual string GetValueText() => Text.SpokenLine.Join(Status, Value);
 
         /// <summary>What to announce after an in-place adjust action (increase/decrease) just ran;
         /// <paramref name="changed"/> is whether the value text actually moved. A move reads the new

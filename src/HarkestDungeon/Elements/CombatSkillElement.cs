@@ -67,13 +67,17 @@ namespace DD2A11y.Elements {
 
         public override string Role => S.RoleButton;
 
+        public override string Status {
+            get {
+                var actor = Actors.Get(_button.ActorGuid);
+                return actor != null && actor.SelectedSkillId == _button.SkillId ? S.StatusSelected : null;
+            }
+        }
+
         public override string Value {
             get {
                 var parts = new List<string>();
                 var actor = Actors.Get(_button.ActorGuid);
-                if (actor != null && actor.SelectedSkillId == _button.SkillId) {
-                    parts.Add(S.StatusSelected);
-                }
                 var skill = Actors.Skill(_button.SkillId);
                 if (skill != null && skill.m_Limit > 0 && actor != null) {
                     string format = GameLoc.TryGet("effect_tooltip_skill_limit");
