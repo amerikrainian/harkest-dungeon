@@ -1260,7 +1260,9 @@ Top to bottom:
 
 - **Header row** (Left/Right within it):
   - The battle status ("round 1, Audrey"; torch value, wave count in chained fights, round
-    detail, and retreat odds as buffer lines).
+    detail, retreat odds, and - in Kingdoms combat - the gang escalation readout as buffer
+    lines: the ribbon tooltip's own title ("Escalation 1") then its effect lines, composed
+    by the game at battle start (sighted access is the More Info hold).
   - The **turn order** ("turn order, Sahar, Audrey, Widow...", current actor first, read live
     from `QueryTurnOrder`; the order is rolled per round, so the current round's remainder is
     all the information the game itself has). A name shared by several living enemies speaks
@@ -1359,9 +1361,7 @@ briefly announces "select target" before auto-resolving; the retreat element onl
 on turn-boundary rebuilds; stealth/summon edge cases and the corpse and militia rows
 unexercised; the inspector reads a militia through its hero-shaped branch (the game's
 academic view has a dedicated militia section showing their one combat item) - needs a
-siege to design against, like the **gang
-escalation tooltip** (Kingdoms sieges, `m_escalationTooltip` on `BattleInfoUiBhv`, shown via
-the More Info hold) is not modeled - Kingdoms-only, needs a siege to design against; target
+militia fight to design against; target
 beeps, invalid-target reasons, and the hit/crit preview are unverified against friendly skills
 and stealth (guard interception and riposte verified live against the preview cache, spoken as
 suffixes); death lines follow the game's death presentation, so the battle-end cleanup that

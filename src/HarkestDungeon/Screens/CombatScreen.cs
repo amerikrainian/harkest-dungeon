@@ -44,6 +44,12 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<BattleInfoUiBhv, TextTooltipBhv>("m_RoundTooltipBhv");
         private static readonly AccessTools.FieldRef<BattleInfoUiBhv, CombatTorchUiBhv> TorchField =
             AccessTools.FieldRefAccess<BattleInfoUiBhv, CombatTorchUiBhv>("m_torchBhv");
+        private static readonly AccessTools.FieldRef<BattleInfoUiBhv, Assets.Code.UI.Kingdom.KingdomMapGangEscalationBhv> EscalationField =
+            AccessTools.FieldRefAccess<BattleInfoUiBhv, Assets.Code.UI.Kingdom.KingdomMapGangEscalationBhv>("m_gangEscalationBhv");
+        private static readonly AccessTools.FieldRef<Assets.Code.UI.Kingdom.KingdomMapGangEscalationBhv, TMPro.TextMeshProUGUI> EscalationTitleField =
+            AccessTools.FieldRefAccess<Assets.Code.UI.Kingdom.KingdomMapGangEscalationBhv, TMPro.TextMeshProUGUI>("m_tooltipTitle");
+        private static readonly AccessTools.FieldRef<Assets.Code.UI.Kingdom.KingdomMapGangEscalationBhv, TMPro.TextMeshProUGUI> EscalationDescriptionField =
+            AccessTools.FieldRefAccess<Assets.Code.UI.Kingdom.KingdomMapGangEscalationBhv, TMPro.TextMeshProUGUI>("m_tooltipDescription");
 
         private readonly Action<string, bool> _speak;
         private readonly DD2A11y.Core.Audio.IAudioEngine _audio;
@@ -283,6 +289,24 @@ namespace DD2A11y.Screens {
             if (torch != null) {
                 foreach (var line in TooltipReader.Lines(torch.gameObject)) {
                     yield return line;
+                }
+            }
+            // The Kingdoms gang-escalation ribbon (sighted access is the More Info hold): the
+            // game composes its title ("Escalation 2") and effect lines into the tooltip TMPs
+            // once at battle start, so the text is the game's own and safe to read.
+            var escalation = EscalationField(_battleInfo);
+            if (escalation != null && escalation.gameObject.activeSelf) {
+                var title = EscalationTitleField(escalation);
+                if (title != null && !string.IsNullOrWhiteSpace(title.text)) {
+                    yield return title.text;
+                }
+                var description = EscalationDescriptionField(escalation);
+                if (description != null) {
+                    foreach (var line in description.text.Split('\n')) {
+                        if (!string.IsNullOrWhiteSpace(line)) {
+                            yield return line;
+                        }
+                    }
                 }
             }
         }
