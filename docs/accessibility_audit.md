@@ -698,9 +698,18 @@ Live-verified 2026-07-23. The pre-run hub (the HERO_SELECT mode - `HeroSelectBhv
 `EmbarkUiBhv`, hero widgets `HeroSelectActorUIBhv`).
 
 - Party ranks (the game's "roster slots", Rank1-4), then the hero pool as horizontal strips,
-  then the actions strip: the party's name when the composition has one, **Embark** (appears
-  once all four ranks are filled - drives the game's own `ConfirmRosterSelection`, including
-  its unequipped-skills confirmation dialog), and **Random Party**.
+  then the actions strip: the party's name when the composition has one, the shown hero's
+  name controls, the two overlay openers, **Embark** (appears once all four ranks are filled -
+  drives the game's own `ConfirmRosterSelection`, including its unequipped-skills confirmation
+  dialog), and **Random Party**.
+- Each party slot LEADS WITH ITS RANK ("rank 1, Highwayman" / "rank 1, empty slot";
+  live-verified 2026-08-02) - rank 1 is the front line, the same numbering combat uses, and
+  it is what tells the four otherwise identical empty slots apart. Pool heroes keep their
+  bare name, and a grab announces the hero, not the rank.
+- The shown hero's name reads as an edit row ("hero name, edit, Bigby") whose Enter runs the
+  game's own rename flow (keystrokes echo, the accepted name reads back), beside "roll a new
+  name" and, on a run survivor, "reset hero" - all icon-only in the game, so they take
+  authored labels.
 - Hero labels are the game's own class-name loc keys; locked heroes say "unavailable" with
   their flavor/unlock text as buffer lines; drafted pool heroes read "in party". Every hero
   slot's buffer ends with the class blurb the sighted panel shows
@@ -712,12 +721,8 @@ Live-verified 2026-07-23. The pre-run hub (the HERO_SELECT mode - `HeroSelectBhv
   right-click equivalent, matching the game's own "Hero Sheet (C)" hint); Escape closes it.
 
 **Known gaps:** the Embark element is live-verified up to (not including) the press - pressing
-it starts the run. The path-select and party-loadout canvas overlays are not modeled, so their
-opener buttons (the "Change Path" seal, "Party Loadouts") are deliberately NOT surfaced -
-offering a control that opens an unreadable overlay is a trap; surface them together with
-their panels (see 4.3). Stagecoach config not started; hero rename/reroll on the canvas not
-surfaced; the party's aggregate Rank/Target pips are not read (each skill's exact ranks are in
-the hero sheet).
+it starts the run. Stagecoach config from the crossroads not started (4.3); the party's
+aggregate Rank/Target pips are not read (each skill's exact ranks are in the hero sheet).
 
 ## 4.2 Hero Sheet (`CharacterSheetScreen`) - WORKS
 
@@ -780,17 +785,44 @@ entry from a hero slot.
 cosmetics tab is floor-level (palette slots read as bare numbers); the game's own tab hotkeys
 and tooltip-view mode are not used.
 
-## 4.3 Crossroads Overlays - NOT STARTED
+## 4.3 Crossroads Overlays - MOSTLY COVERED
 
-Canvas overlays on the hero-select scene, deliberately unopened until they can be read (see
-the trap rule in 4.1):
+Canvas overlays on the hero-select scene. They are NOT stack screens, so each matches off the
+game's own panel flag and registers above the crossroads; their opener buttons are surfaced
+on the crossroads now that the panels read (the trap rule in 4.1 is satisfied).
 
-- **Path select** (the "Change Path" seal; `ActorPathSelectBhv`).
-- **Party Loadouts** (`SkillLoadoutWidgetBhv`, `LoadoutSelectBhv`).
+### 4.3.1 Path Select (`PathSelectScreen`) - WORKS
+
+Live-verified 2026-08-02. The "Change Path" seal opens it (`TogglePathSelectionPanel`), named
+by the panel's own title ("Hero Path").
+
+- One row per available path. Enter previews through the game's own `SelectPath`, which only
+  drives the comparison panel and arms the confirm button - the path itself changes on
+  confirm, so browsing is side-effect-free.
+- A "path details" readout whose buffer carries the previewed path's whole card, line per
+  line (name, flavour, the Rank/Target headers, the effect and objective lines - verified:
+  "Wanderer", "To seek is to find.", "Reach the 2nd Inn").
+- The confirm button commits (`SetSelectedActorPath`), reading "unavailable" while the
+  previewed path is already the active one. Escape closes through the game's own toggle.
+
+### 4.3.2 Party Loadouts (`PartyLoadoutScreen`) - WORKS
+
+Live-verified 2026-08-02 (a test loadout was created, read, renamed, and deleted). Opened by
+the Party Loadouts button, named by the panel's title.
+
+- One block per saved loadout: its name (verified "Loadout1"), the heroes it holds as buffer
+  lines from their portrait tooltips, then the row's rename and delete buttons - icon-only
+  game-wide (no text, no tooltip), so they take authored labels.
+- Enter on the loadout applies it to the party (the game's `OnClickSubmit`); rename runs the
+  row's own edit (keystrokes echo, the accepted name reads back); delete removes it and the
+  pooled rows rebuild by instance-id signature.
+- Save Loadout stores the current party (needs at least one hero); the panel's Continue
+  button and Escape both close.
+
+### 4.3.3 Still not started
+
 - **Stagecoach config from the crossroads** (`StageCoachConfigUiBhv` - the Wainwright reader
-  in 8.5 covers the inn and road variants of this class; the crossroads entry is not
-  started).
-- **Hero rename / reroll** on the canvas.
+  in 8.5 covers the inn and road variants of this class; the crossroads entry is unexplored).
 
 ## 4.4 Embark Staging (`EmbarkScreen`, EMBARK mode) - PARTIAL
 
@@ -1800,8 +1832,7 @@ danger, Loathing (5.2); combat target-validity beeps (7.1.2); map cursor node ti
 - Mods manager panel details (1.8: Enable/Disable All toggles, mod rows, Browse Mods target)
 - Key rebinding flow (2.1.2)
 - Credits (2.8)
-- Crossroads overlays: path select, party loadouts, crossroads stagecoach config, hero rename
-  (4.3)
+- Crossroads stagecoach config (4.3.3)
 - Combat intros, REALTIME_CINEMATIC (7.4)
 - The Mountain's boss-specific presentation (9.2)
 - Kingdoms siege gang-escalation tooltip (7.1.4 gap)

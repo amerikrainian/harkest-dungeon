@@ -309,6 +309,14 @@ namespace DD2A11y.Core.Strings {
             // own UI): rename the loadout, delete it. Verb phrases.
             D("LoadoutRename", "rename"),
             D("LoadoutDelete", "delete"),
+            // The crossroads name field of the hero the scene is showing; its value is that
+            // hero's given name. Noun phrase.
+            D("HeroNameField", "hero name"),
+            // The icon-only button beside it that rolls a new random name. Verb phrase.
+            D("HeroNameReroll", "roll a new name"),
+            // The icon-only button restoring the shown hero's cosmetics and memories to their
+            // defaults (the game asks for confirmation). Verb phrase.
+            D("HeroReset", "reset hero"),
             // A hero slot with no hero in it.
             D("CrossroadsEmptySlot", "empty slot"),
             // A party slot's battle position, spoken before the occupant ("rank 1, Highwayman");
@@ -690,6 +698,9 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenPartyLoadouts => T("ScreenPartyLoadouts");
         public static string LoadoutRename => T("LoadoutRename");
         public static string LoadoutDelete => T("LoadoutDelete");
+        public static string HeroNameField => T("HeroNameField");
+        public static string HeroNameReroll => T("HeroNameReroll");
+        public static string HeroReset => T("HeroReset");
         public static string CrossroadsEmptySlot => T("CrossroadsEmptySlot");
         public static string CrossroadsRank(int rank) => F("CrossroadsRank", rank);
         public static string CrossroadsInParty => T("CrossroadsInParty");

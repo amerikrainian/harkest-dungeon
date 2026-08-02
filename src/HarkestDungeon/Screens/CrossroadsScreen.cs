@@ -33,6 +33,12 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<HeroSelectBhv, GameObject>("m_pathSelectionButton");
         private static readonly AccessTools.FieldRef<HeroSelectBhv, Button> LoadoutButtonField =
             AccessTools.FieldRefAccess<HeroSelectBhv, Button>("m_partyLoadoutButton");
+        // The shown hero's name field and the icon-only buttons beside it.
+        private static readonly AccessTools.FieldRef<HeroSelectBhv, TMPro.TMP_InputField> NameFieldRef =
+            AccessTools.FieldRefAccess<HeroSelectBhv, TMPro.TMP_InputField>("m_textInput");
+        // Serialized as a GameObject (the game reaches its Selectable through GetComponent).
+        private static readonly AccessTools.FieldRef<HeroSelectBhv, GameObject> ResetButtonField =
+            AccessTools.FieldRefAccess<HeroSelectBhv, GameObject>("m_resetButton");
         private static readonly System.Reflection.MethodInfo IsDropValidMethod =
             AccessTools.Method(typeof(HeroSelectActorUIBhv), "IsDropValid");
         private static readonly System.Reflection.MethodInfo IsDropAcceptedMethod =
@@ -41,6 +47,7 @@ namespace DD2A11y.Screens {
             AccessTools.Method(typeof(HeroSelectActorUIBhv), "OnDropAccepted");
 
         private readonly Action<string, bool> _speak;
+        private readonly Core.Text.TypingEcho _echo;
         private HeroSelectBhv _heroSelect;
         private Container _root;
         private int _builtSlots;
@@ -49,6 +56,14 @@ namespace DD2A11y.Screens {
 
         public CrossroadsScreen(Action<string, bool> speak) {
             _speak = speak;
+            // The hero rename runs the game's own edit flow, which sets its IsInputtingText -
+            // so the mod's keys already pause; this only echoes what the field takes.
+            _echo = new Core.Text.TypingEcho(() => Game.TextEntry.IsTyping, HeroName, speak);
+        }
+
+        private string HeroName() {
+            var field = _heroSelect == null ? null : NameFieldRef(_heroSelect);
+            return field == null ? "" : field.text;
         }
 
         public override string Name => S.ScreenCrossroads;
@@ -71,6 +86,11 @@ namespace DD2A11y.Screens {
         }
 
         public override bool OnUpdate(object target) {
+            if (_echo.Tick()) {
+                // The rename ended: read the accepted name (the game restores the previous one
+                // when the field was left empty).
+                _speak(Core.Text.SpokenLine.Join(S.HeroNameField, HeroName()), true);
+            }
             var slots = UnityEngine.Object.FindObjectsOfType<HeroSelectActorUIBhv>();
             if (slots.Length != _builtSlots || EmbarkVisible() != _builtEmbarkVisible) {
                 _root.Clear();
@@ -144,6 +164,24 @@ namespace DD2A11y.Screens {
                 actions.Add(new ReadoutElement(
                     () => partyName == null ? null : UiText.FirstLabel(partyName.gameObject)));
             }
+            // The shown hero's name, with the canvas controls that change it. The scene shows
+            // ONE hero at a time (the game's own selection), so this block follows that hero,
+            // not our focus.
+            var nameField = NameFieldRef(_heroSelect);
+            if (nameField != null && nameField.gameObject.activeInHierarchy) {
+                actions.Add(new ActionElement(() => S.HeroNameField, S.RoleEdit,
+                    _heroSelect.OnEditNameButtonPressed, value: HeroName));
+                actions.Add(new ActionElement(() => S.HeroNameReroll, S.RoleButton,
+                    _heroSelect.RollNewActorName));
+            }
+            // Restores the shown hero's cosmetics and memories; the game asks to confirm.
+            // Only present on a run survivor, hence the live active check.
+            var reset = ResetButtonField(_heroSelect);
+            var resetSelectable = reset == null ? null : reset.GetComponent<Selectable>();
+            if (resetSelectable != null && reset.activeInHierarchy) {
+                actions.Add(new SelectableElement(resetSelectable, () => S.HeroReset));
+            }
+
             // The focused hero's path seal: icon-only on the canvas, so it takes the panel's
             // own name. Opens the path overlay, which reads as its own screen.
             var pathButton = PathButtonField(_heroSelect);

@@ -18,6 +18,13 @@
   rebindable alongside keys ("add button" in a command's menu while a pad is connected; hold
   a trigger while releasing a button to make a trigger combo), and any controller press
   silences speech in progress.
+- Crossroads party slots now say which rank they are ("rank 1, empty slot"), rank 1 being the
+  front line as in combat - the four slots used to be indistinguishable.
+- The crossroads' hero-path and party-loadout panels now read, so their buttons are finally
+  offered: paths list with the full path card in the buffer and a confirm that commits, and
+  loadouts list with apply, rename, delete, and save.
+- The crossroads hero name now reads and can be changed: the name field itself, "roll a new
+  name", and "reset hero" on a run survivor.
 - The road's sensing range is now a mod setting (mod settings tab, next to the separator):
   type any value from 20 to 200 road units, 80 being the mod's original reach. It governs
   everything the road senses - pickup pings, and node identity ticks at their usual half-
