@@ -342,8 +342,9 @@ driving handover below; the add/delete menu re-verified same day). Rebinding for
 commands, say-the-spire2's model: one row per registered input action in registration order,
 each carrying a LIST of keys ("Activate control, Enter, NumpadEnter").
 
-- Enter opens the row's menu as a popup: "add key" plus one "delete {key}" choice per current
-  key; Escape backs out with the row re-read. Choosing "add key" listens ("press the new
+- Enter opens the row's menu as a popup: "add key" plus "replace {key}" and "delete {key}"
+  choices per current key (replace swaps the listened key in for that one, same refusal
+  rules); Escape backs out with the row re-read. Choosing "add key" listens ("press the new
   key" - delivered as the restored row's own focus text, so the popup close cannot talk over
   it): the next non-modifier key pressed joins the set, with whatever Ctrl/Shift/Alt are held
   at that moment, so chords like Ctrl+PageUp capture naturally. Escape keeps things as they

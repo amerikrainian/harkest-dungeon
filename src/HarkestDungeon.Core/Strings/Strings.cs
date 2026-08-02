@@ -265,6 +265,9 @@ namespace DD2A11y.Core.Strings {
             D("TabModKeys", "mod keys"),
             // The row-menu choice that starts listening for a key to add. Verb phrase.
             D("KeyAddBinding", "add key"),
+            // The row-menu choice swapping one of the command's keys for a newly listened one;
+            // {0} = the key combo being replaced.
+            D("KeyReplaceBinding", "replace {0}"),
             // The row-menu choice deleting one of the command's keys; {0} = the key combo.
             D("KeyDeleteBinding", "delete {0}"),
             // Spoken while listening: the next key pressed (with any Ctrl/Shift/Alt held) is
@@ -629,6 +632,7 @@ namespace DD2A11y.Core.Strings {
 
         public static string TabModKeys => T("TabModKeys");
         public static string KeyAddBinding => T("KeyAddBinding");
+        public static string KeyReplaceBinding(string keys) => F("KeyReplaceBinding", keys);
         public static string KeyDeleteBinding(string keys) => F("KeyDeleteBinding", keys);
         public static string KeyPressNew => T("KeyPressNew");
         public static string KeyNotSet => T("KeyNotSet");

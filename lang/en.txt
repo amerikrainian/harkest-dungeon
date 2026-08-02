@@ -135,6 +135,7 @@ SoundCombatTargetValid = target valid
 SoundCombatTargetInvalid = target invalid
 TabModKeys = mod keys
 KeyAddBinding = add key
+KeyReplaceBinding = replace {0}
 KeyDeleteBinding = delete {0}
 KeyPressNew = press the new key
 KeyNotSet = not set

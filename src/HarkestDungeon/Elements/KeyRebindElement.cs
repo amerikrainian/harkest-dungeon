@@ -8,12 +8,12 @@ using S = DD2A11y.Core.Strings.Strings;
 namespace DD2A11y.Elements {
     /// <summary>
     /// One mod-keys row: the command's name and its current key or keys. A command carries a
-    /// LIST of bindings; Enter opens the row's menu - add a key (listens for the next
-    /// non-modifier press, chord-aware; Escape keeps things as they are) or delete one of the
-    /// current keys. A captured key another command holds is refused by name (delete it there
-    /// first), so no command is ever stripped behind the player's back. Shift+Enter (the
-    /// discard action) restores the command's authored defaults. The buffer carries the
-    /// default.
+    /// LIST of bindings; Enter opens the row's menu - add a key, or replace or delete one of
+    /// the current keys (add and replace listen for the next non-modifier press, chord-aware;
+    /// Escape keeps things as they are). A captured key another command holds is refused by
+    /// name (delete it there first), so no command is ever stripped behind the player's back.
+    /// Shift+Enter (the discard action) restores the command's authored defaults. The buffer
+    /// carries the default.
     /// </summary>
     public sealed class KeyRebindElement : UIElement {
         private readonly InputAction _action;
@@ -41,11 +41,13 @@ namespace DD2A11y.Elements {
 
         public override Popup BuildPopup() {
             var root = new Container(ContainerShape.VerticalList, _action.Label);
-            root.Add(new ActionElement(() => S.KeyAddBinding, null, StartListen));
+            root.Add(new ActionElement(() => S.KeyAddBinding, null, () => StartListen(replacing: null)));
             foreach (var binding in _action.Bindings) {
-                var doomed = binding;
-                root.Add(new ActionElement(() => S.KeyDeleteBinding(doomed.DisplayName), null,
-                    () => _keymap.Remove(_action, doomed)));
+                var existing = binding;
+                root.Add(new ActionElement(() => S.KeyReplaceBinding(existing.DisplayName), null,
+                    () => StartListen(existing)));
+                root.Add(new ActionElement(() => S.KeyDeleteBinding(existing.DisplayName), null,
+                    () => _keymap.Remove(_action, existing)));
             }
             return new Popup(root);
         }
@@ -59,7 +61,9 @@ namespace DD2A11y.Elements {
             yield return S.KeyDefault(Display(_keymap.DefaultsOf(_action)));
         }
 
-        private void StartListen() {
+        // Add a captured key, or swap it in for <paramref name="replacing"/>. A key the command
+        // already carries reads the row back unchanged (capturing the replaced key included).
+        private void StartListen(Core.Input.InputBinding replacing) {
             _listening = true;
             _rebind.Start(
                 captured => {
@@ -72,6 +76,9 @@ namespace DD2A11y.Elements {
                     if (holder != null) {
                         _speak(SpokenLine.Join(captured.DisplayName, S.KeyAlreadyBound(holder.Label)), true);
                         return;
+                    }
+                    if (replacing != null) {
+                        _keymap.Remove(_action, replacing);
                     }
                     _keymap.Add(_action, captured);
                     _speak(GetFocusText(), true);
