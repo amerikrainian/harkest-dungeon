@@ -215,9 +215,10 @@ namespace DD2A11y.Core.Strings {
             D("OptionsGammaReset", "Reset Gamma Correction"),
 
             // The mod's own sounds glossary tab on the game's settings screen: one row per sound
-            // the mod plays. Enter previews the row's sound on loop, Left/Right step its volume.
+            // the mod plays. Enter plays the row's sound once, Space loops it, Left/Right step
+            // its volume.
             D("TabModSounds", "mod sounds"),
-            // State word leading the glossary row whose sound is previewing right now.
+            // State word leading the glossary row whose sound is looping right now.
             D("StatusPlaying", "playing"),
             // Glossary row labels: when the mod plays each sound. Road driving events first.
             // The repeating positional ping while a roadside pickup is in sensing range.

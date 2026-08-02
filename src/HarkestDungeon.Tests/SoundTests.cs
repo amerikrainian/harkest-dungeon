@@ -151,6 +151,20 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
+        public void Preview_PlayOnceFiresAOneShot_AndStopsARunningLoop() {
+            var inner = new FakeEngine();
+            var preview = new SoundPreview(inner);
+
+            preview.Toggle(AudioCue.RoadAmbush);
+            preview.PlayOnce(AudioCue.RoadFork);
+
+            Assert.True(inner.Loops[0].Stopped); // one instance plays, not a chord
+            Assert.Null(preview.Playing);
+            var play = Assert.Single(inner.Plays);
+            Assert.Equal(AudioCue.RoadFork, play.Cue);
+        }
+
+        [Fact]
         public void Preview_TogglesTheSameCueOffAndSwapsToAnother() {
             var inner = new FakeEngine();
             var preview = new SoundPreview(inner);

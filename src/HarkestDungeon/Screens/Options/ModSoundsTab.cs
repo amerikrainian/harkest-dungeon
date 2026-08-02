@@ -7,9 +7,10 @@ using S = DD2A11y.Core.Strings.Strings;
 namespace DD2A11y.Screens.Options {
     /// <summary>
     /// The mod sounds glossary tab: one row per <see cref="AudioCue"/> naming what the sound is
-    /// used for. Enter loops the row's sound as a preview, Left/Right step its saved per-sound
-    /// volume (a running preview re-aims live). The preview stops when focus leaves the playing
-    /// row, on a tab switch, and when the screen closes.
+    /// used for. Enter plays the row's sound once, Space loops it (both silent - the sound is
+    /// the feedback), Left/Right step its saved per-sound volume (a running loop re-aims live).
+    /// The loop stops when focus leaves the playing row, on a tab switch, and when the screen
+    /// closes.
     /// </summary>
     public sealed class ModSoundsTab : ModTab {
         private readonly SoundVolumes _sounds;

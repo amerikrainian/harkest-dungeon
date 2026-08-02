@@ -353,11 +353,13 @@ Live-verified 2026-08-02 (logical and device-level key paths, remembered-tab reo
 game restart). The mod's sounds glossary, the second mod tab: one row per `AudioCue` naming
 what the sound is used for ("pickup nearby, 100 percent").
 
-- Enter loops the row's sound as a preview ("playing" leads the re-read); Enter again stops
-  it, as does moving focus off the row, switching tabs, and closing the screen. The preview
-  plays centered at the sound's saved volume.
-- Left/Right step the row's volume 0-100 in tens (percent of the sound's natural level,
-  "minimum"/"maximum" at the ends); a running preview re-aims live on each step. Values
+- Enter plays the row's sound once; Space (the grab key) toggles it looping. Both are
+  SILENT - the sound itself is the feedback ("playing" leads a looping row's line, e.g. in
+  the buffer). The loop stops on moving focus off the row, switching tabs, and closing the
+  screen. Previews play centered at the sound's saved volume.
+- Left/Right step the row's volume 0-100 in tens, speaking the percent (of the sound's
+  natural level; "minimum"/"maximum" at the ends); a running loop re-aims live on each step,
+  so the change is heard as it is spoken. Values
   persist per sound in the config's `[Sounds]` section (verified across a restart) and scale
   every playback of that cue - one-shots and loops - through the volume-scaled engine, with
   the natural dynamics (distance attenuation, pan) still the caller's.

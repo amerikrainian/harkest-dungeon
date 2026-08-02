@@ -333,6 +333,11 @@ namespace DD2A11y {
         }
 
         private void ToggleGrab(bool takeOne) {
+            // An element advertising its own grab takes the press first (the sounds glossary's
+            // loop toggle); the grab-and-place screens below never advertise one.
+            if (!takeOne && Navigator.Current?.InvokeAction("grab") == true) {
+                return;
+            }
             if (Navigator.Current is Elements.HeroSlotElement) {
                 if (!takeOne) { // heroes have no stacks to split
                     _crossroads.ToggleGrab(Navigator.Current);

@@ -6,9 +6,11 @@ using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// One sounds-glossary row: the label names what the mod uses the sound for, the value is its
-    /// saved volume. Enter toggles the preview loop, Left/Right step the volume through the
-    /// advertised increase/decrease actions - while the preview runs, each step is heard live.
+    /// One sounds-glossary row: the label names what the mod uses the sound for, the value is
+    /// its saved volume. Enter plays the sound once and Space (the grab key) toggles it
+    /// looping - both silent, the sound itself is the feedback. Left/Right step the volume
+    /// through the advertised increase/decrease actions, speaking the percent; while a loop
+    /// runs, each step is also heard live.
     /// </summary>
     public sealed class SoundGlossaryElement : UIElement {
         private readonly SoundVolume _sound;
@@ -24,10 +26,10 @@ namespace DD2A11y.Elements {
         public override string Status => IsPlaying ? S.StatusPlaying : null;
         public override string Label => _sound.Label;
         public override string Value => S.ValuePercent(_sound.Value);
-        public override bool ReannounceOnActivate => true;
 
         public override IEnumerable<ElementAction> GetActions() {
-            yield return new ElementAction(ActionIds.Activate, () => _preview.Toggle(_sound.Cue));
+            yield return new ElementAction(ActionIds.Activate, () => _preview.PlayOnce(_sound.Cue));
+            yield return new ElementAction("grab", () => _preview.Toggle(_sound.Cue));
             yield return new ElementAction(ActionIds.Increase, () => Adjust(+1));
             yield return new ElementAction(ActionIds.Decrease, () => Adjust(-1));
         }

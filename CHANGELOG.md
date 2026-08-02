@@ -3,9 +3,10 @@
 ## V0.2.0
 
 - A mod sounds glossary tab in settings, after the mod settings tab: one row per sound the
-  mod plays, named for what it is used for. Enter previews the sound on loop (Enter again,
-  moving away, or closing stops it), and Left/Right set that sound's volume as a percent of
-  its natural level - saved per sound and applied to every future playback of it.
+  mod plays, named for what it is used for. Enter plays the sound once and Space loops it
+  (moving away or closing stops the loop) - both silently, the sound speaking for itself -
+  and Left/Right set that sound's volume as a percent of its natural level, saved per sound
+  and applied to every future playback of it.
 - Roadside pickup pings each play at a slightly different pitch, so several pickups in
   range no longer blend into one sound.
 - The mod's own keys are now rebindable from a mod keys tab in settings. Each command holds
