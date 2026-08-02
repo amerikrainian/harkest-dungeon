@@ -43,8 +43,8 @@ namespace DD2A11y.Elements {
                 if (item == null) {
                     return null;
                 }
-                var field = NameField(item);
-                return field != null ? field.text : null;
+                var nameField = NameField(item);
+                return nameField != null ? nameField.text : null;
             }
         }
 
