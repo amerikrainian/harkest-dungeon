@@ -246,6 +246,9 @@ Live-verified 2026-07-23; dropdowns 2026-07-28; mod tab 2026-07-27. The game's o
   onValueChanged) and Escape cancels - both close by re-reading the restored dropdown row, so
   a commit reads back its new value. The game's own list is shown/hidden alongside
   (`TMP_Dropdown.Show`/`Hide`), and a screen change tears an open popup down.
+- A row holding a second control beside the one its title names reads that control's own
+  caption: the resolution row's Update button reads "Update" (live-verified 2026-08-01), not
+  as a second "Resolution" item.
 - Remembered tab verified across close/reopen, including the corrective re-announce after the
   game's open animation stomps the tab back to the first one.
 - Escape closes in one press from both the title menu and pause (the game's own Escape is

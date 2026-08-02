@@ -244,6 +244,12 @@ namespace DD2A11y.Screens {
             if (selectable is Scrollbar || selectable.GetComponent<SelectOnEmptyFallbackBhv>() != null) {
                 return;
             }
+            // A row can hold a second control beside the one its title names (the resolution
+            // row's Update button); a button carrying its own caption reads that caption, not
+            // the row title.
+            if (selectable is Button && UiText.HasAnyTextSource(selectable.gameObject)) {
+                rowScope = selectable.gameObject;
+            }
             _items.Add(new SelectableElement(selectable, null, rowScope));
         }
 
