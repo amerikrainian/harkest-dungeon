@@ -471,10 +471,37 @@ own "Archive" title (`tutorial_menu_title`).
 
 Not modeled: the tutorial's image/video (visual-only), the close button (Escape covers it).
 
-## 2.7 Feedback (`UserReportingUiBhv`) - NOT STARTED
+## 2.7 Feedback (`FeedbackScreen`) - WORKS
 
-The pause menu's Feedback screen (the game's user-reporting flow; its own handler is
-controller-only Submit). Unexplored.
+Live-verified 2026-08-02 on the road (pause menu > Feedback). The game's user-report form
+(`UserReportingUiBhv`, Unity's user-reporting package in LEGACY uGUI widgets - `InputField`,
+`Dropdown` - which the generic paths misread). The privacy confirmation dialog leads (an
+ordinary dialog read); Send Report captures a screenshot - the screen enters on its capture
+phase reading the game's progress text as its name, and the form's buttons arrive late,
+rebuilt in by instance-id signature.
+
+- Summary and Description read as edit rows titled by their game placeholders ("Summary
+  (Required field), edit") with the typed text as the value. Enter starts the field's OWN
+  edit: typing flows in at device level while every mod key pauses (the package never sets
+  the game's IsInputtingText - the screen's isFocused scan feeds the input manager's
+  suppression), keystrokes echo from the field's text diff, and the edit's end reads the
+  field back. Verified live: suppression (device arrows move nothing mid-edit), per-char
+  echo and end-of-edit read-back via simulated text changes; physical typing rides the same
+  path as the game's own fields (injection cannot synthesize text events).
+- The category is a legacy Dropdown ("Bug, dropdown"), opened as an option popup like the
+  TMP ones (options walk - "Performance Issue" - Enter commits via the game's own
+  onValueChanged, Escape restores; verified live).
+- Cancel / Submit / Take Screenshot sweep generically; Submit sits "unavailable" until the
+  summary validates and reads available the moment it does (verified). Escape is the form's
+  own cancel (`CancelUserReport`), the pause menu re-announcing behind it.
+- Observation: the privacy dialog sometimes continues on its own moments after appearing
+  (seen with and without window focus; it also waited indefinitely once) - likely persisted
+  consent or the dialog's own hotkey handling. Harmless either way: both states read
+  correctly.
+
+**Known gaps:** submitting a real report end to end has deliberately never been exercised;
+the description field may be multiline (Enter might insert a newline rather than end the
+edit - Escape always ends it).
 
 ## 2.8 Credits (`CreditsScreenWidgetBhv`) - NOT STARTED
 
@@ -1765,7 +1792,6 @@ danger, Loathing (5.2); combat target-validity beeps (7.1.2); map cursor node ti
 
 - Mods manager panel details (1.8: Enable/Disable All toggles, mod rows, Browse Mods target)
 - Key rebinding flow (2.1.2)
-- Feedback (2.7)
 - Credits (2.8)
 - Crossroads overlays: path select, party loadouts, crossroads stagecoach config, hero rename
   (4.3)
