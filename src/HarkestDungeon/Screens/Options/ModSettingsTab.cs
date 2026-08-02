@@ -26,6 +26,25 @@ namespace DD2A11y.Screens.Options {
 
         public override void Populate(Container items) {
             foreach (var setting in _settings.All) {
+                // A numeric setting edits as typed text (any value within its bounds, clamped
+                // on commit); nothing commits on garbage, empty restores the default.
+                if (setting is IntSetting number) {
+                    items.Add(new TextEntryElement(
+                        () => number.Label,
+                        () => number.Value.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                        typed => {
+                            if (typed.Length == 0) {
+                                _speak(S.SettingReset, true);
+                                number.Reset();
+                            } else if (int.TryParse(typed, System.Globalization.NumberStyles.Integer,
+                                           System.Globalization.CultureInfo.InvariantCulture, out int parsed)) {
+                                number.Set(parsed);
+                            }
+                        },
+                        _textEdit, _speak,
+                        hint: () => number.DefaultValue.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    continue;
+                }
                 if (setting is TextSetting text) {
                     items.Add(new TextEntryElement(
                         () => text.Label,

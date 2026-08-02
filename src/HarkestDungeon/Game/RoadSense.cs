@@ -45,8 +45,11 @@ namespace DD2A11y.Game {
         private static readonly AccessTools.FieldRef<TileNodeBhv, TriggerState> NodeStateField =
             AccessTools.FieldRefAccess<TileNodeBhv, TriggerState>("m_triggerState");
 
-        private const float PickupRange = 80f;
-        private const float NodeRange = 120f;
+        // The sensing radius is the player's setting, read live per scan. Nodes reach half
+        // again as far as pickups (their authored 120 against the pickups' 80); the one
+        // setting scales both, keeping that ratio.
+        private readonly Core.Settings.IntSetting _sensingRange;
+        private const float NodeRangeFactor = 1.5f;
         private const float ScanInterval = 0.7f;
         // Off-center distance as a fraction of the road's half-width: the bump sounds past
         // Warn and arms again under Rearm, so riding the edge does not chatter.
@@ -71,10 +74,12 @@ namespace DD2A11y.Game {
         private bool _inDanger;
         private bool _dangerKnown;
 
-        public RoadSense(IAudioEngine audio, Action<string, bool> speak, InputGate gate) {
+        public RoadSense(IAudioEngine audio, Action<string, bool> speak, InputGate gate,
+                         Core.Settings.IntSetting sensingRange) {
             _audio = audio;
             _speak = speak;
             _gate = gate;
+            _sensingRange = sensingRange;
             EventManager.AddListener<EventLootToastPresented>(HandleLootToast);
             EventManager.AddListener<EventActorHealthDamage>(HandleDamage);
             EventManager.AddListener<EventRoadEventEnter>(HandleZoneEnter);
@@ -257,12 +262,13 @@ namespace DD2A11y.Game {
                     continue;
                 }
                 int id = pickup.GetInstanceID();
+                float range = _sensingRange.Value;
                 float distance = Vector3.Distance(coach.position, pickup.transform.position);
-                if (distance > (_pickupLoops.ContainsKey(id) ? PickupRange * 1.1f : PickupRange)) {
+                if (distance > (_pickupLoops.ContainsKey(id) ? range * 1.1f : range)) {
                     continue;
                 }
                 float pan = PanTo(coach, pickup.transform.position);
-                float volume = Mathf.Lerp(1f, 0.25f, Mathf.Clamp01(distance / PickupRange));
+                float volume = Mathf.Lerp(1f, 0.25f, Mathf.Clamp01(distance / range));
                 if (_pickupLoops.TryGetValue(id, out var loop)) {
                     loop.Update(volume, pan);
                     _staleLoops.Remove(id);
@@ -298,12 +304,13 @@ namespace DD2A11y.Game {
                     continue;
                 }
                 int id = node.GetInstanceID();
+                float range = _sensingRange.Value * NodeRangeFactor;
                 float distance = Vector3.Distance(coach.position, node.transform.position);
-                if (distance > (_nodeLoops.ContainsKey(id) ? NodeRange * 1.1f : NodeRange)) {
+                if (distance > (_nodeLoops.ContainsKey(id) ? range * 1.1f : range)) {
                     continue;
                 }
                 float pan = PanTo(coach, node.transform.position);
-                float volume = Mathf.Lerp(0.8f, 0.15f, Mathf.Clamp01(distance / NodeRange));
+                float volume = Mathf.Lerp(0.8f, 0.15f, Mathf.Clamp01(distance / range));
                 if (_nodeLoops.TryGetValue(id, out var loop)) {
                     loop.Update(volume, pan);
                     _staleLoops.Remove(id);

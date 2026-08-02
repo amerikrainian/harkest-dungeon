@@ -17,6 +17,10 @@
   rebindable alongside keys ("add button" in a command's menu while a pad is connected; hold
   a trigger while releasing a button to make a trigger combo), and any controller press
   silences speech in progress.
+- The road's sensing range is now a mod setting (mod settings tab, next to the separator):
+  type any value from 20 to 200 road units, 80 being the mod's original reach. It governs
+  everything the road senses - pickup pings, and node identity ticks at their usual half-
+  again reach - and applies immediately.
 - The pause menu's Feedback form is now fully usable: the summary and description fields
   edit with keystroke echo and a read-back when the edit ends, the category opens as a menu,
   and Submit reads its unavailable-until-valid state. Escape cancels the report.

@@ -206,6 +206,9 @@ namespace DD2A11y.Core.Strings {
             D("TabModSettings", "mod settings"),
             // The separator joining the parts of a spoken line ("Exit game, button"). Noun phrase.
             D("SettingSeparator", "announcement separator"),
+            // How far away the road's sensed objects are audible (pickup pings, node identity
+            // ticks), in the road's own distance units. Noun phrase.
+            D("SettingSensingRange", "sensing range"),
             // Spoken when committing an empty value returns a setting to its default.
             D("SettingReset", "reset to default"),
             // The settings graphics tab's gamma reset button, icon-only in the game's own UI.
@@ -628,6 +631,7 @@ namespace DD2A11y.Core.Strings {
         public static string EditDeleted(string character) => F("EditDeleted", character);
         public static string TabModSettings => T("TabModSettings");
         public static string SettingSeparator => T("SettingSeparator");
+        public static string SettingSensingRange => T("SettingSensingRange");
         public static string SettingReset => T("SettingReset");
         public static string OptionsGammaReset => T("OptionsGammaReset");
         public static string TabModSounds => T("TabModSounds");

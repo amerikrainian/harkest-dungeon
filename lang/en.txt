@@ -97,6 +97,7 @@ EditSpace = space
 EditDeleted = {0} deleted
 TabModSettings = mod settings
 SettingSeparator = announcement separator
+SettingSensingRange = sensing range
 SettingReset = reset to default
 OptionsGammaReset = Reset Gamma Correction
 TabModSounds = mod sounds

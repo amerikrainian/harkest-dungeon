@@ -299,8 +299,13 @@ Live-verified 2026-07-23; dropdowns 2026-07-28; mod tab 2026-07-27. The game's o
 
 The first of the mod's own tabs appended after the game's (live-verified 2026-07-27; each tab
 is a `ModTab` under `Screens/Options/`, the screen handling them generically): mod-authored
-rows instead of swept widgets, currently the announcement separator - a free-text field
-(`TextEntryElement` + `ModTextEdit`).
+rows instead of swept widgets - the announcement separator, a free-text field
+(`TextEntryElement` + `ModTextEdit`), and the sensing range, a numeric text field
+("sensing range, edit, 80") typed to any value and clamped to 20-200 on commit (garbage
+commits nothing, empty restores the default, spoken "reset to default"). The road layer
+reads it live for ALL its sensed objects - pickup pings directly, node identity ticks at
+half again the value, preserving their authored 80/120 ratio (live-verified 2026-08-02:
+raising it on the road started ten real pickup loops, restoring 80 drained them).
 
 - Enter opens the mod's own typing mode - "editing, enter when done" then the bare-Enter
   outcome spoken as a hint (the suggested value is spoken rather than prefilled, so typing
