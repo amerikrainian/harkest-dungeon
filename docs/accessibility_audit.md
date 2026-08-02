@@ -219,11 +219,27 @@ named by the game's own "Select Profile" title. Two phases:
 generically but unverified; the save-import flow (`ProfileSummaryWidgetBhv`, console-only
 surfaces) is unmodeled.
 
-## 1.8 Mods Manager - NOT STARTED
+## 1.8 Mods Manager - PARTIAL (menu flow works; panel is floor-swept)
 
-The main menu's Mods screen (`ModScreenWidgetBhv`, rows `ModItemBhv`, plus the
-`ModImportSaveWidgetBhv` / import-save-profile flows). Unmodeled; falls to whatever the floor
-can sweep.
+Live-verified 2026-08-02. The Mods toggle flips the menu to its mods side (a camera
+timeline; the toggle relabels to "Return to Base Game", profiles switch to the separate mods
+set, Import Save Data appears).
+
+- The mods side's own Confessions and Kingdoms entries live OUTSIDE the menu's serialized
+  selectable list and were keyboard-unreachable; the sweep now collects them from their
+  containers, so the whole mods flow is navigable.
+- Escape follows the game's own `TryGoBack`: it closes the Confessions and mod-confessions
+  submenus (whose back arrow is icon-only and invisible to the sweep) before falling through
+  to open settings from the top level - this also fixed the base-game Confessions submenu,
+  which previously could not be closed by keyboard.
+- Mod Confessions auto-opens the mods panel (`ModScreenWidgetBhv`, a stack screen the
+  generic floor reads: title "Darkest Dungeon 2 Mods", Browse Mods); Escape closes it,
+  revealing mod Continue / New Confession and the "Mods" button that reopens the panel.
+
+**Known gaps:** the panel's Enable All / Disable All toggles and the "Showing N Mods" count
+do not read (their labels sit on sibling objects, invisible to the floor's own-text rule);
+per-mod rows (`ModItemBhv`: enable toggle, expand, drag-reorder) unverified - no mods
+installed on the dev box; the Browse Mods target (the mod.io browser) unexplored.
 
 ## 1.9 Journal - RESOLVED (it is the profile button)
 
@@ -1747,8 +1763,7 @@ danger, Loathing (5.2); combat target-validity beeps (7.1.2); map cursor node ti
 
 ## 12.5 Uncovered Surfaces (consolidated)
 
-- Mods manager (1.8)
-- Store promos / mailing list targets (1.10)
+- Mods manager panel details (1.8: Enable/Disable All toggles, mod rows, Browse Mods target)
 - Key rebinding flow (2.1.2)
 - Feedback (2.7)
 - Credits (2.8)

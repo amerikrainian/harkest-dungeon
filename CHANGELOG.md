@@ -17,6 +17,10 @@
   rebindable alongside keys ("add button" in a command's menu while a pad is connected; hold
   a trigger while releasing a button to make a trigger combo), and any controller press
   silences speech in progress.
+- The main menu's mods side is now reachable by keyboard: its Confessions and Kingdoms
+  entries read (they lived outside the menu's own selectable list), and Escape backs out of
+  an open submenu - the Confessions submenu included, which previously trapped keyboard
+  users - before opening settings from the top level.
 - The main menu's profile button (the bottom-right journal) now says what it is: it used to
   read as just your profile's name; it now adds the game's own "Change Profile" caption.
 - The profile panel behind the main menu's profile button is now fully readable: the

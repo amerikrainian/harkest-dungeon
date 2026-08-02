@@ -27,6 +27,10 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<MainMenuUiScreenBhv, Button>("m_continueButton");
         private static readonly AccessTools.FieldRef<MainMenuUiScreenBhv, Button> ProfileButtonField =
             AccessTools.FieldRefAccess<MainMenuUiScreenBhv, Button>("m_profileSelectButton");
+        private static readonly AccessTools.FieldRef<MainMenuUiScreenBhv, GameObject> ModInitialField =
+            AccessTools.FieldRefAccess<MainMenuUiScreenBhv, GameObject>("m_modInitialContainer");
+        private static readonly AccessTools.FieldRef<MainMenuUiScreenBhv, GameObject> ModKingdomsField =
+            AccessTools.FieldRefAccess<MainMenuUiScreenBhv, GameObject>("m_modKingdomsButton");
         private static readonly System.Reflection.FieldInfo DisclaimerDirectorField =
             AccessTools.Field(typeof(MainMenuUiScreenBhv), "m_disclaimerDirector");
 
@@ -54,8 +58,13 @@ namespace DD2A11y.Screens {
 
         public override Container BuildRoot(object target) {
             var menu = (MainMenuUiScreenBhv)target;
-            // The game's own Escape at the title menu opens the settings screen.
+            // The game's own Escape first backs out of an open submenu (the Confessions or
+            // mod-confessions swap, whose back arrow is invisible to the sweep), then opens
+            // the settings screen from the top level.
             _root = new RootContainer(ContainerShape.VerticalList, back: () => {
+                if (menu.TryGoBack(usedEscStartButton: false)) {
+                    return;
+                }
                 if (SingletonMonoBehaviour<Assets.Code.UI.Managers.CommonUiBhv>.HasInstance()) {
                     SingletonMonoBehaviour<Assets.Code.UI.Managers.CommonUiBhv>.Instance.ShowOptionsMenu(isPrimaryPauseMenu: true);
                 }
@@ -161,19 +170,31 @@ namespace DD2A11y.Screens {
         private static List<Selectable> Swept(MainMenuUiScreenBhv menu) {
             var swept = new List<Selectable>();
             foreach (var selectable in SelectablesField(menu)) {
-                if (selectable == null || !selectable.gameObject.activeInHierarchy) {
-                    continue;
-                }
-                if (selectable.GetComponent<SelectOnEmptyFallbackBhv>() != null) {
-                    continue; // invisible selection anchor, not a real control
-                }
-                if (!UiText.HasAnyTextSource(selectable.gameObject)) {
-                    continue; // decorative hover target with nothing to ever read
-                }
-                swept.Add(selectable);
+                Collect(selectable, swept);
+            }
+            // The mods side's own Confessions and Kingdoms entries live OUTSIDE the serialized
+            // selectable list, which left the dark side keyboard-unreachable.
+            foreach (var selectable in ModInitialField(menu).GetComponentsInChildren<Selectable>(false)) {
+                Collect(selectable, swept);
+            }
+            foreach (var selectable in ModKingdomsField(menu).GetComponentsInChildren<Selectable>(false)) {
+                Collect(selectable, swept);
             }
             swept.Sort(VisualOrder);
             return swept;
+        }
+
+        private static void Collect(Selectable selectable, List<Selectable> swept) {
+            if (selectable == null || !selectable.gameObject.activeInHierarchy || swept.Contains(selectable)) {
+                return;
+            }
+            if (selectable.GetComponent<SelectOnEmptyFallbackBhv>() != null) {
+                return; // invisible selection anchor, not a real control
+            }
+            if (!UiText.HasAnyTextSource(selectable.gameObject)) {
+                return; // decorative hover target with nothing to ever read
+            }
+            swept.Add(selectable);
         }
 
         private static int VisualOrder(Selectable a, Selectable b) {
