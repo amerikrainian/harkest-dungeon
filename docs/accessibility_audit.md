@@ -1260,9 +1260,7 @@ Top to bottom:
 
 - **Header row** (Left/Right within it):
   - The battle status ("round 1, Audrey"; torch value, wave count in chained fights, round
-    detail, retreat odds, and - in Kingdoms combat - the gang escalation readout as buffer
-    lines: the ribbon tooltip's own title ("Escalation 1") then its effect lines, composed
-    by the game at battle start (sighted access is the More Info hold).
+    detail, and retreat odds as buffer lines).
   - The **turn order** ("turn order, Sahar, Audrey, Widow...", current actor first, read live
     from `QueryTurnOrder`; the order is rolled per round, so the current round's remainder is
     all the information the game itself has). A name shared by several living enemies speaks
@@ -1273,6 +1271,12 @@ Top to bottom:
     carry one).
   - The **battle modifier** (title from `battle_modifier_title_<id>`, present only in fights
     that roll one; its tooltip title and effect/buff descriptions are buffer lines).
+    Live-verified 2026-08-02 ("Rampaging Beastmen!" with "Combat Start: Enrage" in the
+    buffer).
+  - The **gang escalation** (Kingdoms combat only): the ribbon tooltip's own title
+    ("Escalation 1") with its effect lines as the buffer, composed by the game at battle
+    start (sighted access is the More Info hold). Live-verified 2026-08-02 in a Drakia
+    siege.
 - The enemy strip and the party strip (both rank-ordered; labels are name + Rank + HP read
   live; the rank is the game's front rank, so a combatant behind a size-2 monster reads rank
   3, not its team-list slot; a monster's name is its data id's loc string, the same source

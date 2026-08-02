@@ -119,6 +119,7 @@ namespace DD2A11y.Screens {
             header.Add(new ReadoutElement(TurnOrderText));
             header.Add(new ReadoutElement(GoalText));
             header.Add(new ReadoutElement(ModifierTitle, detail: ModifierDetail));
+            header.Add(new ReadoutElement(EscalationTitle, detail: EscalationDetail));
             _root.Add(header);
             _enemies = new Container(ContainerShape.HorizontalList, S.CombatEnemies);
             _root.Add(_enemies);
@@ -291,23 +292,30 @@ namespace DD2A11y.Screens {
                     yield return line;
                 }
             }
-            // The Kingdoms gang-escalation ribbon (sighted access is the More Info hold): the
-            // game composes its title ("Escalation 2") and effect lines into the tooltip TMPs
-            // once at battle start, so the text is the game's own and safe to read.
-            var escalation = EscalationField(_battleInfo);
-            if (escalation != null && escalation.gameObject.activeSelf) {
-                var title = EscalationTitleField(escalation);
-                if (title != null && !string.IsNullOrWhiteSpace(title.text)) {
-                    yield return title.text;
-                }
-                var description = EscalationDescriptionField(escalation);
-                if (description != null) {
-                    foreach (var line in description.text.Split('\n')) {
-                        if (!string.IsNullOrWhiteSpace(line)) {
-                            yield return line;
-                        }
-                    }
-                }
+        }
+
+        // The Kingdoms gang-escalation ribbon, its own header stop like the battle modifier;
+        // absent outside Kingdoms combat, which hides the element. The game composes the
+        // tooltip title ("Escalation 2") and effect lines into the widget's TMPs once at
+        // battle start, so the text is the game's own and safe to read. Sighted access is
+        // the More Info hold.
+        private string EscalationTitle() {
+            var escalation = _battleInfo == null ? null : EscalationField(_battleInfo);
+            if (escalation == null || !escalation.gameObject.activeSelf) {
+                return null;
+            }
+            var title = EscalationTitleField(escalation);
+            return title == null ? null : title.text;
+        }
+
+        private IEnumerable<string> EscalationDetail() {
+            var escalation = _battleInfo == null ? null : EscalationField(_battleInfo);
+            var description = escalation == null ? null : EscalationDescriptionField(escalation);
+            if (description == null) {
+                yield break;
+            }
+            foreach (var line in description.text.Split('\n')) {
+                yield return line;
             }
         }
 
