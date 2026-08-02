@@ -1,4 +1,5 @@
 using Assets.Code.Kingdom.UI;
+using Assets.Code.UI.Items;
 using Assets.Code.UI.Screens;
 using DD2A11y.Core.Nav;
 using DD2A11y.Elements;
@@ -108,10 +109,11 @@ namespace DD2A11y.Screens {
                 && (cell.BiomeUpgradeInstances.Count > 0 || cell.BiomeModifier != null)) {
                 _root.Add(new ReadoutElement(() => upgrades == null ? null : upgrades.text));
             }
-            foreach (var reward in panel.GetComponentsInChildren<Assets.Code.UI.Items.UninteractableRewardItemBhv>(includeInactive: false)) {
+            foreach (var reward in panel.GetComponentsInChildren<UninteractableRewardItemBhv>(includeInactive: false)) {
                 var captured = reward;
                 _root.Add(new ReadoutElement(
-                    () => UiText.AllText(captured.gameObject),
+                    () => RewardItems.Title(captured),
+                    value: () => RewardItems.Quantity(captured),
                     detail: () => TooltipReader.Lines(captured.gameObject)));
             }
             // Model-gated: the labels keep template text ("Name") until a contract populates.
@@ -135,7 +137,7 @@ namespace DD2A11y.Screens {
 
         private static int Signature(ScreenKingdomMapBiomePanel panel) {
             int signature = 17;
-            foreach (var reward in panel.GetComponentsInChildren<Assets.Code.UI.Items.UninteractableRewardItemBhv>(includeInactive: false)) {
+            foreach (var reward in panel.GetComponentsInChildren<UninteractableRewardItemBhv>(includeInactive: false)) {
                 signature = signature * 31 + reward.GetInstanceID();
             }
             var title = ContractTitleField(panel);

@@ -1554,10 +1554,12 @@ is visual only.
 ## 10.3 Biome Cell Panel (`KingdomBiomePanelScreen`) - WORKS
 
 - The enemy roster under the game's own Enemies header (model-composed so it is complete on
-  the entry frame; the biome's name is the screen name), expedition rewards,
-  upgrades/modifier text and kill contract gated on the model (the labels keep template text
-  when unbound), reward tooltips in buffers, and the close button (prefab-wired, found by a
-  text-bearing button sweep).
+  the entry frame; the biome's name is the screen name), expedition rewards composed from
+  the item model like an inventory slot - title then stack size, the icon's own text being
+  only the count badge (`RewardItems`, shared with the inn and event panels; live-verified
+  2026-08-01) - upgrades/modifier text and kill contract gated on the model (the labels keep
+  template text when unbound), reward tooltips in buffers, and the close button
+  (prefab-wired, found by a text-bearing button sweep).
 
 ## 10.4 Event Panel (`KingdomEventPanelScreen`) - BUILT
 

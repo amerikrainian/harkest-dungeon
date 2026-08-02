@@ -82,7 +82,8 @@ namespace DD2A11y.Screens {
             foreach (var reward in panel.GetComponentsInChildren<Assets.Code.UI.Items.UninteractableRewardItemBhv>(includeInactive: false)) {
                 var captured = reward;
                 _root.Add(new ReadoutElement(
-                    () => UiText.AllText(captured.gameObject),
+                    () => RewardItems.Title(captured),
+                    value: () => RewardItems.Quantity(captured),
                     detail: () => TooltipReader.Lines(captured.gameObject)));
             }
             var close = CloseButtonField(panel);
