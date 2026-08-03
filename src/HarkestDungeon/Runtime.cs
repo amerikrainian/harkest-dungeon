@@ -49,6 +49,12 @@ namespace DD2A11y {
         private float _lastTickErrorTime;
         private bool _wasTyping;
         private readonly ModTextEdit _textEdit;
+        private readonly string _version;
+        private bool _loadedAnnounced;
+
+        // How long the loaded announcement waits for the game to restore its language before
+        // speaking in English anyway - the mod must never boot silent.
+        private const float LoadedAnnounceCapSeconds = 20f;
 
         public Core.Settings.ModSettings Settings { get; }
         public Core.Settings.SoundVolumes Sounds { get; }
@@ -245,9 +251,8 @@ namespace DD2A11y {
                 && (Router.Active.HandleAction(action.Key) || Navigator.Handle(action.Key));
 
             _language = new LanguageSync(Path.Combine(pluginDir, "lang"));
+            _version = version;
             Dev = DevServer.TryStart(this);
-
-            Speech.Speak(S.ModLoaded(version));
         }
 
         // "pad:" entries deserialize as pad combos, everything else as keyboard - the untagged
@@ -382,6 +387,12 @@ namespace DD2A11y {
             try {
                 Dev?.PumpMainThread();
                 _language.Tick();
+                // The loaded line waits for the game's restored language so it speaks
+                // translated on a foreign-language relaunch.
+                if (!_loadedAnnounced && (_language.Resolved || Time.unscaledTime >= LoadedAnnounceCapSeconds)) {
+                    _loadedAnnounced = true;
+                    Speech.Speak(S.ModLoaded(_version));
+                }
                 Router.Tick();
                 _roadSense.Tick();
                 Gate.Reassert();

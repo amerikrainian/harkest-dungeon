@@ -4,13 +4,15 @@ using Assets.Code.Locale;
 using Assets.Code.Utils;
 using DD2A11y.Core.Strings;
 using HarmonyLib;
-using UnityEngine;
 
 namespace DD2A11y {
     /// <summary>
     /// Follows the game language: when it changes, loads the matching mod translation from
     /// lang/&lt;code&gt;.txt (falling back to the bare prefix, e.g. de for de_DE), or resets to
-    /// English when no file exists. Checked once a second - a language switch is rare.
+    /// English when no file exists. Checked every frame - the check is two reflection reads -
+    /// so after a switch only speech from the switch's own frame can carry the old language.
+    /// During boot, before the game has restored its persisted language, nothing is applied
+    /// yet; <see cref="Resolved"/> flips once the first real language lands.
     /// </summary>
     public sealed class LanguageSync {
         private static readonly System.Reflection.MethodInfo GetActualMethod =
@@ -20,20 +22,18 @@ namespace DD2A11y {
 
         private readonly string _langDir;
         private string _applied;
-        private float _nextCheck;
 
         public LanguageSync(string langDir) {
             _langDir = langDir;
         }
 
-        public void Tick() {
-            if (Time.unscaledTime < _nextCheck) {
-                return;
-            }
-            _nextCheck = Time.unscaledTime + 1f;
+        /// <summary>Whether the game's language has been read at least once (the boot-time
+        /// announcement waits on this so it speaks in the restored language).</summary>
+        public bool Resolved => _applied != null;
 
+        public void Tick() {
             string code = CurrentCode();
-            if (code == _applied) {
+            if (code == null || code == _applied) {
                 return;
             }
             _applied = code;
@@ -45,7 +45,7 @@ namespace DD2A11y {
                 var loc = Singleton<Localization>.Instance;
                 var language = loc?.GetLanguage();
                 if (language == null) {
-                    return "en";
+                    return null;
                 }
                 var actual = GetActualMethod.Invoke(language, null) as LanguageDefinition ?? language;
                 return LanguageField.GetValue(actual) as string ?? "en";

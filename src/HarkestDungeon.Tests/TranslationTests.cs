@@ -88,6 +88,24 @@ namespace DD2A11y.Tests {
         public void Slavic(int n, int form) => Assert.Equal(form, PluralRules.Slavic(n));
 
         [Theory]
+        [InlineData(1, 0)]
+        [InlineData(21, 2)]
+        [InlineData(3, 1)]
+        [InlineData(22, 1)]
+        [InlineData(12, 2)]
+        [InlineData(25, 2)]
+        public void Polish(int n, int form) => Assert.Equal(form, PluralRules.Polish(n));
+
+        [Theory]
+        [InlineData(1, 0)]
+        [InlineData(2, 1)]
+        [InlineData(4, 1)]
+        [InlineData(5, 2)]
+        [InlineData(21, 2)]
+        [InlineData(22, 2)]
+        public void Czech(int n, int form) => Assert.Equal(form, PluralRules.Czech(n));
+
+        [Theory]
         [InlineData(0, 0)]
         [InlineData(1, 1)]
         [InlineData(2, 2)]

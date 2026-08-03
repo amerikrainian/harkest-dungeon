@@ -17,7 +17,7 @@ namespace DD2A11y.Core.Strings {
         /// <summary>Two forms: 0 and 1 share the singular, then everything else (French, Portuguese-BR).</summary>
         public static readonly Func<int, int> French = n => Math.Abs(n) <= 1 ? 0 : 1;
 
-        /// <summary>Three forms - one, few, many (Russian, Polish, Ukrainian): 1/21/31 take the first,
+        /// <summary>Three forms - one, few, many (Russian, Ukrainian): 1/21/31 take the first,
         /// 2-4/22-24 the second (except the teens), the rest the third.</summary>
         public static readonly Func<int, int> Slavic = n => {
             int abs = Math.Abs(n);
@@ -26,6 +26,33 @@ namespace DD2A11y.Core.Strings {
                 return 0;
             }
             if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+                return 1;
+            }
+            return 2;
+        };
+
+        /// <summary>Three forms - one, few, many (Polish): only exactly 1 takes the first,
+        /// 2-4/22-24 the second (except the teens), the rest (including 21/31) the third.</summary>
+        public static readonly Func<int, int> Polish = n => {
+            int abs = Math.Abs(n);
+            if (abs == 1) {
+                return 0;
+            }
+            int mod10 = abs % 10, mod100 = abs % 100;
+            if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+                return 1;
+            }
+            return 2;
+        };
+
+        /// <summary>Three forms - one, few, many (Czech): only exactly 1 takes the first, only
+        /// literal 2-4 the second, the rest (including 22-24) the third.</summary>
+        public static readonly Func<int, int> Czech = n => {
+            int abs = Math.Abs(n);
+            if (abs == 1) {
+                return 0;
+            }
+            if (abs >= 2 && abs <= 4) {
                 return 1;
             }
             return 2;
@@ -63,6 +90,8 @@ namespace DD2A11y.Core.Strings {
                 case "english": return English;
                 case "french": return French;
                 case "slavic": return Slavic;
+                case "polish": return Polish;
+                case "czech": return Czech;
                 case "arabic": return Arabic;
                 default: return null;
             }

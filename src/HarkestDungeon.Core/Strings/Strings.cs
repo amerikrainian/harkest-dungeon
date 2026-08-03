@@ -22,7 +22,8 @@ namespace DD2A11y.Core.Strings {
         /// ambiguous. Values are spoken by a screen reader: terse, lowercase unless shown otherwise,
         /// no decorative punctuation.</summary>
         internal static readonly KeyValuePair<string, string>[] Defaults = {
-            // Spoken once when the mod finishes initializing at game launch; {0} = the mod version.
+            // Spoken once at game launch, as soon as the game's own language is known so the
+            // line comes out translated; {0} = the mod version.
             D("ModLoaded", "Harkest Dungeon {0} loaded"),
 
             // Screen names, spoken when the mod takes over a screen. Match the game's own word for
