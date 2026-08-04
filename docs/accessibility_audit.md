@@ -1040,9 +1040,10 @@ wired but pending an ear pass. The mod's own NAudio output (independent of FMOD;
   "interact" instead of the zone blip); **ambush** (AMBUSH-category event executing); **danger
   stretches** (the game's inkfire-tile flag, enter/exit on the flips); **Loathing** (a DOOM
   run-value increase).
-- Wired 2026-08-04, by-ear pass pending: **turning** - a loop while the coach actually
-  rotates, panned toward the turn and louder the harder it is, with an end cue on the settle
-  back to straight. The signal is the coach's own turn-speed state times the speed ratio (the
+- **Turning** (wired 2026-08-04; player ear-passed same day, which caught the mirrored pan -
+  the game's positive turn ratio is a LEFT turn): a loop while the coach actually rotates,
+  panned toward the turn and louder the harder it is, with an end cue on the settle back to
+  straight. The signal is the coach's own turn-speed state times the speed ratio (the
   product its rotation math applies, and what the horses' turn animation runs on), so
   road-snap curves the coach steers itself sound too; start over 25% strength, end under 12%,
   the gap against micro-correction chatter. A capture or mode change cuts the loop silently -

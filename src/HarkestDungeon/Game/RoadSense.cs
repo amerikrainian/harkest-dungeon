@@ -345,7 +345,8 @@ namespace DD2A11y.Game {
             float ratio = vehicle is StageCoachVehicleControlBhv coach
                 ? coach.GetTurnSpeedRatio() * Mathf.Abs(vehicle.GetSpeedRatio()) : 0f;
             float strength = Mathf.Abs(ratio);
-            float pan = Mathf.Clamp(ratio * 1.4f, -1f, 1f);
+            // A positive turn ratio is a LEFT turn (ear-verified), so the pan negates it.
+            float pan = Mathf.Clamp(-ratio * 1.4f, -1f, 1f);
             float volume = Mathf.Lerp(0.35f, 0.9f, strength);
             if (_turnLoop == null) {
                 if (strength > TurnStart) {
