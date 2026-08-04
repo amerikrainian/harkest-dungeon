@@ -369,9 +369,19 @@ caption.
 ### 2.1.3 Mod Sounds Tab (`ModSoundsTab`) - WORKS
 
 Live-verified 2026-08-02 (logical and device-level key paths, remembered-tab reopen across a
-game restart). The mod's sounds glossary, the second mod tab: one row per `AudioCue` naming
-what the sound is used for ("pickup nearby, 100 percent").
+game restart); master volume row 2026-08-04. The mod's sounds glossary, the second mod tab:
+the master volume slider, then one row per `AudioCue` naming what the sound is used for
+("pickup nearby, 100 percent").
 
+- The master volume row heads the tab ("master volume, slider, 100 percent"): Left/Right
+  step the baseline every mod sound plays at. Per-sound volumes are stored as signed offsets
+  from it (`Master = 80`, `RoadPickupTaken = -20` in the config's `[Sounds]` section), so a
+  master move carries every sound while their relative levels hold; the rows still display
+  the resolved absolute percent, never the offset (live-verified 2026-08-04: pickup collected
+  stepped to 60 under master 80 read "80 percent" again after master returned to 100 while
+  pickup nearby read "100 percent"). An effective volume clamps at 0 - never negative - and
+  the clamped offset survives a master dip below it intact. Pre-master configs (bare unsigned
+  numbers) read as absolute percents against a full master, unchanged until next adjusted.
 - Enter plays the row's sound once; Space (the grab key) toggles it looping. Both are
   SILENT - the sound itself is the feedback ("playing" leads a looping row's line, e.g. in
   the buffer). The loop stops on moving focus off the row, switching tabs, and closing the

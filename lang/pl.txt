@@ -96,6 +96,7 @@ EditDeleted = {0} usunięte
 TabModSettings = ustawienia moda
 SettingSeparator = separator komunikatów
 SettingSensingRange = zasięg wykrywania
+SettingMasterVolume = głośność główna
 SettingReset = przywrócono domyślne
 TabModAnnouncements = komunikaty moda
 SettingCorpseDeaths = niszczenie zwłok

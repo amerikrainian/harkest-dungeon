@@ -96,6 +96,7 @@ EditDeleted = {0} видалено
 TabModSettings = налаштування мода
 SettingSeparator = роздільник оголошень
 SettingSensingRange = дальність відчуття
+SettingMasterVolume = загальна гучність
 SettingReset = скинуто до типового значення
 TabModAnnouncements = оголошення мода
 SettingCorpseDeaths = смерті трупів

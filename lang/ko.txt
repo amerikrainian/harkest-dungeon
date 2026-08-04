@@ -96,6 +96,7 @@ EditDeleted = {0} 삭제됨
 TabModSettings = 모드 설정
 SettingSeparator = 알림 구분자
 SettingSensingRange = 감지 범위
+SettingMasterVolume = 마스터 볼륨
 SettingReset = 기본값으로 재설정
 TabModAnnouncements = 모드 알림
 SettingCorpseDeaths = 시체 사망

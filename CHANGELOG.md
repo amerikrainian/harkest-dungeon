@@ -1,9 +1,14 @@
 # Changelog
 
-## Unreleased
+## v0.2.2
 
 - The audio settings tab now reads the active audio device row ("Audio Device, Speakers..."),
   which only OCR could see before: it is plain text with no control, so the sweep skipped it.
+- A master volume slider now heads the mod sounds tab, setting the baseline volume of every
+  sound the mod plays. The per-sound volumes ride on it: moving the master carries every
+  sound with it while their differences hold, and each row keeps showing its own resolved
+  percent. A sound pushed below zero by a low master goes silent instead of negative and
+  comes back intact when the master rises again.
 
 ## v0.2.1
 

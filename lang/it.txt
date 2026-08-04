@@ -96,6 +96,7 @@ EditDeleted = {0} cancellato
 TabModSettings = opzioni mod
 SettingSeparator = separatore degli annunci
 SettingSensingRange = raggio di rilevamento
+SettingMasterVolume = volume generale
 SettingReset = ripristinato il valore predefinito
 TabModAnnouncements = annunci mod
 SettingCorpseDeaths = morte dei resti corporei

@@ -96,6 +96,7 @@ EditDeleted = {0} supprimé
 TabModSettings = réglages du mod
 SettingSeparator = séparateur d'annonces
 SettingSensingRange = portée de détection
+SettingMasterVolume = volume général
 SettingReset = valeur par défaut rétablie
 TabModAnnouncements = annonces du mod
 SettingCorpseDeaths = destruction des cadavres

@@ -212,6 +212,9 @@ namespace DD2A11y.Core.Strings {
             // How far away the road's sensed objects are audible (pickup pings, node identity
             // ticks), in the road's own distance units. Noun phrase.
             D("SettingSensingRange", "sensing range"),
+            // The baseline volume of every mod sound, the slider heading the sounds glossary
+            // tab; the per-sound volumes below ride on it as offsets. Noun phrase.
+            D("SettingMasterVolume", "master volume"),
             // Spoken when committing an empty value returns a setting to its default.
             D("SettingReset", "reset to default"),
             // The mod's own announcements tab on the game's settings screen: one toggle per
@@ -666,6 +669,7 @@ namespace DD2A11y.Core.Strings {
         public static string TabModSettings => T("TabModSettings");
         public static string SettingSeparator => T("SettingSeparator");
         public static string SettingSensingRange => T("SettingSensingRange");
+        public static string SettingMasterVolume => T("SettingMasterVolume");
         public static string SettingReset => T("SettingReset");
         public static string TabModAnnouncements => T("TabModAnnouncements");
         public static string SettingCorpseDeaths => T("SettingCorpseDeaths");

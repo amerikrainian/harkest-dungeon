@@ -53,56 +53,134 @@ namespace DD2A11y.Tests {
             }
         }
 
+        private static SoundVolume Volume(MemoryStore store, AudioCue cue = AudioCue.RoadAmbush)
+            => new SoundVolume(cue, store, new MasterVolume(store));
+
         [Fact]
         public void Volume_DefaultsToFull() {
-            var volume = new SoundVolume(AudioCue.RoadAmbush, new MemoryStore());
+            var volume = Volume(new MemoryStore());
             Assert.Equal(100, volume.Value);
             Assert.Equal(1f, volume.Gain);
         }
 
         [Fact]
-        public void Volume_LoadsStoredValue() {
+        public void Volume_LoadsLegacyAbsoluteValueAsOffsetFromFullMaster() {
             var store = new MemoryStore();
             store.Values["RoadAmbush"] = "40";
-            Assert.Equal(40, new SoundVolume(AudioCue.RoadAmbush, store).Value);
+            Assert.Equal(40, Volume(store).Value);
         }
 
         [Fact]
-        public void Volume_UnparsableStoredValueFallsBackToDefault() {
+        public void Volume_LoadsSignedValueAsOffsetFromMaster() {
+            var store = new MemoryStore();
+            store.Values["Master"] = "50";
+            store.Values["RoadAmbush"] = "+10";
+            store.Values["RoadFork"] = "-20";
+            var volumes = new SoundVolumes(store);
+            Assert.Equal(60, volumes.All.First(v => v.Cue == AudioCue.RoadAmbush).Value);
+            Assert.Equal(30, volumes.All.First(v => v.Cue == AudioCue.RoadFork).Value);
+        }
+
+        [Fact]
+        public void Volume_UnparsableStoredValueFollowsTheMaster() {
             var store = new MemoryStore();
             store.Values["RoadAmbush"] = "loud";
-            Assert.Equal(100, new SoundVolume(AudioCue.RoadAmbush, store).Value);
+            Assert.Equal(100, Volume(store).Value);
         }
 
         [Theory]
-        [InlineData("250", 100)]
-        [InlineData("-5", 0)]
-        public void Volume_StoredValueOutOfRangeClamps(string stored, int expected) {
+        [InlineData("250", 100)] // legacy absolute, clamped to the old range
+        [InlineData("-5", 95)] // signed, so an offset
+        public void Volume_StoredValueEdgeCases(string stored, int expected) {
             var store = new MemoryStore();
             store.Values["RoadAmbush"] = stored;
-            Assert.Equal(expected, new SoundVolume(AudioCue.RoadAmbush, store).Value);
+            Assert.Equal(expected, Volume(store).Value);
         }
 
         [Fact]
-        public void Volume_AdjustStepsAndPersists() {
+        public void Volume_AdjustStepsAndPersistsTheOffset() {
             var store = new MemoryStore();
-            var volume = new SoundVolume(AudioCue.RoadAmbush, store);
+            var volume = Volume(store);
             Assert.True(volume.Adjust(-1));
             Assert.Equal(90, volume.Value);
-            Assert.Equal("90", store.Values["RoadAmbush"]);
+            Assert.Equal("-10", store.Values["RoadAmbush"]);
         }
 
         [Fact]
         public void Volume_AdjustAtTheEndsMovesNothing() {
             var store = new MemoryStore();
-            var volume = new SoundVolume(AudioCue.RoadAmbush, store);
+            var volume = Volume(store);
             Assert.False(volume.Adjust(+1)); // already at 100
             Assert.False(store.Values.ContainsKey("RoadAmbush")); // no pointless write
 
-            store.Values["RoadAmbush"] = "0";
-            var muted = new SoundVolume(AudioCue.RoadAmbush, store);
+            store.Values["RoadAmbush"] = "-100";
+            var muted = Volume(store);
+            Assert.Equal(0, muted.Value);
             Assert.False(muted.Adjust(-1));
-            Assert.Equal("0", store.Values["RoadAmbush"]);
+            Assert.Equal("-100", store.Values["RoadAmbush"]);
+        }
+
+        [Fact]
+        public void Master_MoveCarriesEverySoundWhileOffsetsHold() {
+            var store = new MemoryStore();
+            store.Values["RoadAmbush"] = "-40";
+            var volumes = new SoundVolumes(store);
+            var ambush = volumes.All.First(v => v.Cue == AudioCue.RoadAmbush);
+            var fork = volumes.All.First(v => v.Cue == AudioCue.RoadFork);
+
+            Assert.True(volumes.Master.Adjust(-1));
+            Assert.Equal(90, volumes.Master.Value);
+            Assert.Equal("90", store.Values["Master"]);
+            Assert.Equal(50, ambush.Value);
+            Assert.Equal(90, fork.Value);
+            Assert.Equal("-40", store.Values["RoadAmbush"]); // the offset itself never rewrites
+        }
+
+        [Fact]
+        public void Master_DipBelowASoundOffsetClampsToSilentAndComesBack() {
+            var store = new MemoryStore();
+            store.Values["Master"] = "30";
+            store.Values["RoadAmbush"] = "-40";
+            var volumes = new SoundVolumes(store);
+            var ambush = volumes.All.First(v => v.Cue == AudioCue.RoadAmbush);
+
+            Assert.Equal(0, ambush.Value); // 30 - 40, clamped: never negative
+            Assert.Equal(0f, ambush.Gain);
+
+            volumes.Master.Adjust(+1);
+            volumes.Master.Adjust(+1);
+            Assert.Equal(10, ambush.Value); // the full offset survived the dip
+        }
+
+        [Fact]
+        public void Volume_AdjustFromTheClampRederivesTheOffset() {
+            var store = new MemoryStore();
+            store.Values["Master"] = "30";
+            store.Values["RoadAmbush"] = "-40";
+            var volume = Volume(store);
+
+            Assert.Equal(0, volume.Value);
+            Assert.True(volume.Adjust(+1));
+            Assert.Equal(10, volume.Value);
+            Assert.Equal("-20", store.Values["RoadAmbush"]);
+        }
+
+        [Fact]
+        public void Master_ClampsStoredValueAndStepsWithinTheRange() {
+            var store = new MemoryStore();
+            store.Values["Master"] = "150";
+            Assert.Equal(100, new MasterVolume(store).Value);
+
+            store.Values["Master"] = "sonorous";
+            Assert.Equal(100, new MasterVolume(store).Value);
+
+            store.Values.Remove("Master");
+            var master = new MasterVolume(store);
+            Assert.Equal(100, master.Value);
+            Assert.False(master.Adjust(+1)); // already at the cap
+            Assert.False(store.Values.ContainsKey("Master")); // no pointless write
+            Assert.True(master.Adjust(-1));
+            Assert.Equal("90", store.Values["Master"]);
         }
 
         [Fact]
@@ -127,6 +205,17 @@ namespace DD2A11y.Tests {
 
             engine.PlayCue(AudioCue.RoadAmbush, 0.8f, 0f); // unadjusted cue plays naturally
             Assert.Equal(0.8f, inner.Plays[1].Volume, 3);
+        }
+
+        [Fact]
+        public void ScaledEngine_MasterScalesEveryCue() {
+            var store = new MemoryStore();
+            store.Values["Master"] = "50";
+            var inner = new FakeEngine();
+            var engine = new VolumeScaledEngine(inner, new SoundVolumes(store));
+
+            engine.PlayCue(AudioCue.RoadPickup, 0.8f, 0f);
+            Assert.Equal(0.4f, inner.Plays[0].Volume, 3);
         }
 
         [Fact]

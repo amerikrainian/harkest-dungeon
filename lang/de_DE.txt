@@ -96,6 +96,7 @@ EditDeleted = {0} gelöscht
 TabModSettings = Mod-Einstellungen
 SettingSeparator = Trennzeichen für Ansagen
 SettingSensingRange = Ortungsreichweite
+SettingMasterVolume = Gesamtlautstärke
 SettingReset = auf Standard zurückgesetzt
 TabModAnnouncements = Mod-Ansagen
 SettingCorpseDeaths = Leichentode
