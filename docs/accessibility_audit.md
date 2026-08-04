@@ -1352,8 +1352,10 @@ Top to bottom:
   removal reads in the skill's own text; a conditional heal below its HP threshold previews
   as 0 and stays silent, matching the game's hidden heal bar segment).
 - Enter on a target sends the game's own actor-pick event to execute. Escape cancels
-  target-select first, landing back on the picked skill's button whose own line ("selected,
-  Crush, button") is the whole feedback; else it opens the pause menu.
+  target-select first, fully deselecting the pick through the game's own deselect event
+  (the bare cancel keeps the skill armed for the mouse flow, which left Enter refusing to
+  re-pick it) and landing back on the skill's button, whose plain line ("Crush, button")
+  is the whole feedback - Enter picks it again cleanly; else Escape opens the pause menu.
 - Turn lines ("round 2, Audrey") are spoken outright on every turn change - focus can sit
   anywhere - and logged to the combat buffer once.
 

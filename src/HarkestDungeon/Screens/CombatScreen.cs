@@ -502,13 +502,22 @@ namespace DD2A11y.Screens {
             }
         }
 
-        // Escape: first back out of target-select (the game's own cancel), landing back on
-        // the picked skill's button - its own line ("selected, Crush, button") is the whole
-        // feedback; else the pause menu.
+        // Escape: first back out of target-select, landing back on the picked skill's
+        // button, whose plain line ("Crush, button") is the whole feedback; else the pause
+        // menu. The pick is fully deselected via the game's own deselect event (its END_TURN
+        // path) - the bare CancelTargetSelection keeps the actor's selected skill armed for
+        // the mouse flow, which leaves the button's OnClick refusing a re-pick of the same
+        // skill. The deselect must fire BEFORE the cancel: the skill bar's own listener
+        // flips back into target-select on any selection event naming one of its buttons.
         private void Back() {
             if (_skillSelection != null
                 && _skillSelection.CurrentInputState == SkillSelectionBhv.InputState.ACTOR_SELECT) {
                 var skill = SelectedSkillElement();
+                if (Game.Targeting.TryGetPick(out var performer, out _)) {
+                    Assets.Code.Actor.Events.EventSkillSelectionChanged.Trigger(isSelected: false,
+                        performer.m_ActorGuid, performer.SelectedSkillId,
+                        isUserInput: false, autohighlightTarget: false);
+                }
                 _skillSelection.CancelTargetSelection();
                 if (skill != null) {
                     _navigator.Focus(skill, announce: true);
