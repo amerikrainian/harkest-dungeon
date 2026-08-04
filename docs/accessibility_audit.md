@@ -1373,6 +1373,14 @@ damage, miss, stress damage and relief, token spend and loss, death-blow resist,
 tick, barks, tutorial toast, always-spoken turn lines, wave count suppressed in a
 single-battle fight.
 
+Hover parity (2026-08-03, deployed, awaiting live pass): the target preview line grew the
+panel's other two calculations - the effective damage range with every live modifier folded
+in (flat crit damage on a guaranteed crit, the game's own switch) and the tested resistances
+after the attacker's piercing ("Blight RES 40%", the chips the panel highlights). An enemy's
+buffer opens with its monster type tags and speed (the hover panel's identity facts, shown
+nowhere else - the inspector already spoke speed); a combat item on the bar reads the game's
+own "Quantity: N" beside its remaining limit uses.
+
 **Known gaps:** dodge/heal/meltdown/retreat/final-round/wave-start/wound/quirk/objective/
 message-toast lines are deployed but not yet observed live (their handlers share gates and
 composition with the verified ones); the goal readout is unverified in a fight that has one;

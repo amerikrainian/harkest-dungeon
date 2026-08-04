@@ -9,10 +9,10 @@ using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// One skill on the combat bar (a regular skill, move, or pass): the skill's name, with the
-    /// selected state, remaining limited uses, and usability read live. Enter runs the game's own
-    /// skill-pick handler (validity, presentation gating, audio, then target-select). The full
-    /// skill card is buffer lines.
+    /// One skill on the combat bar (a regular skill, a combat item, move, or pass): the skill's
+    /// name, with the selected and mastered states, remaining limited uses, an item's quantity,
+    /// and usability read live. Enter runs the game's own skill-pick handler (validity,
+    /// presentation gating, audio, then target-select). The full skill card is buffer lines.
     /// </summary>
     public sealed class CombatSkillElement : UIElement {
         private readonly SkillButtonBhv _button;
@@ -85,6 +85,14 @@ namespace DD2A11y.Elements {
                     string format = GameLoc.TryGet("effect_tooltip_skill_limit");
                     int uses = actor.GetRemainingSkillLimitUses(skill);
                     parts.Add(format == null ? uses.ToString() : string.Format(format, uses));
+                }
+                // A combat item's stack, the bar's own "Quantity: 2" beside the item skill.
+                if (actor != null && !string.IsNullOrEmpty(_button.SkillId)) {
+                    int count = actor.GetItemCountFromSkillId(_button.SkillId);
+                    if (count > 0) {
+                        string format = GameLoc.TryGet("combat_item_display_quantity");
+                        parts.Add(format == null ? count.ToString() : string.Format(format, count));
+                    }
                 }
                 if (!_button.IsValid) {
                     // The game's own wording for why the skill is grey (wrong rank, on

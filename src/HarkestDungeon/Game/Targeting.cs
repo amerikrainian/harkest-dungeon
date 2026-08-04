@@ -97,12 +97,21 @@ namespace DD2A11y.Game {
                 }
                 if (preview.m_ResultType == SkillCalculation.ResultType.TARGET
                     && (preview.m_TargetActorGuid == targetGuid || preview.m_GuardingActorGuid == targetGuid)) {
+                    int crit = (int)System.Math.Round(UnityEngine.Mathf.Clamp01(preview.m_CritChance) * 100f);
                     if (preview.m_IsToHitValid) {
                         parts.Add(S.CombatHitChance((int)System.Math.Round(preview.m_ToHitChance * 100f)));
                     }
                     if (preview.m_IsCritValid) {
-                        int crit = (int)System.Math.Round(UnityEngine.Mathf.Clamp01(preview.m_CritChance) * 100f);
                         parts.Add(S.CombatCritChance(crit));
+                    }
+                    // The effective damage the pick would deal - the panel's DMG stat with
+                    // every live modifier folded in; a guaranteed crit shows the flat crit
+                    // damage, as the game's panel does.
+                    if (preview.m_IsDamageValid) {
+                        string amount = crit >= 100 ? ((int)preview.m_CritDamage).ToString()
+                            : Range((int)preview.m_DamageLow, (int)preview.m_DamageHigh);
+                        string word = GameLoc.TryGet("attack_stats_damage");
+                        parts.Add(word == null ? amount : amount + " " + word);
                     }
                     if (preview.m_IsHealValid && !preview.m_HideHealPreview) {
                         int low = (int)preview.m_TargetHealthHealBase;
@@ -116,6 +125,7 @@ namespace DD2A11y.Game {
                     if (preview.m_IsToHitValid && preview.m_TargetActorGuid != targetGuid) {
                         parts.Add(S.CombatIntercepted(Actors.Name(Actors.Get(preview.m_TargetActorGuid))));
                     }
+                    AddResistParts(parts, preview);
                     AddRemovalParts(parts, preview);
                 } else if (preview.m_ResultType == SkillCalculation.ResultType.RIPOSTE_TARGET
                            && preview.m_TargetActorGuid == performer.m_ActorGuid
@@ -124,6 +134,30 @@ namespace DD2A11y.Game {
                 }
             }
             return parts.Count == 0 ? null : Core.Text.SpokenLine.Join(parts.ToArray());
+        }
+
+        // The resistances the pick will test - the chips the game highlights on the enemy
+        // panel: the target's value minus the performer's resist-piercing, the panel's own
+        // math ("Blight RES 40%" answers whether the dot will stick).
+        private static void AddResistParts(List<string> parts,
+                SkillCalculation.ActorResult.SkillPreview preview) {
+            if (preview.TargetResists == null) {
+                return;
+            }
+            var seen = new List<string>();
+            foreach (var resist in preview.TargetResists) {
+                if (resist == null || seen.Contains(resist.m_Id)) {
+                    continue;
+                }
+                seen.Add(resist.m_Id);
+                string name = Study.ResistName(resist.m_Id);
+                if (name == null) {
+                    continue;
+                }
+                preview.TargetResistanceStatValues.TryGetValue(resist.m_Id, out float value);
+                preview.PerformerResistanceIgnoreStatValues.TryGetValue(resist.m_Id, out float ignore);
+                parts.Add(name + " " + (int)System.Math.Round((value - ignore) * 100f) + "%");
+            }
         }
 
         // What the pick strips off the hit combatant (the preview's real recipient - the

@@ -19,8 +19,10 @@ namespace DD2A11y.Elements {
     /// with the reason it cannot be hit, a valid one ends with the game's own hit/crit/heal
     /// preview. Enter sends the game's own actor-pick event (the mouse click equivalent:
     /// executes the selected skill on a valid target, otherwise the game ignores it); the
-    /// inspect action opens the hero sheet. The buffer is the full status readout: HP, stress,
-    /// then one line per token, dot, and combat buff, all from the game's own describers.
+    /// inspect action opens the hero sheet. The buffer is the full status readout: an enemy's
+    /// monster type and speed first (the hover panel's identity facts, shown nowhere else),
+    /// HP, stress, then one line per token, dot, and combat buff, all from the game's own
+    /// describers.
     /// </summary>
     public sealed class CombatantElement : UIElement {
         private readonly uint _guid;
@@ -96,6 +98,21 @@ namespace DD2A11y.Elements {
             var actor = Actor;
             if (actor == null) {
                 yield break;
+            }
+            if (!_friendly) {
+                if (actor.ActorDataClass != null) {
+                    var tags = new List<string>();
+                    foreach (var tag in actor.ActorDataClass.GetPotentialTags()) {
+                        string word = GameLoc.TryGet("tag_" + tag);
+                        if (word != null && !tags.Contains(word)) {
+                            tags.Add(word);
+                        }
+                    }
+                    if (tags.Count > 0) {
+                        yield return SpokenLine.Join(tags.ToArray());
+                    }
+                }
+                yield return S.SheetSpeed((int)actor.GetClampedStatValue(ActorStatType.SPEED));
             }
             if (_friendly) {
                 string stressFormat = GameLoc.TryGet("status_bar_stress");
