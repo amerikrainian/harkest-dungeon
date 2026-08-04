@@ -5,17 +5,10 @@
 - Target picking now says everything the game's attack panel computes: beside hit and crit
   chance, the damage the pick would actually deal with every live modifier folded in (flat
   crit damage once crit is guaranteed), and the target's tested resistances after your
-  piercing ("Blight RES 40%") so you know whether the dot will stick. An enemy's buffer
-  opens with its monster type and speed - facts sighted players only get by hovering - and
-  combat items on the skill bar say their quantity.
+  piercing ("Blight RES 40%") so you know whether the dot will stick.
 - Mastery is no longer bought blind: an unmastered skill's buffer now ends with the upgrade
-  preview a sighted player gets on the tooltip - the game's own "Upgrade" header, the
-  mastered version's damage, crit, and effects, with any new tokens explained - at the
-  Mastery Trainer and on the hero sheet alike. A mastered skill says "mastered" on the hero
-  sheet and combat bar (the laurel's spoken form), and the trainer now reads a mastered
-  skill's actual upgraded card instead of the base one.
-- Token descriptions ride at the end of every buffer that mentions a token: a skill like
-  Backlash now closes with "Block: Takes -50% DMG from next hit".
+  preview.
+- Token descriptions ride at the end of every buffer that mentions a token.
 - Thanks to Chaosbringer's report, the very first dialogue when the game pops up reads.
   I really, really should remember to completely nuke saves before handing the mods to him. This happened 2 times in a row now.
 - Buffer review no longer repeats chrome: a control's first buffer line is its label and
