@@ -52,10 +52,6 @@ namespace DD2A11y {
         private readonly string _version;
         private bool _loadedAnnounced;
 
-        // How long the loaded announcement waits for the game to restore its language before
-        // speaking in English anyway - the mod must never boot silent.
-        private const float LoadedAnnounceCapSeconds = 20f;
-
         public Core.Settings.ModSettings Settings { get; }
         public Core.Settings.SoundVolumes Sounds { get; }
         public Core.Input.ModKeymap Keymap { get; }
@@ -389,8 +385,9 @@ namespace DD2A11y {
                 Dev?.PumpMainThread();
                 _language.Tick();
                 // The loaded line waits for the game's restored language so it speaks
-                // translated on a foreign-language relaunch.
-                if (!_loadedAnnounced && (_language.Resolved || Time.unscaledTime >= LoadedAnnounceCapSeconds)) {
+                // translated on a foreign-language relaunch; the game always sets a
+                // language during boot.
+                if (!_loadedAnnounced && _language.Resolved) {
                     _loadedAnnounced = true;
                     Speech.Speak(S.ModLoaded(_version));
                 }
