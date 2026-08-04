@@ -19,6 +19,8 @@
 - The coach's turning is now audible: a loop while it turns, panned toward the turn and
   louder the harder it leans, and an end cue when it straightens out. Both sit in the mod
   sounds tab with their own volumes.
+- The mod sounds tab is no longer one long scroll: after the master volume slider, a tab
+  groups the sounds by family (road, nodes, combat), Left/Right to switch.
 - The audio settings tab now reads the active audio device row ("Audio Device, Speakers..."),
   which only OCR could see before: it is plain text with no control, so the sweep skipped it.
 - A master volume slider now heads the mod sounds tab, setting the baseline volume of every

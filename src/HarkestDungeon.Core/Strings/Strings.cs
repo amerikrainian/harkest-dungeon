@@ -229,6 +229,11 @@ namespace DD2A11y.Core.Strings {
             // the mod plays. Enter plays the row's sound once, Space loops it, Left/Right step
             // its volume.
             D("TabModSounds", "mod sounds"),
+            // The glossary's group tabs after the master volume row, one per sound family
+            // (the assets/audio folders). Nouns.
+            D("SoundTabRoad", "road"),
+            D("SoundTabNodes", "nodes"),
+            D("SoundTabCombat", "combat"),
             // State word leading the glossary row whose sound is looping right now.
             D("StatusPlaying", "playing"),
             // Glossary row labels: when the mod plays each sound. Road driving events first.
@@ -690,6 +695,9 @@ namespace DD2A11y.Core.Strings {
         public static string SettingCorpseDeaths => T("SettingCorpseDeaths");
         public static string OptionsGammaReset => T("OptionsGammaReset");
         public static string TabModSounds => T("TabModSounds");
+        public static string SoundTabRoad => T("SoundTabRoad");
+        public static string SoundTabNodes => T("SoundTabNodes");
+        public static string SoundTabCombat => T("SoundTabCombat");
         public static string StatusPlaying => T("StatusPlaying");
 
         /// <summary>The glossary label of one mod sound, keyed "Sound{cue}" by convention; a test

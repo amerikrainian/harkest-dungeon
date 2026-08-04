@@ -369,9 +369,13 @@ caption.
 ### 2.1.3 Mod Sounds Tab (`ModSoundsTab`) - WORKS
 
 Live-verified 2026-08-02 (logical and device-level key paths, remembered-tab reopen across a
-game restart); master volume row 2026-08-04. The mod's sounds glossary, the second mod tab:
-the master volume slider, then one row per `AudioCue` naming what the sound is used for
-("pickup nearby, 100 percent").
+game restart); master volume row 2026-08-04; group tabs 2026-08-04. The mod's sounds
+glossary, the second mod tab: the master volume slider, then a group tab per sound family -
+road, nodes, combat, the assets/audio folders, derived from the cue names (`AudioCues.
+GroupOf`) so a new cue lands in its tab by name alone - then one row per `AudioCue` in the
+active group naming what the sound is used for ("pickup nearby, 100 percent"). Left/Right on
+the group tab switch groups (rebuilding the rows below; a running preview stops); the group
+resets to road on each open, matching the settings screen's own no-remembered-tab behavior.
 
 - The master volume row heads the tab ("master volume, slider, 100 percent"): Left/Right
   step the baseline every mod sound plays at. Per-sound volumes are stored as signed offsets

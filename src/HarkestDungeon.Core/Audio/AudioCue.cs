@@ -67,4 +67,26 @@ namespace DD2A11y.Core.Audio {
         /// <summary>Focus landed on an invalid target for the chosen skill (440 Hz).</summary>
         CombatTargetInvalid,
     }
+
+    /// <summary>The glossary's grouping of cues, mirroring the assets/audio folders.</summary>
+    public enum AudioCueGroup {
+        Road,
+        Nodes,
+        Combat,
+    }
+
+    public static class AudioCues {
+        /// <summary>A cue's group, derived from the enum's naming groups so a new cue lands
+        /// in its glossary tab by name alone.</summary>
+        public static AudioCueGroup GroupOf(AudioCue cue) {
+            string name = cue.ToString();
+            if (name.StartsWith("Node", System.StringComparison.Ordinal)) {
+                return AudioCueGroup.Nodes;
+            }
+            if (name.StartsWith("Combat", System.StringComparison.Ordinal)) {
+                return AudioCueGroup.Combat;
+            }
+            return AudioCueGroup.Road;
+        }
+    }
 }
