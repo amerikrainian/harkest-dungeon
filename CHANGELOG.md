@@ -9,6 +9,8 @@
   sound with it while their differences hold, and each row keeps showing its own resolved
   percent. A sound pushed below zero by a low master goes silent instead of negative and
   comes back intact when the master rises again.
+- Mod volumes now go up to 200 percent, master and per-sound alike, so a quiet sound can be
+  boosted past its natural level.
 
 ## v0.2.1
 

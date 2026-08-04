@@ -89,7 +89,7 @@ namespace DD2A11y.Tests {
         }
 
         [Theory]
-        [InlineData("250", 100)] // legacy absolute, clamped to the old range
+        [InlineData("999", 200)] // clamped to the cap
         [InlineData("-5", 95)] // signed, so an offset
         public void Volume_StoredValueEdgeCases(string stored, int expected) {
             var store = new MemoryStore();
@@ -107,11 +107,23 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
-        public void Volume_AdjustAtTheEndsMovesNothing() {
+        public void Volume_StepsAboveNaturalUpToTheCapWithMatchingGain() {
             var store = new MemoryStore();
             var volume = Volume(store);
-            Assert.False(volume.Adjust(+1)); // already at 100
-            Assert.False(store.Values.ContainsKey("RoadAmbush")); // no pointless write
+            Assert.True(volume.Adjust(+1));
+            Assert.Equal(110, volume.Value);
+            Assert.Equal("+10", store.Values["RoadAmbush"]);
+            Assert.Equal(1.1f, volume.Gain, 3);
+        }
+
+        [Fact]
+        public void Volume_AdjustAtTheEndsMovesNothing() {
+            var store = new MemoryStore();
+            store.Values["RoadAmbush"] = "+100";
+            var maxed = Volume(store);
+            Assert.Equal(200, maxed.Value);
+            Assert.False(maxed.Adjust(+1));
+            Assert.Equal("+100", store.Values["RoadAmbush"]); // no pointless write
 
             store.Values["RoadAmbush"] = "-100";
             var muted = Volume(store);
@@ -168,17 +180,20 @@ namespace DD2A11y.Tests {
         [Fact]
         public void Master_ClampsStoredValueAndStepsWithinTheRange() {
             var store = new MemoryStore();
-            store.Values["Master"] = "150";
-            Assert.Equal(100, new MasterVolume(store).Value);
+            store.Values["Master"] = "999";
+            Assert.Equal(200, new MasterVolume(store).Value);
 
             store.Values["Master"] = "sonorous";
             Assert.Equal(100, new MasterVolume(store).Value);
 
+            store.Values["Master"] = "200";
+            var maxed = new MasterVolume(store);
+            Assert.False(maxed.Adjust(+1)); // already at the cap
+            Assert.Equal("200", store.Values["Master"]); // no pointless write
+
             store.Values.Remove("Master");
             var master = new MasterVolume(store);
             Assert.Equal(100, master.Value);
-            Assert.False(master.Adjust(+1)); // already at the cap
-            Assert.False(store.Values.ContainsKey("Master")); // no pointless write
             Assert.True(master.Adjust(-1));
             Assert.Equal("90", store.Values["Master"]);
         }

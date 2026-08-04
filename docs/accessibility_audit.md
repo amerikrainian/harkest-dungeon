@@ -386,8 +386,10 @@ the master volume slider, then one row per `AudioCue` naming what the sound is u
   SILENT - the sound itself is the feedback ("playing" leads a looping row's line, e.g. in
   the buffer). The loop stops on moving focus off the row, switching tabs, and closing the
   screen. Previews play centered at the sound's saved volume.
-- Left/Right step the row's volume 0-100 in tens, speaking the percent (of the sound's
-  natural level; "minimum"/"maximum" at the ends); a running loop re-aims live on each step,
+- Left/Right step the row's volume 0-200 in tens (master row included; live-verified
+  2026-08-04 to the 200 cap), speaking the percent (of the sound's natural level, values
+  above 100 boosting past it under the output's soft limiter; "minimum"/"maximum" at the
+  ends); a running loop re-aims live on each step,
   so the change is heard as it is spoken. Values
   persist per sound in the config's `[Sounds]` section (verified across a restart) and scale
   every playback of that cue - one-shots and loops - through the volume-scaled engine, with

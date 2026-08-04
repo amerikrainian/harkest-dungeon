@@ -12,7 +12,7 @@ namespace DD2A11y.Core.Settings {
     /// </summary>
     public sealed class SoundVolume : ModSetting {
         public const int Step = 10;
-        public const int MaxVolume = 100;
+        public const int MaxVolume = 200;
 
         private readonly ISettingsStore _store;
         private readonly MasterVolume _master;
