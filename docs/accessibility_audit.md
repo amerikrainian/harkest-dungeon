@@ -219,6 +219,20 @@ named by the game's own "Select Profile" title. Two phases:
 generically but unverified; the save-import flow (`ProfileSummaryWidgetBhv`, console-only
 surfaces) is unmodeled.
 
+## 1.7b First-Boot Profile Window (`FirstProfileScreen`) - WORKS
+
+Live-verified 2026-08-03 on a fresh save (SaveFiles removed). With no profile on disk the
+game auto-creates a default one and holds the title menu behind its GDPR panel
+(`MainMenuUiScreenBhv.m_firstTimeProfileCreationBhv`) with every menu button disabled - the
+menu reader used to capture instead and Enter went nowhere. The window is the same
+`ProfileCreationWidgetBhv` as the profile-select create window, built by the shared
+`ProfileCreationTree`: name field (edit echo + accepted-name read-back), language dropdown,
+the GDPR text around the analytics toggle (Enter flips consent, the game's own
+`ANALYTICS_ENABLED` option), then Continue, which hands the menu over to the normal
+disclaimer flow. The game offers no cancel here, so Escape reports unavailable. The prompt
+appears only while no profile exists - a restart auto-saves the default profile and it
+never returns, which used to strand first-time users past an unanswerable consent.
+
 ## 1.8 Mods Manager - PARTIAL (menu flow works; panel is floor-swept)
 
 Live-verified 2026-08-02. The Mods toggle flips the menu to its mods side (a camera

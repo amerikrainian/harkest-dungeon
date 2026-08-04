@@ -1,16 +1,20 @@
 # Changelog
 
-## V0.2.0
+## v0.2.1
 
+- The first-boot profile window (name, language, and analytics consent, shown once when no
+  profile exists) now reads and answers: every row is navigable, the toggle flips the game's
+  real consent option, and Continue unlocks the menu. It used to leave the menu reading but
+  dead, with the prompt silently skipped on the next restart.
 - Buffer review no longer repeats chrome: a control's first buffer line is its label and
   state without the role word ("Confessions" instead of "Confessions, button"), and detail
   lines that only restate the name or value (an item tooltip's title, an icon button's
   caption) fold away, so Ctrl plus Down goes straight to the content.
 - The mod now speaks in the game's language: translations for all fourteen of the game's
-  non-English languages ship with the mod, reusing the game's own terminology. Switching the
-  language in settings switches the mod's speech immediately, the choice carries across
-  relaunches, and the launch announcement waits for the restored language so it comes out
-  translated too.
+  non-English languages ship with the mod, reusing the game's own terminology.
+
+## V0.2.0
+
 - A mod sounds glossary tab in settings, after the mod settings tab: one row per sound the
   mod plays, named for what it is used for. Enter plays the sound once and Space loops it
   (moving away or closing stops the loop) - both silently, the sound speaking for itself -

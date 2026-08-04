@@ -35,6 +35,7 @@ namespace DD2A11y {
         private readonly LanguageSync _language;
         private CrossroadsScreen _crossroads;
         private ProfileSelectScreen _profileSelect;
+        private FirstProfileScreen _firstProfile;
         private KeyBindingsScreen _keyBindings;
         private InnScreen _inn;
         private FeedbackScreen _feedback;
@@ -185,6 +186,10 @@ namespace DD2A11y {
             Router.Register(_profileSelect);
             // The kingdoms scene overlays the title menu inside the same MAIN_MENU mode.
             Router.Register(new KingdomMenuScreen(speak));
+            // The first-boot profile window disables every menu button, so it must outrank
+            // the menu reader.
+            _firstProfile = new FirstProfileScreen(speak);
+            Router.Register(_firstProfile);
             Router.Register(new MainMenuScreen());
             // The hero-select canvas overlays are not stack screens; they match off the game's
             // own panel flags and must outrank the crossroads beneath them.
@@ -236,8 +241,8 @@ namespace DD2A11y {
                 // rebind pauses the same way, the game's and the mod's own alike: the pressed
                 // key must become the binding.
                 bool typing = Game.TextEntry.IsTyping || _textEdit.Active || _profileSelect.EditingName
-                    || _keyBindings.RebindActive || _rebind.Active || _feedback.Editing
-                    || _partyLoadouts.EditingName;
+                    || _firstProfile.EditingName || _keyBindings.RebindActive || _rebind.Active
+                    || _feedback.Editing || _partyLoadouts.EditingName;
                 bool suppress = typing || _wasTyping;
                 _wasTyping = typing;
                 return suppress;

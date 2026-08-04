@@ -32,16 +32,6 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<ProfileSelectBhv, PlayableDirector>("m_profileSelectPanel");
         private static readonly AccessTools.FieldRef<ProfileSelectBhv, ProfileCreationWidgetBhv> CreationField =
             AccessTools.FieldRefAccess<ProfileSelectBhv, ProfileCreationWidgetBhv>("m_creationWidgetBhv");
-        private static readonly AccessTools.FieldRef<ProfileCreationWidgetBhv, TMP_InputField> CreationNameField =
-            AccessTools.FieldRefAccess<ProfileCreationWidgetBhv, TMP_InputField>("m_nameInputLabel");
-        private static readonly AccessTools.FieldRef<ProfileCreationWidgetBhv, LanguageWidgetBhv> LanguageField =
-            AccessTools.FieldRefAccess<ProfileCreationWidgetBhv, LanguageWidgetBhv>("m_languageDropdownBhv");
-        private static readonly AccessTools.FieldRef<ProfileCreationWidgetBhv, Toggle> AnalyticsToggleField =
-            AccessTools.FieldRefAccess<ProfileCreationWidgetBhv, Toggle>("m_analyticsToggle");
-        private static readonly AccessTools.FieldRef<ProfileCreationWidgetBhv, Button> CreateButtonField =
-            AccessTools.FieldRefAccess<ProfileCreationWidgetBhv, Button>("m_createButton");
-        private static readonly AccessTools.FieldRef<ProfileCreationWidgetBhv, TextMeshProUGUI> AnalyticsLabelField =
-            AccessTools.FieldRefAccess<ProfileCreationWidgetBhv, TextMeshProUGUI>("m_analyticsCheckLabel");
         private static readonly AccessTools.FieldRef<ProfileSelectItemBhv, TMP_InputField> ItemNameField =
             AccessTools.FieldRefAccess<ProfileSelectItemBhv, TMP_InputField>("m_nameInputField");
 
@@ -116,7 +106,7 @@ namespace DD2A11y.Screens {
             }
             var creation = CreationField(_bhv);
             if (creation != null && creation.gameObject.activeInHierarchy) {
-                var field = CreationNameField(creation);
+                var field = ProfileCreationTree.NameField(creation);
                 if (field != null && field.isFocused) {
                     return field;
                 }
@@ -139,8 +129,7 @@ namespace DD2A11y.Screens {
         // name is re-read from the model-backed row matching the edited guid.
         private string AcceptedName() {
             if (_editingCreation) {
-                var creation = CreationField(_bhv);
-                var field = creation != null ? CreationNameField(creation) : null;
+                var field = ProfileCreationTree.NameField(CreationField(_bhv));
                 return field != null ? field.text : null;
             }
             var item = FindByGuid(_editingGuid);
@@ -243,46 +232,8 @@ namespace DD2A11y.Screens {
         // The create window, top to bottom as the game lays it out. Its name edit is already
         // active when the window opens (the game activates it), so entry lands on the title
         // while the echo reports the edit.
-        private void PopulateCreation() {
-            var creation = CreationField(_bhv);
-            _root.Add(new StaticTextElement(() => GameLoc.TryGet("first_time_profile_creation_title")));
-            _root.Add(new ActionElement(
-                () => GameLoc.TryGet("profile_creation_name_label"),
-                S.RoleEdit,
-                creation.OnEditNameButtonPressed,
-                extraBufferLines: () => BufferLine(GameLoc.TryGet("profile_creation_name_char_limit_label")),
-                value: () => {
-                    var field = CreationNameField(creation);
-                    return field != null ? field.text : null;
-                }));
-            var language = LanguageField(creation);
-            var dropdown = language != null
-                ? language.GetComponentInChildren<TMP_Dropdown>(includeInactive: true) : null;
-            if (dropdown != null) {
-                _root.Add(new SelectableElement(dropdown,
-                    () => GameLoc.TryGet("profile_creation_language_label")));
-            }
-            _root.Add(new StaticTextElement(() => GameLoc.TryGet("gdpr_dialog_desc_1")));
-            var toggle = AnalyticsToggleField(creation);
-            _root.Add(new SelectableElement(toggle, () => {
-                var label = AnalyticsLabelField(creation);
-                return label != null ? label.text : null;
-            }));
-            _root.Add(new StaticTextElement(() => GameLoc.TryGet("gdpr_dialog_desc_2")));
-            var create = CreateButtonField(creation);
-            _root.Add(new SelectableElement(create));
-            foreach (var button in create.transform.parent.GetComponentsInChildren<Button>(includeInactive: false)) {
-                if (button != create) {
-                    _root.Add(new SelectableElement(button));
-                }
-            }
-        }
-
-        private static IEnumerable<string> BufferLine(string line) {
-            if (!string.IsNullOrEmpty(line)) {
-                yield return line;
-            }
-        }
+        private void PopulateCreation()
+            => ProfileCreationTree.Populate(_root, CreationField(_bhv), includeTitle: true);
 
         private UIElement Add(Dictionary<object, UIElement> previous, object key, Func<UIElement> make) {
             if (!previous.TryGetValue(key, out var element)) {
