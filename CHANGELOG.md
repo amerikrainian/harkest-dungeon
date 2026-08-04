@@ -3,11 +3,7 @@
 ## v0.2.1
 
 - Token descriptions ride at the end of every buffer that mentions a token: a skill like
-  Backlash now closes with "Block: Takes -50% DMG from next hit", the same text a sighted
-  player mouses over the icon for. One line per unique token, anywhere tokens appear -
-  skills, trinkets, combat items - and never repeated where the description is already
-  there (a combatant's token rows). Effects that are not tokens (Knockback) have no
-  hover text in the game either, so they stay as they are.
+  Backlash now closes with "Block: Takes -50% DMG from next hit".
 - Thanks to Chaosbringer's report, the very first dialogue when the game pops up reads.
   I really, really should remember to completely nuke saves before handing the mods to him. This happened 2 times in a row now.
 - Buffer review no longer repeats chrome: a control's first buffer line is its label and
