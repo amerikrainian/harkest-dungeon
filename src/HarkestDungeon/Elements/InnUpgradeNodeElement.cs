@@ -93,8 +93,7 @@ namespace DD2A11y.Elements {
             });
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             if (_node == null) {
                 yield break;
             }

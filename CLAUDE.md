@@ -190,10 +190,13 @@ remembers its last tab across close/reopen.
 
 **Buffer model** (Core): a `Buffer` is a named flat list of text lines with a cursor (`ui` first;
 more to come - `hero`, `events`). On every focus change the plugin resets all buffers and the
-focused element populates them: the `ui` buffer gets the element's own line first, then **one line
-per tooltip**. Ctrl+Left/Right switch among non-empty buffers (speaks "name: current line"),
-Ctrl+Up/Down step lines (speaks the line). Buffers repopulate from the live element on every
-buffer keypress, so they never go stale.
+focused element populates them: the `ui` buffer gets the element's own line first (status, label,
+value - never the role word; buffers review content, and the control type is not content), then
+**one line per tooltip**, dropping details that only repeat the head's label or value. Elements
+override `GetDetailLines`; head composition and that dedupe live in `UIElement.GetBufferLines`.
+Ctrl+Left/Right switch among non-empty buffers (speaks "name: current line"), Ctrl+Up/Down step
+lines (speaks the line). Buffers repopulate from the live element on every buffer keypress, so
+they never go stale.
 
 **Adapter / composition split.** Reading live game state touches Unity and lives in a thin adapter
 in the plugin that extracts raw state into plain data (no Unity types past the boundary) and does

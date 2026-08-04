@@ -2,6 +2,10 @@
 
 ## V0.2.0
 
+- Buffer review no longer repeats chrome: a control's first buffer line is its label and
+  state without the role word ("Confessions" instead of "Confessions, button"), and detail
+  lines that only restate the name or value (an item tooltip's title, an icon button's
+  caption) fold away, so Ctrl plus Down goes straight to the content.
 - The mod now speaks in the game's language: translations for all fourteen of the game's
   non-English languages ship with the mod, reusing the game's own terminology. Switching the
   language in settings switches the mod's speech immediately, the choice carries across

@@ -67,8 +67,7 @@ namespace DD2A11y.Elements {
             }
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             string label = TextFilter.Clean(Label);
             foreach (var line in BarkLines(label)) {
                 yield return line;

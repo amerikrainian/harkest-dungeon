@@ -154,17 +154,8 @@ namespace DD2A11y.Elements {
                 ExecuteEvents.submitHandler);
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
-            string label = Label;
-            string value = Value;
-            foreach (var line in TooltipReader.Lines(RowScope)) {
-                // A tooltip doubling as the label (an icon button) or the value (the profile
-                // button's purpose) is already in the focus line.
-                if (line != label && line != value) {
-                    yield return line;
-                }
-            }
-        }
+        // A tooltip doubling as the label (an icon button) or the value (the profile button's
+        // purpose) is already in the head line; the base dedupe folds those.
+        protected override IEnumerable<string> GetDetailLines() => TooltipReader.Lines(RowScope);
     }
 }

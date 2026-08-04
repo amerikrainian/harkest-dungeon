@@ -33,8 +33,7 @@ namespace DD2A11y.Elements {
             yield return new ElementAction(ActionIds.Activate, _activate);
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             if (_extraBufferLines == null) {
                 yield break;
             }

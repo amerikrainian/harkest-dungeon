@@ -59,8 +59,7 @@ namespace DD2A11y.Elements {
         // A page reads the landed hero in full; the browser wraps, it has no ends.
         public override string GetAdjustText(string actionId, bool changed) => GetFocusText();
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             var browser = Browser;
             if (browser != null) {
                 foreach (var line in TooltipReader.Lines(browser.gameObject)) {

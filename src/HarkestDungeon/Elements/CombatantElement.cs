@@ -92,8 +92,7 @@ namespace DD2A11y.Elements {
             yield return new ElementAction("inspect", () => EventInspectActor.Trigger(_guid));
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             var actor = Actor;
             if (actor == null) {
                 yield break;

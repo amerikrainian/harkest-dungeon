@@ -58,8 +58,7 @@ namespace DD2A11y.Elements {
 
         public override string GetValueText() => SpokenLine.Join(Title(), Description());
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             if (SelectedField(_widget) != _option.gameObject) {
                 yield break;
             }

@@ -78,8 +78,7 @@ namespace DD2A11y.Elements {
             return null;
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             foreach (var line in SkillCard.Lines(_skillId, _sheet.ActorGuid)) {
                 yield return line;
             }

@@ -108,8 +108,7 @@ namespace DD2A11y.Elements {
             yield return new ElementAction(ActionIds.Activate, () => _button.OnClick());
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             foreach (var line in SkillCard.Lines(_button.SkillId, _button.ActorGuid)) {
                 yield return line;
             }

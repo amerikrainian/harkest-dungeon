@@ -39,8 +39,7 @@ namespace DD2A11y.Elements {
             return new OptionsItemElement(item, control);
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             // The binding holds a loc key: the option's tooltip key, or the unlock-requirement
             // key SetLocked swapped in on a locked altar row.
             var context = ContextField(_item);

@@ -80,8 +80,7 @@ namespace DD2A11y.Elements {
             return NodeCues.For(_indicator.GetNodeType());
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             if (_indicator.IsRevealed()) {
                 string description = GameLoc.TryGet(_indicator.GetNodeType().m_roadIndicatorDescKey);
                 if (description != null) {

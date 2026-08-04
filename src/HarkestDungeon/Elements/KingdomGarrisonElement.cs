@@ -25,8 +25,7 @@ namespace DD2A11y.Elements {
 
         public override string Label => _label();
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             if (Widget == null) {
                 yield break;
             }

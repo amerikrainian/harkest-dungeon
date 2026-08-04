@@ -34,8 +34,8 @@ namespace DD2A11y.Elements {
             }
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            foreach (var line in base.GetBufferLines()) {
+        protected override IEnumerable<string> GetDetailLines() {
+            foreach (var line in base.GetDetailLines()) {
                 yield return line;
             }
             if (Selectable != null && !Selectable.enabled && _region.SubScreenPrefab != null) {

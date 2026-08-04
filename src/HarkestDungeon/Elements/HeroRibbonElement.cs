@@ -47,8 +47,7 @@ namespace DD2A11y.Elements {
                 () => EventInspectActor.Trigger(_ribbon.ActorGuid));
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             foreach (var line in TooltipReader.Lines(_ribbon.gameObject)) {
                 yield return line;
             }

@@ -23,8 +23,7 @@ namespace DD2A11y.Elements {
 
         public override string Value => _value?.Invoke();
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             if (_detail == null) {
                 yield break;
             }

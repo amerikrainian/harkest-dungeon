@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using DD2A11y.Core.Buffers;
+using DD2A11y.Core.Nav;
 using Xunit;
 
 namespace DD2A11y.Tests {
@@ -114,6 +116,63 @@ namespace DD2A11y.Tests {
             _manager.Add(new Buffer("ui", () => "control"));
             _controls.NextLine();
             Assert.Equal("no buffer lines", Assert.Single(_spoken));
+        }
+    }
+
+    public class ElementBufferLinesTests {
+        private sealed class FakeElement : UIElement {
+            public string? L, R, V, S;
+            public List<string> Details = new();
+            public override string? Label => L;
+            public override string? Role => R;
+            public override string? Value => V;
+            public override string? Status => S;
+            protected override IEnumerable<string> GetDetailLines() => Details;
+        }
+
+        [Fact]
+        public void HeadLine_CarriesNoRole() {
+            var element = new FakeElement { L = "Confessions", R = "button" };
+            Assert.Equal(new[] { "Confessions" }, element.GetBufferLines());
+        }
+
+        [Fact]
+        public void HeadLine_KeepsStatusAndValue() {
+            var element = new FakeElement { S = "on", L = "Tutorials", R = "toggle" };
+            Assert.Equal("on, Tutorials", element.GetBufferLines().First());
+        }
+
+        [Fact]
+        public void DetailRepeatingTheLabel_IsFolded() {
+            var element = new FakeElement {
+                L = "Healing Potion", R = "button",
+                Details = { "Healing Potion", "Restores 20 health" },
+            };
+            Assert.Equal(new[] { "Healing Potion", "Restores 20 health" }, element.GetBufferLines());
+        }
+
+        [Fact]
+        public void DetailRepeatingTheLabelThroughMarkup_IsFolded() {
+            var element = new FakeElement {
+                L = "Healing Potion",
+                Details = { "<color=#aa0000>Healing Potion</color>", "Restores 20 health" },
+            };
+            Assert.Equal(new[] { "Healing Potion", "Restores 20 health" }, element.GetBufferLines());
+        }
+
+        [Fact]
+        public void DetailRepeatingTheValue_IsFolded() {
+            var element = new FakeElement {
+                L = "Profile", V = "Traveler",
+                Details = { "Traveler", "Switch profiles" },
+            };
+            Assert.Equal(new[] { "Profile, Traveler", "Switch profiles" }, element.GetBufferLines());
+        }
+
+        [Fact]
+        public void BlankDetails_AreDropped() {
+            var element = new FakeElement { L = "Row", Details = { "   ", "<b></b>", "kept" } };
+            Assert.Equal(new[] { "Row", "kept" }, element.GetBufferLines());
         }
     }
 }

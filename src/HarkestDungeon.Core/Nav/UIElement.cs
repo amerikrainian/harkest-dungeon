@@ -74,12 +74,34 @@ namespace DD2A11y.Core.Nav {
             return actionId == ActionIds.Increase ? StatusMaximum : StatusMinimum;
         }
 
-        /// <summary>The element's review lines for the buffer system: its own focus line first, then
-        /// one line per detail the focus message leaves out - each tooltip, each stat block line.
-        /// Read live on every buffer keypress, so lines never go stale. The base yields just the
-        /// focus line.</summary>
-        public virtual IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        /// <summary>The buffer's own line for this element: the focus message without the role
+        /// word - the buffer reviews content, and the control type is not content.</summary>
+        public virtual string GetBufferHeadText()
+            => Text.SpokenLine.Join(Status, Label, Value);
+
+        /// <summary>The element's review lines for the buffer system: its role-less own line
+        /// first (<see cref="GetBufferHeadText"/>), then one line per detail the focus message
+        /// leaves out - each tooltip, each stat block line - dropping blanks and details that
+        /// only repeat the head's label or value (compared through the speech filter, so a
+        /// markup-carrying tooltip title still folds into the plain label). Read live on every
+        /// buffer keypress, so lines never go stale.</summary>
+        public IEnumerable<string> GetBufferLines() {
+            yield return GetBufferHeadText();
+            string label = Text.TextFilter.Clean(Label);
+            string value = Text.TextFilter.Clean(Value);
+            foreach (var line in GetDetailLines()) {
+                string clean = Text.TextFilter.Clean(line);
+                if (string.IsNullOrWhiteSpace(clean) || clean == label || clean == value) {
+                    continue;
+                }
+                yield return line;
+            }
+        }
+
+        /// <summary>The detail lines behind the head line (tooltips, stat blocks, descriptions);
+        /// the base carries none.</summary>
+        protected virtual IEnumerable<string> GetDetailLines() {
+            yield break;
         }
 
         /// <summary>Called by the navigator when this element becomes the focused leaf after a move.

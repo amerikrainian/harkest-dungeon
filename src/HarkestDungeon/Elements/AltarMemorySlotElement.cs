@@ -113,8 +113,7 @@ namespace DD2A11y.Elements {
             }
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             // A filled slot's confession identity moves to the buffer behind the item name.
             string label = Label;
             if (Item != null) {

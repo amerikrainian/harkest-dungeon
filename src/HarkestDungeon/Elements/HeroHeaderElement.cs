@@ -53,8 +53,7 @@ namespace DD2A11y.Elements {
         // same one, which is still the right thing to read (this control wraps, it has no ends).
         public override string GetAdjustText(string actionId, bool changed) => GetFocusText();
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             foreach (var line in ClassDescription.Lines(Actor?.ActorDataId)) {
                 yield return line;
             }

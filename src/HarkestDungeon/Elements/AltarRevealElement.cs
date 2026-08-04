@@ -28,12 +28,7 @@ namespace DD2A11y.Elements {
             return SpokenLine.Join(", ", parts);
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return _name();
-            foreach (var line in DescriptionLines()) {
-                yield return line;
-            }
-        }
+        protected override IEnumerable<string> GetDetailLines() => DescriptionLines();
 
         public override IEnumerable<ElementAction> GetActions() {
             yield return new ElementAction(ActionIds.Activate, _resume);

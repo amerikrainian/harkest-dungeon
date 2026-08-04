@@ -63,8 +63,7 @@ namespace DD2A11y.Elements {
             yield return new ElementAction("discard", ResetToDefault);
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             yield return S.KeyDefault(Display(_keymap.DefaultsOf(_action)));
         }
 

@@ -36,14 +36,15 @@ namespace DD2A11y.Elements {
             SpeakSpendResult(before);
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            foreach (var line in base.GetBufferLines()) {
+        protected override IEnumerable<string> GetDetailLines() {
+            foreach (var line in base.GetDetailLines()) {
                 yield return line;
             }
-            // The quest lock's caption; a DLC row already carries it as the label.
+            // The quest lock's caption; a DLC row already carries it as the label, and the
+            // base dedupe folds the repeat.
             if (Selectable != null && !Selectable.interactable) {
                 string locked = ContextField(_hero).GetStringValue("locked_label");
-                if (!string.IsNullOrEmpty(locked) && locked != Label) {
+                if (!string.IsNullOrEmpty(locked)) {
                     yield return locked;
                 }
             }

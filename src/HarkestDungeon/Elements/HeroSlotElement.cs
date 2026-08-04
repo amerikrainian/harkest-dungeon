@@ -176,8 +176,7 @@ namespace DD2A11y.Elements {
             return dataClass == null ? null : dataClass.Id;
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
+        protected override IEnumerable<string> GetDetailLines() {
             string label = TextFilter.Clean(HeroName);
             string hoverHint = GameLoc.TryGet("hero_select_actor_hover_label");
             foreach (var tooltip in new[] { TooltipField(Slot), LockedTooltipField(Slot) }) {

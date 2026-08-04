@@ -63,14 +63,6 @@ namespace DD2A11y.Elements {
             });
         }
 
-        public override IEnumerable<string> GetBufferLines() {
-            yield return GetFocusText();
-            string label = Label;
-            foreach (var line in TooltipReader.Lines(_choice.gameObject)) {
-                if (line != label) {
-                    yield return line;
-                }
-            }
-        }
+        protected override IEnumerable<string> GetDetailLines() => TooltipReader.Lines(_choice.gameObject);
     }
 }
