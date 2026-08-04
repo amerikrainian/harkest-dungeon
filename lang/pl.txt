@@ -268,3 +268,6 @@ InputCombatEnemyResists = Odporności wroga {0}
 InputCombatHero = Stan bohatera {0}
 InputCombatHeroEffects = Wzmocnienia i osłabienia bohatera {0}
 InputCombatHeroResists = Odporności bohatera {0}
+InputCombatActor = Stan aktywnej postaci
+InputCombatTargets = Prawidłowe cele wskazanej umiejętności
+InputCombatTurnOrder = Kolejność tur

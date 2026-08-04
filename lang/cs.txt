@@ -268,3 +268,6 @@ InputCombatEnemyResists = Odolnosti nepřítele {0}
 InputCombatHero = Stav hrdiny {0}
 InputCombatHeroEffects = Posílení a postihy hrdiny {0}
 InputCombatHeroResists = Odolnosti hrdiny {0}
+InputCombatActor = Stav bojovníka na tahu
+InputCombatTargets = Platné cíle zaměřené dovednosti
+InputCombatTurnOrder = Pořadí tahů

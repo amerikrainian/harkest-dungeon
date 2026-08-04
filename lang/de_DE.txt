@@ -268,3 +268,6 @@ InputCombatEnemyResists = Resistenzen von Feind {0}
 InputCombatHero = Status von Held {0}
 InputCombatHeroEffects = Stärkungen und Schwächungen von Held {0}
 InputCombatHeroResists = Resistenzen von Held {0}
+InputCombatActor = Status des aktiven Kämpfers
+InputCombatTargets = Gültige Ziele der fokussierten Fähigkeit
+InputCombatTurnOrder = Zugreihenfolge

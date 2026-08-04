@@ -268,3 +268,6 @@ InputCombatEnemyResists = 敵{0}の耐性
 InputCombatHero = 英雄{0}の状態
 InputCombatHeroEffects = 英雄{0}のバフとデバフ
 InputCombatHeroResists = 英雄{0}の耐性
+InputCombatActor = 行動中の戦闘員の状態
+InputCombatTargets = フォーカス中のスキルの有効な対象
+InputCombatTurnOrder = ターン順

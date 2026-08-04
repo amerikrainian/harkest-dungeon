@@ -268,3 +268,6 @@ InputCombatEnemyResists = 敌人{0}抗性
 InputCombatHero = 英雄{0}状态
 InputCombatHeroEffects = 英雄{0}增益与减益
 InputCombatHeroResists = 英雄{0}抗性
+InputCombatActor = 行动中战斗者状态
+InputCombatTargets = 焦点技能的有效目标
+InputCombatTurnOrder = 行动顺序

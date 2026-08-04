@@ -27,6 +27,8 @@ namespace DD2A11y.Elements {
 
         public string SkillId => _button.SkillId;
 
+        public uint ActorGuid => _button.ActorGuid;
+
         public override bool CanFocus
             => _button != null && _button.gameObject.activeInHierarchy && !IsDuplicate();
 
@@ -106,7 +108,7 @@ namespace DD2A11y.Elements {
             }
         }
 
-        private string InvalidReasonText() {
+        public string InvalidReasonText() {
             var query = QueryIsValidSkill.Trigger(_button.ActorGuid, _button.SkillId);
             if (query.m_ValidityType == null || query.IsValid) {
                 return null;

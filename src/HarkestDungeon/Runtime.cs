@@ -364,6 +364,14 @@ namespace DD2A11y {
                     () => _combat.GlanceResists(friendly: true, slot), InputCategory.Combat)
                     .AddBinding(K(heroKeys[slot], ctrl: true));
             }
+            // The acting combatant, the focused skill's valid targets with previews, and the
+            // turn order - the reads a skill choice hinges on, one press from anywhere.
+            Reg("combat.actor", S.InputCombatActor, () => _combat.GlanceActor(),
+                InputCategory.Combat).AddBinding(K(Key.S));
+            Reg("combat.targets", S.InputCombatTargets, () => _combat.GlanceTargets(),
+                InputCategory.Combat).AddBinding(K(Key.T));
+            Reg("combat.turnorder", S.InputCombatTurnOrder, () => _combat.GlanceTurnOrder(),
+                InputCategory.Combat).AddBinding(K(Key.T, shift: true));
             // Rename the focused hero, and roll them a random name. The game puts both on one
             // key by tap-versus-hold; a hold is poor for a screen-reader user, so they get a
             // key each. Roster-category (live only where hero slots advertise the actions);

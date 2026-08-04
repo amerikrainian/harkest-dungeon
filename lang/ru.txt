@@ -268,3 +268,6 @@ InputCombatEnemyResists = Сопротивления врага {0}
 InputCombatHero = Состояние героя {0}
 InputCombatHeroEffects = Усиления и ослабления героя {0}
 InputCombatHeroResists = Сопротивления героя {0}
+InputCombatActor = Состояние действующего бойца
+InputCombatTargets = Допустимые цели навыка в фокусе
+InputCombatTurnOrder = Порядок ходов

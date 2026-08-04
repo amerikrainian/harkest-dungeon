@@ -268,3 +268,6 @@ InputCombatEnemyResists = 적 {0} 저항
 InputCombatHero = 영웅 {0} 상태
 InputCombatHeroEffects = 영웅 {0} 강화 및 약화
 InputCombatHeroResists = 영웅 {0} 저항
+InputCombatActor = 행동 중인 전투원 상태
+InputCombatTargets = 포커스된 스킬의 유효 대상
+InputCombatTurnOrder = 턴 순서

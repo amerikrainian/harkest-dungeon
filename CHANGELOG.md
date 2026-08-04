@@ -11,8 +11,11 @@
   what freed R to be a hero glance in combat.
 - Picking a skill now drops your cursor straight onto the first valid target, preview and
   all, instead of announcing "select target" and leaving you on the skill bar to commute
-  from. Arrows browse targets as before; Escape returns you to the skill, whose own line
-  ("selected, Crush, button") replaces the old "target cancelled".
+  from. Arrows browse targets as before; Escape returns you to the skill.
+- Three more combat glances: S reads the acting combatant, T on a skill reads everyone it
+  could hit right now with hit/crit/damage previews - before you commit to the pick - and
+  Shift+T reads the turn order from anywhere. T off the skill bar does nothing, as
+  advertised.
 - The audio settings tab now reads the active audio device row ("Audio Device, Speakers..."),
   which only OCR could see before: it is plain text with no control, so the sweep skipped it.
 - A master volume slider now heads the mod sounds tab, setting the baseline volume of every

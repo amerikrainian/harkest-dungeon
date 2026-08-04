@@ -1376,6 +1376,13 @@ screens' keys; all 24 are rebindable from the mod keys tab.
 - **Ctrl**: the resistance grid as one line, using the game's grid names with the shared
   RESIST word stripped (`CommonAffix`, language-agnostic character-level affix strip):
   "STUN 20%, BLIGHT 40%, ... DEATHBLOW 90%".
+- **S**: the acting combatant's status glance, no strip key to hunt for.
+- **T on a focused skill**: every combatant the skill could take right now, each with a
+  terse preview ("Lost Soul, 100% hit, 5% crit, 4-6 DMG; Woodsman, ...") - the game's own
+  precomputed valid-target entries (`GetValidSkillTargetEntries`), read without picking;
+  resist chips and removal lists stay per-target after the pick. A skill with no valid use
+  speaks its grey reason; anywhere off the skill bar the key is silent.
+- **Shift+T**: the header's turn-order line from anywhere in the battle.
 
 ### 7.1.4 Buffers - WORKS
 

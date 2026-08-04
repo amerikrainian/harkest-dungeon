@@ -268,3 +268,6 @@ InputCombatEnemyResists = Résistances de l'ennemi {0}
 InputCombatHero = État du héros {0}
 InputCombatHeroEffects = Bonus et malus du héros {0}
 InputCombatHeroResists = Résistances du héros {0}
+InputCombatActor = État du combattant actif
+InputCombatTargets = Cibles valides de la compétence en focus
+InputCombatTurnOrder = Ordre de tour

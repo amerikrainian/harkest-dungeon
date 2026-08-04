@@ -85,8 +85,15 @@ namespace DD2A11y.Game {
         /// <summary>The game's precomputed preview against one valid target: hit and crit
         /// chances for attacks, the heal range for friendly skills; null when the game holds no
         /// preview (invalid target, no pick pending).</summary>
-        public static string PreviewText(ActorInstance performer, uint targetGuid) {
-            var query = QuerySkillPreview.Trigger(performer.m_ActorGuid, performer.SelectedSkillId, targetGuid);
+        public static string PreviewText(ActorInstance performer, uint targetGuid)
+            => PreviewText(performer, performer.SelectedSkillId, targetGuid, terse: false);
+
+        /// <summary>The preview for any of the actor's skills (the game precomputes every valid
+        /// skill x target pair at turn start, so no pick needs to be pending). Terse drops the
+        /// per-target resist chips and token-removal lists - the T glance reads several targets
+        /// in one line, and that tail is read per target after the pick.</summary>
+        public static string PreviewText(ActorInstance performer, string skillId, uint targetGuid, bool terse) {
+            var query = QuerySkillPreview.Trigger(performer.m_ActorGuid, skillId, targetGuid);
             if (!query.IsValid) {
                 return null;
             }
@@ -125,8 +132,10 @@ namespace DD2A11y.Game {
                     if (preview.m_IsToHitValid && preview.m_TargetActorGuid != targetGuid) {
                         parts.Add(S.CombatIntercepted(Actors.Name(Actors.Get(preview.m_TargetActorGuid))));
                     }
-                    AddResistParts(parts, preview);
-                    AddRemovalParts(parts, preview);
+                    if (!terse) {
+                        AddResistParts(parts, preview);
+                        AddRemovalParts(parts, preview);
+                    }
                 } else if (preview.m_ResultType == SkillCalculation.ResultType.RIPOSTE_TARGET
                            && preview.m_TargetActorGuid == performer.m_ActorGuid
                            && preview.m_IsDamageValid) {

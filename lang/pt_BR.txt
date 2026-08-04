@@ -268,3 +268,6 @@ InputCombatEnemyResists = Resistências do inimigo {0}
 InputCombatHero = Estado do herói {0}
 InputCombatHeroEffects = Benefícios e penalidades do herói {0}
 InputCombatHeroResists = Resistências do herói {0}
+InputCombatActor = Estado do combatente ativo
+InputCombatTargets = Alvos válidos da habilidade em foco
+InputCombatTurnOrder = Ordem de turnos

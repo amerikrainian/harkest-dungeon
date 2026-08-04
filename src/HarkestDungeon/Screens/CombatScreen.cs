@@ -402,6 +402,84 @@ namespace DD2A11y.Screens {
             }
         }
 
+        /// <summary>S: the acting combatant's glance, without hunting for its strip key.</summary>
+        public void GlanceActor() {
+            var element = FindCombatant(CurrentTurnGuid());
+            string line = element != null && element.CanFocus ? element.GlanceLine() : null;
+            if (line != null) {
+                _speak(line, true);
+            }
+        }
+
+        /// <summary>Shift+T: the header's turn-order line from anywhere in the battle.</summary>
+        public void GlanceTurnOrder() {
+            string line = TurnOrderText();
+            if (line != null) {
+                _speak(line, true);
+            }
+        }
+
+        /// <summary>T on a focused skill: every combatant the skill could take right now, each
+        /// with its terse preview - the game's own precomputed valid-target entries, read
+        /// without picking. On a skill with no valid use it speaks the skill's grey reason;
+        /// off the skill bar the key is silent.</summary>
+        public void GlanceTargets() {
+            if (!(_navigator.Current is CombatSkillElement skill)) {
+                return;
+            }
+            var performer = Actors.Get(skill.ActorGuid);
+            var entries = performer?.Controller?.GetValidSkillTargetEntries();
+            IReadOnlyList<uint> targets = null;
+            if (entries != null) {
+                foreach (var entry in entries) {
+                    if (entry.m_SkillId == skill.SkillId) {
+                        targets = entry.m_ValidTargetActorGuids;
+                        break;
+                    }
+                }
+            }
+            var parts = new List<string>();
+            if (targets != null && targets.Count > 0) {
+                foreach (var strip in new[] { _enemies, _party }) {
+                    foreach (var child in strip.Children) {
+                        if (child is CombatantElement combatant && ContainsGuid(targets, combatant.Guid)) {
+                            parts.Add(SpokenLine.Join(
+                                Actors.SpokenName(Actors.Get(combatant.Guid)),
+                                Game.Targeting.PreviewText(performer, skill.SkillId, combatant.Guid, terse: true)));
+                        }
+                    }
+                }
+            }
+            if (parts.Count > 0) {
+                _speak(string.Join("; ", parts), true);
+                return;
+            }
+            string reason = skill.InvalidReasonText();
+            if (reason != null) {
+                _speak(reason, true);
+            }
+        }
+
+        private CombatantElement FindCombatant(uint guid) {
+            foreach (var strip in new[] { _enemies, _party }) {
+                foreach (var child in strip.Children) {
+                    if (child is CombatantElement combatant && combatant.Guid == guid) {
+                        return combatant;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private static bool ContainsGuid(IReadOnlyList<uint> guids, uint guid) {
+            for (int i = 0; i < guids.Count; i++) {
+                if (guids[i] == guid) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         // The game's word for the retreat control, from the tooltip's own leading label key
         // (shown as "Retreat:"); the trailing colon is list punctuation, not information.
         private string RetreatLabel() {

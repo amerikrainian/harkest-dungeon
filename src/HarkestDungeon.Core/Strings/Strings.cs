@@ -547,6 +547,10 @@ namespace DD2A11y.Core.Strings {
             D("InputCombatHero", "Hero {0} status"),
             D("InputCombatHeroEffects", "Hero {0} buffs and debuffs"),
             D("InputCombatHeroResists", "Hero {0} resistances"),
+            D("InputCombatActor", "Acting combatant status"),
+            // The valid-targets glance, live while a skill is focused.
+            D("InputCombatTargets", "Focused skill's valid targets"),
+            D("InputCombatTurnOrder", "Turn order"),
         };
 
         private static readonly Dictionary<string, string> English = BuildEnglish();
@@ -844,5 +848,8 @@ namespace DD2A11y.Core.Strings {
         public static string InputCombatHero(int slot) => F("InputCombatHero", slot);
         public static string InputCombatHeroEffects(int slot) => F("InputCombatHeroEffects", slot);
         public static string InputCombatHeroResists(int slot) => F("InputCombatHeroResists", slot);
+        public static string InputCombatActor => T("InputCombatActor");
+        public static string InputCombatTargets => T("InputCombatTargets");
+        public static string InputCombatTurnOrder => T("InputCombatTurnOrder");
     }
 }

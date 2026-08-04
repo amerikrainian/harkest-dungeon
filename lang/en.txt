@@ -270,3 +270,6 @@ InputCombatEnemyResists = Enemy {0} resistances
 InputCombatHero = Hero {0} status
 InputCombatHeroEffects = Hero {0} buffs and debuffs
 InputCombatHeroResists = Hero {0} resistances
+InputCombatActor = Acting combatant status
+InputCombatTargets = Focused skill's valid targets
+InputCombatTurnOrder = Turn order
