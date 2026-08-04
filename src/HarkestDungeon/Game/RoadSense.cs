@@ -4,6 +4,7 @@ using Assets.Code.Actor.Events;
 using Assets.Code.Bark.Events;
 using Assets.Code.Events;
 using Assets.Code.Game;
+using Assets.Code.Game.StageCoach;
 using Assets.Code.Item;
 using Assets.Code.Item.Events;
 using Assets.Code.Map;
@@ -55,6 +56,11 @@ namespace DD2A11y.Game {
         // Warn and arms again under Rearm, so riding the edge does not chatter.
         private const float EdgeWarn = 0.85f;
         private const float EdgeRearm = 0.7f;
+        // Turn strength (the applied turn rate as a fraction of the coach's max) past which the
+        // turning loop starts, and under which it ends - the gap keeps road-following
+        // micro-corrections from chattering the loop.
+        private const float TurnStart = 0.25f;
+        private const float TurnStop = 0.12f;
 
         private readonly IAudioEngine _audio;
         private readonly Action<string, bool> _speak;
@@ -73,6 +79,7 @@ namespace DD2A11y.Game {
         private bool _edgeArmed = true;
         private bool _inDanger;
         private bool _dangerKnown;
+        private IAudioLoop _turnLoop;
 
         public RoadSense(IAudioEngine audio, Action<string, bool> speak, InputGate gate,
                          Core.Settings.IntSetting sensingRange) {
@@ -234,6 +241,7 @@ namespace DD2A11y.Game {
             UpdatePickupLoops(vehicle.transform);
             UpdateNodeLoops(vehicle.transform);
             CheckRoadEdge(vehicle.transform);
+            CheckTurning(vehicle);
             CheckDanger();
 
             if (Time.unscaledTime < _nextScanTime) {
@@ -328,6 +336,32 @@ namespace DD2A11y.Game {
             }
         }
 
+        // The turning layer: the loop runs while the coach actually rotates - the game's own
+        // turn-speed state times the speed ratio, the same product its rotation math applies
+        // (and what the road-snap assist steers with, so curves the coach takes itself sound
+        // too) - panned toward the turn and louder the harder it is. The settle back to
+        // straight plays the end cue; a loop cut by a capture or mode change ends silently.
+        private void CheckTurning(AVehicleControl vehicle) {
+            float ratio = vehicle is StageCoachVehicleControlBhv coach
+                ? coach.GetTurnSpeedRatio() * Mathf.Abs(vehicle.GetSpeedRatio()) : 0f;
+            float strength = Mathf.Abs(ratio);
+            float pan = Mathf.Clamp(ratio * 1.4f, -1f, 1f);
+            float volume = Mathf.Lerp(0.35f, 0.9f, strength);
+            if (_turnLoop == null) {
+                if (strength > TurnStart) {
+                    _turnLoop = _audio.StartLoop(AudioCue.RoadTurning, volume, pan);
+                }
+                return;
+            }
+            if (strength < TurnStop) {
+                _turnLoop.Stop();
+                _turnLoop = null;
+                _audio.PlayCue(AudioCue.RoadTurnEnd, 1f, 0f);
+                return;
+            }
+            _turnLoop.Update(volume, pan);
+        }
+
         private void StopAllLoops() {
             foreach (var pair in _pickupLoops) {
                 pair.Value.Stop();
@@ -337,6 +371,10 @@ namespace DD2A11y.Game {
                 pair.Value.Stop();
             }
             _nodeLoops.Clear();
+            if (_turnLoop != null) {
+                _turnLoop.Stop();
+                _turnLoop = null;
+            }
         }
 
         private static float PanTo(Transform coach, Vector3 target) {

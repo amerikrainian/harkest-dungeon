@@ -100,6 +100,8 @@ namespace DD2A11y.Audio {
                 case AudioCue.RoadDangerEnter: return Road("danger_enter");
                 case AudioCue.RoadDangerExit: return Road("danger_exit");
                 case AudioCue.RoadEdgeBump: return Road("road_edge");
+                case AudioCue.RoadTurning: return Road("turning");
+                case AudioCue.RoadTurnEnd: return Road("end_turn");
                 case AudioCue.RoadCoachDamage: return Road("coach_damage");
                 case AudioCue.RoadCoachBreak: return Road("coach_break");
                 case AudioCue.RoadPenalty: return Road("penalty");

@@ -29,6 +29,10 @@ namespace DD2A11y.Core.Audio {
         RoadDangerExit,
         /// <summary>Drifting off the road's edge.</summary>
         RoadEdgeBump,
+        /// <summary>The coach is turning (loops while the turn lasts, panned toward it).</summary>
+        RoadTurning,
+        /// <summary>The turn ended; the coach runs straight again.</summary>
+        RoadTurnEnd,
         /// <summary>Wheels or armor took a hit.</summary>
         RoadCoachDamage,
         /// <summary>A wheel or armor slot fully broke.</summary>

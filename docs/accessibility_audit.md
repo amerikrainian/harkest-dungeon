@@ -1036,6 +1036,13 @@ wired but pending an ear pass. The mod's own NAudio output (independent of FMOD;
   "interact" instead of the zone blip); **ambush** (AMBUSH-category event executing); **danger
   stretches** (the game's inkfire-tile flag, enter/exit on the flips); **Loathing** (a DOOM
   run-value increase).
+- Wired 2026-08-04, by-ear pass pending: **turning** - a loop while the coach actually
+  rotates, panned toward the turn and louder the harder it is, with an end cue on the settle
+  back to straight. The signal is the coach's own turn-speed state times the speed ratio (the
+  product its rotation math applies, and what the horses' turn animation runs on), so
+  road-snap curves the coach steers itself sound too; start over 25% strength, end under 12%,
+  the gap against micro-correction chatter. A capture or mode change cuts the loop silently -
+  the end cue marks only a real settle.
 - **Road transients** (all live-verified 2026-07-31 by firing the game's own paths): tutorial
   and message toasts route by mode through the toast postfixes (combat queue in battle, the
   road pending queue on the road; the patches attach at startup, not on the first combat

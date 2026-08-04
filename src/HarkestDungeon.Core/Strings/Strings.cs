@@ -246,6 +246,9 @@ namespace DD2A11y.Core.Strings {
             D("SoundRoadDangerExit", "dangerous road left"),
             // The coach is drifting off the road's edge.
             D("SoundRoadEdgeBump", "road edge"),
+            // Loops while the coach turns; its end cue marks the settle back to straight.
+            D("SoundRoadTurning", "coach turning"),
+            D("SoundRoadTurnEnd", "turn ended"),
             D("SoundRoadCoachDamage", "coach damaged"),
             // A wheel or armor slot fully broke.
             D("SoundRoadCoachBreak", "coach part broke"),
