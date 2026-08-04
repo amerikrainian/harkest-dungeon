@@ -25,6 +25,8 @@ namespace DD2A11y.Elements {
             _index = index;
         }
 
+        public string SkillId => _button.SkillId;
+
         public override bool CanFocus
             => _button != null && _button.gameObject.activeInHierarchy && !IsDuplicate();
 

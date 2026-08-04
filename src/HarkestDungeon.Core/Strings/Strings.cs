@@ -363,8 +363,6 @@ namespace DD2A11y.Core.Strings {
             D("CombatEnemies", "enemies"),
             // The torch/flame meter readout; {0} = its value. The game shows it as a bare icon.
             D("CombatTorch", "torch {0}"),
-            // Spoken when a chosen skill starts waiting for its target.
-            D("CombatSelectTarget", "select target"),
             // Why a combatant cannot take the chosen skill, prepended to its line during
             // target-select (validity itself rides as the high/low beep). Mirrors the game's
             // own target checks, which it shows only as dimming.
@@ -392,8 +390,6 @@ namespace DD2A11y.Core.Strings {
             D("CombatIntercepted", "intercepted by {0}"),
             // Picking this target draws a counter-attack; {0} = its damage range.
             D("CombatRiposte", "riposte {0}"),
-            // Spoken when target selection is cancelled back to skill choice.
-            D("CombatTargetCancelled", "target cancelled"),
             // Buffer line on a skill the hero holds twice: once equipped by the player, once as
             // a granted always-equipped copy. The game's bar shows two identical buttons that
             // select the same skill; the mod reads one button and notes the grant here.
@@ -742,8 +738,6 @@ namespace DD2A11y.Core.Strings {
         public static string CombatHeader(int round, string actor) => F("CombatHeader", round, actor);
         public static string CombatEnemies => T("CombatEnemies");
         public static string CombatTorch(int value) => F("CombatTorch", value);
-        public static string CombatSelectTarget => T("CombatSelectTarget");
-        public static string CombatTargetCancelled => T("CombatTargetCancelled");
         public static string CombatSkillAlsoGranted => T("CombatSkillAlsoGranted");
         public static string CombatTokenCount(string name, int count) => F("CombatTokenCount", name, count);
         public static string TargetOutOfRange => T("TargetOutOfRange");

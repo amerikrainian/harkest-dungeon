@@ -1333,7 +1333,11 @@ Top to bottom:
 
 ### 7.1.2 The Turn and Targeting - WORKS
 
-- Enter on a skill runs the game's own pick handler and announces "select target".
+- Enter on a skill runs the game's own pick handler; focus then snaps to the first valid
+  target (enemy strip first, so a hostile pick lands on an enemy and a friendly one on the
+  party) and the landing line - with its preview - is the whole announcement. Arrows browse
+  on from there as usual. Live-verified 2026-08-04 (Crush onto the enemy strip, Move onto
+  the party strip, via /input).
 - Landing on a combatant then plays a validity beep (660 Hz triangle for a valid target,
   440 Hz for an invalid one, `assets/audio/combat`), only when the validity CHANGED from the
   previously focused combatant - runs of same-validity targets stay silent.
@@ -1348,7 +1352,8 @@ Top to bottom:
   removal reads in the skill's own text; a conditional heal below its HP threshold previews
   as 0 and stays silent, matching the game's hidden heal bar segment).
 - Enter on a target sends the game's own actor-pick event to execute. Escape cancels
-  target-select first, else opens the pause menu.
+  target-select first, landing back on the picked skill's button whose own line ("selected,
+  Crush, button") is the whole feedback; else it opens the pause menu.
 - Turn lines ("round 2, Audrey") are spoken outright on every turn change - focus can sit
   anywhere - and logged to the combat buffer once.
 

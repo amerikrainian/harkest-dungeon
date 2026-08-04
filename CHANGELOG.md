@@ -9,6 +9,10 @@
 - R and Shift+R (rename, reroll) now exist only at the crossroads, where they do something.
   They no longer squat on the keyboard everywhere else announcing "unavailable" - which is
   what freed R to be a hero glance in combat.
+- Picking a skill now drops your cursor straight onto the first valid target, preview and
+  all, instead of announcing "select target" and leaving you on the skill bar to commute
+  from. Arrows browse targets as before; Escape returns you to the skill, whose own line
+  ("selected, Crush, button") replaces the old "target cancelled".
 - The audio settings tab now reads the active audio device row ("Audio Device, Speakers..."),
   which only OCR could see before: it is plain text with no control, so the sweep skipped it.
 - A master volume slider now heads the mod sounds tab, setting the baseline volume of every

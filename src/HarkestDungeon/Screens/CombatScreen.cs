@@ -25,9 +25,10 @@ namespace DD2A11y.Screens {
     /// turn order; then the battle goal when the fight has one), the enemy strip, the party
     /// strip (both rank-ordered, full status in each combatant's buffer), then the acting
     /// hero's skill bar (skills, move, pass, retreat). Enter on a skill runs the game's
-    /// own pick and flips into target-select - every combatant then reads its validity, and
-    /// Enter on one sends the game's own actor-pick to execute. Escape cancels target-select,
-    /// else opens the pause menu. Turn changes rebuild the tree; turn lines and battle events
+    /// own pick and flips into target-select - focus snaps to the first valid target, every
+    /// combatant reads its validity, and Enter on one sends the game's own actor-pick to
+    /// execute. Escape cancels target-select back onto the picked skill's button, else opens
+    /// the pause menu. Turn changes rebuild the tree; turn lines and battle events
     /// (damage, deaths, enemy actions) are announced and kept in the combat buffer, which
     /// empties when the battle ends.
     /// </summary>
@@ -53,6 +54,7 @@ namespace DD2A11y.Screens {
 
         private readonly Action<string, bool> _speak;
         private readonly DD2A11y.Core.Audio.IAudioEngine _audio;
+        private readonly TraditionalNavigator _navigator;
         private CombatBhv _combat;
         private SkillSelectionBhv _skillSelection;
         private BattleInfoUiBhv _battleInfo;
@@ -68,9 +70,11 @@ namespace DD2A11y.Screens {
         private string _lastTurnLine;
         private bool? _lastTargetValid;
 
-        public CombatScreen(Action<string, bool> speak, DD2A11y.Core.Audio.IAudioEngine audio) {
+        public CombatScreen(Action<string, bool> speak, DD2A11y.Core.Audio.IAudioEngine audio,
+                            TraditionalNavigator navigator) {
             _speak = speak;
             _audio = audio;
+            _navigator = navigator;
         }
 
         public override string Name => S.ScreenCombat;
@@ -166,13 +170,16 @@ namespace DD2A11y.Screens {
                 Populate();
             }
 
-            // Entering target-select is the response to the player's skill pick; announce it.
-            // Falling back to skill-select is covered by the turn flow.
+            // Entering target-select is the response to the player's skill pick: focus snaps
+            // to the first combatant the pick can take, so targeting starts on a target
+            // instead of the skill bar (the landing line carries the preview, the validity
+            // beep rides the settle, and arrows browse on from there). Falling back to
+            // skill-select is covered by the turn flow and the Escape path.
             if (_skillSelection != null && _skillSelection.CurrentInputState != _lastInputState) {
                 _lastInputState = _skillSelection.CurrentInputState;
                 _lastTargetValid = null;
                 if (_lastInputState == SkillSelectionBhv.InputState.ACTOR_SELECT) {
-                    _speak(S.CombatSelectTarget, true);
+                    FocusFirstValidTarget();
                 }
             }
             return false;
@@ -402,15 +409,52 @@ namespace DD2A11y.Screens {
             return label == null ? null : label.TrimEnd(':', ' ');
         }
 
-        // Escape: first back out of target-select (the game's own cancel), else the pause menu.
+        private void FocusFirstValidTarget() {
+            if (!Game.Targeting.TryGetPick(out var performer, out _)) {
+                return;
+            }
+            foreach (var strip in new[] { _enemies, _party }) {
+                foreach (var child in strip.Children) {
+                    if (child is CombatantElement combatant && combatant.CanFocus
+                        && Game.Targeting.IsValidTarget(performer, combatant.Guid)) {
+                        _navigator.Focus(combatant, announce: true);
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Escape: first back out of target-select (the game's own cancel), landing back on
+        // the picked skill's button - its own line ("selected, Crush, button") is the whole
+        // feedback; else the pause menu.
         private void Back() {
             if (_skillSelection != null
                 && _skillSelection.CurrentInputState == SkillSelectionBhv.InputState.ACTOR_SELECT) {
+                var skill = SelectedSkillElement();
                 _skillSelection.CancelTargetSelection();
-                _speak(S.CombatTargetCancelled, true);
+                if (skill != null) {
+                    _navigator.Focus(skill, announce: true);
+                } else {
+                    Plugin.Log.LogWarning("combat: no bar button for the cancelled pick");
+                }
                 return;
             }
             SingletonMonoBehaviour<CommonUiBhv>.Instance.TogglePauseMenu();
+        }
+
+        private CombatSkillElement SelectedSkillElement() {
+            if (!Game.Targeting.TryGetPick(out var performer, out _)) {
+                return null;
+            }
+            foreach (var strip in new[] { _skills, _commands }) {
+                foreach (var child in strip.Children) {
+                    if (child is CombatSkillElement element && element.CanFocus
+                        && element.SkillId == performer.SelectedSkillId) {
+                        return element;
+                    }
+                }
+            }
+            return null;
         }
     }
 }

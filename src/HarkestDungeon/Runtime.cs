@@ -203,7 +203,7 @@ namespace DD2A11y {
             // The inspector overlays the battle, so it outranks the combat floor.
             _academic = new AcademicScreen(speak);
             Router.Register(_academic);
-            _combat = new CombatScreen(speak, Audio);
+            _combat = new CombatScreen(speak, Audio, Navigator);
             Router.Register(_combat);
             Router.Register(new RouteChoiceScreen(Audio));
             // The road map shares the keyboard with live driving, so it sits below every
