@@ -2,6 +2,13 @@
 
 ## v0.2.2
 
+- Combat glance hotkeys: 1-4 read the enemy strip, Q/W/E/R the party, in rank order, without
+  moving your cursor. Bare key is name and health ("Bigby, HP 40/40, Stress 0/10"), Shift is
+  the token summary, buffs before debuffs ("Death Armor x2", "Block (3 Turns)"), Ctrl is the
+  resistance line ("STUN 20%, BLIGHT 40%..."). Empty slots keep quiet. All rebindable.
+- R and Shift+R (rename, reroll) now exist only at the crossroads, where they do something.
+  They no longer squat on the keyboard everywhere else announcing "unavailable" - which is
+  what freed R to be a hero glance in combat.
 - The audio settings tab now reads the active audio device row ("Audio Device, Speakers..."),
   which only OCR could see before: it is plain text with no control, so the sweep skipped it.
 - A master volume slider now heads the mod sounds tab, setting the baseline volume of every

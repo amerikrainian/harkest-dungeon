@@ -398,6 +398,9 @@ namespace DD2A11y.Core.Strings {
             // a granted always-equipped copy. The game's bar shows two identical buttons that
             // select the same skill; the mod reads one button and notes the grant here.
             D("CombatSkillAlsoGranted", "also granted as a bonus skill"),
+            // A stacked token in the Shift-glance line - the game's own x-count with a space a
+            // reader can speak; {0} = the token's name, {1} = the stack count (2 or more).
+            D("CombatTokenCount", "{0} x{1}"),
             // Battle events, announced as they happen and kept in the combat buffer.
             // Damage to any combatant; {0} = who, {1} = the amount (2 or more).
             D("CombatTookDamage", "{0} took {1} damage"),
@@ -539,6 +542,15 @@ namespace DD2A11y.Core.Strings {
             // The hero-name keys at the crossroads, acting on the focused hero.
             D("InputRename", "Rename hero"),
             D("InputReroll", "Roll a new hero name"),
+            // The combat glance hotkeys, one action per battlefield slot in rank order;
+            // {0} = the slot number. Bare key = name and health, Shift = buffs and debuffs,
+            // Ctrl = resistances.
+            D("InputCombatEnemy", "Enemy {0} status"),
+            D("InputCombatEnemyEffects", "Enemy {0} buffs and debuffs"),
+            D("InputCombatEnemyResists", "Enemy {0} resistances"),
+            D("InputCombatHero", "Hero {0} status"),
+            D("InputCombatHeroEffects", "Hero {0} buffs and debuffs"),
+            D("InputCombatHeroResists", "Hero {0} resistances"),
         };
 
         private static readonly Dictionary<string, string> English = BuildEnglish();
@@ -733,6 +745,7 @@ namespace DD2A11y.Core.Strings {
         public static string CombatSelectTarget => T("CombatSelectTarget");
         public static string CombatTargetCancelled => T("CombatTargetCancelled");
         public static string CombatSkillAlsoGranted => T("CombatSkillAlsoGranted");
+        public static string CombatTokenCount(string name, int count) => F("CombatTokenCount", name, count);
         public static string TargetOutOfRange => T("TargetOutOfRange");
         public static string TargetAlliesOnly => T("TargetAlliesOnly");
         public static string TargetEnemiesOnly => T("TargetEnemiesOnly");
@@ -831,5 +844,11 @@ namespace DD2A11y.Core.Strings {
         public static string InputDiscard => T("InputDiscard");
         public static string InputRename => T("InputRename");
         public static string InputReroll => T("InputReroll");
+        public static string InputCombatEnemy(int slot) => F("InputCombatEnemy", slot);
+        public static string InputCombatEnemyEffects(int slot) => F("InputCombatEnemyEffects", slot);
+        public static string InputCombatEnemyResists(int slot) => F("InputCombatEnemyResists", slot);
+        public static string InputCombatHero(int slot) => F("InputCombatHero", slot);
+        public static string InputCombatHeroEffects(int slot) => F("InputCombatHeroEffects", slot);
+        public static string InputCombatHeroResists(int slot) => F("InputCombatHeroResists", slot);
     }
 }

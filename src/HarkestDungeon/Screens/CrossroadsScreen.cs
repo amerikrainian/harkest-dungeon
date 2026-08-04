@@ -68,6 +68,11 @@ namespace DD2A11y.Screens {
 
         public override string Name => S.ScreenCrossroads;
 
+        // The hero slots advertise rename/reroll, so the roster keys are live here.
+        private static readonly Core.Input.InputCategory[] RosterCategories =
+            { Core.Input.InputCategory.Roster, Core.Input.InputCategory.UI };
+        public override Core.Input.InputCategory[] InputCategories => RosterCategories;
+
         public override object ResolveTarget() {
             if (GameModeMgr.CurrentMode != GameModeType.HERO_SELECT || Singleton<GameModeMgr>.Instance.IsChangingState()) {
                 return null;

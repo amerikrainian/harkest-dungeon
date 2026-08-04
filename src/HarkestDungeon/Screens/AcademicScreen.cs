@@ -50,6 +50,11 @@ namespace DD2A11y.Screens {
 
         public override string Name => S.ScreenInspector;
 
+        // The combat keys stay live here: I closes the view, A/D cycle, the glances still read.
+        private static readonly Core.Input.InputCategory[] CombatCategories =
+            { Core.Input.InputCategory.Combat, Core.Input.InputCategory.UI };
+        public override Core.Input.InputCategory[] InputCategories => CombatCategories;
+
         public override object ResolveTarget() {
             if (GameModeMgr.CurrentMode != GameModeType.COMBAT
                 || !SingletonMonoBehaviour<CombatUiBhv>.HasInstance()

@@ -766,7 +766,8 @@ Live-verified 2026-07-23. The pre-run hub (the HERO_SELECT mode - `HeroSelectBhv
   for a screen-reader user, so each gets a key. The rename runs the game's edit flow
   (keystrokes echo, the accepted name reads back, the mod's keys pause meanwhile); the reroll
   speaks the new name, which the game otherwise changes silently. A non-hero element answers
-  "unavailable" rather than going quiet.
+  "unavailable" rather than going quiet. The pair lives in the Roster input category, declared
+  only by this screen - everywhere else R is free (in combat it is the hero-4 glance).
 - "reset hero" (a run survivor's cosmetics/memories restore, the game asking to confirm)
   stays in the actions block; it is icon-only in the game, so it takes an authored label.
 - Hero labels are the game's own class-name loc keys; locked heroes say "unavailable" with
@@ -1351,7 +1352,27 @@ Top to bottom:
 - Turn lines ("round 2, Audrey") are spoken outright on every turn change - focus can sit
   anywhere - and logged to the combat buffer once.
 
-### 7.1.3 Buffers - WORKS
+### 7.1.3 Glance hotkeys - WORKS
+
+Live-verified 2026-08-04 (player-pressed, all three layers). One key per strip slot in rank
+order - 1-4 the enemy strip, Q/W/E/R the party - spoken in place, focus stays put. A slot
+with no combatant is silent. The keys live in the Combat input category (declared by this
+screen and the inspector overlay only), so they never shadow the roster rename or other
+screens' keys; all 24 are rebindable from the mod keys tab.
+
+- **Bare key**: the scroll-over read without the rank word (the key is the rank) -
+  "Lost Soul, HP 13/13", "Bigby, HP 40/40, Stress 0/10" - including the target-validity
+  reason/preview while a pick is pending.
+- **Shift**: the token/dot/buff summary, positives then negatives, each token as its bare
+  name with the stack count when above one (mod-authored "{0} x{1}" - the game's own format
+  lacks the space a reader needs) and its duration when above one ("Death Armor x2",
+  "Block (3 Turns)"); dots as the game's condensed dot text; combat buffs (the
+  `IsEligibleToShowAsCombatUi` set) split by their buff/debuff tag. No effects = silence.
+- **Ctrl**: the resistance grid as one line, using the game's grid names with the shared
+  RESIST word stripped (`CommonAffix`, language-agnostic character-level affix strip):
+  "STUN 20%, BLIGHT 40%, ... DEATHBLOW 90%".
+
+### 7.1.4 Buffers - WORKS
 
 - Combatant buffers: HP, stress (heroes), then one line per token (hidden tokens filtered by
   the game's own `IsHidden` gate - they are internal logic-control state whose loc text is a
@@ -1360,7 +1381,7 @@ Top to bottom:
   game's own describers.
 - Skill buffers: the full skill card (shared `SkillCard` composer with the hero sheet).
 
-### 7.1.4 Battle Events - WORKS
+### 7.1.5 Battle Events - WORKS
 
 Announced as they happen (queued, so narration stacks in order) and kept in the **combat
 buffer** (Ctrl+Left/Right; follows the latest line; empties when the battle ends). Display
@@ -1783,7 +1804,7 @@ has had no dedicated audit pass; boss-specific presentation is unaudited.
 
 Kingdoms entry, save select, and the creation wizard are in 1.5. Kingdoms inns add the
 stationed-heroes row (8.2), Select Replacement Hero (8.9), the Relationships matrix (8.7), and
-Inn Upgrades (8.8). The gang escalation tooltip in siege combat is an open gap (7.1.4).
+Inn Upgrades (8.8). The gang escalation tooltip in siege combat is an open gap (7.1.5).
 
 ## 10.1 Kingdom Overworld Map (`KingdomMapScreen`) - WORKS
 
@@ -1950,7 +1971,7 @@ danger, Loathing (5.2); combat target-validity beeps (7.1.2); map cursor node ti
 - Credits (2.8)
 - Combat intros, REALTIME_CINEMATIC (7.4)
 - The Mountain's boss-specific presentation (9.2)
-- Kingdoms siege gang-escalation tooltip (7.1.4 gap)
+- Kingdoms siege gang-escalation tooltip (7.1.5 gap)
 - DEBUG-tab filter field; sliders' display values (2.1 gaps)
 
 ---

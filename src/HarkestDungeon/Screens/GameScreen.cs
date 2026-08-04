@@ -1,3 +1,4 @@
+using DD2A11y.Core.Input;
 using DD2A11y.Core.Nav;
 
 namespace DD2A11y.Screens {
@@ -30,6 +31,14 @@ namespace DD2A11y.Screens {
         /// that shares the keyboard with live gameplay (the road map: our arrows, the game's
         /// WASD) answers false and suppresses the specific game bindings it claims instead.</summary>
         public virtual bool CapturesKeyboard => true;
+
+        private static readonly InputCategory[] UiOnlyCategories = { InputCategory.UI };
+
+        /// <summary>The input categories live while this screen stands, highest-priority first
+        /// (Global is always appended by the manager). A screen with commands of its own (the
+        /// combat glances, the crossroads rename) declares their category here, so those keys
+        /// are dead everywhere the commands do not apply.</summary>
+        public virtual InputCategory[] InputCategories => UiOnlyCategories;
 
         /// <summary>First shot at a dispatched UI action, before the navigator's tree handling.
         /// A bespoke-cursor screen (the map viewer) consumes its keys here.</summary>

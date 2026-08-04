@@ -14,5 +14,14 @@ namespace DD2A11y.Core.Input {
         /// keyboard; nav keys are routed into the active navigator rather than firing a handler
         /// directly.</summary>
         UI,
+
+        /// <summary>Battlefield keys (combatant glances, the inspector), declared by the combat
+        /// floor and its inspector overlay. Declared ahead of UI, so a chord both categories
+        /// carry resolves to the combat command there.</summary>
+        Combat,
+
+        /// <summary>Hero-roster keys (rename, name reroll), declared by the screens whose hero
+        /// slots advertise those actions (the crossroads).</summary>
+        Roster,
     }
 }

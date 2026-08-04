@@ -75,6 +75,10 @@ namespace DD2A11y.Screens {
 
         public override string Name => S.ScreenCombat;
 
+        private static readonly Core.Input.InputCategory[] CombatCategories =
+            { Core.Input.InputCategory.Combat, Core.Input.InputCategory.UI };
+        public override Core.Input.InputCategory[] InputCategories => CombatCategories;
+
         public override object ResolveTarget() {
             if (GameModeMgr.CurrentMode != GameModeType.COMBAT || Singleton<GameModeMgr>.Instance.IsChangingState()) {
                 Release();
@@ -360,6 +364,34 @@ namespace DD2A11y.Screens {
                         battleInfo.ButtonFuncAttemptRetreat,
                         () => TooltipReader.LinesOf(RetreatTooltipField(battleInfo))));
                 }
+            }
+        }
+
+        // ---- Glance hotkeys ----
+
+        // The combatant hotkeys speak one strip slot (rank order) without moving focus: the
+        // digit row glances enemies, the QWER row the party. A slot with no combatant is
+        // silent - the empty rank is the answer.
+
+        public void GlanceStatus(bool friendly, int index)
+            => Glance(friendly, index, e => e.GlanceLine());
+
+        public void GlanceEffects(bool friendly, int index)
+            => Glance(friendly, index, e => e.GlanceEffectsLine());
+
+        public void GlanceResists(bool friendly, int index)
+            => Glance(friendly, index, e => e.GlanceResistsLine());
+
+        private void Glance(bool friendly, int index, Func<CombatantElement, string> line) {
+            var strip = friendly ? _party : _enemies;
+            var element = strip != null && index < strip.Children.Count
+                ? strip.Children[index] as CombatantElement : null;
+            if (element == null || !element.CanFocus) {
+                return;
+            }
+            string text = line(element);
+            if (text != null) {
+                _speak(text, true);
             }
         }
 

@@ -3,6 +3,8 @@ using Assets.Code.Actor;
 using Assets.Code.Actor.Events;
 using Assets.Code.Buff;
 using Assets.Code.Combat;
+using Assets.Code.Duration;
+using Assets.Code.Token;
 using Assets.Code.UI;
 using Assets.Code.UI.Events;
 using Assets.Code.UI.Tooltips;
@@ -86,6 +88,114 @@ namespace DD2A11y.Elements {
             return format == null ? hp + "/" + max : string.Format(format, hp, max);
         }
 
+        // The game's stress-bar caption; null for monsters, which have no stress bar.
+        private string StressText(ActorInstance actor) {
+            if (!_friendly) {
+                return null;
+            }
+            string format = GameLoc.TryGet("status_bar_stress");
+            return format == null ? null : string.Format(format, (int)actor.Stress, (int)actor.StressMax);
+        }
+
+        // ---- Glance hotkeys (spoken in place, focus stays put) ----
+
+        /// <summary>The bare-hotkey glance: the scroll-over read without the rank word (the
+        /// key itself is the rank), plus a hero's stress.</summary>
+        public string GlanceLine() {
+            var actor = Actor;
+            if (actor == null) {
+                return null;
+            }
+            string preview = PickPending(out var performer, out _) && Targeting.IsValidTarget(performer, _guid)
+                ? Targeting.PreviewText(performer, _guid) : null;
+            return SpokenLine.Join(Label, HpText(actor), StressText(actor), preview);
+        }
+
+        /// <summary>The Shift-hotkey glance: every token stack, dot, and combat buff as a
+        /// terse line - positives first, then negatives - the token name with its stack count
+        /// ("Block x2") and its shown duration when either says more than 1. Null when the
+        /// combatant carries none (the caller stays silent).</summary>
+        public string GlanceEffectsLine() {
+            var actor = Actor;
+            if (actor == null) {
+                return null;
+            }
+            var positives = new List<string>();
+            var negatives = new List<string>();
+            foreach (var stack in TokenIconBhv.ConvertInstancesToStacks(Actors.VisibleTokens(actor))) {
+                var definition = stack.Key.Definition;
+                string name = TokenDescription.GetUnglyphedNameString(definition);
+                if (stack.Value > 1) {
+                    name = S.CombatTokenCount(name, stack.Value);
+                }
+                int duration = stack.Key.GetDurationAmount();
+                if (definition.m_ShowCombatDuration && duration > 1) {
+                    name += " (" + DurationDescription.GetDurationText(definition.DurationType, duration) + ")";
+                }
+                (definition.IsNegative ? negatives : positives).Add(name);
+            }
+            var dots = actor.DotContainer?.GetInstances();
+            if (dots != null && dots.Count > 0) {
+                foreach (var line in SpokenLine.NonEmptyLines(DotTooltipBhv.MakeTooltipText(dots, condense: true))) {
+                    negatives.Add(line);
+                }
+            }
+            var buffs = actor.BuffContainer?.GetInstances();
+            if (buffs != null) {
+                foreach (var buff in buffs) {
+                    if (buff?.Definition == null || !buff.Definition.IsEligibleToShowAsCombatUi) {
+                        continue;
+                    }
+                    string text = BuffDescription.GetDescriptionWithDuration(buff);
+                    if (string.IsNullOrWhiteSpace(text)) {
+                        continue;
+                    }
+                    bool isBuff = buff.Definition.Tags != null && buff.Definition.Tags.Contains("buff");
+                    foreach (var line in SpokenLine.NonEmptyLines(text)) {
+                        (isBuff ? positives : negatives).Add(line);
+                    }
+                }
+            }
+            if (positives.Count == 0 && negatives.Count == 0) {
+                return null;
+            }
+            positives.AddRange(negatives);
+            return SpokenLine.Join(positives.ToArray());
+        }
+
+        /// <summary>The Ctrl-hotkey glance: the resistance grid as one line, name and value
+        /// per resist the game shows for this combatant, the shared RESIST word said once by
+        /// its omission ("STUN 20%, MOVE 10%").</summary>
+        public string GlanceResistsLine() {
+            var actor = Actor;
+            if (actor == null) {
+                return null;
+            }
+            var names = new List<string>();
+            var values = new List<string>();
+            foreach (string id in Study.ResistIds(actor)) {
+                string value = Study.ResistValue(actor, id);
+                if (value == null) {
+                    continue;
+                }
+                string name = Study.ResistName(id);
+                if (name == null) {
+                    continue;
+                }
+                names.Add(name);
+                values.Add(value);
+            }
+            if (names.Count == 0) {
+                return null;
+            }
+            var terse = CommonAffix.Shorten(names);
+            var parts = new string[names.Count];
+            for (int i = 0; i < parts.Length; i++) {
+                parts[i] = terse[i] + " " + values[i];
+            }
+            return SpokenLine.Join(parts);
+        }
+
         public override IEnumerable<ElementAction> GetActions() {
             // The same event a mouse click on the actor sends; in target-select the battle state
             // machine validates and executes, otherwise it is the game's browse/no-op.
@@ -114,11 +224,9 @@ namespace DD2A11y.Elements {
                 }
                 yield return S.SheetSpeed((int)actor.GetClampedStatValue(ActorStatType.SPEED));
             }
-            if (_friendly) {
-                string stressFormat = GameLoc.TryGet("status_bar_stress");
-                if (stressFormat != null) {
-                    yield return string.Format(stressFormat, (int)actor.Stress, (int)actor.StressMax);
-                }
+            string stress = StressText(actor);
+            if (stress != null) {
+                yield return stress;
             }
             var tokens = Actors.VisibleTokens(actor);
             if (tokens.Count > 0) {

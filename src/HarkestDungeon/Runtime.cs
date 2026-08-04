@@ -16,7 +16,6 @@ namespace DD2A11y {
     /// <summary>Owns every subsystem and the per-frame order: dev-server pump, language sync,
     /// screen routing, input-gate re-assert, then key dispatch.</summary>
     public sealed class Runtime : IDisposable {
-        private static readonly InputCategory[] UiCategories = { InputCategory.UI };
         private static readonly InputCategory[] NoCategories = { };
 
         public SpeechPipeline Speech { get; }
@@ -229,9 +228,12 @@ namespace DD2A11y {
             RegisterInputs();
             Keymap.Load();
             // Keys are live while the gate holds the keyboard, and also under a screen that
-            // deliberately shares it (the road map claims arrows, the game keeps WASD).
+            // deliberately shares it (the road map claims arrows, the game keeps WASD). The
+            // live categories are the active screen's own declaration, so screen-specific
+            // commands (combat glances, the crossroads rename) die with their screen.
             Input.ActiveCategoriesProvider = () =>
-                Gate.Captured || (Router.Active != null && !Router.Active.CapturesKeyboard) ? UiCategories : NoCategories;
+                Router.Active != null && (Gate.Captured || !Router.Active.CapturesKeyboard)
+                    ? Router.Active.InputCategories : NoCategories;
             // While a game text field is being typed into, every key belongs to the field - and
             // for one tick after the edit ends: the field processes its closing Enter/Escape
             // earlier in the same frame, so that key is still this frame's press and would
@@ -266,8 +268,9 @@ namespace DD2A11y {
                 : KeyboardBinding.TryDeserialize(text);
 
         private void RegisterInputs() {
-            InputAction Reg(string key, string label, Action handler = null)
-                => Input.Register(key, label, InputCategory.UI, handler);
+            InputAction Reg(string key, string label, Action handler = null,
+                            InputCategory category = InputCategory.UI)
+                => Input.Register(key, label, category, handler);
             KeyboardBinding K(UnityEngine.InputSystem.Key key, bool ctrl = false, bool shift = false)
                 => new KeyboardBinding(key, ctrl, shift);
             PadBinding P(PadInput input) => new PadBinding(input);
@@ -327,26 +330,54 @@ namespace DD2A11y {
             }).AddBinding(K(Key.I));
             // The combat inspector (the game's academic view): I toggles it on the focused
             // combatant; while it is up, A/D cycle combatants - the game's own keys for it.
-            Reg("combat.inspector", S.InputInspector, () => _academic.Toggle(Router, Navigator))
-                .AddBinding(K(Key.I));
-            Reg("combat.inspector.prev", S.InputInspectorPrev, () => _academic.Cycle(Router, -1))
-                .AddBinding(K(Key.A));
-            Reg("combat.inspector.next", S.InputInspectorNext, () => _academic.Cycle(Router, +1))
-                .AddBinding(K(Key.D));
+            Reg("combat.inspector", S.InputInspector, () => _academic.Toggle(Router, Navigator),
+                InputCategory.Combat).AddBinding(K(Key.I));
+            Reg("combat.inspector.prev", S.InputInspectorPrev, () => _academic.Cycle(Router, -1),
+                InputCategory.Combat).AddBinding(K(Key.A));
+            Reg("combat.inspector.next", S.InputInspectorNext, () => _academic.Cycle(Router, +1),
+                InputCategory.Combat).AddBinding(K(Key.D));
+            // Combatant glances, one key per strip slot in rank order: the digit row reads
+            // enemies, the QWER row the party. Bare = name and health, Shift = the token/buff
+            // summary, Ctrl = resistances - spoken in place, focus stays put. Combat-category,
+            // so R is the roster rename everywhere these keys are dead.
+            var enemyKeys = new[] { Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4 };
+            var heroKeys = new[] { Key.Q, Key.W, Key.E, Key.R };
+            for (int i = 0; i < enemyKeys.Length; i++) {
+                int slot = i;
+                int number = i + 1;
+                Reg("combat.enemy." + number, S.InputCombatEnemy(number),
+                    () => _combat.GlanceStatus(friendly: false, slot), InputCategory.Combat)
+                    .AddBinding(K(enemyKeys[slot]));
+                Reg("combat.enemy.effects." + number, S.InputCombatEnemyEffects(number),
+                    () => _combat.GlanceEffects(friendly: false, slot), InputCategory.Combat)
+                    .AddBinding(K(enemyKeys[slot], shift: true));
+                Reg("combat.enemy.resists." + number, S.InputCombatEnemyResists(number),
+                    () => _combat.GlanceResists(friendly: false, slot), InputCategory.Combat)
+                    .AddBinding(K(enemyKeys[slot], ctrl: true));
+                Reg("combat.hero." + number, S.InputCombatHero(number),
+                    () => _combat.GlanceStatus(friendly: true, slot), InputCategory.Combat)
+                    .AddBinding(K(heroKeys[slot]));
+                Reg("combat.hero.effects." + number, S.InputCombatHeroEffects(number),
+                    () => _combat.GlanceEffects(friendly: true, slot), InputCategory.Combat)
+                    .AddBinding(K(heroKeys[slot], shift: true));
+                Reg("combat.hero.resists." + number, S.InputCombatHeroResists(number),
+                    () => _combat.GlanceResists(friendly: true, slot), InputCategory.Combat)
+                    .AddBinding(K(heroKeys[slot], ctrl: true));
+            }
             // Rename the focused hero, and roll them a random name. The game puts both on one
             // key by tap-versus-hold; a hold is poor for a screen-reader user, so they get a
-            // key each. Only hero elements advertise these, so anything else answers
-            // "unavailable" rather than silence.
+            // key each. Roster-category (live only where hero slots advertise the actions);
+            // a non-hero element there answers "unavailable" rather than silence.
             Reg("ui.rename", S.InputRename, () => {
                 if (Navigator.Current?.InvokeAction("rename") != true) {
                     Speech.Speak(S.StatusUnavailable, interrupt: true);
                 }
-            }).AddBinding(K(Key.R));
+            }, InputCategory.Roster).AddBinding(K(Key.R));
             Reg("ui.reroll", S.InputReroll, () => {
                 if (Navigator.Current?.InvokeAction("reroll") != true) {
                     Speech.Speak(S.StatusUnavailable, interrupt: true);
                 }
-            }).AddBinding(K(Key.R, shift: true));
+            }, InputCategory.Roster).AddBinding(K(Key.R, shift: true));
             // Discard the focused item (the game's shift-click); the element advertises the
             // action only where the game allows the discard, so anything else answers
             // "unavailable" rather than silence.
