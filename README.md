@@ -46,6 +46,30 @@ Items and heroes:
 - **Shift+Space** - place a single item off a grabbed stack.
 - **Shift+Enter** - discard the focused item (the game's shift-click).
 
+At the crossroads:
+
+- **R** - rename the focused hero (type the name, Enter to accept).
+- **Shift+R** - roll the focused hero a random name.
+
+In combat, glances speak without moving your cursor:
+
+- **1-4** - the enemy in that rank: name and health. **Q/W/E/R** - the same for your party.
+- **Shift+number/letter** - that combatant's tokens, buffs, and debuffs.
+- **Ctrl+number/letter** - that combatant's resistances.
+- **S** - the acting combatant's status.
+- **T** on a focused skill - everyone that skill could hit right now, with hit, crit, and
+  damage previews; on an unusable skill, the reason it is grey.
+- **Shift+T** - the turn order.
+- **I** - open or close the inspector (the game's hold-Alt combatant dossier) on the focused
+  combatant; **A / D** cycle combatants while it is open.
+
+Picking a skill with Enter drops the cursor on its first valid target; arrows browse the rest
+(a high or low beep marks valid and invalid targets), Enter executes, Escape returns to the
+skill bar.
+
+Every mod key can be rebound from the settings screen's "mod keys" tab, keyboard and
+controller alike.
+
 One exception while the road map is open: the arrow keys browse the map and Ctrl belongs to
 buffer review, so the game's hold-Ctrl token glossary is unavailable there. WASD keeps driving
 the coach the whole time.
