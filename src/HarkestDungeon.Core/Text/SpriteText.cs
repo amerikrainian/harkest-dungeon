@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace DD2A11y.Core.Text {
@@ -29,6 +30,16 @@ namespace DD2A11y.Core.Text {
                 // the whitespace collapse later tidies any doubling.
                 return word == null ? match.Value : " " + word + " ";
             });
+        }
+
+        /// <summary>The sprite names embedded in raw text, in order of appearance.</summary>
+        public static IEnumerable<string> Names(string? raw) {
+            if (raw == null || raw.IndexOf("<sprite", StringComparison.Ordinal) < 0) {
+                yield break;
+            }
+            foreach (Match match in SpriteTag.Matches(raw)) {
+                yield return match.Groups[1].Value;
+            }
         }
     }
 }

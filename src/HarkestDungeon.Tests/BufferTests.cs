@@ -174,5 +174,43 @@ namespace DD2A11y.Tests {
             var element = new FakeElement { L = "Row", Details = { "   ", "<b></b>", "kept" } };
             Assert.Equal(new[] { "Row", "kept" }, element.GetBufferLines());
         }
+
+        [Fact]
+        public void Glossary_SeesCollectedLines_AndAppends() {
+            var element = new FakeElement {
+                L = "Skill", Details = { "Self: <sprite name=\"token_block\">" },
+            };
+            UIElement.BufferGlossary = lines => {
+                Assert.Equal(new[] { "Skill", "Self: <sprite name=\"token_block\">" }, lines);
+                return new[] { "Block: halves the next hit" };
+            };
+            try {
+                Assert.Equal(
+                    new[] { "Skill", "Self: <sprite name=\"token_block\">", "Block: halves the next hit" },
+                    element.GetBufferLines());
+            } finally {
+                UIElement.BufferGlossary = null;
+            }
+        }
+
+        [Fact]
+        public void Glossary_Unset_AppendsNothing() {
+            var element = new FakeElement { L = "Skill", Details = { "a line" } };
+            Assert.Equal(new[] { "Skill", "a line" }, element.GetBufferLines());
+        }
+    }
+
+    public class SpriteNamesTests {
+        [Fact]
+        public void Names_YieldsEachSpriteInOrder() {
+            Assert.Equal(new[] { "token_block", "icon_bleed" }, DD2A11y.Core.Text.SpriteText.Names(
+                "Self: <sprite name=\"token_block\">. Target: <sprite name=\"icon_bleed\"> 2"));
+        }
+
+        [Fact]
+        public void Names_NoSprites_YieldsNothing() {
+            Assert.Empty(DD2A11y.Core.Text.SpriteText.Names("plain text"));
+            Assert.Empty(DD2A11y.Core.Text.SpriteText.Names(null));
+        }
     }
 }

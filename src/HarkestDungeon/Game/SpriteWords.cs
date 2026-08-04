@@ -17,10 +17,20 @@ namespace DD2A11y.Game {
 
         public static string Resolve(string spriteName) {
             if (spriteName.StartsWith(TokenPrefix, System.StringComparison.Ordinal)) {
-                // Not every token glyph has an unglyphed name key (the stress-over-time glyph is
-                // "token_stress" with no token behind it) - the humanized name keeps the meaning.
+                // An icon id can diverge from its token id ("token_blind-line" is blind's icon),
+                // so the glossary's icon-to-token mapping is tried before falling back. Not
+                // every token glyph has a token behind it at all (the stress-over-time glyph is
+                // "token_stress") - the humanized name keeps the meaning there.
                 string bareToken = spriteName.Substring(TokenPrefix.Length);
-                return GameLoc.TryGet("token_name_" + bareToken) ?? Humanize(bareToken);
+                string name = GameLoc.TryGet("token_name_" + bareToken);
+                if (name != null) {
+                    return name;
+                }
+                string tokenId = TokenGlossary.TokenIdOf(spriteName);
+                if (tokenId != null) {
+                    name = GameLoc.TryGet("token_name_" + tokenId);
+                }
+                return name ?? Humanize(bareToken);
             }
             if (spriteName.StartsWith(CostPrefix, System.StringComparison.Ordinal)) {
                 // Currency glyphs in cost text ("<cost_faction> 8"); the faction currency's

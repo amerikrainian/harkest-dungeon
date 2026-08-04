@@ -192,8 +192,11 @@ remembers its last tab across close/reopen.
 more to come - `hero`, `events`). On every focus change the plugin resets all buffers and the
 focused element populates them: the `ui` buffer gets the element's own line first (status, label,
 value - never the role word; buffers review content, and the control type is not content), then
-**one line per tooltip**, dropping details that only repeat the head's label or value. Elements
-override `GetDetailLines`; head composition and that dedupe live in `UIElement.GetBufferLines`.
+**one line per tooltip**, dropping details that only repeat the head's label or value, then one
+trailing glossary line per unique token glyph the lines carry (the game's own "Name: description"
+tooltip text - the mouse-over a sighted player gets; skipped when the description already
+appears). Elements override `GetDetailLines`; head composition, that dedupe, and the glossary
+hook live in `UIElement.GetBufferLines`.
 Ctrl+Left/Right switch among non-empty buffers (speaks "name: current line"), Ctrl+Up/Down step
 lines (speaks the line). Buffers repopulate from the live element on every buffer keypress, so
 they never go stale.

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using static DD2A11y.Core.Strings.Strings;
 
@@ -79,14 +80,22 @@ namespace DD2A11y.Core.Nav {
         public virtual string GetBufferHeadText()
             => Text.SpokenLine.Join(Status, Label, Value);
 
+        /// <summary>Supplies trailing glossary lines for a buffer: receives every line the
+        /// buffer collected, returns lines to append after them. The plugin wires the game's
+        /// token descriptions here - the mouse-over half of a token glyph; null appends
+        /// nothing (unit tests, boot).</summary>
+        public static Func<IReadOnlyList<string>, IEnumerable<string>>? BufferGlossary { get; set; }
+
         /// <summary>The element's review lines for the buffer system: its role-less own line
         /// first (<see cref="GetBufferHeadText"/>), then one line per detail the focus message
         /// leaves out - each tooltip, each stat block line - dropping blanks and details that
         /// only repeat the head's label or value (compared through the speech filter, so a
-        /// markup-carrying tooltip title still folds into the plain label). Read live on every
+        /// markup-carrying tooltip title still folds into the plain label), then whatever
+        /// <see cref="BufferGlossary"/> adds for the collected lines. Read live on every
         /// buffer keypress, so lines never go stale.</summary>
         public IEnumerable<string> GetBufferLines() {
-            yield return GetBufferHeadText();
+            var collected = new List<string> { GetBufferHeadText() };
+            yield return collected[0];
             string label = Text.TextFilter.Clean(Label);
             string value = Text.TextFilter.Clean(Value);
             foreach (var line in GetDetailLines()) {
@@ -94,6 +103,14 @@ namespace DD2A11y.Core.Nav {
                 if (string.IsNullOrWhiteSpace(clean) || clean == label || clean == value) {
                     continue;
                 }
+                collected.Add(line);
+                yield return line;
+            }
+            var glossary = BufferGlossary;
+            if (glossary == null) {
+                yield break;
+            }
+            foreach (var line in glossary(collected)) {
                 yield return line;
             }
         }

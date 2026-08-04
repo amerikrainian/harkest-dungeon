@@ -2,14 +2,18 @@
 
 ## v0.2.1
 
-- The first-boot profile window (name, language, and analytics consent, shown once when no
-  profile exists) now reads and answers: every row is navigable, the toggle flips the game's
-  real consent option, and Continue unlocks the menu. It used to leave the menu reading but
-  dead, with the prompt silently skipped on the next restart.
+- Token descriptions ride at the end of every buffer that mentions a token: a skill like
+  Backlash now closes with "Block: Takes -50% DMG from next hit", the same text a sighted
+  player mouses over the icon for. One line per unique token, anywhere tokens appear -
+  skills, trinkets, combat items - and never repeated where the description is already
+  there (a combatant's token rows). Effects that are not tokens (Knockback) have no
+  hover text in the game either, so they stay as they are.
+- Thanks to Chaosbringer's report, the very first dialogue when the game pops up reads.
+  I really, really should remember to completely nuke saves before handing the mods to him. This happened 2 times in a row now.
 - Buffer review no longer repeats chrome: a control's first buffer line is its label and
   state without the role word ("Confessions" instead of "Confessions, button"), and detail
   lines that only restate the name or value (an item tooltip's title, an icon button's
-  caption) fold away, so Ctrl plus Down goes straight to the content.
+  caption) fold away.
 - The mod now speaks in the game's language: translations for all fourteen of the game's
   non-English languages ship with the mod, reusing the game's own terminology.
 

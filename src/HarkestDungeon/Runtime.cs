@@ -86,6 +86,7 @@ namespace DD2A11y {
             combatBuffer.SetSource(Game.CombatLog.Lines);
 
             Core.Text.SpriteText.Resolver = Game.SpriteWords.Resolve;
+            Core.Nav.UIElement.BufferGlossary = Game.TokenGlossary.Lines;
 
             Settings = new Core.Settings.ModSettings(new Settings.BepInExSettingsStore(config));
             Sounds = new Core.Settings.SoundVolumes(new Settings.BepInExSettingsStore(config, "Sounds"));
