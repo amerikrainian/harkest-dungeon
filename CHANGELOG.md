@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The audio settings tab now reads the active audio device row ("Audio Device, Speakers..."),
+  which only OCR could see before: it is plain text with no control, so the sweep skipped it.
+
 ## v0.2.1
 
 - Target picking now says everything the game's attack panel computes: beside hit and crit

@@ -302,6 +302,11 @@ Live-verified 2026-07-23; dropdowns 2026-07-28; mod tab 2026-07-27. The game's o
   the sweep like scrollbars; the bespoke graphics quality slider no longer reads a second
   "Graphics Quality, button" item (live-verified 2026-08-01). Left/Right on the slider row
   still adjust the value.
+- The audio tab's active audio device row - a static title plus the data-bound device name,
+  no control anywhere under it - reads as a read-only readout ("Audio Device, Speakers
+  (Realtek(R) Audio)", live-verified 2026-08-04). The rule is generic: a layout row with no
+  selectable but a `UiDisplayTextBhv`-bound value becomes a readout; rows with only static
+  text (the section dividers) stay decoration.
 - The tab is not remembered across close/reopen - the game itself resets to its first tab on
   every open and the mod follows it (corrective re-announce when the game's open animation
   settles the tab after our entry read). Returning from the bindings panel keeps the controls

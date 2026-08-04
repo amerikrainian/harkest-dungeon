@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Assets.Code.UI.DataContext;
 using Assets.Code.UI.Options;
 using Assets.Code.UI.Screens;
 using DD2A11y.Core.Nav;
@@ -7,6 +8,7 @@ using DD2A11y.Game;
 using DD2A11y.Screens.Options;
 using HarmonyLib;
 using S = DD2A11y.Core.Strings.Strings;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -225,7 +227,21 @@ namespace DD2A11y.Screens {
                 }
                 return;
             }
-            foreach (var selectable in row.GetComponentsInChildren<Selectable>(includeInactive: false)) {
+            var selectables = row.GetComponentsInChildren<Selectable>(includeInactive: false);
+            if (selectables.Length == 0) {
+                // A control-less row showing live data (the audio tab's active audio device):
+                // static title label plus the data-bound value, as a read-only readout. Rows
+                // with only static text (the section dividers) stay decoration.
+                var bound = row.GetComponentInChildren<UiDisplayTextBhv>(includeInactive: false);
+                var boundText = bound == null ? null : bound.GetComponent<TMP_Text>();
+                if (boundText != null) {
+                    _items.Add(new ReadoutElement(
+                        () => UiText.FirstLabel(row),
+                        () => string.IsNullOrWhiteSpace(boundText.text) ? null : boundText.text));
+                }
+                return;
+            }
+            foreach (var selectable in selectables) {
                 AddSelectable(selectable, row, seen);
             }
         }
