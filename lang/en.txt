@@ -4,6 +4,7 @@
 # '|' separates plural forms, chosen by the _plural rule below.
 _plural = english
 ModLoaded = Harkest Dungeon {0} loaded
+UpdateAvailable = update {0} available
 ScreenMainMenu = main menu
 ScreenKingdoms = kingdoms
 ScreenSettings = settings

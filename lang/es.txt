@@ -2,6 +2,7 @@
 # Lines starting with # are comments. Format: key = value.
 _plural = english
 ModLoaded = Harkest Dungeon {0} cargado
+UpdateAvailable = actualización {0} disponible
 ScreenMainMenu = menú principal
 ScreenKingdoms = reinos
 ScreenSettings = opciones

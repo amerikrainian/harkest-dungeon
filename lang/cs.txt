@@ -2,6 +2,7 @@
 # Lines starting with # are comments. Format: key = value.
 _plural = czech
 ModLoaded = Harkest Dungeon {0} načten
+UpdateAvailable = je k dispozici aktualizace {0}
 ScreenMainMenu = hlavní nabídka
 ScreenKingdoms = království
 ScreenSettings = nastavení

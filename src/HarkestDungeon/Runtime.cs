@@ -51,6 +51,8 @@ namespace DD2A11y {
         private readonly ModTextEdit _textEdit;
         private readonly string _version;
         private bool _loadedAnnounced;
+        private readonly UpdateChecker _updateCheck = new UpdateChecker();
+        private bool _updateAnnounced;
 
         public Core.Settings.ModSettings Settings { get; }
         public Core.Settings.SoundVolumes Sounds { get; }
@@ -431,10 +433,17 @@ namespace DD2A11y {
                 _language.Tick();
                 // The loaded line waits for the game's restored language so it speaks
                 // translated on a foreign-language relaunch; the game always sets a
-                // language during boot.
+                // language during boot. Loading done, the update check starts in the
+                // background; its line follows whenever the request lands, and only when
+                // a release outranks the running build - up to date stays silent.
                 if (!_loadedAnnounced && _language.Resolved) {
                     _loadedAnnounced = true;
                     Speech.Speak(S.ModLoaded(_version));
+                    _updateCheck.Start(_version);
+                }
+                if (_loadedAnnounced && !_updateAnnounced && _updateCheck.NewerVersion != null) {
+                    _updateAnnounced = true;
+                    Speech.Speak(S.UpdateAvailable(_updateCheck.NewerVersion));
                 }
                 Router.Tick();
                 _roadSense.Tick();

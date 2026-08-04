@@ -2,6 +2,7 @@
 # Lines starting with # are comments. Format: key = value.
 _plural = one
 ModLoaded = Harkest Dungeon {0} 已加载
+UpdateAvailable = 有可用更新 {0}
 ScreenMainMenu = 主菜单
 ScreenKingdoms = 王国
 ScreenSettings = 选项

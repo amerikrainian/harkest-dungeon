@@ -10,6 +10,9 @@ Download `HarkestDungeonInstaller.exe` from the
 your Steam install, downloads the mod, and can later update, repair, or uninstall it. Manual
 alternative: extract the release zip over the game folder.
 
+At launch the mod checks the releases page and announces when a newer version exists ("update
+0.3.0 available"); run the installer again to update. Up to date, or offline, it says nothing.
+
 Requires the Steam version of the game on Windows.
 
 ## Languages

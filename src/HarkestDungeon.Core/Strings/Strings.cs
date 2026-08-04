@@ -25,6 +25,9 @@ namespace DD2A11y.Core.Strings {
             // Spoken once at game launch, as soon as the game's own language is known so the
             // line comes out translated; {0} = the mod version.
             D("ModLoaded", "Harkest Dungeon {0} loaded"),
+            // Follows the loaded line when the newest release outranks the running build;
+            // {0} = that newer version. Up to date (or ahead) stays silent.
+            D("UpdateAvailable", "update {0} available"),
 
             // Screen names, spoken when the mod takes over a screen. Match the game's own word for
             // the screen where it has one (the settings screen's title, the pause header).
@@ -606,6 +609,7 @@ namespace DD2A11y.Core.Strings {
         }
 
         public static string ModLoaded(string version) => F("ModLoaded", version);
+        public static string UpdateAvailable(string version) => F("UpdateAvailable", version);
 
         public static string ScreenMainMenu => T("ScreenMainMenu");
         public static string ScreenKingdoms => T("ScreenKingdoms");
