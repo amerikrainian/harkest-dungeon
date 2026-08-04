@@ -8,9 +8,53 @@ namespace DD2A11y.Game {
     /// The full spoken card for one combat skill, composed from the game's own SkillDescription
     /// strings - the same source the visual tooltip renders: usable ranks and targets,
     /// damage/crit/cooldown/limit, the per-target effects, and the melee/ranged tag. One buffer
-    /// line per fact.
+    /// line per fact. <see cref="UpgradeLines"/> is the mastery preview the sighted tooltip
+    /// carries beside the card.
     /// </summary>
     public static class SkillCard {
+        // Every skill's mastered variant lives in the library under its id plus this suffix,
+        // and a hero's buttons carry the suffixed id once the skill is mastered.
+        private const string UpgradeSuffix = "_u";
+
+        /// <summary>Whether this id is a skill's mastered variant.</summary>
+        public static bool IsMasteredId(string skillId)
+            => skillId != null && skillId.EndsWith(UpgradeSuffix, System.StringComparison.Ordinal);
+
+        /// <summary>The mastered variant's id when the library has one, else the id itself.</summary>
+        public static string MasteredId(string skillId)
+            => Actors.Skill(skillId + UpgradeSuffix) != null ? skillId + UpgradeSuffix : skillId;
+
+        /// <summary>The mastery preview the game shows beside an unmastered skill's card (the
+        /// trainer tooltip's second half, the sheet tooltip's hold-to-expand): the game's own
+        /// Upgrade header, then the mastered variant's stat bar and per-target effects. Empty
+        /// when no mastered variant exists (move, pass, already-suffixed ids).</summary>
+        public static IEnumerable<string> UpgradeLines(string skillId, uint actorGuid) {
+            if (IsMasteredId(skillId)) {
+                yield break;
+            }
+            var upgraded = Actors.Skill(skillId + UpgradeSuffix);
+            if (upgraded == null) {
+                yield break;
+            }
+            string title = GameLoc.TryGet("upgrade_skill_tooltip_upgrade_title");
+            if (title != null) {
+                yield return title;
+            }
+            string topBar = SkillDescription.GetUpgradeTopBarString(upgraded, new[] { skillId });
+            if (!string.IsNullOrWhiteSpace(topBar)) {
+                foreach (var line in topBar.Split('\n')) {
+                    if (!string.IsNullOrWhiteSpace(line)) {
+                        yield return line;
+                    }
+                }
+            }
+            foreach (var result in SkillDescription.GetResultStringsByTargetType(upgraded, showIgnores: false, actorGuid)) {
+                if (!string.IsNullOrWhiteSpace(result)) {
+                    yield return result;
+                }
+            }
+        }
+
         public static IEnumerable<string> Lines(string skillId, uint actorGuid) {
             var skill = Actors.Skill(skillId);
             if (skill == null) {

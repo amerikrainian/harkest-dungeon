@@ -142,7 +142,9 @@ namespace DD2A11y.Core.Strings {
             // A filled memory slot the profile can reroll, as the slot's state; {0} = the
             // candle cost. The game shows only a button-prompt icon and the cost.
             D("AltarMemoryReroll", "reroll {0} candle|reroll {0} candles"),
-            // A skill the hero has already mastered, on the inn's Mastery Trainer. Adjective.
+            // A skill the hero has already mastered: the state word on the inn's Mastery
+            // Trainer, and the spoken form of the laurel on the hero sheet's and combat bar's
+            // skill rows. Adjective.
             D("SkillMastered", "mastered"),
             // The Mastery Trainer's remaining points readout; {0} = the number.
             D("MasteryPoints", "mastery points {0}"),

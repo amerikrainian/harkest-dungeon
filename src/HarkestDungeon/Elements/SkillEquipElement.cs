@@ -11,11 +11,14 @@ using UnityEngine;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// One combat skill on the hero sheet: the skill's name with its equipped state, toggled by
-    /// Enter through the game's own skill button (equip rules, audio, notifications). The full
-    /// skill card is buffer lines: usable ranks and targets, damage/crit/cooldown, the per-target
-    /// effects, and the melee/ranged tag - all composed from the game's own SkillDescription
-    /// strings, the same source the visual tooltip renders.
+    /// One combat skill on the hero sheet: the skill's name with its equipped state (a mastered
+    /// skill - a suffixed id on the game's own button - leads with "mastered", the laurel's
+    /// spoken form), toggled by Enter through the game's own skill button (equip rules, audio,
+    /// notifications). The full skill card is buffer lines: usable ranks and targets,
+    /// damage/crit/cooldown, the per-target effects, and the melee/ranged tag - all composed
+    /// from the game's own SkillDescription strings, the same source the visual tooltip renders
+    /// - and an unmastered skill's card closes with the mastery preview, the sighted tooltip's
+    /// hold-to-expand half.
     /// </summary>
     public sealed class SkillEquipElement : UIElement {
         private static readonly AccessTools.FieldRef<CharacterSheetStatsUiBhv, List<GameObject>> SkillButtonsField =
@@ -47,7 +50,9 @@ namespace DD2A11y.Elements {
                     return null;
                 }
                 string state = actor.GetCombatSkillEquipped(_skillId) ? S.StatusOn : S.StatusOff;
-                return SpokenLine.Join(state, _sheet.IsSkillsEditable ? null : S.StatusUnavailable);
+                return SpokenLine.Join(state,
+                    SkillCard.IsMasteredId(_skillId) ? S.SkillMastered : null,
+                    _sheet.IsSkillsEditable ? null : S.StatusUnavailable);
             }
         }
 
@@ -80,6 +85,9 @@ namespace DD2A11y.Elements {
 
         protected override IEnumerable<string> GetDetailLines() {
             foreach (var line in SkillCard.Lines(_skillId, _sheet.ActorGuid)) {
+                yield return line;
+            }
+            foreach (var line in SkillCard.UpgradeLines(_skillId, _sheet.ActorGuid)) {
                 yield return line;
             }
         }

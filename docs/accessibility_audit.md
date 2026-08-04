@@ -792,7 +792,12 @@ Reads from the game model:
 - Quirks (name; description in the buffer, re-read live so rerolls never go stale).
 - Each combat skill as a toggle - Enter equips/unequips through the game's own button - with
   the full skill card as buffer lines (Rank/Target lines with multi-hit "+" joins,
-  DMG/CRIT/cooldown, per-target effects, melee/ranged).
+  DMG/CRIT/cooldown, per-target effects, melee/ranged). An unmastered skill's card closes
+  with the mastery preview - the sighted tooltip's hold-to-expand half: the game's "Upgrade"
+  header, the upgraded stat bar and effects, tokens glossaried (live-verified 2026-08-03 on
+  Backlash). A mastered skill (the game's button carries the `_u` id, so its card already
+  reads the upgraded values) leads its state with "mastered", the laurel's spoken form; the
+  combat bar speaks the same word.
 - The combat item and trinket slots. Resistances, quirks, skills, combat items and trinkets
   are one horizontal row each (Left/Right within a row, Up/Down between sections).
 - Equip slots (trinkets, combat items) are `EquipSlotElement`s: occupied slots read the item's
@@ -1616,6 +1621,11 @@ Live-verified 2026-07-24 at the first Denial inn. Over `InnUpgradeSkillsBhv`.
   path seal, "Change Path" with its cost (caption from its tooltip - the visible text is only
   the cost), and Reset - whose visual is a hold gesture, so the element drives the real
   `OnResetPressed`.
+- The buffer pairs the cards the sighted tooltip pairs (2026-08-03): an unmastered skill reads
+  its current card then the mastery preview (`SkillCard.UpgradeLines` - the game's "Upgrade"
+  header, the `_u` variant's stat bar via `GetUpgradeTopBarString` and its per-target effects,
+  with the token glossary covering any tokens the upgrade introduces); a mastered skill reads
+  the mastered card itself, the same switch the game's tooltip makes.
 - Enter queues a skill through the trainer's own `TrySelectSkillToUnlock` (the mouse holds);
   the rebuild announces the new points.
 - The path panel stays permanently active with a CanvasGroup riding visibility, so the view

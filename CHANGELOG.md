@@ -2,6 +2,12 @@
 
 ## v0.2.1
 
+- Mastery is no longer bought blind: an unmastered skill's buffer now ends with the upgrade
+  preview a sighted player gets on the tooltip - the game's own "Upgrade" header, the
+  mastered version's damage, crit, and effects, with any new tokens explained - at the
+  Mastery Trainer and on the hero sheet alike. A mastered skill says "mastered" on the hero
+  sheet and combat bar (the laurel's spoken form), and the trainer now reads a mastered
+  skill's actual upgraded card instead of the base one.
 - Token descriptions ride at the end of every buffer that mentions a token: a skill like
   Backlash now closes with "Block: Takes -50% DMG from next hit".
 - Thanks to Chaosbringer's report, the very first dialogue when the game pops up reads.

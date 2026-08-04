@@ -58,8 +58,10 @@ namespace DD2A11y.Game {
                 case "icon_speed": return S.SpriteSpeed;
                 case "icon_health":
                 case "icon_health_v2": return S.SpriteHealth;
-                // Decorative: the seal glyph always precedes the path's own name text.
+                // Decorative: the seal glyph always precedes the path's own name text, the
+                // laurel glyph the "Upgrade" caption's own word.
                 case "icon_heroseal": return null;
+                case "icon_upgraded_skill": return null;
                 default: return Humanize(bare);
             }
         }

@@ -13,9 +13,10 @@ namespace DD2A11y.Elements {
     /// <summary>
     /// One skill on the inn's Mastery Trainer: the skill's own name, its state ("mastered",
     /// "selected" while queued for the Apply press, "unavailable" when it cannot be picked or
-    /// the points are short), and the full skill card as buffer lines. Enter queues the skill
-    /// through the trainer's own selection (the mouse gesture is a hold); Apply and Reset are
-    /// the screen's own buttons.
+    /// the points are short), and the full skill card as buffer lines - the mastered card once
+    /// mastered, else the current card followed by the mastery preview, the same pairing the
+    /// sighted tooltip shows. Enter queues the skill through the trainer's own selection (the
+    /// mouse gesture is a hold); Apply and Reset are the screen's own buttons.
     /// </summary>
     public sealed class MasterySkillElement : SelectableElement {
         private readonly UpgradeSkillButton _button;
@@ -71,7 +72,16 @@ namespace DD2A11y.Elements {
         }
 
         protected override IEnumerable<string> GetDetailLines() {
-            foreach (var line in SkillCard.Lines(_button.SkillId, _button.ActorGuid)) {
+            string id = _button.SkillId;
+            var actor = _button.ActorInstance;
+            bool mastered = actor != null && actor.GetUpgradedCombatSkillIds().Contains(id);
+            foreach (var line in SkillCard.Lines(mastered ? SkillCard.MasteredId(id) : id, _button.ActorGuid)) {
+                yield return line;
+            }
+            if (mastered) {
+                yield break;
+            }
+            foreach (var line in SkillCard.UpgradeLines(id, _button.ActorGuid)) {
                 yield return line;
             }
         }

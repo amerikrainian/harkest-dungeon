@@ -70,7 +70,9 @@ namespace DD2A11y.Elements {
         public override string Status {
             get {
                 var actor = Actors.Get(_button.ActorGuid);
-                return actor != null && actor.SelectedSkillId == _button.SkillId ? S.StatusSelected : null;
+                return SpokenLine.Join(
+                    actor != null && actor.SelectedSkillId == _button.SkillId ? S.StatusSelected : null,
+                    SkillCard.IsMasteredId(_button.SkillId) ? S.SkillMastered : null);
             }
         }
 
