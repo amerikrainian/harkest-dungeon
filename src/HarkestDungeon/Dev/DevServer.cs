@@ -54,19 +54,14 @@ namespace DD2A11y.Dev {
             if (!string.IsNullOrEmpty(portVar) && int.TryParse(portVar, out int parsed)) {
                 port = parsed;
             }
-            // Another dev server on this machine may hold the base port; fall forward so a
-            // shared box never costs the session its driver. The log names the bound port.
-            for (int candidate = port; candidate < port + 10; candidate++) {
-                try {
-                    var server = new DevServer(runtime, candidate);
-                    Plugin.Log.LogInfo($"dev http: listening on 127.0.0.1:{candidate}");
-                    return server;
-                } catch (Exception ex) {
-                    Plugin.Log.LogWarning($"dev http: port {candidate} unavailable: {ex.Message}");
-                }
+            try {
+                var server = new DevServer(runtime, port);
+                Plugin.Log.LogInfo($"dev http: listening on 127.0.0.1:{port}");
+                return server;
+            } catch (Exception ex) {
+                Plugin.Log.LogError("dev http: failed to start: " + ex.Message);
+                return null;
             }
-            Plugin.Log.LogError($"dev http: no free port in {port}-{port + 9}; dev server off");
-            return null;
 #else
             return null;
 #endif
