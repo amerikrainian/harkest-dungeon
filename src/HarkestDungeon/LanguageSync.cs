@@ -9,16 +9,19 @@ namespace DD2A11y {
     /// <summary>
     /// Follows the game language: when it changes, loads the matching mod translation from
     /// lang/&lt;code&gt;.txt (falling back to the bare prefix, e.g. de for de_DE), or resets to
-    /// English when no file exists. Checked every frame - the check is two reflection reads -
-    /// so after a switch only speech from the switch's own frame can carry the old language.
-    /// During boot, before the game has restored its persisted language, nothing is applied
-    /// yet; <see cref="Resolved"/> flips once the first real language lands.
+    /// English when no file exists. A postfix on the game's language setter applies a switch
+    /// synchronously, so even the read-back of the control that committed it speaks the new
+    /// language; the per-frame check covers boot (before the game restores its persisted
+    /// language nothing is applied - <see cref="Resolved"/> flips once the first real
+    /// language lands) and any setter path the patch missed.
     /// </summary>
     public sealed class LanguageSync {
         private static readonly System.Reflection.MethodInfo GetActualMethod =
             AccessTools.Method(typeof(LanguageDefinition), "GetActual");
         private static readonly System.Reflection.FieldInfo LanguageField =
             AccessTools.Field(typeof(LanguageDefinition), "m_language");
+
+        private static LanguageSync _instance;
 
         private readonly string _langDir;
         private string _applied;
@@ -31,13 +34,38 @@ namespace DD2A11y {
         /// announcement waits on this so it speaks in the restored language).</summary>
         public bool Resolved => _applied != null;
 
-        public void Tick() {
+        public void Tick() => SyncNow();
+
+        private void SyncNow() {
             string code = CurrentCode();
             if (code == null || code == _applied) {
                 return;
             }
             _applied = code;
             Apply(code);
+        }
+
+        /// <summary>Postfix the game's language setter so a switch lands in the strings table
+        /// before anything later in the same call stack composes speech.</summary>
+        public void AttachLanguagePatch() {
+            _instance = this;
+            var target = AccessTools.Method(typeof(Localization), nameof(Localization.SetLanguage));
+            if (target == null) {
+                Plugin.Log.LogError(
+                    "language sync: Localization.SetLanguage not found; translations apply a frame late");
+                return;
+            }
+            new Harmony("dd2a11y.language").Patch(target,
+                postfix: new HarmonyMethod(AccessTools.Method(typeof(LanguageSync), nameof(LanguageSet))));
+        }
+
+        private static void LanguageSet() {
+            try {
+                _instance.SyncNow();
+            } catch (Exception ex) {
+                // Never let a mod failure escape into the game's language setter.
+                Plugin.Log.LogError("language sync: applying on language change failed: " + ex);
+            }
         }
 
         private static string CurrentCode() {

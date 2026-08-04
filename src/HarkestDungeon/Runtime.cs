@@ -251,6 +251,7 @@ namespace DD2A11y {
                 && (Router.Active.HandleAction(action.Key) || Navigator.Handle(action.Key));
 
             _language = new LanguageSync(Path.Combine(pluginDir, "lang"));
+            _language.AttachLanguagePatch();
             _version = version;
             Dev = DevServer.TryStart(this);
         }

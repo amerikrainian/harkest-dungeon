@@ -15,7 +15,7 @@ Requires the Steam version of the game on Windows.
 ## Languages
 
 The mod speaks the language the game is set to, covering every language the game ships.
-Switching the language in the game's settings switches the mod's speech within a second, and
+Switching the language in the game's settings switches the mod's speech immediately, and
 the choice carries across relaunches. Game text (menus, tooltips, skills) is read from the
 game itself, already localized; the mod's own words come from `lang/<code>.txt` files in the
 plugin folder - edit one to adjust a translation (missing entries fall back to English).

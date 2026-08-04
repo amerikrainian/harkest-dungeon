@@ -127,8 +127,11 @@ update/repair/uninstall restore the dir exactly. Installer UI strings live in `i
 ## Dev driver (in-process HTTP server) - for iteration, not a player feature
 
 A loopback dev server is baked into the plugin (`Debug` builds only), on by default, binding
-**127.0.0.1:8771** (`DD2A11Y_DEV_PORT` overrides; `DD2A11Y_NO_DEV=1` disables). It lets an agent
-introspect and drive the live game. Bring-up: launch through Steam, then poll
+**127.0.0.1:8771** (`DD2A11Y_DEV_PORT` overrides; `DD2A11Y_NO_DEV=1` disables). If the port is
+taken (another project's dev server on this machine), it falls forward up to +9 and logs the
+bound port - on any bring-up oddity, grep the BepInEx log for `dev http:` and confirm the
+`/health` you polled is OURS, not a stranger on 8771. It lets an agent introspect and drive
+the live game. Bring-up: launch through Steam, then poll
 `curl -s --retry 60 --retry-connrefused --retry-delay 1 http://127.0.0.1:8771/health`.
 
 Endpoints (drive with `curl`):

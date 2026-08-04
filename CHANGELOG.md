@@ -4,7 +4,7 @@
 
 - The mod now speaks in the game's language: translations for all fourteen of the game's
   non-English languages ship with the mod, reusing the game's own terminology. Switching the
-  language in settings switches the mod's speech within a second, the choice carries across
+  language in settings switches the mod's speech immediately, the choice carries across
   relaunches, and the launch announcement waits for the restored language so it comes out
   translated too.
 - A mod sounds glossary tab in settings, after the mod settings tab: one row per sound the
