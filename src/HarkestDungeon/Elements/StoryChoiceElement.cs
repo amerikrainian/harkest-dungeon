@@ -16,7 +16,7 @@ namespace DD2A11y.Elements {
     /// the hero's name, then everything the button face shows (the bark line, a quirk gate, the
     /// relationship banner) and the game's own choice previews (the sighted Alt panel: effects
     /// on the party, then on the enemy side). The hero's vitals are the S glance
-    /// (<see cref="GlanceLine"/>) and a buffer line. Enter commits through the game's own
+    /// (<see cref="GlanceLine"/>) and the buffer's head line. Enter commits through the game's own
     /// selection event (the hold-to-choose equivalent), honoring its hoverable gate; C inspects
     /// the hero.
     /// </summary>
@@ -61,7 +61,7 @@ namespace DD2A11y.Elements {
             return label + ": " + value;
         }
 
-        public override string GetBufferHeadText() => GetFocusText();
+        public override string GetBufferHeadText() => GlanceLine() ?? Label;
 
         /// <summary>The S glance: the hero's vitals (name, HP, stress), spoken in place.</summary>
         public string GlanceLine() {
@@ -93,10 +93,6 @@ namespace DD2A11y.Elements {
         }
 
         protected override IEnumerable<string> GetDetailLines() {
-            string vitals = GlanceLine();
-            if (vitals != null) {
-                yield return vitals;
-            }
             string label = TextFilter.Clean(Label);
             foreach (var line in BarkLines(label)) {
                 yield return line;
