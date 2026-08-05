@@ -74,6 +74,18 @@ namespace DD2A11y.Elements {
             return SpokenLine.Join(Label, hp, stress);
         }
 
+        /// <summary>Whether the button face carries its bark line yet. The story reaches its
+        /// choose state a beat after the buttons appear and the bark is the last piece to bind;
+        /// the screen holds its entry announcement on this.</summary>
+        internal bool HasBark {
+            get {
+                foreach (var line in BarkLines(TextFilter.Clean(Label))) {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         private static string Format(string locKey, int current, int max) {
             string format = GameLoc.TryGet(locKey);
             return format == null ? current + "/" + max : string.Format(format, current, max);

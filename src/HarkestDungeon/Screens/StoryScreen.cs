@@ -23,7 +23,10 @@ namespace DD2A11y.Screens {
         private readonly TraditionalNavigator _navigator;
         private StoryScreenBhv _story;
         private Container _root;
+        private Container _choices;
         private int _builtChoices;
+        private bool _awaitingValue;
+        private string _lastValue;
 
         public StoryScreen(Action<string, bool> speak, TraditionalNavigator navigator) {
             _speak = speak;
@@ -54,13 +57,43 @@ namespace DD2A11y.Screens {
             return _root;
         }
 
+        /// <summary>The choice buttons exist before the story reaches its choose state, and the
+        /// bark text binds a beat later still - an entry announced early reads a bare hero name.
+        /// Every choosable choice carries a bark (the game localizes one per choice; a button
+        /// whose choice is null stays disabled), so the entry holds until the landing choice's
+        /// bark is readable.</summary>
+        public override bool EntrySettled =>
+            _choices.FirstFocusable() is StoryChoiceElement choice && choice.HasBark;
+
         public override bool OnUpdate(object target) {
             var story = (StoryScreenBhv)target;
             if (CountChoices(story) != _builtChoices) {
                 _root.Clear();
                 Populate(story);
             }
-            return false;
+            return ValueSettled();
+        }
+
+        // A fresh story binds its bark text and choice previews a beat after the buttons
+        // appear, so the entry read can land on a bare hero name. Watch the landing choice
+        // until its value is non-empty and holds for a frame, then request the one
+        // re-announce (deduped by the router when the entry already read the full line).
+        private bool ValueSettled() {
+            if (!_awaitingValue) {
+                return false;
+            }
+            if (!(_choices.FirstFocusable() is StoryChoiceElement choice)) {
+                _awaitingValue = false;
+                return false;
+            }
+            string value = choice.Value;
+            if (string.IsNullOrEmpty(value) || value != _lastValue) {
+                _lastValue = value;
+                return false;
+            }
+            _awaitingValue = false;
+            _lastValue = null;
+            return true;
         }
 
         /// <summary>S: the focused choice's hero vitals (name, HP, stress), spoken in place.
@@ -79,6 +112,9 @@ namespace DD2A11y.Screens {
             }
             _builtChoices = CountChoices(story);
             _root.Add(choices);
+            _choices = choices;
+            _awaitingValue = choices.FirstFocusable() is StoryChoiceElement;
+            _lastValue = null;
 
             var buttons = new Container(ContainerShape.VerticalList);
             AddButtonUnder(buttons, story.transform, "CharSheetBtn");

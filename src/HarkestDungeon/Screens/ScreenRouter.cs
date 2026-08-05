@@ -8,7 +8,8 @@ namespace DD2A11y.Screens {
     /// Resolves the active surface once per frame, in registration order (modals first, then
     /// stack screens, then game-mode screens). On a match it takes the keyboard (input gate),
     /// builds the screen tree, attaches the navigator, and speaks the screen name then the
-    /// landing focus; when nothing matches the keyboard is released. While a screen stands, its
+    /// landing focus - held while the screen reports its entry unsettled, so a late-binding
+    /// screen reads complete; when nothing matches the keyboard is released. While a screen stands, its
     /// OnUpdate runs and a focus orphaned by a rebuild is re-homed and re-announced here - the
     /// single announce chokepoint.
     /// </summary>
@@ -20,6 +21,12 @@ namespace DD2A11y.Screens {
 
         private GameScreen _active;
         private object _target;
+        private bool _entryPending;
+        private int _entryHeld;
+
+        // Frames a screen may hold its entry announcement (EntrySettled false) before the
+        // router announces anyway - a screen that never settles must not stay silent.
+        private const int EntryHoldFrames = 120;
 
         public ScreenRouter(TraditionalNavigator navigator, InputGate gate, Action<string, bool> speak) {
             _navigator = navigator;
@@ -57,7 +64,19 @@ namespace DD2A11y.Screens {
             }
 
             bool announceRequested = _active.OnUpdate(_target);
-            if (_navigator.EnsureFocusValid() || announceRequested) {
+            bool reHomed = _navigator.EnsureFocusValid();
+            if (_entryPending) {
+                if (!_active.EntrySettled && ++_entryHeld < EntryHoldFrames) {
+                    return;
+                }
+                if (_entryHeld >= EntryHoldFrames) {
+                    Plugin.Log.LogWarning(_active.GetType().Name + ": entry never settled; announcing anyway");
+                }
+                _entryPending = false;
+                AnnounceEntry();
+                return;
+            }
+            if (reHomed || announceRequested) {
                 // Skipped when the re-landed line matches the last announcement verbatim - a
                 // screen the game populates a beat after entry rebuilds on every open.
                 _navigator.AnnounceCurrentIfChanged();
@@ -77,7 +96,15 @@ namespace DD2A11y.Screens {
                 _gate.Release();
             }
             _navigator.Attach(screen.BuildRoot(target));
-            _speak(screen.Name, true);
+            _entryPending = !screen.EntrySettled;
+            _entryHeld = 0;
+            if (!_entryPending) {
+                AnnounceEntry();
+            }
+        }
+
+        private void AnnounceEntry() {
+            _speak(_active.Name, true);
             _navigator.AnnounceCurrent();
         }
 
@@ -86,6 +113,7 @@ namespace DD2A11y.Screens {
             _active.OnLeave();
             _active = null;
             _target = null;
+            _entryPending = false;
             _navigator.Attach(null);
             _gate.Release();
         }

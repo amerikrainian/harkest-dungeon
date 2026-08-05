@@ -27,6 +27,13 @@ namespace DD2A11y.Screens {
         /// tree.</summary>
         public virtual bool OnUpdate(object target) => false;
 
+        /// <summary>Whether the screen's entry announcement may be spoken yet. A screen whose
+        /// content binds a beat after it appears (a story's bark lines) answers false until the
+        /// read would be complete; the router holds the name-then-landing announcement until
+        /// then, capped so a screen that never settles still reads. Consulted only between
+        /// entry and that first announcement.</summary>
+        public virtual bool EntrySettled => true;
+
         /// <summary>Whether the input gate takes the whole keyboard for this screen. An overlay
         /// that shares the keyboard with live gameplay (the road map: our arrows, the game's
         /// WASD) answers false and suppresses the specific game bindings it claims instead.</summary>
