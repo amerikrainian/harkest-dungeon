@@ -2,6 +2,11 @@
 
 ## v0.2.2
 
+- Road story choices now speak the choice, not the chooser: "Bigby: Life's luxuries are
+  wasted here, party, Relics -12, Flame 30" - the hero's line and every consequence in one
+  pass, instead of hero vitals with the actual option buried in the buffer. S reads the
+  focused hero's vitals (name, HP, stress) on demand, rebindable like the combat glances;
+  the buffer still carries it all line by line.
 - Combat glance hotkeys: 1-4 read the enemy strip, Q/W/E/R the party, in rank order, without
   moving your cursor. Bare key is name and health ("Bigby, HP 40/40, Stress 0/10"), Shift is
   the token summary, buffs before debuffs ("Death Armor x2", "Block (3 Turns)"), Ctrl is the

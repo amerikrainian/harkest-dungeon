@@ -277,3 +277,4 @@ InputCombatHeroResists = 英雄{0}抗性
 InputCombatActor = 行动中战斗者状态
 InputCombatTargets = 焦点技能的有效目标
 InputCombatTurnOrder = 行动顺序
+InputStoryHero = 焦点选项的英雄状态

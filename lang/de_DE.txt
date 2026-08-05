@@ -277,3 +277,4 @@ InputCombatHeroResists = Resistenzen von Held {0}
 InputCombatActor = Status des aktiven Kämpfers
 InputCombatTargets = Gültige Ziele der fokussierten Fähigkeit
 InputCombatTurnOrder = Zugreihenfolge
+InputStoryHero = Status des Helden der fokussierten Entscheidung

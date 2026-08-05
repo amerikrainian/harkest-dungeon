@@ -1,5 +1,7 @@
+using System;
 using Assets.Code.UI.Screens;
 using Assets.Code.UI.Story;
+using DD2A11y.Core.Input;
 using DD2A11y.Core.Nav;
 using DD2A11y.Elements;
 using DD2A11y.Game;
@@ -10,15 +12,27 @@ using UnityEngine.UI;
 namespace DD2A11y.Screens {
     /// <summary>
     /// A road story (assistance, resistance, shrine, hero story): the story's title, then one
-    /// element per choice - always a hero, with consequences in the buffer - then the utility
-    /// buttons. The narration itself is the game's own voiced narrator, already audible; this
-    /// screen carries what the voice does not: who can be chosen and what each choice does.
+    /// element per choice - always a hero, speaking the choice itself (bark and previews), with
+    /// per-line review in the buffer - then the utility buttons. S glances the focused choice's
+    /// hero vitals. The narration itself is the game's own voiced narrator, already audible;
+    /// this screen carries what the voice does not: who can be chosen and what each choice does.
     /// Escape is deliberately inert - a story blocks its screen from closing until resolved.
     /// </summary>
     public sealed class StoryScreen : GameScreen {
+        private readonly Action<string, bool> _speak;
+        private readonly TraditionalNavigator _navigator;
         private StoryScreenBhv _story;
         private Container _root;
         private int _builtChoices;
+
+        public StoryScreen(Action<string, bool> speak, TraditionalNavigator navigator) {
+            _speak = speak;
+            _navigator = navigator;
+        }
+
+        private static readonly InputCategory[] StoryCategories =
+            { InputCategory.Story, InputCategory.UI };
+        public override InputCategory[] InputCategories => StoryCategories;
 
         public override string Name {
             get {
@@ -47,6 +61,15 @@ namespace DD2A11y.Screens {
                 Populate(story);
             }
             return false;
+        }
+
+        /// <summary>S: the focused choice's hero vitals (name, HP, stress), spoken in place.
+        /// Off a choice the key is silent.</summary>
+        public void GlanceSelf() {
+            string line = _navigator.Current is StoryChoiceElement choice ? choice.GlanceLine() : null;
+            if (line != null) {
+                _speak(line, true);
+            }
         }
 
         private void Populate(StoryScreenBhv story) {

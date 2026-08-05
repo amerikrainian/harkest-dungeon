@@ -277,3 +277,4 @@ InputCombatHeroResists = Опори героя {0}
 InputCombatActor = Стан діючого бійця
 InputCombatTargets = Допустимі цілі навички у фокусі
 InputCombatTurnOrder = Порядок ходів
+InputStoryHero = Стан героя вибору у фокусі

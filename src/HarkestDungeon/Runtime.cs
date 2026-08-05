@@ -44,6 +44,7 @@ namespace DD2A11y {
         private KingdomInnPanelScreen _kingdomInnPanel;
         private CombatScreen _combat;
         private AcademicScreen _academic;
+        private StoryScreen _storyScreen;
         private DrivingScreen _driving;
         private string _lastTickError;
         private float _lastTickErrorTime;
@@ -120,7 +121,8 @@ namespace DD2A11y {
             Router.Register(new PauseScreen());
             Router.Register(new CharacterSheetScreen());
             Router.Register(new LootScreen());
-            Router.Register(new StoryScreen());
+            _storyScreen = new StoryScreen(speak, Navigator);
+            Router.Register(_storyScreen);
             Router.Register(new BossSelectScreen());
             Router.Register(new TokenGlossaryScreen());
             Router.Register(new TutorialArchiveScreen());
@@ -374,6 +376,9 @@ namespace DD2A11y {
                 InputCategory.Combat).AddBinding(K(Key.T));
             Reg("combat.turnorder", S.InputCombatTurnOrder, () => _combat.GlanceTurnOrder(),
                 InputCategory.Combat).AddBinding(K(Key.T, shift: true));
+            // The focused story choice's hero vitals - what the choice line no longer carries.
+            Reg("story.hero", S.InputStoryHero, () => _storyScreen.GlanceSelf(),
+                InputCategory.Story).AddBinding(K(Key.S));
             // Rename the focused hero, and roll them a random name. The game puts both on one
             // key by tap-versus-hold; a hold is poor for a screen-reader user, so they get a
             // key each. Roster-category (live only where hero slots advertise the actions);

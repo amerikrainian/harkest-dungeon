@@ -13,10 +13,12 @@ using TMPro;
 namespace DD2A11y.Elements {
     /// <summary>
     /// One choice in a road story - always a hero (every story type keys its choices by actor):
-    /// the hero's name with their HP and stress, and the full consequences in the buffer - the
-    /// hero's bark line, then the game's own choice previews (the sighted Alt panel: effects on
-    /// the party, then on the enemy side). Enter commits through the game's own selection event
-    /// (the hold-to-choose equivalent), honoring its hoverable gate; C inspects the hero.
+    /// the hero's name, then everything the button face shows (the bark line, a quirk gate, the
+    /// relationship banner) and the game's own choice previews (the sighted Alt panel: effects
+    /// on the party, then on the enemy side). The hero's vitals are the S glance
+    /// (<see cref="GlanceLine"/>) and a buffer line. Enter commits through the game's own
+    /// selection event (the hold-to-choose equivalent), honoring its hoverable gate; C inspects
+    /// the hero.
     /// </summary>
     public sealed class StoryChoiceElement : UIElement {
         private static readonly AccessTools.FieldRef<StoryChoiceButtonBhv, StoryType> StoryTypeField =
@@ -39,14 +41,37 @@ namespace DD2A11y.Elements {
 
         public override string Value {
             get {
-                var actor = Actors.Get(_button.ActorGuid);
-                if (actor == null) {
-                    return null;
+                var parts = new List<string>();
+                parts.AddRange(BarkLines(TextFilter.Clean(Label)));
+                var choice = ChoiceFor(_button.ActorGuid);
+                if (choice != null) {
+                    parts.Add(PreviewGroup(choice, player: true));
+                    parts.Add(PreviewGroup(choice, player: false));
                 }
-                string hp = Format("status_bar_health", (int)actor.DisplayedHp, (int)actor.DisplayedHpMax);
-                string stress = Format("status_bar_stress", (int)actor.Stress, (int)actor.StressMax);
-                return SpokenLine.Join(hp, stress);
+                return SpokenLine.Join(SpokenLine.Separator, parts);
             }
+        }
+
+        public override string GetFocusText() {
+            string label = Label;
+            string value = Value;
+            if (string.IsNullOrEmpty(label) || string.IsNullOrEmpty(value)) {
+                return SpokenLine.Join(label, value);
+            }
+            return label + ": " + value;
+        }
+
+        public override string GetBufferHeadText() => GetFocusText();
+
+        /// <summary>The S glance: the hero's vitals (name, HP, stress), spoken in place.</summary>
+        public string GlanceLine() {
+            var actor = Actors.Get(_button.ActorGuid);
+            if (actor == null) {
+                return null;
+            }
+            string hp = Format("status_bar_health", (int)actor.DisplayedHp, (int)actor.DisplayedHpMax);
+            string stress = Format("status_bar_stress", (int)actor.Stress, (int)actor.StressMax);
+            return SpokenLine.Join(Label, hp, stress);
         }
 
         private static string Format(string locKey, int current, int max) {
@@ -68,6 +93,10 @@ namespace DD2A11y.Elements {
         }
 
         protected override IEnumerable<string> GetDetailLines() {
+            string vitals = GlanceLine();
+            if (vitals != null) {
+                yield return vitals;
+            }
             string label = TextFilter.Clean(Label);
             foreach (var line in BarkLines(label)) {
                 yield return line;
@@ -92,6 +121,21 @@ namespace DD2A11y.Elements {
             var story = UnityEngine.Object.FindObjectOfType(StoryBhvType);
             return story == null ? null
                 : (StoryChoiceDefinition)GetChoiceMethod.Invoke(story, new object[] { actorGuid });
+        }
+
+        // One side's previews for the focus line: the side word once, then every preview -
+        // "party, Relics -12, Flame 30"; null when the side has none.
+        private static string PreviewGroup(StoryChoiceDefinition choice, bool player) {
+            var ids = player ? choice.m_PlayerStoryChoicePreviewIds : choice.m_EnemyStoryChoicePreviewIds;
+            if (ids.Count == 0) {
+                return null;
+            }
+            var lines = new string[ids.Count + 1];
+            lines[0] = player ? S.CrossroadsParty : S.CombatEnemies;
+            for (int i = 0; i < ids.Count; i++) {
+                lines[i + 1] = PreviewLine(choice, i, player);
+            }
+            return SpokenLine.Join(lines);
         }
 
         // The sighted Alt panel's own composition: one loc-keyed description per preview icon

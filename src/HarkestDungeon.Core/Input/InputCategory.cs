@@ -23,5 +23,9 @@ namespace DD2A11y.Core.Input {
         /// <summary>Hero-roster keys (rename, name reroll), declared by the screens whose hero
         /// slots advertise those actions (the crossroads).</summary>
         Roster,
+
+        /// <summary>Road-story keys (the focused choice's hero vitals), declared by the story
+        /// screen.</summary>
+        Story,
     }
 }

@@ -1204,20 +1204,23 @@ shared prompt - `CommonUiBhv.ShowEnterNodeScreen` (6.1) - then branches to its s
 
 ## 6.3 Road Stories (`StoryScreen`) - WORKS
 
-Live-verified 2026-07-23 on "Help Us!"; the commit event is wired but deliberately not
+Live-verified 2026-08-05 on "Assist Us!"; the commit event is wired but deliberately not
 pressed in testing.
 
-- Every road story's choices are heroes; each reads name + HP + stress, with the full
-  consequences in the buffer: the hero's bark line, then the sighted Alt panel's own preview
-  lines (loc-keyed descriptions with values - "party, Flame 100", "party, Supplies"), split
-  party/enemy.
+- Every road story's choices are heroes; each reads the choice itself: the hero's name, then
+  the button face (bark line, quirk gate, relationship banner when bound) and the sighted Alt
+  panel's previews grouped per side ("Bigby: Life's luxuries are wasted here, party, Relics
+  -12, Flame 30"). The buffer reviews it per line: the hero's vitals (name, HP, stress), the
+  bark, then one line per preview ("party, Flame 30"), split party/enemy.
+- S glances the focused choice's hero vitals in place (Story input category, live only here);
+  off a choice the key is silent.
 - Enter fires the game's own selection event (the click-and-hold equivalent), honoring its
   hoverable gate; C inspects the hero. The narration itself is the game's voiced narrator,
   already audible.
 
 **Known gaps:** choices spawning after screen entry leave focus on the utility buttons until
 the player moves (Home reaches the choices); story RESULT presentation is unread beyond the
-narrator; relationship banners and affinity previews unspoken.
+narrator; affinity change previews unspoken.
 
 ## 6.4 Hero Story Intro (`HeroStoryIntroScreen`, HERO_STORY_INTRO mode) - BUILT
 

@@ -277,3 +277,4 @@ InputCombatHeroResists = Resistencias del héroe {0}
 InputCombatActor = Estado del combatiente activo
 InputCombatTargets = Objetivos válidos de la habilidad enfocada
 InputCombatTurnOrder = Orden de los turnos
+InputStoryHero = Estado del héroe de la elección enfocada
