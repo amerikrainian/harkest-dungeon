@@ -63,6 +63,13 @@ namespace DD2A11y.Elements {
 
         public override string GetBufferHeadText() => GlanceLine() ?? Label;
 
+        // The buffer head is the vitals glance, not the label+value focus line - the bark,
+        // banner, and previews live only as detail lines, so nothing but the name may fold
+        // (a bark that IS the whole value must survive review).
+        protected override IEnumerable<string> GetBufferHeadParts() {
+            yield return Label;
+        }
+
         /// <summary>The S glance: the hero's vitals (name, HP, stress), spoken in place.</summary>
         public string GlanceLine() {
             var actor = Actors.Get(_button.ActorGuid);

@@ -199,6 +199,27 @@ namespace DD2A11y.Tests {
             Assert.Equal(new[] { "Skill", "a line" }, element.GetBufferLines());
         }
 
+        // The story-choice shape: the buffer head is a glance line, not label+value, so a
+        // detail equal to the whole value (a bark with no banner or previews beside it) is
+        // information the head never said and must survive the repeat-folding.
+        private sealed class GlanceHeadElement : UIElement {
+            public override string? Label => "Bigby";
+            public override string? Value => "I was once a scholar...";
+            public override string GetBufferHeadText() => "Bigby, HP 33/40";
+            protected override IEnumerable<string?> GetBufferHeadParts() {
+                yield return Label;
+            }
+            protected override IEnumerable<string> GetDetailLines() {
+                yield return "I was once a scholar...";
+            }
+        }
+
+        [Fact]
+        public void OverriddenHeadParts_KeepADetailEqualToTheValue() {
+            Assert.Equal(new[] { "Bigby, HP 33/40", "I was once a scholar..." },
+                new GlanceHeadElement().GetBufferLines());
+        }
+
         private sealed class SideBufferElement : UIElement {
             public override string? Label => "Crush";
             public override IEnumerable<string> GetSideBufferLines(string bufferKey)

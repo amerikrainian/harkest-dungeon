@@ -80,6 +80,15 @@ namespace DD2A11y.Core.Nav {
         public virtual string GetBufferHeadText()
             => Text.SpokenLine.Join(Status, Label, Value);
 
+        /// <summary>The texts the buffer's head line carries, which detail lines dedupe against
+        /// (through the speech filter, so a markup-carrying tooltip title still folds into the
+        /// plain label). Mirrors <see cref="GetBufferHeadText"/>: an element that overrides the
+        /// head overrides this too, else the dedupe folds detail the head never said.</summary>
+        protected virtual IEnumerable<string?> GetBufferHeadParts() {
+            yield return Label;
+            yield return Value;
+        }
+
         /// <summary>Supplies trailing glossary lines for a buffer: receives every line the
         /// buffer collected, returns lines to append after them. The plugin wires the game's
         /// token descriptions here - the mouse-over half of a token glyph; null appends
@@ -89,18 +98,22 @@ namespace DD2A11y.Core.Nav {
         /// <summary>The element's review lines for the buffer system: its role-less own line
         /// first (<see cref="GetBufferHeadText"/>), then one line per detail the focus message
         /// leaves out - each tooltip, each stat block line - dropping blanks and details that
-        /// only repeat the head's label or value (compared through the speech filter, so a
-        /// markup-carrying tooltip title still folds into the plain label), then whatever
-        /// <see cref="BufferGlossary"/> adds for the collected lines. Read live on every
-        /// buffer keypress, so lines never go stale.</summary>
+        /// only repeat what the head line carries (<see cref="GetBufferHeadParts"/>), then
+        /// whatever <see cref="BufferGlossary"/> adds for the collected lines. Read live on
+        /// every buffer keypress, so lines never go stale.</summary>
         public IEnumerable<string> GetBufferLines() {
             var collected = new List<string> { GetBufferHeadText() };
             yield return collected[0];
-            string label = Text.TextFilter.Clean(Label);
-            string value = Text.TextFilter.Clean(Value);
+            var headParts = new List<string>();
+            foreach (var part in GetBufferHeadParts()) {
+                string clean = Text.TextFilter.Clean(part);
+                if (clean.Length != 0) {
+                    headParts.Add(clean);
+                }
+            }
             foreach (var line in GetDetailLines()) {
                 string clean = Text.TextFilter.Clean(line);
-                if (string.IsNullOrWhiteSpace(clean) || clean == label || clean == value) {
+                if (string.IsNullOrWhiteSpace(clean) || headParts.Contains(clean)) {
                     continue;
                 }
                 collected.Add(line);
