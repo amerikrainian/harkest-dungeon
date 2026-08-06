@@ -13,6 +13,8 @@
 - In combat, enemies and party buffers read the whole battlefield from wherever you are:
   one line per combatant in rank order - name, rank, HP, a hero's stress, the pending
   target preview, and the effects summary.
+- The inspector's conditions row now disappears while the hero has no conditions, like the
+  token and buff rows already did, instead of reading as an empty stop.
 - A story choice with nothing beside the hero's line - no relationship banner, no previews -
   now keeps that line in the control buffer. The buffer's repeat-folding compared details
   against the choice's spoken value, and on such a choice the value was exactly the hero's

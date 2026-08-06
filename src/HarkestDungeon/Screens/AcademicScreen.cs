@@ -83,12 +83,9 @@ namespace DD2A11y.Screens {
             _skills = new Container(ContainerShape.HorizontalList, GameLoc.TryGet("character_sheet_tab_skills"));
             _root.Add(_skills);
             _conditions = new Container(ContainerShape.HorizontalList);
-            _conditions.Add(new ReadoutElement(
-                () => {
-                    var actor = Actor();
-                    return actor != null && actor.TeamIndex == 0 ? ConditionsLabel() : null;
-                },
-                detail: () => Study.ConditionLines(Actor())));
+            _conditions.Add(StatusReadout(ConditionsLabel,
+                actor => actor.TeamIndex == 0 ? Study.ConditionLines(actor)
+                                              : System.Linq.Enumerable.Empty<string>()));
             _root.Add(_conditions);
             _trinkets = new Container(ContainerShape.HorizontalList, GameLoc.TryGet("character_sheet_trinkets_title"));
             _root.Add(_trinkets);

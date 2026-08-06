@@ -1502,7 +1502,9 @@ game's own show event so the camera, fog of war, and its gates follow.
     raw ids; skills the player has never seen use the game's own "???" hidden strings.
     Heroes: equipped skills with the full skill card, remaining uses and cooldowns.
   - Hero **conditions** (class conditions, condition-tagged buffs, stagecoach effects, the
-    wound line), **trinkets** (enemies and Kingdoms allies carry visible ones).
+    wound line; the row vanishes while the hero has none, like the status rows - the game's
+    own view blanks its conditions binding then, live-verified 2026-08-06 on a story-battle
+    Highwayman), **trinkets** (enemies and Kingdoms allies carry visible ones).
   - The **resistance grid** (every resist with the game's immune and death's-door special
     cases; per-source breakdown in the buffer).
   - **Tokens, damage over time, buffs, debuffs** (empty sections vanish; hidden tokens are
