@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.2.3
+## V0.2.3
 
 - Detail now spreads across purpose-built buffers instead of piling into one. Ctrl+Left/Right
   cycles only the buffers with something to say where you stand: control (the focused
@@ -29,7 +29,7 @@
   focused hero's vitals (name, HP, stress) on demand, rebindable like the combat glances;
   the buffer still carries it all line by line.
 
-## v0.2.2
+## V0.2.2
 
 - Combat glance hotkeys: 1-4 read the enemy strip, Q/W/E/R the party, in rank order, without
   moving your cursor. Bare key is name and health ("Bigby, HP 40/40, Stress 0/10"), Shift is
@@ -59,7 +59,7 @@
 - Mod volumes now go up to 200 percent, master and per-sound alike, so a quiet sound can be
   boosted past its natural level.
 
-## v0.2.1
+## V0.2.1
 
 - Target picking now says everything the game's attack panel computes: beside hit and crit
   chance, the damage the pick would actually deal with every live modifier folded in (flat
