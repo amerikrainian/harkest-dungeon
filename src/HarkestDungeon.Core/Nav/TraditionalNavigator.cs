@@ -5,8 +5,9 @@ namespace DD2A11y.Core.Nav {
     /// <summary>
     /// Windows-screen-reader-style navigation: Tab / Shift-Tab traverse Panel tab-stops (a list
     /// counts as one stop), arrows move within a list (or adjust a focused slider/stepper/tab
-    /// selector), Enter activates, Escape asks the screen to go back, Home/End jump to a list's
-    /// ends. Entering a container auto-focuses its representative child.
+    /// selector), Enter activates, Escape asks the screen to go back, Home/End jump to the ends
+    /// of the enclosing tab stop (the whole screen when no Panel splits it). Entering a
+    /// container auto-focuses its representative child.
     /// </summary>
     public sealed class TraditionalNavigator : Navigator {
         public TraditionalNavigator(Action<string, bool> speak) : base(speak) { }
@@ -197,26 +198,28 @@ namespace DD2A11y.Core.Nav {
             return true;
         }
 
-        // Home/End: jump to the first/last item of the list the focus is in.
+        // Home/End: jump to the first/last element of the enclosing tab stop - Panels are hard
+        // boundaries (Home/End never cross what Tab separates), and with no Panel above the
+        // focus the jump spans the whole screen. Nested lists flatten: the landing is the true
+        // edge leaf, not an inner list's representative.
         private bool JumpEdge(bool first) {
-            var container = Current?.Parent;
-            if (container == null
-                || (container.Shape != ContainerShape.VerticalList && container.Shape != ContainerShape.HorizontalList)) {
-                return true; // focused but in no jumpable list - consume, do nothing
+            if (Current == null) {
+                return true;
             }
-
-            var target = first ? container.FirstFocusable() : container.LastFocusable();
+            UIElement scope = Current;
+            while (scope.Parent != null && scope.Parent.Shape != ContainerShape.Panel) {
+                scope = scope.Parent;
+            }
+            UIElement? target = scope;
+            while (target is Container c) {
+                target = first ? c.FirstFocusable() : c.LastFocusable();
+            }
             if (target == null || target == Current) {
                 return true;
             }
 
             var snapshot = new List<UIElement>(Path);
-            int idx = Path.IndexOf(Current!);
-            if (idx >= 0) {
-                Path.RemoveRange(idx, Path.Count - idx);
-            }
-            AppendWithDescend(target);
-            container.SetFocusedChild(target);
+            BuildPathTo(target);
             AnnounceDelta(snapshot, interrupt: true);
             return true;
         }

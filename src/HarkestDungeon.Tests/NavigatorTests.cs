@@ -350,5 +350,51 @@ namespace DD2A11y.Tests {
             _nav.Handle(UiActions.Home);
             Assert.Equal("A", _nav.Current!.Label);
         }
+
+        [Fact]
+        public void HomeEndSpanTheScreenAcrossNestedLists_WhenNoPanelSplitsIt() {
+            // The story screen's shape: one vertical flow holding the choices list then the
+            // utility buttons list - End reaches the last button, Home the first hero.
+            var root = VerticalMenu(
+                VerticalMenu(new TestElement("Hero A"), new TestElement("Hero B")),
+                VerticalMenu(new TestElement("Map"), new TestElement("Inventory")));
+            _nav.Attach(root);
+            _nav.Handle(UiActions.End);
+            Assert.Equal("Inventory", _nav.Current!.Label);
+            _nav.Handle(UiActions.Home);
+            Assert.Equal("Hero A", _nav.Current!.Label);
+        }
+
+        [Fact]
+        public void HomeEndStayInsideTheirPanel() {
+            var left = VerticalMenu(new TestElement("A"), new TestElement("B"));
+            var right = VerticalMenu(new TestElement("X"), new TestElement("Y"));
+            var root = new Container(ContainerShape.Panel);
+            root.Add(left);
+            root.Add(right);
+            _nav.Attach(root);
+
+            _nav.Handle(UiActions.End);
+            Assert.Equal("B", _nav.Current!.Label); // clamped to the left panel, not "Y"
+            _nav.Handle(UiActions.Home);
+            Assert.Equal("A", _nav.Current!.Label);
+
+            _nav.Handle(UiActions.Next); // Tab crosses into the right panel
+            Assert.Equal("X", _nav.Current!.Label);
+            _nav.Handle(UiActions.End);
+            Assert.Equal("Y", _nav.Current!.Label);
+        }
+
+        [Fact]
+        public void HomeEndAreInertOnALoneLeafTabStop() {
+            var root = new Container(ContainerShape.Panel);
+            root.Add(new TestElement("Close", "button"));
+            root.Add(VerticalMenu(new TestElement("A"), new TestElement("B")));
+            _nav.Attach(root);
+
+            Assert.Equal("Close", _nav.Current!.Label);
+            Assert.True(_nav.Handle(UiActions.End)); // consumed, focus holds
+            Assert.Equal("Close", _nav.Current!.Label);
+        }
     }
 }

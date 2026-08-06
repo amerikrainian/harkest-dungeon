@@ -2,6 +2,10 @@
 
 ## v0.2.2
 
+- Home and End now jump to the first and last element of the whole screen - on a road story,
+  Home is the first hero and End the inventory button - instead of stopping at the edge of
+  the list the cursor is in. Panels stay hard boundaries: where Tab separates panels, Home
+  and End keep to the panel you are in.
 - Road story choices now speak the choice, not the chooser: "Bigby: Life's luxuries are
   wasted here, party, Relics -12, Flame 30" - the hero's line and every consequence in one
   pass, instead of hero vitals with the actual option buried in the buffer. S reads the
