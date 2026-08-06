@@ -30,7 +30,8 @@ namespace DD2A11y.Screens {
     /// execute. Escape cancels target-select back onto the picked skill's button, else opens
     /// the pause menu. Turn changes rebuild the tree; turn lines and battle events
     /// (damage, deaths, enemy actions) are announced and kept in the combat buffer, which
-    /// empties when the battle ends.
+    /// empties when the battle ends. The enemies and party buffers carry one overview line per
+    /// combatant (<see cref="TeamOverview"/>), a battlefield review that never moves focus.
     /// </summary>
     public sealed class CombatScreen : GameScreen {
         private static readonly AccessTools.FieldRef<SkillSelectionBhv, SkillButtonBhv> MoveButtonField =
@@ -347,6 +348,24 @@ namespace DD2A11y.Screens {
             strip.Clear();
             foreach (var actor in Actors.Team(friendly)) {
                 strip.Add(new CombatantElement(actor.m_ActorGuid, friendly, _skillSelection));
+            }
+        }
+
+        /// <summary>The enemies/party buffer source: one overview line per combatant in rank
+        /// order, read from the built strips. Empty outside a battle, which hides the buffer
+        /// from the review keys.</summary>
+        public IEnumerable<string> TeamOverview(bool friendly) {
+            var strip = friendly ? _party : _enemies;
+            if (_combat == null || strip == null) {
+                yield break;
+            }
+            foreach (var child in strip.Children) {
+                if (child is CombatantElement combatant && combatant.CanFocus) {
+                    string line = combatant.OverviewLine();
+                    if (line != null) {
+                        yield return line;
+                    }
+                }
             }
         }
 

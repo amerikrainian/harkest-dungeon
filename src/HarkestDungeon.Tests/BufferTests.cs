@@ -198,6 +198,43 @@ namespace DD2A11y.Tests {
             var element = new FakeElement { L = "Skill", Details = { "a line" } };
             Assert.Equal(new[] { "Skill", "a line" }, element.GetBufferLines());
         }
+
+        private sealed class SideBufferElement : UIElement {
+            public override string? Label => "Crush";
+            public override IEnumerable<string> GetSideBufferLines(string bufferKey)
+                => bufferKey == BufferKeys.Upgrade ? new[] { "damage 4-8" } : base.GetSideBufferLines(bufferKey);
+        }
+
+        [Fact]
+        public void SideBufferLines_DefaultEmpty_ForEveryKey() {
+            var element = new FakeElement { L = "Continue" };
+            Assert.Empty(element.GetSideBufferLines(BufferKeys.Upgrade));
+            Assert.Empty(element.GetSideBufferLines(BufferKeys.Hero));
+        }
+
+        // The runtime's wiring pattern: the ui and side buffers re-bind to each focused
+        // element; a side buffer the element does not fill stays empty and the review keys
+        // skip it, so cycling only visits the buffers that answer.
+        [Fact]
+        public void SideBuffer_ReachableOnlyWhenTheElementFillsIt() {
+            var manager = new BufferManager();
+            var ui = manager.Add(new Buffer(BufferKeys.Ui, () => "control"));
+            var upgrade = manager.Add(new Buffer(BufferKeys.Upgrade, () => "mastery"));
+
+            var plain = new FakeElement { L = "Continue" };
+            ui.SetSource(plain.GetBufferLines);
+            upgrade.SetSource(() => plain.GetSideBufferLines(BufferKeys.Upgrade));
+            manager.SetCurrent(BufferKeys.Ui);
+            Assert.False(manager.MoveBuffer(1)); // nothing but ui answers
+
+            var skill = new SideBufferElement();
+            ui.SetSource(skill.GetBufferLines);
+            upgrade.SetSource(() => skill.GetSideBufferLines(BufferKeys.Upgrade));
+            manager.SetCurrent(BufferKeys.Ui);
+            Assert.True(manager.MoveBuffer(1));
+            Assert.Equal(BufferKeys.Upgrade, manager.Current!.Key);
+            Assert.Equal("damage 4-8", manager.Current!.CurrentLine);
+        }
     }
 
     public class SpriteNamesTests {

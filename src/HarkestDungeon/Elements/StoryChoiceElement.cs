@@ -121,6 +121,10 @@ namespace DD2A11y.Elements {
             }
         }
 
+        public override IEnumerable<string> GetSideBufferLines(string bufferKey)
+            => bufferKey == Core.Buffers.BufferKeys.Hero
+                ? HeroStatus.Lines(_button.ActorGuid) : base.GetSideBufferLines(bufferKey);
+
         private static StoryChoiceDefinition ChoiceFor(uint actorGuid) {
             if (GetChoiceMethod == null) {
                 Plugin.Log.LogWarning("StoryChoiceElement: StoryBhv.GetStoryChoiceFromActorGuid not found; previews unavailable");

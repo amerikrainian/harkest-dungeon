@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Assets.Code.Combat.Queries;
 using Assets.Code.Skill;
 using Assets.Code.UI;
+using DD2A11y.Core.Buffers;
 using DD2A11y.Core.Nav;
 using DD2A11y.Core.Text;
 using DD2A11y.Game;
@@ -130,5 +131,9 @@ namespace DD2A11y.Elements {
                 yield return S.CombatSkillAlsoGranted;
             }
         }
+
+        public override IEnumerable<string> GetSideBufferLines(string bufferKey)
+            => bufferKey == BufferKeys.Hero
+                ? HeroStatus.Lines(_button.ActorGuid) : base.GetSideBufferLines(bufferKey);
     }
 }

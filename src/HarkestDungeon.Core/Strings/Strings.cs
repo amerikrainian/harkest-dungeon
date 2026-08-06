@@ -149,6 +149,9 @@ namespace DD2A11y.Core.Strings {
             // Trainer, and the spoken form of the laurel on the hero sheet's and combat bar's
             // skill rows. Adjective.
             D("SkillMastered", "mastered"),
+            // The upgrade buffer's only line when the focused skill has no mastery preview to
+            // show: the skill is already mastered, or no mastered variant exists.
+            D("SkillNoUpgrade", "no upgrade available"),
             // The Mastery Trainer's remaining points readout; {0} = the number.
             D("MasteryPoints", "mastery points {0}"),
             // A repair button on the Wainwright's stagecoach sheet, where the game shows only
@@ -515,6 +518,12 @@ namespace DD2A11y.Core.Strings {
             D("BufferControl", "control"),
             // The battle-event log buffer, non-empty only during combat. Noun naming that buffer.
             D("BufferCombat", "combat"),
+            // The skill-upgrade preview buffer's name, used only when the game's own upgrade
+            // header string is missing. Noun naming that buffer.
+            D("BufferMastery", "mastery"),
+            // The buffer holding the vitals of the hero the focused control concerns (a skill's
+            // owner, a story choice's hero). Noun naming that buffer.
+            D("BufferHero", "hero"),
             // Spoken when a buffer key is pressed and every buffer is empty.
             D("BufferNone", "no buffer lines"),
             // Switching to a buffer: {0} = the buffer's name, {1} = its current line.
@@ -676,6 +685,7 @@ namespace DD2A11y.Core.Strings {
         public static string AltarUnlocked => T("AltarUnlocked");
         public static string AltarMemoryReroll(int count) => P("AltarMemoryReroll", count);
         public static string SkillMastered => T("SkillMastered");
+        public static string SkillNoUpgrade => T("SkillNoUpgrade");
         public static string MasteryPoints(int count) => F("MasteryPoints", count);
         public static string StationRepair(string cost) => F("StationRepair", cost);
         public static string InventorySlots(string count) => F("InventorySlots", count);
@@ -831,6 +841,8 @@ namespace DD2A11y.Core.Strings {
 
         public static string BufferControl => T("BufferControl");
         public static string BufferCombat => T("BufferCombat");
+        public static string BufferMastery => T("BufferMastery");
+        public static string BufferHero => T("BufferHero");
         public static string BufferNone => T("BufferNone");
         public static string BufferLine(string buffer, string line) => F("BufferLine", buffer, line);
 

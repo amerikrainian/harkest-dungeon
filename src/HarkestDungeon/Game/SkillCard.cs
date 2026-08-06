@@ -2,14 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Assets.Code.Skill;
+using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Game {
     /// <summary>
     /// The full spoken card for one combat skill, composed from the game's own SkillDescription
     /// strings - the same source the visual tooltip renders: usable ranks and targets,
     /// damage/crit/cooldown/limit, the per-target effects, and the melee/ranged tag. One buffer
-    /// line per fact. <see cref="UpgradeLines"/> is the mastery preview the sighted tooltip
-    /// carries beside the card.
+    /// line per fact. <see cref="UpgradeBufferLines"/> is the mastery preview the sighted
+    /// tooltip carries beside the card, reviewed as its own buffer.
     /// </summary>
     public static class SkillCard {
         // Every skill's mastered variant lives in the library under its id plus this suffix,
@@ -24,21 +25,38 @@ namespace DD2A11y.Game {
         public static string MasteredId(string skillId)
             => Actors.Skill(skillId + UpgradeSuffix) != null ? skillId + UpgradeSuffix : skillId;
 
-        /// <summary>The mastery preview the game shows beside an unmastered skill's card (the
-        /// trainer tooltip's second half, the sheet tooltip's hold-to-expand): the game's own
-        /// Upgrade header, then the mastered variant's stat bar and per-target effects. Empty
-        /// when no mastered variant exists (move, pass, already-suffixed ids).</summary>
-        public static IEnumerable<string> UpgradeLines(string skillId, uint actorGuid) {
+        /// <summary>The upgrade buffer's spoken name: the game's own header over the mastery
+        /// preview, its trailing colon trimmed (list punctuation, not information).</summary>
+        public static string UpgradeTitle() {
+            string title = GameLoc.TryGet("upgrade_skill_tooltip_upgrade_title");
+            return title == null ? S.BufferMastery : title.TrimEnd(':', ' ');
+        }
+
+        /// <summary>The upgrade buffer for one skill: the mastery preview when the skill still
+        /// has one, else the authored no-upgrade line (the skill is already mastered, or has no
+        /// mastered variant). Never empty, so the buffer answers on every skill.</summary>
+        public static IEnumerable<string> UpgradeBufferLines(string skillId, uint actorGuid) {
+            bool any = false;
+            foreach (var line in UpgradeLines(skillId, actorGuid)) {
+                any = true;
+                yield return line;
+            }
+            if (!any) {
+                yield return S.SkillNoUpgrade;
+            }
+        }
+
+        // The mastery preview the game shows beside an unmastered skill's card (the trainer
+        // tooltip's second half, the sheet tooltip's hold-to-expand): the mastered variant's
+        // stat bar and per-target effects. Empty when no mastered variant exists (move, pass,
+        // already-suffixed ids).
+        private static IEnumerable<string> UpgradeLines(string skillId, uint actorGuid) {
             if (IsMasteredId(skillId)) {
                 yield break;
             }
             var upgraded = Actors.Skill(skillId + UpgradeSuffix);
             if (upgraded == null) {
                 yield break;
-            }
-            string title = GameLoc.TryGet("upgrade_skill_tooltip_upgrade_title");
-            if (title != null) {
-                yield return title;
             }
             string topBar = SkillDescription.GetUpgradeTopBarString(upgraded, new[] { skillId });
             if (!string.IsNullOrWhiteSpace(topBar)) {

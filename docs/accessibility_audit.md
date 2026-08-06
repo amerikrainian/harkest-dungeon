@@ -35,6 +35,12 @@ Conventions every supported screen follows. Individual sections below note only 
 - Focus lines are terse (label, role, value). Tooltips and detail are buffer lines:
   Ctrl+Up/Down step lines, Ctrl+Left/Right switch buffers. Buffers repopulate live on every
   buffer keypress, so they never go stale.
+- The buffer roster, in cycling order: control (the focused element's own lines), mastery
+  (the focused skill's upgrade preview, named by the game's own upgrade header; "no upgrade
+  available" on a skill with nothing left to preview), hero (the vitals of the hero the
+  focused element concerns - a skill's owner, a story choice's hero, the sheet's paged hero),
+  enemies and party (one overview line per combatant, combat only), and combat (the battle
+  log). Empty buffers are skipped, so each surface cycles only the buffers that answer there.
 - Modals read their text first, then each choice, all on Up/Down. A modal announces itself on
   appearance; its dismissal is spoken too (the underlying screen re-announces).
 - Tabbed screens put the tab selector first: Left/Right switch tabs, Down enters the tab's
@@ -814,12 +820,13 @@ Reads from the game model:
 - Quirks (name; description in the buffer, re-read live so rerolls never go stale).
 - Each combat skill as a toggle - Enter equips/unequips through the game's own button - with
   the full skill card as buffer lines (Rank/Target lines with multi-hit "+" joins,
-  DMG/CRIT/cooldown, per-target effects, melee/ranged). An unmastered skill's card closes
-  with the mastery preview - the sighted tooltip's hold-to-expand half: the game's "Upgrade"
-  header, the upgraded stat bar and effects, tokens glossaried (live-verified 2026-08-03 on
-  Backlash). A mastered skill (the game's button carries the `_u` id, so its card already
-  reads the upgraded values) leads its state with "mastered", the laurel's spoken form; the
-  combat bar speaks the same word.
+  DMG/CRIT/cooldown, per-target effects, melee/ranged). An unmastered skill's mastery
+  preview - the sighted tooltip's hold-to-expand half: the upgraded stat bar and effects -
+  is the mastery buffer, one Ctrl+Right away (spliced card lines live-verified 2026-08-03 on
+  Backlash, before the preview moved to its own buffer). A mastered skill (the game's button
+  carries the `_u` id, so its card already reads the upgraded values) leads its state with
+  "mastered", the laurel's spoken form, and its mastery buffer answers "no upgrade
+  available"; the combat bar speaks the same "mastered" word.
 - The combat item and trinket slots. Resistances, quirks, skills, combat items and trinkets
   are one horizontal row each (Left/Right within a row, Up/Down between sections).
 - Equip slots (trinkets, combat items) are `EquipSlotElement`s: occupied slots read the item's
@@ -1409,6 +1416,13 @@ screens' keys; all 24 are rebindable from the mod keys tab.
   `IsEligibleToShowAsCombatUi`, e.g. Preparation's "On Riposte: heal Self 10%"), all from the
   game's own describers.
 - Skill buffers: the full skill card (shared `SkillCard` composer with the hero sheet).
+- The **enemies** and **party** buffers (unverified live): one overview line per living
+  combatant in rank order - name (with the target-validity reason while a pick is pending),
+  rank, HP, a hero's stress, the pending pick's preview, and the token/dot/buff summary the
+  Shift glance speaks - readable from anywhere in the battle without moving focus, pad
+  included (the glance digits are keyboard-only).
+- The **hero** buffer follows the focused element's hero: a skill or a friendly combatant
+  binds its owner's identity (name, class, path), HP/stress, and speed.
 
 ### 7.1.5 Battle Events - WORKS
 
@@ -1696,11 +1710,12 @@ Live-verified 2026-07-24 at the first Denial inn. Over `InnUpgradeSkillsBhv`.
   path seal, "Change Path" with its cost (caption from its tooltip - the visible text is only
   the cost), and Reset - whose visual is a hold gesture, so the element drives the real
   `OnResetPressed`.
-- The buffer pairs the cards the sighted tooltip pairs (2026-08-03): an unmastered skill reads
-  its current card then the mastery preview (`SkillCard.UpgradeLines` - the game's "Upgrade"
-  header, the `_u` variant's stat bar via `GetUpgradeTopBarString` and its per-target effects,
-  with the token glossary covering any tokens the upgrade introduces); a mastered skill reads
-  the mastered card itself, the same switch the game's tooltip makes.
+- The buffers split the cards the sighted tooltip pairs (spliced form live-verified
+  2026-08-03): a skill's control buffer holds its current card (the mastered card once
+  mastered, the same switch the game's tooltip makes), and the mastery buffer holds the
+  preview (`SkillCard.UpgradeBufferLines` - the `_u` variant's stat bar via
+  `GetUpgradeTopBarString` and its per-target effects), or "no upgrade available" once
+  mastered.
 - Enter queues a skill through the trainer's own `TrySelectSkillToUnlock` (the mouse holds);
   the rebuild announces the new points.
 - The path panel stays permanently active with a CanvasGroup riding visibility, so the view

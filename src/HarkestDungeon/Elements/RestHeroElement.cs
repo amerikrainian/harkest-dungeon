@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Assets.Code.Actor;
 using Assets.Code.UI.Widgets;
 using DD2A11y.Game;
@@ -27,5 +28,9 @@ namespace DD2A11y.Elements {
         public override string Role => null;
 
         public override string Value => Actors.StatusLine(Actor);
+
+        public override IEnumerable<string> GetSideBufferLines(string bufferKey)
+            => bufferKey == Core.Buffers.BufferKeys.Hero
+                ? HeroStatus.Lines(Actor) : base.GetSideBufferLines(bufferKey);
     }
 }

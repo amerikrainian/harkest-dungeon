@@ -29,6 +29,9 @@ namespace DD2A11y {
         public DevServer Dev { get; }
 
         private readonly PrismBackend _backend;
+        private readonly Core.Buffers.Buffer _uiBuffer;
+        private readonly Core.Buffers.Buffer _upgradeBuffer;
+        private readonly Core.Buffers.Buffer _heroBuffer;
         private readonly Audio.NAudioEngine _audioEngine;
         private readonly Game.RoadSense _roadSense;
         private readonly LanguageSync _language;
@@ -75,15 +78,19 @@ namespace DD2A11y {
             Navigator = new TraditionalNavigator(speak);
             BufferCtl = new BufferControls(Buffers, speak);
 
-            var uiBuffer = Buffers.Add(new Core.Buffers.Buffer("ui", () => S.BufferControl));
-            Navigator.FocusSettled += element => {
-                uiBuffer.SetSource(element == null ? (Func<System.Collections.Generic.IEnumerable<string>>)null
-                                                   : element.GetBufferLines);
-                Buffers.SetCurrent("ui");
-            };
+            // The buffer roster, in cycling order: the focused element's own lines, its skill's
+            // mastery preview, its hero's vitals, the battlefield overviews, then the battle
+            // log. An empty buffer is skipped by the review keys, so a surface only ever
+            // cycles through the buffers that answer there.
+            _uiBuffer = Buffers.Add(new Core.Buffers.Buffer(BufferKeys.Ui, () => S.BufferControl));
+            _upgradeBuffer = Buffers.Add(new Core.Buffers.Buffer(BufferKeys.Upgrade, Game.SkillCard.UpgradeTitle));
+            _heroBuffer = Buffers.Add(new Core.Buffers.Buffer(BufferKeys.Hero, () => S.BufferHero));
+            var enemiesBuffer = Buffers.Add(new Core.Buffers.Buffer(BufferKeys.Enemies, () => S.CombatEnemies));
+            var partyBuffer = Buffers.Add(new Core.Buffers.Buffer(BufferKeys.Party, () => S.CrossroadsParty));
+            Navigator.FocusSettled += RehomeBuffers;
             // The battle-event history; filled from the combat screen's pump path and empty
-            // outside combat (an empty buffer is skipped by the review keys).
-            var combatBuffer = Buffers.Add(new Core.Buffers.Buffer("combat", () => S.BufferCombat));
+            // outside combat.
+            var combatBuffer = Buffers.Add(new Core.Buffers.Buffer(BufferKeys.Combat, () => S.BufferCombat));
             combatBuffer.FollowLatest = true;
             combatBuffer.SetSource(Game.CombatLog.Lines);
 
@@ -136,12 +143,7 @@ namespace DD2A11y {
             Router.Register(new KingdomBiomePanelScreen());
             _innStorage = new InnStorageScreen(speak, Navigator);
             Router.Register(_innStorage);
-            Router.Register(new KingdomMapScreen(Navigator, speak, () => {
-                uiBuffer.SetSource(Navigator.Current == null
-                    ? (Func<System.Collections.Generic.IEnumerable<string>>)null
-                    : Navigator.Current.GetBufferLines);
-                Buffers.SetCurrent("ui");
-            }));
+            Router.Register(new KingdomMapScreen(Navigator, speak, () => RehomeBuffers(Navigator.Current)));
             // The inn hub reads THROUGH its own inventory stack entry, so it must outrank the
             // generic floor that would otherwise take that entry.
             _inn = new InnScreen(speak, Navigator);
@@ -209,16 +211,15 @@ namespace DD2A11y {
             Router.Register(_academic);
             _combat = new CombatScreen(speak, Audio, Navigator);
             Router.Register(_combat);
+            // The battlefield overviews read through the combat screen's built strips; out of
+            // combat they yield nothing.
+            enemiesBuffer.SetSource(() => _combat.TeamOverview(friendly: false));
+            partyBuffer.SetSource(() => _combat.TeamOverview(friendly: true));
             Router.Register(new RouteChoiceScreen(Audio));
             // The road map shares the keyboard with live driving, so it sits below every
             // taking surface (the fork menu included). Its cursor moves re-home the buffers
             // the same way a focus change does.
-            Router.Register(new MapScreen(speak, Audio, () => {
-                uiBuffer.SetSource(Navigator.Current == null
-                    ? (Func<System.Collections.Generic.IEnumerable<string>>)null
-                    : Navigator.Current.GetBufferLines);
-                Buffers.SetCurrent("ui");
-            }, Input));
+            Router.Register(new MapScreen(speak, Audio, () => RehomeBuffers(Navigator.Current), Input));
             // The free-driving floor: the HUD as Tab panels around a pass-through driving area.
             _driving = new DrivingScreen(speak, Navigator, Input);
             Router.Register(_driving);
@@ -407,6 +408,20 @@ namespace DD2A11y {
             Reg("ui.grab", S.InputGrab, () => ToggleGrab(takeOne: false)).AddBinding(K(Key.Space));
             Reg("ui.place.one", S.InputPlaceOne, () => ToggleGrab(takeOne: true))
                 .AddBinding(K(Key.Space, shift: true));
+        }
+
+        // A focus move re-binds the element-fed buffers to the landed element and re-homes
+        // review to its own lines; the map screens call this for their cursor moves too.
+        private void RehomeBuffers(UIElement element) {
+            _uiBuffer.SetSource(element == null
+                ? (Func<System.Collections.Generic.IEnumerable<string>>)null : element.GetBufferLines);
+            _upgradeBuffer.SetSource(element == null
+                ? (Func<System.Collections.Generic.IEnumerable<string>>)null
+                : () => element.GetSideBufferLines(BufferKeys.Upgrade));
+            _heroBuffer.SetSource(element == null
+                ? (Func<System.Collections.Generic.IEnumerable<string>>)null
+                : () => element.GetSideBufferLines(BufferKeys.Hero));
+            Buffers.SetCurrent(BufferKeys.Ui);
         }
 
         private void ToggleGrab(bool takeOne) {

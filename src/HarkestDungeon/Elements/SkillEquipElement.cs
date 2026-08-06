@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Assets.Code.Skill;
 using Assets.Code.UI;
 using Assets.Code.UI.Widgets;
+using DD2A11y.Core.Buffers;
 using DD2A11y.Core.Nav;
 using DD2A11y.Core.Text;
 using DD2A11y.Game;
@@ -16,9 +17,9 @@ namespace DD2A11y.Elements {
     /// spoken form), toggled by Enter through the game's own skill button (equip rules, audio,
     /// notifications). The full skill card is buffer lines: usable ranks and targets,
     /// damage/crit/cooldown, the per-target effects, and the melee/ranged tag - all composed
-    /// from the game's own SkillDescription strings, the same source the visual tooltip renders
-    /// - and an unmastered skill's card closes with the mastery preview, the sighted tooltip's
-    /// hold-to-expand half.
+    /// from the game's own SkillDescription strings, the same source the visual tooltip
+    /// renders. The mastery preview (the sighted tooltip's hold-to-expand half) is the upgrade
+    /// buffer, and the sheet's hero fills the hero buffer.
     /// </summary>
     public sealed class SkillEquipElement : UIElement {
         private static readonly AccessTools.FieldRef<CharacterSheetStatsUiBhv, List<GameObject>> SkillButtonsField =
@@ -87,9 +88,16 @@ namespace DD2A11y.Elements {
             foreach (var line in SkillCard.Lines(_skillId, _sheet.ActorGuid)) {
                 yield return line;
             }
-            foreach (var line in SkillCard.UpgradeLines(_skillId, _sheet.ActorGuid)) {
-                yield return line;
+        }
+
+        public override IEnumerable<string> GetSideBufferLines(string bufferKey) {
+            if (bufferKey == BufferKeys.Upgrade) {
+                return SkillCard.UpgradeBufferLines(_skillId, _sheet.ActorGuid);
             }
+            if (bufferKey == BufferKeys.Hero) {
+                return HeroStatus.Lines(_sheet.ActorGuid);
+            }
+            return base.GetSideBufferLines(bufferKey);
         }
     }
 }

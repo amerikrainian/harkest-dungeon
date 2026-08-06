@@ -121,6 +121,15 @@ namespace DD2A11y.Core.Nav {
             yield break;
         }
 
+        /// <summary>The lines this element contributes to a named side buffer (a skill's mastery
+        /// preview under <see cref="Buffers.BufferKeys.Upgrade"/>, the owning hero's vitals under
+        /// <see cref="Buffers.BufferKeys.Hero"/>). Empty for a buffer the element does not fill -
+        /// an empty buffer is skipped by the review keys. The ui buffer has its own composition
+        /// (<see cref="GetBufferLines"/>).</summary>
+        public virtual IEnumerable<string> GetSideBufferLines(string bufferKey) {
+            yield break;
+        }
+
         /// <summary>Called by the navigator when this element becomes the focused leaf after a move.
         /// The default does nothing; an engine-coupled element overrides it to sync the game's own
         /// cursor to our focus where that is side-effect-free.</summary>

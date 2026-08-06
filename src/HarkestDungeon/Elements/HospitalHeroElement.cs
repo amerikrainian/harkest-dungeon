@@ -67,5 +67,9 @@ namespace DD2A11y.Elements {
                 }
             }
         }
+
+        public override IEnumerable<string> GetSideBufferLines(string bufferKey)
+            => bufferKey == Core.Buffers.BufferKeys.Hero
+                ? HeroStatus.Lines(Actor) : base.GetSideBufferLines(bufferKey);
     }
 }

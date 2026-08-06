@@ -188,15 +188,21 @@ Escape asks the screen root's back action, Home/End jump. Tabbed screens (option
 below it), Up/Down walk from the tab header through the active tab's items, and the screen
 remembers its last tab across close/reopen.
 
-**Buffer model** (Core): a `Buffer` is a named flat list of text lines with a cursor (`ui` first;
-more to come - `hero`, `events`). On every focus change the plugin resets all buffers and the
-focused element populates them: the `ui` buffer gets the element's own line first (status, label,
-value - never the role word; buffers review content, and the control type is not content), then
-**one line per tooltip**, dropping details that only repeat the head's label or value, then one
-trailing glossary line per unique token glyph the lines carry (the game's own "Name: description"
-tooltip text - the mouse-over a sighted player gets; skipped when the description already
-appears). Elements override `GetDetailLines`; head composition, that dedupe, and the glossary
-hook live in `UIElement.GetBufferLines`.
+**Buffer model** (Core): a `Buffer` is a named flat list of text lines with a cursor. The roster,
+in cycling order (`BufferKeys`): `ui` (the focused element's own lines), `upgrade` (the focused
+skill's mastery preview, titled by the game's own upgrade header; a skill with nothing to preview
+answers with one no-upgrade line), `hero` (the vitals of the hero the focused element concerns),
+`enemies` and `party` (one overview line per combatant, filled only in combat), and `combat` (the
+battle-event log, FollowLatest). An empty buffer is skipped by the review keys, so each surface
+cycles only the buffers that answer there. On every focus change the plugin re-binds the
+element-fed buffers to the landed element: the `ui` buffer gets the element's own line first
+(status, label, value - never the role word; buffers review content, and the control type is not
+content), then **one line per tooltip**, dropping details that only repeat the head's label or
+value, then one trailing glossary line per unique token glyph the lines carry (the game's own
+"Name: description" tooltip text - the mouse-over a sighted player gets; skipped when the
+description already appears). Elements override `GetDetailLines` for the ui buffer and
+`GetSideBufferLines(key)` for the side buffers they fill; head composition, that dedupe, and the
+glossary hook live in `UIElement.GetBufferLines`.
 Ctrl+Left/Right switch among non-empty buffers (speaks "name: current line"), Ctrl+Up/Down step
 lines (speaks the line). Buffers repopulate from the live element on every buffer keypress, so
 they never go stale.

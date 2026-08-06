@@ -2,6 +2,22 @@
 
 ## v0.2.2
 
+- Detail now spreads across purpose-built buffers instead of piling into one. Ctrl+Left/Right
+  cycles only the buffers with something to say where you stand: control (the focused
+  element, as before), mastery, hero, enemies, party, and combat.
+- A skill's upgrade preview is its own mastery buffer instead of trailing the skill card:
+  on the hero sheet and the Mastery Trainer, the control buffer reads the card you have,
+  Ctrl+Right reads what mastering changes. The buffer takes its name from the game's own
+  upgrade header, and an already-mastered skill answers "no upgrade available" rather than
+  hiding, so the same keystroke always answers.
+- A hero buffer follows whatever you focus that belongs to a hero - a skill on the combat
+  bar, sheet, or trainer, a story choice, a hero slot, a road ribbon, the hospital pager -
+  and holds that hero's name, class and path, HP, stress, and speed: the "how are they
+  doing" read without leaving the control.
+- In combat, enemies and party buffers read the whole battlefield from wherever you are:
+  one line per combatant in rank order - name, rank, HP, a hero's stress, the pending
+  target preview, and the effects summary. What the glance keys answer, now steppable line
+  by line and reachable on a controller.
 - Home and End now jump to the first and last element of the whole screen - on a road story,
   Home is the first hero and End the inventory button - instead of stopping at the edge of
   the list the cursor is in. Panels stay hard boundaries: where Tab separates panels, Home

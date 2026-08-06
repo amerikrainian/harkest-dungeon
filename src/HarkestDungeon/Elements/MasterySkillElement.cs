@@ -3,6 +3,7 @@ using System.Linq;
 using Assets.Code.Skill;
 using Assets.Code.UI;
 using Assets.Code.UI.Screens;
+using DD2A11y.Core.Buffers;
 using DD2A11y.Core.Nav;
 using DD2A11y.Core.Speech;
 using DD2A11y.Game;
@@ -14,9 +15,10 @@ namespace DD2A11y.Elements {
     /// One skill on the inn's Mastery Trainer: the skill's own name, its state ("mastered",
     /// "selected" while queued for the Apply press, "unavailable" when it cannot be picked or
     /// the points are short), and the full skill card as buffer lines - the mastered card once
-    /// mastered, else the current card followed by the mastery preview, the same pairing the
-    /// sighted tooltip shows. Enter queues the skill through the trainer's own selection (the
-    /// mouse gesture is a hold); Apply and Reset are the screen's own buttons.
+    /// mastered, else the current card. The mastery preview (the sighted tooltip's second half)
+    /// is the upgrade buffer, and the trainer's hero fills the hero buffer. Enter queues the
+    /// skill through the trainer's own selection (the mouse gesture is a hold); Apply and Reset
+    /// are the screen's own buttons.
     /// </summary>
     public sealed class MasterySkillElement : SelectableElement {
         private readonly UpgradeSkillButton _button;
@@ -72,18 +74,30 @@ namespace DD2A11y.Elements {
         }
 
         protected override IEnumerable<string> GetDetailLines() {
+            foreach (var line in SkillCard.Lines(DisplayedSkillId(), _button.ActorGuid)) {
+                yield return line;
+            }
+        }
+
+        public override IEnumerable<string> GetSideBufferLines(string bufferKey) {
+            if (bufferKey == BufferKeys.Upgrade) {
+                // The mastered variant's id once mastered, so the preview folds into the
+                // no-upgrade line instead of re-offering the upgrade the hero already owns.
+                return SkillCard.UpgradeBufferLines(DisplayedSkillId(), _button.ActorGuid);
+            }
+            if (bufferKey == BufferKeys.Hero) {
+                return HeroStatus.Lines(_button.ActorGuid);
+            }
+            return base.GetSideBufferLines(bufferKey);
+        }
+
+        // The id whose card the trainer is showing: the mastered variant once mastered, else
+        // the button's own.
+        private string DisplayedSkillId() {
             string id = _button.SkillId;
             var actor = _button.ActorInstance;
             bool mastered = actor != null && actor.GetUpgradedCombatSkillIds().Contains(id);
-            foreach (var line in SkillCard.Lines(mastered ? SkillCard.MasteredId(id) : id, _button.ActorGuid)) {
-                yield return line;
-            }
-            if (mastered) {
-                yield break;
-            }
-            foreach (var line in SkillCard.UpgradeLines(id, _button.ActorGuid)) {
-                yield return line;
-            }
+            return mastered ? SkillCard.MasteredId(id) : id;
         }
     }
 }

@@ -9,6 +9,7 @@ using Assets.Code.UI;
 using Assets.Code.UI.Events;
 using Assets.Code.UI.Tooltips;
 using Assets.Code.Utils;
+using DD2A11y.Core.Buffers;
 using DD2A11y.Core.Nav;
 using DD2A11y.Core.Text;
 using DD2A11y.Game;
@@ -96,6 +97,24 @@ namespace DD2A11y.Elements {
             string format = GameLoc.TryGet("status_bar_stress");
             return format == null ? null : string.Format(format, (int)actor.Stress, (int)actor.StressMax);
         }
+
+        /// <summary>One line for the battlefield buffers (enemies/party): the glance read with
+        /// the rank included, closing with the effects summary - the whole combatant at one
+        /// review step.</summary>
+        public string OverviewLine() {
+            var actor = Actor;
+            if (actor == null) {
+                return null;
+            }
+            string preview = PickPending(out var performer, out _) && Targeting.IsValidTarget(performer, _guid)
+                ? Targeting.PreviewText(performer, _guid) : null;
+            return SpokenLine.Join(Label, RankText(actor), HpText(actor), StressText(actor),
+                preview, GlanceEffectsLine());
+        }
+
+        public override IEnumerable<string> GetSideBufferLines(string bufferKey)
+            => _friendly && bufferKey == BufferKeys.Hero
+                ? HeroStatus.Lines(_guid) : base.GetSideBufferLines(bufferKey);
 
         // ---- Glance hotkeys (spoken in place, focus stays put) ----
 
