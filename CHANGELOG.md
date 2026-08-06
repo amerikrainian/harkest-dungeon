@@ -2,8 +2,6 @@
 
 ## v0.2.3
 
-## v0.2.2
-
 - Detail now spreads across purpose-built buffers instead of piling into one. Ctrl+Left/Right
   cycles only the buffers with something to say where you stand: control (the focused
   element, as before), mastery, hero, enemies, party, and combat.
@@ -28,6 +26,9 @@
   pass, instead of hero vitals with the actual option buried in the buffer. S reads the
   focused hero's vitals (name, HP, stress) on demand, rebindable like the combat glances;
   the buffer still carries it all line by line.
+
+## v0.2.2
+
 - Combat glance hotkeys: 1-4 read the enemy strip, Q/W/E/R the party, in rank order, without
   moving your cursor. Bare key is name and health ("Bigby, HP 40/40, Stress 0/10"), Shift is
   the token summary, buffs before debuffs ("Death Armor x2", "Block (3 Turns)"), Ctrl is the
