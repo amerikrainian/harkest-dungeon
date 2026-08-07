@@ -1022,15 +1022,21 @@ Cues live-verified by ear 2026-07-25 (pickup ping confirmed audible); several cu
 wired but pending an ear pass. The mod's own NAudio output (independent of FMOD;
 `assets/audio`, placeholders replace 1:1).
 
-- **Every uncollected pickup in range loops** (one live loop voice each - pan to its bearing,
-  louder as it nears, parameter steps smoothed ~5 ms against zipper noise) and **every map
-  node in range loops its destination's identity timbre** (shared with the fork menu via
-  `NodeCues`; its first appearance also plays once louder as the announcement), each re-aimed
-  EVERY frame so steering reflects immediately; a loop cuts the frame its object is
+- **Every uncollected pickup in range loops** (one live loop voice each - louder as it nears,
+  parameter steps smoothed ~5 ms against zipper noise) and **every map node in range loops
+  its destination's identity timbre** (shared with the fork menu via `NodeCues`; its first
+  appearance also plays once louder as the announcement), each re-aimed EVERY frame so
+  steering reflects immediately. Distance and pan run hitbox to hitbox - the closest points
+  between the object's trigger colliders (the node set follows the game's own collision rule,
+  honoring `m_ignoredNodeColliders`) and the coach's solid colliders (control rig, horses,
+  wagon body) - so a wide zone whose edge is dead ahead sounds centered, touching reads as
+  distance zero, and the coach's own width counts against the gap; a center-distance bound
+  pre-culls far candidates before any physics query. A loop cuts the frame its object is
   collected/executed or drops out of range (a 10% exit margin keeps the boundary from
-  flapping). The allocating scene sweeps run on a 0.7 s clock only to refresh the candidate
-  arrays (measured live: ~43 pickups loaded, 2 within the 80-unit range; 6 nodes loaded, 1-3
-  in range - a handful of concurrent voices, mixed under one output limiter).
+  flapping). The allocating scene sweeps run on a 0.7 s clock to refresh the candidate
+  arrays and their cached collider sets (measured live: ~43 pickups loaded, 2 within the
+  80-unit range; 6 nodes loaded, 1-3 in range - a handful of concurrent voices, mixed under
+  one output limiter).
 - Collection plays a blip and speaks the item's own title; road damage plays the penalty cue
   and speaks the combat damage wording (the coach's stop/start is left to the game's own
   driving audio); a junction's banners coming up cue "fork ahead" (once per junction).

@@ -28,9 +28,11 @@ namespace DD2A11y.Game {
     /// (the game keeps the keyboard for steering; cues carry what held keys would make speech
     /// miss). EVERY uncollected roadside pickup in hearing range sounds as its own continuous
     /// loop, and every map node in range as a loop of its destination's identity timbre (with a
-    /// louder one-shot announcing its first appearance) - each re-aimed every frame, pan to its
-    /// bearing and louder as it nears, so the whole nearby layout stays audible and steering
-    /// reflects immediately. Candidate discovery (the allocating scene sweep) stays on a slow
+    /// louder one-shot announcing its first appearance) - each re-aimed every frame, hitbox to
+    /// hitbox: distance and pan run between the closest points of the object's trigger zone and
+    /// the coach's own body, so a wide zone whose edge is dead ahead sounds centered and the
+    /// coach's bulk counts against the gap, louder as it nears, so the whole nearby layout stays
+    /// audible and steering reflects immediately. Candidate discovery (the allocating scene sweep) stays on a slow
     /// clock; the per-frame work runs over the cached candidates allocation-free, and a loop
     /// cuts the frame its object is collected, executed, or out of range. Collection and damage
     /// arrive as cue plus queued speech; the coach's stop/start, an approaching fork, the
@@ -45,6 +47,8 @@ namespace DD2A11y.Game {
             AccessTools.FieldRefAccess<RoadEventBhv, RoadEventInteractionType>("m_interactionType");
         private static readonly AccessTools.FieldRef<TileNodeBhv, TriggerState> NodeStateField =
             AccessTools.FieldRefAccess<TileNodeBhv, TriggerState>("m_triggerState");
+        private static readonly AccessTools.FieldRef<TileNodeBhv, Collider[]> IgnoredNodeCollidersField =
+            AccessTools.FieldRefAccess<TileNodeBhv, Collider[]>(TileNodeBhv.VAR_IGNORED_NODE_COLLIDERS);
 
         // The sensing radius is the player's setting, read live per scan. Nodes reach half
         // again as far as pickups (their authored 120 against the pickups' 80); the one
@@ -73,6 +77,23 @@ namespace DD2A11y.Game {
         private float _nextScanTime;
         private RoadEventBhv[] _pickupCandidates = new RoadEventBhv[0];
         private TileNodeBhv[] _nodeCandidates = new TileNodeBhv[0];
+        // Hitbox geometry per candidate, rebuilt on the scan clock alongside the candidate
+        // arrays (live Collider references, queried per frame). Extent is how far the object's
+        // collider points reach from its transform - the pre-cull radius that keeps the
+        // physics closest-point queries to candidates actually near the coach.
+        private readonly struct Hitbox {
+            public Hitbox(Collider[] colliders, float extent) {
+                Colliders = colliders;
+                Extent = extent;
+            }
+            public readonly Collider[] Colliders;
+            public readonly float Extent;
+        }
+        private readonly Dictionary<int, Hitbox> _hitboxes = new Dictionary<int, Hitbox>();
+        private readonly List<Collider> _colliderScratch = new List<Collider>();
+        private Collider[] _coachColliders = new Collider[0];
+        private float _coachExtent;
+        private readonly HashSet<int> _hitboxWarned = new HashSet<int>();
         private readonly Dictionary<int, IAudioLoop> _pickupLoops = new Dictionary<int, IAudioLoop>();
         private readonly Dictionary<int, IAudioLoop> _nodeLoops = new Dictionary<int, IAudioLoop>();
         private readonly HashSet<int> _staleLoops = new HashSet<int>();
@@ -210,6 +231,10 @@ namespace DD2A11y.Game {
                 _dangerKnown = false;
                 _pickupCandidates = new RoadEventBhv[0];
                 _nodeCandidates = new TileNodeBhv[0];
+                _hitboxes.Clear();
+                _coachColliders = new Collider[0];
+                _coachExtent = 0f;
+                _hitboxWarned.Clear();
                 StopAllLoops();
                 return;
             }
@@ -252,6 +277,7 @@ namespace DD2A11y.Game {
             // refresh is enough; everything per-frame reads these arrays.
             _pickupCandidates = UnityEngine.Object.FindObjectsOfType<RoadEventBhv>();
             _nodeCandidates = UnityEngine.Object.FindObjectsOfType<TileNodeBhv>();
+            RefreshHitboxes(vehicle);
             AnnounceApproachingFork();
         }
 
@@ -271,11 +297,11 @@ namespace DD2A11y.Game {
                 }
                 int id = pickup.GetInstanceID();
                 float range = _sensingRange.Value;
-                float distance = Vector3.Distance(coach.position, pickup.transform.position);
-                if (distance > (_pickupLoops.ContainsKey(id) ? range * 1.1f : range)) {
+                float limit = _pickupLoops.ContainsKey(id) ? range * 1.1f : range;
+                Aim(coach, pickup.transform, _hitboxes[id], limit, out float distance, out float pan);
+                if (distance > limit) {
                     continue;
                 }
-                float pan = PanTo(coach, pickup.transform.position);
                 float volume = Mathf.Lerp(1f, 0.25f, Mathf.Clamp01(distance / range));
                 if (_pickupLoops.TryGetValue(id, out var loop)) {
                     loop.Update(volume, pan);
@@ -313,11 +339,11 @@ namespace DD2A11y.Game {
                 }
                 int id = node.GetInstanceID();
                 float range = _sensingRange.Value * NodeRangeFactor;
-                float distance = Vector3.Distance(coach.position, node.transform.position);
-                if (distance > (_nodeLoops.ContainsKey(id) ? range * 1.1f : range)) {
+                float limit = _nodeLoops.ContainsKey(id) ? range * 1.1f : range;
+                Aim(coach, node.transform, _hitboxes[id], limit, out float distance, out float pan);
+                if (distance > limit) {
                     continue;
                 }
-                float pan = PanTo(coach, node.transform.position);
                 float volume = Mathf.Lerp(0.8f, 0.15f, Mathf.Clamp01(distance / range));
                 if (_nodeLoops.TryGetValue(id, out var loop)) {
                     loop.Update(volume, pan);
@@ -378,10 +404,160 @@ namespace DD2A11y.Game {
             }
         }
 
-        private static float PanTo(Transform coach, Vector3 target) {
-            Vector3 to = (target - coach.position).normalized;
+        // Distance and pan between the closest points on the target's trigger colliders and
+        // the coach's body colliders - the same geometry the game's own collection test runs
+        // on - so a wide zone whose edge is dead ahead sounds centered and the coach's own
+        // width counts against the gap. A cheap center-distance bound culls the far majority
+        // of candidates before any physics query; a culled target answers an infinite
+        // distance, which every caller's range gate drops.
+        private void Aim(Transform coach, Transform target, Hitbox hitbox, float cullRange,
+                         out float distance, out float pan) {
+            Vector3 center = target.position;
+            if (Vector3.Distance(coach.position, center) - hitbox.Extent - _coachExtent > cullRange) {
+                distance = float.MaxValue;
+                pan = 0f;
+                return;
+            }
+            Vector3 targetPoint = ClosestOn(hitbox.Colliders, coach.position, center);
+            Vector3 coachPoint = ClosestOn(_coachColliders, targetPoint, coach.position);
+            targetPoint = ClosestOn(hitbox.Colliders, coachPoint, center);
+            Vector3 delta = targetPoint - coachPoint;
+            distance = delta.magnitude;
+            pan = PanOf(coach, delta);
+        }
+
+        // Touching or overlapping hitboxes read as dead ahead.
+        private static float PanOf(Transform coach, Vector3 delta) {
+            if (delta.sqrMagnitude < 1e-4f) {
+                return 0f;
+            }
+            Vector3 to = delta.normalized;
             float angle = Mathf.Atan2(Vector3.Dot(to, coach.right), Vector3.Dot(to, coach.forward));
             return Mathf.Clamp(Mathf.Sin(angle) * 1.4f, -1f, 1f);
+        }
+
+        // Closest point on any of the colliders to the query point; dead, disabled, and
+        // inactive colliders are skipped, and a set with none usable answers the fallback
+        // (the owner's transform position).
+        private static Vector3 ClosestOn(Collider[] colliders, Vector3 point, Vector3 fallback) {
+            float bestSqr = float.MaxValue;
+            Vector3 best = fallback;
+            foreach (var collider in colliders) {
+                if (collider == null || !collider.enabled || !collider.gameObject.activeInHierarchy) {
+                    continue;
+                }
+                Vector3 candidate = SupportsExactClosest(collider)
+                    ? collider.ClosestPoint(point) : collider.ClosestPointOnBounds(point);
+                float sqr = (candidate - point).sqrMagnitude;
+                if (sqr < bestSqr) {
+                    bestSqr = sqr;
+                    best = candidate;
+                }
+            }
+            return best;
+        }
+
+        // Collider.ClosestPoint supports the primitive shapes and convex meshes only;
+        // anything else (wheels, concave meshes on the coach) uses its AABB instead.
+        private static bool SupportsExactClosest(Collider collider) {
+            return collider is BoxCollider || collider is SphereCollider || collider is CapsuleCollider
+                || (collider is MeshCollider mesh && mesh.convex);
+        }
+
+        // The scan-clock side of the hitbox math: the coach's body colliders and every
+        // candidate's trigger colliders, rebuilt with the candidate arrays they parallel.
+        private void RefreshHitboxes(AVehicleControl vehicle) {
+            _coachColliders = SweepCoachColliders(vehicle);
+            _coachExtent = ExtentFrom(vehicle.transform.position, _coachColliders);
+            if (_coachColliders.Length == 0 && _hitboxWarned.Add(vehicle.GetInstanceID())) {
+                Plugin.Log.LogWarning("RoadSense: no solid colliders under the vehicle; aiming from its transform");
+            }
+            _hitboxes.Clear();
+            foreach (var pickup in _pickupCandidates) {
+                if (pickup != null) {
+                    _hitboxes[pickup.GetInstanceID()] = BuildHitbox(pickup, PickupTriggers(pickup));
+                }
+            }
+            foreach (var node in _nodeCandidates) {
+                if (node != null) {
+                    _hitboxes[node.GetInstanceID()] = BuildHitbox(node, NodeTriggers(node));
+                }
+            }
+        }
+
+        private Hitbox BuildHitbox(Component owner, Collider[] colliders) {
+            if (colliders.Length == 0 && _hitboxWarned.Add(owner.GetInstanceID())) {
+                Plugin.Log.LogWarning($"RoadSense: no trigger colliders under {owner.name}; aiming at its transform");
+            }
+            return new Hitbox(colliders, ExtentFrom(owner.transform.position, colliders));
+        }
+
+        private static float ExtentFrom(Vector3 origin, Collider[] colliders) {
+            float max = 0f;
+            foreach (var collider in colliders) {
+                if (collider == null || !collider.enabled || !collider.gameObject.activeInHierarchy) {
+                    continue;
+                }
+                var bounds = collider.bounds;
+                float reach = (bounds.center - origin).magnitude + bounds.extents.magnitude;
+                if (reach > max) {
+                    max = reach;
+                }
+            }
+            return max;
+        }
+
+        // A road event's zone is the trigger colliders under it - what its OnTriggerEnter
+        // listens through.
+        private Collider[] PickupTriggers(RoadEventBhv pickup) {
+            _colliderScratch.Clear();
+            foreach (var collider in pickup.GetComponentsInChildren<Collider>(true)) {
+                if (collider.isTrigger) {
+                    _colliderScratch.Add(collider);
+                }
+            }
+            return _colliderScratch.ToArray();
+        }
+
+        // The node collision rule TileNodeBhv.Start wires: its own collider plus child
+        // triggers on its layer, minus the colliders it explicitly ignores for collision
+        // (oversized narration and road-sfx zones).
+        private Collider[] NodeTriggers(TileNodeBhv node) {
+            _colliderScratch.Clear();
+            Collider[] ignored = IgnoredNodeCollidersField(node);
+            foreach (var collider in node.GetComponentsInChildren<Collider>(true)) {
+                if (!collider.isTrigger) {
+                    continue;
+                }
+                if (collider.gameObject != node.gameObject
+                    && (collider.gameObject.layer != node.gameObject.layer
+                        || (ignored != null && Array.IndexOf(ignored, collider) >= 0))) {
+                    continue;
+                }
+                _colliderScratch.Add(collider);
+            }
+            return _colliderScratch.ToArray();
+        }
+
+        // The coach's physical bulk: every solid collider under the vehicle assembly - the
+        // control rig and horses, plus the wagon body wherever the game parents it. The
+        // assembly's trigger colliders are listeners, not the body.
+        private Collider[] SweepCoachColliders(AVehicleControl vehicle) {
+            _colliderScratch.Clear();
+            AddSolidColliders(vehicle.gameObject);
+            GameObject coachGObj = vehicle is StageCoachVehicleControlBhv coach ? coach.GetCoachGObj() : null;
+            if (coachGObj != null && !coachGObj.transform.IsChildOf(vehicle.transform)) {
+                AddSolidColliders(coachGObj);
+            }
+            return _colliderScratch.ToArray();
+        }
+
+        private void AddSolidColliders(GameObject root) {
+            foreach (var collider in root.GetComponentsInChildren<Collider>(true)) {
+                if (!collider.isTrigger) {
+                    _colliderScratch.Add(collider);
+                }
+            }
         }
 
         // Distance from the road's centerline against its half-width, from the same public road
