@@ -6,6 +6,7 @@
 - When purchasing skills at a Mastery trainer, we no longer say selected and use consistent "Mastered" verbage throughout.
 - In combat, your focus shall now land consistently on the round number at the start. It was landing on the combatant strip, and that bothered me.
 - We no longer double-announce who you've switched to on the Mastery screen. I know you love Paracelsus, you'll just have to switch back and forth to get her name twice now.
+- The weird bug where you'd jump from enemy first rank to the back of your party has been fixed. That's what we get for doing this at 1 in the morning!
 
 ## V0.2.5
 
