@@ -7,7 +7,7 @@ using S = DD2A11y.Core.Strings.Strings;
 namespace DD2A11y.Screens.Options {
     /// <summary>
     /// The mod sounds glossary tab: the master volume slider, then a group tab per sound
-    /// family (road, nodes, combat - the assets/audio folders), then one row per
+    /// family (road, combat - the assets/audio folders), then one row per
     /// <see cref="AudioCue"/> in the active group naming what the sound is used for.
     /// Left/Right on the group tab switch groups; Enter plays a row's sound once, Space loops
     /// it (both silent - the sound is the feedback), Left/Right step its saved per-sound
@@ -17,7 +17,7 @@ namespace DD2A11y.Screens.Options {
     /// </summary>
     public sealed class ModSoundsTab : ModTab {
         private static readonly AudioCueGroup[] Groups =
-            { AudioCueGroup.Road, AudioCueGroup.Nodes, AudioCueGroup.Combat };
+            { AudioCueGroup.Road, AudioCueGroup.Combat };
 
         private readonly SoundVolumes _sounds;
         private readonly SoundPreview _preview;
@@ -48,7 +48,6 @@ namespace DD2A11y.Screens.Options {
 
         private static string GroupName(int index) {
             switch (Groups[index]) {
-                case AudioCueGroup.Nodes: return S.SoundTabNodes;
                 case AudioCueGroup.Combat: return S.SoundTabCombat;
                 default: return S.SoundTabRoad;
             }

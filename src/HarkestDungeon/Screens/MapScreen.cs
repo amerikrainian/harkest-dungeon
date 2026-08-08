@@ -27,10 +27,10 @@ namespace DD2A11y.Screens {
         // claim follows the live bindings, so a rebind moves it.
         private readonly DrivingKeySuppressor _suppressor;
 
-        public MapScreen(Action<string, bool> speak, Core.Audio.IAudioEngine audio, Action cursorMoved,
+        public MapScreen(Action<string, bool> speak, Action cursorMoved,
                          Core.Input.InputManager input) {
             _speak = speak;
-            _viewer = new MapViewer(speak, audio);
+            _viewer = new MapViewer(speak);
             _cursorMoved = cursorMoved;
             _suppressor = new DrivingKeySuppressor(
                 () => DrivingKeySuppressor.ClaimFor(input,

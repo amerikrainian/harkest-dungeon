@@ -8,8 +8,6 @@ using Assets.Code.Game.StageCoach;
 using Assets.Code.Item;
 using Assets.Code.Item.Events;
 using Assets.Code.Map;
-using Assets.Code.Map.Events;
-using Assets.Code.Map.Generation;
 using Assets.Code.Map.Generation.Row;
 using Assets.Code.Map.RoadEvents;
 using Assets.Code.Run;
@@ -27,34 +25,23 @@ namespace DD2A11y.Game {
     /// The free-driving soundscape, ticked from the pump while the DRIVING mode runs uncaptured
     /// (the game keeps the keyboard for steering; cues carry what held keys would make speech
     /// miss). EVERY uncollected roadside pickup in hearing range sounds as its own continuous
-    /// loop, and every map node in range as a loop of its destination's identity timbre (with a
-    /// louder one-shot announcing its first appearance) - each re-aimed every frame, hitbox to
-    /// hitbox: distance and pan run between the closest points of the object's trigger zone and
+    /// loop - the one thing on the road worth steering at - re-aimed every frame, hitbox to
+    /// hitbox: distance and pan run between the closest points of the pickup's trigger zone and
     /// the coach's own body, so a wide zone whose edge is dead ahead sounds centered and the
     /// coach's bulk counts against the gap, louder as it nears, so the whole nearby layout stays
     /// audible and steering reflects immediately. Candidate discovery (the allocating scene sweep) stays on a slow
     /// clock; the per-frame work runs over the cached candidates allocation-free, and a loop
-    /// cuts the frame its object is collected, executed, or out of range. Collection and damage
-    /// arrive as cue plus queued speech; the coach's stop/start, an approaching fork, the
-    /// road's edge, an event zone's enter/exit (with the interact prompt on opt-in events), an
-    /// ambush, a danger stretch, and a Loathing advance each get their own cue. Event listeners
-    /// only compose pending lines; every sound and word goes out on the pump path.
+    /// cuts the frame its pickup is collected or out of range. The coach's own motion keeps two
+    /// cues: the turning loop and the road-edge bump. Everything else on the road is speech -
+    /// collection, damage, barks, an approaching fork. Event listeners only compose pending
+    /// lines; every sound and word goes out on the pump path.
     /// </summary>
     public sealed class RoadSense {
         private static readonly AccessTools.FieldRef<TriggerIntersectionBhv, IntersectionState> StateField =
             AccessTools.FieldRefAccess<TriggerIntersectionBhv, IntersectionState>("m_CurrentState");
-        private static readonly AccessTools.FieldRef<RoadEventBhv, RoadEventInteractionType> InteractionTypeField =
-            AccessTools.FieldRefAccess<RoadEventBhv, RoadEventInteractionType>("m_interactionType");
-        private static readonly AccessTools.FieldRef<TileNodeBhv, TriggerState> NodeStateField =
-            AccessTools.FieldRefAccess<TileNodeBhv, TriggerState>("m_triggerState");
-        private static readonly AccessTools.FieldRef<TileNodeBhv, Collider[]> IgnoredNodeCollidersField =
-            AccessTools.FieldRefAccess<TileNodeBhv, Collider[]>(TileNodeBhv.VAR_IGNORED_NODE_COLLIDERS);
 
-        // The sensing radius is the player's setting, read live per scan. Nodes reach half
-        // again as far as pickups (their authored 120 against the pickups' 80); the one
-        // setting scales both, keeping that ratio.
+        // The sensing radius is the player's setting, read live per scan.
         private readonly Core.Settings.IntSetting _sensingRange;
-        private const float NodeRangeFactor = 1.5f;
         private const float ScanInterval = 0.7f;
         // Off-center distance as a fraction of the road's half-width: the bump sounds past
         // Warn and arms again under Rearm, so riding the edge does not chatter.
@@ -73,10 +60,8 @@ namespace DD2A11y.Game {
         // game's own sfx already marks the moment).
         private readonly List<KeyValuePair<AudioCue?, string>> _pending = new List<KeyValuePair<AudioCue?, string>>();
         private readonly HashSet<int> _announcedForks = new HashSet<int>();
-        private readonly HashSet<int> _announcedNodes = new HashSet<int>();
         private float _nextScanTime;
         private RoadEventBhv[] _pickupCandidates = new RoadEventBhv[0];
-        private TileNodeBhv[] _nodeCandidates = new TileNodeBhv[0];
         // Hitbox geometry per candidate, rebuilt on the scan clock alongside the candidate
         // arrays (live Collider references, queried per frame). Extent is how far the object's
         // collider points reach from its transform - the pre-cull radius that keeps the
@@ -95,11 +80,8 @@ namespace DD2A11y.Game {
         private float _coachExtent;
         private readonly HashSet<int> _hitboxWarned = new HashSet<int>();
         private readonly Dictionary<int, IAudioLoop> _pickupLoops = new Dictionary<int, IAudioLoop>();
-        private readonly Dictionary<int, IAudioLoop> _nodeLoops = new Dictionary<int, IAudioLoop>();
         private readonly HashSet<int> _staleLoops = new HashSet<int>();
         private bool _edgeArmed = true;
-        private bool _inDanger;
-        private bool _dangerKnown;
         private IAudioLoop _turnLoop;
 
         public RoadSense(IAudioEngine audio, Action<string, bool> speak, InputGate gate,
@@ -110,10 +92,6 @@ namespace DD2A11y.Game {
             _sensingRange = sensingRange;
             EventManager.AddListener<EventLootToastPresented>(HandleLootToast);
             EventManager.AddListener<EventActorHealthDamage>(HandleDamage);
-            EventManager.AddListener<EventRoadEventEnter>(HandleZoneEnter);
-            EventManager.AddListener<EventRoadEventExit>(HandleZoneExit);
-            EventManager.AddListener<EventExecuteRoadEventStarted>(HandleRoadEventStarted);
-            EventManager.AddListener<EventRunValueChanged>(HandleRunValue);
             EventManager.AddListener<EventBark>(HandleBark);
             EventManager.AddListener<EventRunResist>(HandleRunResist);
         }
@@ -150,37 +128,7 @@ namespace DD2A11y.Game {
                 return;
             }
             _pending.Add(new KeyValuePair<AudioCue?, string>(
-                AudioCue.RoadPenalty, damage == 1 ? S.CombatTookDamageOne(name) : S.CombatTookDamage(name, damage)));
-        }
-
-        // Crossing into an event's zone: an opt-in event fires only on the game's Interact key,
-        // so its prompt says so; a contact event gets the plain zone blip.
-        private void HandleZoneEnter(EventRoadEventEnter evt) {
-            if (!OnRoad || evt.m_roadEvent == null || evt.m_roadEvent.GetTriggerState() != TriggerState.None
-                || evt.m_category != RoadEventCategory.OBJECTS) {
-                return;
-            }
-            if (InteractionTypeField(evt.m_roadEvent) == RoadEventInteractionType.OPT_IN) {
-                _pending.Add(new KeyValuePair<AudioCue?, string>(AudioCue.RoadPrompt, S.RoadInteract));
-            } else {
-                _pending.Add(new KeyValuePair<AudioCue?, string>(AudioCue.RoadZoneEnter, null));
-            }
-        }
-
-        // Leaving a zone with the event still untriggered: a pickup passed uncollected.
-        private void HandleZoneExit(EventRoadEventExit evt) {
-            if (!OnRoad || evt.m_roadEvent == null || evt.m_roadEvent.GetTriggerState() != TriggerState.None
-                || evt.m_roadEvent.RoadEventCategory != RoadEventCategory.OBJECTS) {
-                return;
-            }
-            _pending.Add(new KeyValuePair<AudioCue?, string>(AudioCue.RoadZoneExit, null));
-        }
-
-        private void HandleRoadEventStarted(EventExecuteRoadEventStarted evt) {
-            if (!OnRoad || evt.m_RoadEventCategory != RoadEventCategory.AMBUSH) {
-                return;
-            }
-            _pending.Add(new KeyValuePair<AudioCue?, string>(AudioCue.RoadAmbush, null));
+                null, damage == 1 ? S.CombatTookDamageOne(name) : S.CombatTookDamage(name, damage)));
         }
 
         // A hero's speech bubble while driving (banter, act-outs); same wording as battle -
@@ -214,23 +162,11 @@ namespace DD2A11y.Game {
             _pending.Add(new KeyValuePair<AudioCue?, string>(null, string.Format(format, percent)));
         }
 
-        // The Loathing meter (DOOM internally) advanced.
-        private void HandleRunValue(EventRunValueChanged evt) {
-            if (!OnRoad || evt.m_RunValueType != RunValueType.DOOM || evt.m_IsReset
-                || evt.m_CurrentValue <= evt.m_PreviousValue) {
-                return;
-            }
-            _pending.Add(new KeyValuePair<AudioCue?, string>(AudioCue.RoadLoathing, null));
-        }
-
         public void Tick() {
             if (!OnRoad) {
                 _pending.Clear();
                 _announcedForks.Clear();
-                _announcedNodes.Clear();
-                _dangerKnown = false;
                 _pickupCandidates = new RoadEventBhv[0];
-                _nodeCandidates = new TileNodeBhv[0];
                 _hitboxes.Clear();
                 _coachColliders = new Collider[0];
                 _coachExtent = 0f;
@@ -264,19 +200,16 @@ namespace DD2A11y.Game {
             // The continuous layers re-aim every frame over the cached candidates, so steering
             // lands in the ears the same frame it lands on the road.
             UpdatePickupLoops(vehicle.transform);
-            UpdateNodeLoops(vehicle.transform);
             CheckRoadEdge(vehicle.transform);
             CheckTurning(vehicle);
-            CheckDanger();
 
             if (Time.unscaledTime < _nextScanTime) {
                 return;
             }
             _nextScanTime = Time.unscaledTime + ScanInterval;
-            // The allocating sweeps: new objects stream in with the road tiles, so a slow
-            // refresh is enough; everything per-frame reads these arrays.
+            // The allocating sweep: new objects stream in with the road tiles, so a slow
+            // refresh is enough; everything per-frame reads this array.
             _pickupCandidates = UnityEngine.Object.FindObjectsOfType<RoadEventBhv>();
-            _nodeCandidates = UnityEngine.Object.FindObjectsOfType<TileNodeBhv>();
             RefreshHitboxes(vehicle);
             AnnounceApproachingFork();
         }
@@ -325,43 +258,6 @@ namespace DD2A11y.Game {
             return 0.94f + hash % 256u / 255f * 0.12f;
         }
 
-        // Every node in range loops its destination's identity timbre until the coach passes
-        // it (executes it or leaves it behind); its first appearance also announces once,
-        // louder, so a new destination registers even over the ambient layer.
-        private void UpdateNodeLoops(Transform coach) {
-            _staleLoops.Clear();
-            foreach (var pair in _nodeLoops) {
-                _staleLoops.Add(pair.Key);
-            }
-            foreach (var node in _nodeCandidates) {
-                if (node == null || NodeStateField(node) != TriggerState.None) {
-                    continue;
-                }
-                int id = node.GetInstanceID();
-                float range = _sensingRange.Value * NodeRangeFactor;
-                float limit = _nodeLoops.ContainsKey(id) ? range * 1.1f : range;
-                Aim(coach, node.transform, _hitboxes[id], limit, out float distance, out float pan);
-                if (distance > limit) {
-                    continue;
-                }
-                float volume = Mathf.Lerp(0.8f, 0.15f, Mathf.Clamp01(distance / range));
-                if (_nodeLoops.TryGetValue(id, out var loop)) {
-                    loop.Update(volume, pan);
-                    _staleLoops.Remove(id);
-                } else {
-                    var cue = NodeCues.For(node.GetNodeType());
-                    if (_announcedNodes.Add(id)) {
-                        _audio.PlayCue(cue, 1f, pan);
-                    }
-                    _nodeLoops[id] = _audio.StartLoop(cue, volume, pan);
-                }
-            }
-            foreach (int id in _staleLoops) {
-                _nodeLoops[id].Stop();
-                _nodeLoops.Remove(id);
-            }
-        }
-
         // The turning layer: the loop runs while the coach actually rotates - the game's own
         // turn-speed state times the speed ratio, the same product its rotation math applies
         // (and what the road-snap assist steers with, so curves the coach takes itself sound
@@ -394,10 +290,6 @@ namespace DD2A11y.Game {
                 pair.Value.Stop();
             }
             _pickupLoops.Clear();
-            foreach (var pair in _nodeLoops) {
-                pair.Value.Stop();
-            }
-            _nodeLoops.Clear();
             if (_turnLoop != null) {
                 _turnLoop.Stop();
                 _turnLoop = null;
@@ -465,7 +357,7 @@ namespace DD2A11y.Game {
         }
 
         // The scan-clock side of the hitbox math: the coach's body colliders and every
-        // candidate's trigger colliders, rebuilt with the candidate arrays they parallel.
+        // candidate's trigger colliders, rebuilt with the candidate array they parallel.
         private void RefreshHitboxes(AVehicleControl vehicle) {
             _coachColliders = SweepCoachColliders(vehicle);
             _coachExtent = ExtentFrom(vehicle.transform.position, _coachColliders);
@@ -476,11 +368,6 @@ namespace DD2A11y.Game {
             foreach (var pickup in _pickupCandidates) {
                 if (pickup != null) {
                     _hitboxes[pickup.GetInstanceID()] = BuildHitbox(pickup, PickupTriggers(pickup));
-                }
-            }
-            foreach (var node in _nodeCandidates) {
-                if (node != null) {
-                    _hitboxes[node.GetInstanceID()] = BuildHitbox(node, NodeTriggers(node));
                 }
             }
         }
@@ -515,26 +402,6 @@ namespace DD2A11y.Game {
                 if (collider.isTrigger) {
                     _colliderScratch.Add(collider);
                 }
-            }
-            return _colliderScratch.ToArray();
-        }
-
-        // The node collision rule TileNodeBhv.Start wires: its own collider plus child
-        // triggers on its layer, minus the colliders it explicitly ignores for collision
-        // (oversized narration and road-sfx zones).
-        private Collider[] NodeTriggers(TileNodeBhv node) {
-            _colliderScratch.Clear();
-            Collider[] ignored = IgnoredNodeCollidersField(node);
-            foreach (var collider in node.GetComponentsInChildren<Collider>(true)) {
-                if (!collider.isTrigger) {
-                    continue;
-                }
-                if (collider.gameObject != node.gameObject
-                    && (collider.gameObject.layer != node.gameObject.layer
-                        || (ignored != null && Array.IndexOf(ignored, collider) >= 0))) {
-                    continue;
-                }
-                _colliderScratch.Add(collider);
             }
             return _colliderScratch.ToArray();
         }
@@ -593,20 +460,6 @@ namespace DD2A11y.Game {
             }
         }
 
-        // The burning stretches the game tracks per road tile.
-        private void CheckDanger() {
-            bool danger = RoadMaterialUtils.InInkfireTile;
-            if (!_dangerKnown) {
-                _dangerKnown = true;
-                _inDanger = danger;
-                return;
-            }
-            if (danger != _inDanger) {
-                _inDanger = danger;
-                _audio.PlayCue(danger ? AudioCue.RoadDangerEnter : AudioCue.RoadDangerExit, 1f, 0f);
-            }
-        }
-
         // Each junction announces once, as its banners come up on approach; the route menu
         // itself opens when the coach halts there.
         private void AnnounceApproachingFork() {
@@ -616,7 +469,6 @@ namespace DD2A11y.Game {
                     continue;
                 }
                 if (_announcedForks.Add(intersection.GetInstanceID())) {
-                    _audio.PlayCue(AudioCue.RoadFork, 1f, 0f);
                     _speak(S.RoadForkAhead, false);
                 }
             }

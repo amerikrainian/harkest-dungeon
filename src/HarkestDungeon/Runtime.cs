@@ -215,11 +215,11 @@ namespace DD2A11y {
             // combat they yield nothing.
             enemiesBuffer.SetSource(() => _combat.TeamOverview(friendly: false));
             partyBuffer.SetSource(() => _combat.TeamOverview(friendly: true));
-            Router.Register(new RouteChoiceScreen(Audio));
+            Router.Register(new RouteChoiceScreen());
             // The road map shares the keyboard with live driving, so it sits below every
             // taking surface (the fork menu included). Its cursor moves re-home the buffers
             // the same way a focus change does.
-            Router.Register(new MapScreen(speak, Audio, () => RehomeBuffers(Navigator.Current), Input));
+            Router.Register(new MapScreen(speak, () => RehomeBuffers(Navigator.Current), Input));
             // The free-driving floor: the HUD as Tab panels around a pass-through driving area.
             _driving = new DrivingScreen(speak, Navigator, Input);
             Router.Register(_driving);

@@ -53,7 +53,7 @@ namespace DD2A11y.Tests {
             }
         }
 
-        private static SoundVolume Volume(MemoryStore store, AudioCue cue = AudioCue.RoadAmbush)
+        private static SoundVolume Volume(MemoryStore store, AudioCue cue = AudioCue.RoadEdgeBump)
             => new SoundVolume(cue, store, new MasterVolume(store));
 
         [Fact]
@@ -66,7 +66,7 @@ namespace DD2A11y.Tests {
         [Fact]
         public void Volume_LoadsLegacyAbsoluteValueAsOffsetFromFullMaster() {
             var store = new MemoryStore();
-            store.Values["RoadAmbush"] = "40";
+            store.Values["RoadEdgeBump"] = "40";
             Assert.Equal(40, Volume(store).Value);
         }
 
@@ -74,17 +74,17 @@ namespace DD2A11y.Tests {
         public void Volume_LoadsSignedValueAsOffsetFromMaster() {
             var store = new MemoryStore();
             store.Values["Master"] = "50";
-            store.Values["RoadAmbush"] = "+10";
-            store.Values["RoadFork"] = "-20";
+            store.Values["RoadEdgeBump"] = "+10";
+            store.Values["RoadTurning"] = "-20";
             var volumes = new SoundVolumes(store);
-            Assert.Equal(60, volumes.All.First(v => v.Cue == AudioCue.RoadAmbush).Value);
-            Assert.Equal(30, volumes.All.First(v => v.Cue == AudioCue.RoadFork).Value);
+            Assert.Equal(60, volumes.All.First(v => v.Cue == AudioCue.RoadEdgeBump).Value);
+            Assert.Equal(30, volumes.All.First(v => v.Cue == AudioCue.RoadTurning).Value);
         }
 
         [Fact]
         public void Volume_UnparsableStoredValueFollowsTheMaster() {
             var store = new MemoryStore();
-            store.Values["RoadAmbush"] = "loud";
+            store.Values["RoadEdgeBump"] = "loud";
             Assert.Equal(100, Volume(store).Value);
         }
 
@@ -93,7 +93,7 @@ namespace DD2A11y.Tests {
         [InlineData("-5", 95)] // signed, so an offset
         public void Volume_StoredValueEdgeCases(string stored, int expected) {
             var store = new MemoryStore();
-            store.Values["RoadAmbush"] = stored;
+            store.Values["RoadEdgeBump"] = stored;
             Assert.Equal(expected, Volume(store).Value);
         }
 
@@ -103,7 +103,7 @@ namespace DD2A11y.Tests {
             var volume = Volume(store);
             Assert.True(volume.Adjust(-1));
             Assert.Equal(90, volume.Value);
-            Assert.Equal("-10", store.Values["RoadAmbush"]);
+            Assert.Equal("-10", store.Values["RoadEdgeBump"]);
         }
 
         [Fact]
@@ -112,69 +112,69 @@ namespace DD2A11y.Tests {
             var volume = Volume(store);
             Assert.True(volume.Adjust(+1));
             Assert.Equal(110, volume.Value);
-            Assert.Equal("+10", store.Values["RoadAmbush"]);
+            Assert.Equal("+10", store.Values["RoadEdgeBump"]);
             Assert.Equal(1.1f, volume.Gain, 3);
         }
 
         [Fact]
         public void Volume_AdjustAtTheEndsMovesNothing() {
             var store = new MemoryStore();
-            store.Values["RoadAmbush"] = "+100";
+            store.Values["RoadEdgeBump"] = "+100";
             var maxed = Volume(store);
             Assert.Equal(200, maxed.Value);
             Assert.False(maxed.Adjust(+1));
-            Assert.Equal("+100", store.Values["RoadAmbush"]); // no pointless write
+            Assert.Equal("+100", store.Values["RoadEdgeBump"]); // no pointless write
 
-            store.Values["RoadAmbush"] = "-100";
+            store.Values["RoadEdgeBump"] = "-100";
             var muted = Volume(store);
             Assert.Equal(0, muted.Value);
             Assert.False(muted.Adjust(-1));
-            Assert.Equal("-100", store.Values["RoadAmbush"]);
+            Assert.Equal("-100", store.Values["RoadEdgeBump"]);
         }
 
         [Fact]
         public void Master_MoveCarriesEverySoundWhileOffsetsHold() {
             var store = new MemoryStore();
-            store.Values["RoadAmbush"] = "-40";
+            store.Values["RoadEdgeBump"] = "-40";
             var volumes = new SoundVolumes(store);
-            var ambush = volumes.All.First(v => v.Cue == AudioCue.RoadAmbush);
-            var fork = volumes.All.First(v => v.Cue == AudioCue.RoadFork);
+            var edge = volumes.All.First(v => v.Cue == AudioCue.RoadEdgeBump);
+            var turning = volumes.All.First(v => v.Cue == AudioCue.RoadTurning);
 
             Assert.True(volumes.Master.Adjust(-1));
             Assert.Equal(90, volumes.Master.Value);
             Assert.Equal("90", store.Values["Master"]);
-            Assert.Equal(50, ambush.Value);
-            Assert.Equal(90, fork.Value);
-            Assert.Equal("-40", store.Values["RoadAmbush"]); // the offset itself never rewrites
+            Assert.Equal(50, edge.Value);
+            Assert.Equal(90, turning.Value);
+            Assert.Equal("-40", store.Values["RoadEdgeBump"]); // the offset itself never rewrites
         }
 
         [Fact]
         public void Master_DipBelowASoundOffsetClampsToSilentAndComesBack() {
             var store = new MemoryStore();
             store.Values["Master"] = "30";
-            store.Values["RoadAmbush"] = "-40";
+            store.Values["RoadEdgeBump"] = "-40";
             var volumes = new SoundVolumes(store);
-            var ambush = volumes.All.First(v => v.Cue == AudioCue.RoadAmbush);
+            var edge = volumes.All.First(v => v.Cue == AudioCue.RoadEdgeBump);
 
-            Assert.Equal(0, ambush.Value); // 30 - 40, clamped: never negative
-            Assert.Equal(0f, ambush.Gain);
+            Assert.Equal(0, edge.Value); // 30 - 40, clamped: never negative
+            Assert.Equal(0f, edge.Gain);
 
             volumes.Master.Adjust(+1);
             volumes.Master.Adjust(+1);
-            Assert.Equal(10, ambush.Value); // the full offset survived the dip
+            Assert.Equal(10, edge.Value); // the full offset survived the dip
         }
 
         [Fact]
         public void Volume_AdjustFromTheClampRederivesTheOffset() {
             var store = new MemoryStore();
             store.Values["Master"] = "30";
-            store.Values["RoadAmbush"] = "-40";
+            store.Values["RoadEdgeBump"] = "-40";
             var volume = Volume(store);
 
             Assert.Equal(0, volume.Value);
             Assert.True(volume.Adjust(+1));
             Assert.Equal(10, volume.Value);
-            Assert.Equal("-20", store.Values["RoadAmbush"]);
+            Assert.Equal("-20", store.Values["RoadEdgeBump"]);
         }
 
         [Fact]
@@ -218,7 +218,7 @@ namespace DD2A11y.Tests {
             Assert.Equal(0.4f, play.Volume, 3);
             Assert.Equal(-0.5f, play.Pan, 3); // pan is the caller's, untouched
 
-            engine.PlayCue(AudioCue.RoadAmbush, 0.8f, 0f); // unadjusted cue plays naturally
+            engine.PlayCue(AudioCue.RoadEdgeBump, 0.8f, 0f); // unadjusted cue plays naturally
             Assert.Equal(0.8f, inner.Plays[1].Volume, 3);
         }
 
@@ -259,13 +259,13 @@ namespace DD2A11y.Tests {
             var inner = new FakeEngine();
             var preview = new SoundPreview(inner);
 
-            preview.Toggle(AudioCue.RoadAmbush);
-            preview.PlayOnce(AudioCue.RoadFork);
+            preview.Toggle(AudioCue.RoadEdgeBump);
+            preview.PlayOnce(AudioCue.RoadTurning);
 
             Assert.True(inner.Loops[0].Stopped); // one instance plays, not a chord
             Assert.Null(preview.Playing);
             var play = Assert.Single(inner.Plays);
-            Assert.Equal(AudioCue.RoadFork, play.Cue);
+            Assert.Equal(AudioCue.RoadTurning, play.Cue);
         }
 
         [Fact]
@@ -273,15 +273,15 @@ namespace DD2A11y.Tests {
             var inner = new FakeEngine();
             var preview = new SoundPreview(inner);
 
-            preview.Toggle(AudioCue.RoadAmbush);
-            Assert.Equal(AudioCue.RoadAmbush, preview.Playing);
+            preview.Toggle(AudioCue.RoadEdgeBump);
+            Assert.Equal(AudioCue.RoadEdgeBump, preview.Playing);
             Assert.Single(inner.Loops);
 
-            preview.Toggle(AudioCue.RoadAmbush);
+            preview.Toggle(AudioCue.RoadEdgeBump);
             Assert.Null(preview.Playing);
             Assert.True(inner.Loops[0].Stopped);
 
-            preview.Toggle(AudioCue.RoadFork);
+            preview.Toggle(AudioCue.RoadTurning);
             preview.Toggle(AudioCue.RoadPickup);
             Assert.Equal(AudioCue.RoadPickup, preview.Playing);
             Assert.True(inner.Loops[1].Stopped);
@@ -296,8 +296,8 @@ namespace DD2A11y.Tests {
             var preview = new SoundPreview(new VolumeScaledEngine(inner, volumes));
 
             preview.VolumeChanged(); // nothing playing; must not throw
-            preview.Toggle(AudioCue.RoadAmbush);
-            volumes.All.First(v => v.Cue == AudioCue.RoadAmbush).Adjust(-1);
+            preview.Toggle(AudioCue.RoadEdgeBump);
+            volumes.All.First(v => v.Cue == AudioCue.RoadEdgeBump).Adjust(-1);
             preview.VolumeChanged();
             Assert.Equal(0.9f, inner.Loops[0].Volume, 3);
 

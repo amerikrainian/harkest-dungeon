@@ -4,7 +4,6 @@ using Assets.Code.Map.Generation;
 using Assets.Code.Roster;
 using Assets.Code.UI;
 using Assets.Code.Utils;
-using DD2A11y.Core.Audio;
 using DD2A11y.Core.Nav;
 using DD2A11y.Core.Text;
 using DD2A11y.Game;
@@ -15,21 +14,18 @@ namespace DD2A11y.Elements {
     /// <summary>
     /// One route at a road fork: its direction and destination (the game's own road-indicator
     /// title; "Unknown" while unrevealed - what the sighted banner shows, never the hidden
-    /// type). Focus plays the destination's identity tick panned to the route's side. The
-    /// buffer carries the destination's description, which heroes prefer this route, and the
-    /// banner's tooltips. Enter commits through the game's own selection (audio and narration
-    /// included), after which the coach drives itself.
+    /// type). The buffer carries the destination's description, which heroes prefer this
+    /// route, and the banner's tooltips. Enter commits through the game's own selection
+    /// (audio and narration included), after which the coach drives itself.
     /// </summary>
     public sealed class RouteElement : UIElement {
         private static readonly AccessTools.FieldRef<RoadIndicatorUIBhv, RoadIndicatorUIBhv.IndicatorDirection> DirectionField =
             AccessTools.FieldRefAccess<RoadIndicatorUIBhv, RoadIndicatorUIBhv.IndicatorDirection>("m_indicatorDirection");
 
         private readonly RoadIndicatorUIBhv _indicator;
-        private readonly IAudioEngine _audio;
 
-        public RouteElement(RoadIndicatorUIBhv indicator, IAudioEngine audio) {
+        public RouteElement(RoadIndicatorUIBhv indicator) {
             _indicator = indicator;
-            _audio = audio;
         }
 
         public override bool CanFocus => _indicator != null && _indicator.gameObject.activeInHierarchy;
@@ -59,25 +55,6 @@ namespace DD2A11y.Elements {
 
         public override IEnumerable<ElementAction> GetActions() {
             yield return new ElementAction(ActionIds.Activate, _indicator.OnClick);
-        }
-
-        public override void OnFocused() {
-            _audio?.PlayCue(IdentityCue(), 1f, Pan());
-        }
-
-        private float Pan() {
-            switch (DirectionField(_indicator)) {
-                case RoadIndicatorUIBhv.IndicatorDirection.Left: return -0.6f;
-                case RoadIndicatorUIBhv.IndicatorDirection.Right: return 0.6f;
-                default: return 0f;
-            }
-        }
-
-        private AudioCue IdentityCue() {
-            if (!_indicator.IsRevealed()) {
-                return AudioCue.NodeUnknown;
-            }
-            return NodeCues.For(_indicator.GetNodeType());
         }
 
         protected override IEnumerable<string> GetDetailLines() {

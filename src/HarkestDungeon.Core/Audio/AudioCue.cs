@@ -1,9 +1,9 @@
 namespace DD2A11y.Core.Audio {
     /// <summary>
     /// A named one-shot cue (the engine owns the sound file behind each name, so Core stays free
-    /// of paths). Cues carry what speech would lose while driving keys are held: road events as
-    /// they happen, and the identity of each route at a fork. One cue per file under
-    /// assets/audio; placeholders are replaced 1:1 by dropping in a file with the same name.
+    /// of paths). Cues carry what speech would lose while driving keys are held: the steerable
+    /// pickups and the coach's own motion. One cue per file under assets/audio; placeholders are
+    /// replaced 1:1 by dropping in a file with the same name.
     /// </summary>
     public enum AudioCue {
         // The road (assets/audio/road).
@@ -11,55 +11,12 @@ namespace DD2A11y.Core.Audio {
         RoadPickup,
         /// <summary>A pickup was collected.</summary>
         RoadPickupTaken,
-        /// <summary>An ambush event.</summary>
-        RoadAmbush,
-        /// <summary>A fork is ahead (its route menu follows when the coach stops).</summary>
-        RoadFork,
-        /// <summary>A blocked route (a barricade fight ahead).</summary>
-        RoadBarricade,
-        /// <summary>A blocked route cleared.</summary>
-        RoadBarricadeOpen,
-        /// <summary>Crossed into an event's trigger zone.</summary>
-        RoadZoneEnter,
-        /// <summary>Left an event's trigger zone (a pickup passed uncollected).</summary>
-        RoadZoneExit,
-        /// <summary>Entered a dangerous stretch of road.</summary>
-        RoadDangerEnter,
-        /// <summary>Left the dangerous stretch.</summary>
-        RoadDangerExit,
         /// <summary>Drifting off the road's edge.</summary>
         RoadEdgeBump,
         /// <summary>The coach is turning (loops while the turn lasts, panned toward it).</summary>
         RoadTurning,
         /// <summary>The turn ended; the coach runs straight again.</summary>
         RoadTurnEnd,
-        /// <summary>Wheels or armor took a hit.</summary>
-        RoadCoachDamage,
-        /// <summary>A wheel or armor slot fully broke.</summary>
-        RoadCoachBreak,
-        /// <summary>A driven-over object hurt the party.</summary>
-        RoadPenalty,
-        /// <summary>An opt-in interaction stopped the coach and waits.</summary>
-        RoadPrompt,
-        /// <summary>The Loathing meter advanced.</summary>
-        RoadLoathing,
-
-        // Route/node identities (assets/audio/nodes), one tick timbre per destination type -
-        // played when a fork menu route gets focus and by minimap review later.
-        NodeCombat,
-        NodeCache,
-        NodeUnknown,
-        NodeInn,
-        NodeHospital,
-        NodeDungeon,
-        NodeOasis,
-        NodeStore,
-        NodeStory,
-        NodeWatchtower,
-        NodeGuardian,
-        NodeDen,
-        NodeGate,
-        NodeBridge,
 
         // Combat (assets/audio/combat).
         /// <summary>Focus landed on a valid target for the chosen skill (660 Hz).</summary>
@@ -71,7 +28,6 @@ namespace DD2A11y.Core.Audio {
     /// <summary>The glossary's grouping of cues, mirroring the assets/audio folders.</summary>
     public enum AudioCueGroup {
         Road,
-        Nodes,
         Combat,
     }
 
@@ -80,9 +36,6 @@ namespace DD2A11y.Core.Audio {
         /// in its glossary tab by name alone.</summary>
         public static AudioCueGroup GroupOf(AudioCue cue) {
             string name = cue.ToString();
-            if (name.StartsWith("Node", System.StringComparison.Ordinal)) {
-                return AudioCueGroup.Nodes;
-            }
             if (name.StartsWith("Combat", System.StringComparison.Ordinal)) {
                 return AudioCueGroup.Combat;
             }

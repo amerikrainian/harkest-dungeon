@@ -91,44 +91,15 @@ namespace DD2A11y.Audio {
             switch (cue) {
                 case AudioCue.RoadPickup: return Road("pickup");
                 case AudioCue.RoadPickupTaken: return Road("pickup_taken");
-                case AudioCue.RoadAmbush: return Road("ambush");
-                case AudioCue.RoadFork: return Road("fork");
-                case AudioCue.RoadBarricade: return Road("barricade");
-                case AudioCue.RoadBarricadeOpen: return Road("barricade_open");
-                case AudioCue.RoadZoneEnter: return Road("zone_enter");
-                case AudioCue.RoadZoneExit: return Road("zone_exit");
-                case AudioCue.RoadDangerEnter: return Road("danger_enter");
-                case AudioCue.RoadDangerExit: return Road("danger_exit");
                 case AudioCue.RoadEdgeBump: return Road("road_edge");
                 case AudioCue.RoadTurning: return Road("turning");
                 case AudioCue.RoadTurnEnd: return Road("end_turn");
-                case AudioCue.RoadCoachDamage: return Road("coach_damage");
-                case AudioCue.RoadCoachBreak: return Road("coach_break");
-                case AudioCue.RoadPenalty: return Road("penalty");
-                case AudioCue.RoadPrompt: return Road("prompt");
-                case AudioCue.RoadLoathing: return Road("loathing");
-                case AudioCue.NodeCombat: return Node("node_combat");
-                case AudioCue.NodeCache: return Node("node_cache");
-                case AudioCue.NodeUnknown: return Node("node_unknown");
-                case AudioCue.NodeInn: return Node("node_inn");
-                case AudioCue.NodeHospital: return Node("node_hospital");
-                case AudioCue.NodeDungeon: return Node("node_dungeon");
-                case AudioCue.NodeOasis: return Node("node_oasis");
-                case AudioCue.NodeStore: return Node("node_store");
-                case AudioCue.NodeStory: return Node("node_story");
-                case AudioCue.NodeWatchtower: return Node("node_watchtower");
-                case AudioCue.NodeGuardian: return Node("node_guardian");
-                case AudioCue.NodeDen: return Node("node_den");
-                case AudioCue.NodeGate: return Node("node_gate");
-                case AudioCue.NodeBridge: return Node("node_bridge");
                 case AudioCue.CombatTargetValid: return Combat("target_valid");
-                case AudioCue.CombatTargetInvalid: return Combat("target_invalid");
-                default: return Node("node_unknown");
+                default: return Combat("target_invalid");
             }
         }
 
         private string Road(string name) => Path.Combine(_assetRoot, "road", name + ".wav");
-        private string Node(string name) => Path.Combine(_assetRoot, "nodes", name + ".wav");
         private string Combat(string name) => Path.Combine(_assetRoot, "combat", name + ".wav");
 
         // Decode a WAV to a mono float[] at the mixer rate, caching only successes.

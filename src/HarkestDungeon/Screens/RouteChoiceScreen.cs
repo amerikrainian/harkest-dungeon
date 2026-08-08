@@ -3,7 +3,6 @@ using Assets.Code.Game;
 using Assets.Code.Map.Generation.Row;
 using Assets.Code.UI;
 using Assets.Code.Utils;
-using DD2A11y.Core.Audio;
 using DD2A11y.Core.Nav;
 using DD2A11y.Elements;
 using HarmonyLib;
@@ -25,14 +24,9 @@ namespace DD2A11y.Screens {
         private static readonly AccessTools.FieldRef<TriggerIntersectionBhv, List<RoadIndicatorUIBhv>> PreviewIconsField =
             AccessTools.FieldRefAccess<TriggerIntersectionBhv, List<RoadIndicatorUIBhv>>("m_PreviewIcons");
 
-        private readonly IAudioEngine _audio;
         private TriggerIntersectionBhv _intersection;
         private TriggerIntersectionBhv _dismissed;
         private float _nextScanTime;
-
-        public RouteChoiceScreen(IAudioEngine audio) {
-            _audio = audio;
-        }
 
         public override string Name => S.ScreenFork;
 
@@ -79,7 +73,7 @@ namespace DD2A11y.Screens {
             var root = new RootContainer(ContainerShape.VerticalList, back: () => _dismissed = intersection);
             foreach (var indicator in PreviewIconsField(intersection)) {
                 if (indicator != null && indicator.gameObject.activeInHierarchy) {
-                    root.Add(new RouteElement(indicator, _audio));
+                    root.Add(new RouteElement(indicator));
                 }
             }
             return root;

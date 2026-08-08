@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Assets.Code.Map;
 using Assets.Code.Map.Minimap;
 using Assets.Code.Utils;
-using DD2A11y.Core.Audio;
 using DD2A11y.Core.Text;
 using HarmonyLib;
 using S = DD2A11y.Core.Strings.Strings;
@@ -18,8 +17,7 @@ namespace DD2A11y.Game {
     /// the wagon - on its node when the coach stands at one, else a synthetic between-nodes
     /// position read live, since the coach keeps driving while the map is up. Home returns to
     /// the wagon, End jumps to the biome's destination. Every node and road reads fog-gated
-    /// (an unscouted node stays "Unknown"), and landings play the node-type audio tick (the
-    /// unknown tick while unrevealed).
+    /// (an unscouted node stays "Unknown").
     /// </summary>
     public sealed class MapViewer {
 
@@ -43,17 +41,15 @@ namespace DD2A11y.Game {
         }
 
         private readonly Action<string, bool> _speak;
-        private readonly IAudioEngine _audio;
         private NodeRef? _cursor; // null = the wagon
         private readonly List<(NodeRef From, MinimapLink Link)> _path = new List<(NodeRef, MinimapLink)>();
 
-        public MapViewer(Action<string, bool> speak, IAudioEngine audio) {
+        public MapViewer(Action<string, bool> speak) {
             _speak = speak;
-            _audio = audio;
         }
 
         /// <summary>Home the cursor on the wagon: on the node itself when the coach stands at
-        /// one (its identity tick plays), else the synthetic between-nodes position.</summary>
+        /// one, else the synthetic between-nodes position.</summary>
         public void Reset() {
             _cursor = null;
             _path.Clear();
@@ -61,7 +57,6 @@ namespace DD2A11y.Game {
             if (progress != null && progress.Value.IsAtNode()) {
                 var info = progress.Value;
                 _cursor = new NodeRef { Biome = info.GetBiomeIndex(), Row = info.GetRowIndex(), Index = info.GetIndex() };
-                LandCue();
             }
         }
 
@@ -142,7 +137,6 @@ namespace DD2A11y.Game {
             }
             _path.Add((from, link));
             _cursor = target;
-            LandCue();
             _speak(SpokenLine.Join(
                 fork ? SpokenLine.Join(S.MapChoice, RouteText(link)) : RouteText(link),
                 NodeLine(Icon(target.Value))), true);
@@ -157,7 +151,6 @@ namespace DD2A11y.Game {
                 var step = _path[_path.Count - 1];
                 _path.RemoveAt(_path.Count - 1);
                 _cursor = step.From;
-                LandCue();
                 _speak(CursorLine(), true);
                 return;
             }
@@ -180,7 +173,6 @@ namespace DD2A11y.Game {
                 return;
             }
             _cursor = origin;
-            LandCue();
             _speak(CursorLine(), true);
         }
 
@@ -206,7 +198,6 @@ namespace DD2A11y.Game {
             }
             _path[_path.Count - 1] = (top.From, link);
             _cursor = target;
-            LandCue();
             // The alternative's own line only - its road rides in the buffer as the "via"
             // line, so cycling compares nodes without a leading road word.
             _speak(NodeLine(Icon(target.Value)), true);
@@ -229,7 +220,6 @@ namespace DD2A11y.Game {
             }
             _path.Clear();
             _cursor = new NodeRef { Biome = biome, Row = lastRow, Index = 0 };
-            LandCue();
             _speak(CursorLine(), true);
         }
 
@@ -243,7 +233,6 @@ namespace DD2A11y.Game {
             var info = progress.Value;
             if (info.IsAtNode()) {
                 _cursor = new NodeRef { Biome = info.GetBiomeIndex(), Row = info.GetRowIndex(), Index = info.GetIndex() };
-                LandCue();
                 _speak(CursorLine(), true);
                 return;
             }
@@ -258,7 +247,6 @@ namespace DD2A11y.Game {
                 return;
             }
             _cursor = target;
-            LandCue();
             _speak(SpokenLine.Join(RouteText(link), NodeLine(Icon(target.Value))), true);
         }
 
@@ -392,18 +380,6 @@ namespace DD2A11y.Game {
                 case MinimapState.UNCHOSEN: return S.MapNotTaken;
                 default: return null;
             }
-        }
-
-        private void LandCue() {
-            if (_cursor == null) {
-                return;
-            }
-            var icon = Icon(_cursor.Value);
-            if (icon == null) {
-                return;
-            }
-            // Unrevealed nodes tick as unknown - the type must not leak through the audio.
-            _audio.PlayCue(icon.IsRevealed() ? NodeCues.For(icon.GetNodeType()) : AudioCue.NodeUnknown, 1f, 0f);
         }
 
         // ---- Graph access over the live minimap ----

@@ -238,7 +238,6 @@ namespace DD2A11y.Core.Strings {
             // The glossary's group tabs after the master volume row, one per sound family
             // (the assets/audio folders). Nouns.
             D("SoundTabRoad", "road"),
-            D("SoundTabNodes", "nodes"),
             D("SoundTabCombat", "combat"),
             // State word leading the glossary row whose sound is looping right now.
             D("StatusPlaying", "playing"),
@@ -246,44 +245,11 @@ namespace DD2A11y.Core.Strings {
             // The repeating positional ping while a roadside pickup is in sensing range.
             D("SoundRoadPickup", "pickup nearby"),
             D("SoundRoadPickupTaken", "pickup collected"),
-            D("SoundRoadAmbush", "ambush"),
-            D("SoundRoadFork", "fork ahead"),
-            D("SoundRoadBarricade", "barricade ahead"),
-            D("SoundRoadBarricadeOpen", "barricade cleared"),
-            // Crossed into / out of a road event's trigger zone.
-            D("SoundRoadZoneEnter", "event zone entered"),
-            D("SoundRoadZoneExit", "event zone left"),
-            D("SoundRoadDangerEnter", "dangerous road entered"),
-            D("SoundRoadDangerExit", "dangerous road left"),
             // The coach is drifting off the road's edge.
             D("SoundRoadEdgeBump", "road edge"),
             // Loops while the coach turns; its end cue marks the settle back to straight.
             D("SoundRoadTurning", "coach turning"),
             D("SoundRoadTurnEnd", "turn ended"),
-            D("SoundRoadCoachDamage", "coach damaged"),
-            // A wheel or armor slot fully broke.
-            D("SoundRoadCoachBreak", "coach part broke"),
-            // A driven-over obstacle hurt the party.
-            D("SoundRoadPenalty", "party hurt by obstacle"),
-            // An opt-in roadside interaction stopped the coach and waits for the Interact key.
-            D("SoundRoadPrompt", "interaction waiting"),
-            D("SoundRoadLoathing", "loathing advanced"),
-            // Route and map-node identity ticks, one timbre per destination kind: played when a
-            // fork route gets focus and by the road map's cursor. "node" = a stop on the road.
-            D("SoundNodeCombat", "combat node"),
-            D("SoundNodeCache", "cache node"),
-            D("SoundNodeUnknown", "unrevealed node"),
-            D("SoundNodeInn", "inn node"),
-            D("SoundNodeHospital", "field hospital node"),
-            D("SoundNodeDungeon", "lair node"),
-            D("SoundNodeOasis", "oasis node"),
-            D("SoundNodeStore", "hoarder node"),
-            D("SoundNodeStory", "story node"),
-            D("SoundNodeWatchtower", "watchtower node"),
-            D("SoundNodeGuardian", "guardian node"),
-            D("SoundNodeDen", "creature den node"),
-            D("SoundNodeGate", "gate node"),
-            D("SoundNodeBridge", "bridge node"),
             // Combat target-selection beeps: focus landed on a valid / invalid target.
             D("SoundCombatTargetValid", "target valid"),
             D("SoundCombatTargetInvalid", "target invalid"),
@@ -486,9 +452,6 @@ namespace DD2A11y.Core.Strings {
             D("RouteRight", "right"),
             // Heroes whose route preference matches this route; {0} = their names, joined.
             D("RoutePreferredBy", "preferred by {0}"),
-            // Spoken (with the prompt cue) on entering a roadside interaction that fires only
-            // on the game's Interact key, never by contact. Verb, an instruction.
-            D("RoadInteract", "interact"),
 
             // Words for the game's inline effect glyphs in skill and tooltip text, where the icon
             // itself carries the meaning. Nouns.
@@ -712,7 +675,6 @@ namespace DD2A11y.Core.Strings {
         public static string OptionsGammaReset => T("OptionsGammaReset");
         public static string TabModSounds => T("TabModSounds");
         public static string SoundTabRoad => T("SoundTabRoad");
-        public static string SoundTabNodes => T("SoundTabNodes");
         public static string SoundTabCombat => T("SoundTabCombat");
         public static string StatusPlaying => T("StatusPlaying");
 
@@ -823,7 +785,6 @@ namespace DD2A11y.Core.Strings {
         public static string ToastObjective(string name) => F("ToastObjective", name);
 
         public static string RoadForkAhead => T("RoadForkAhead");
-        public static string RoadInteract => T("RoadInteract");
         public static string RouteLeft => T("RouteLeft");
         public static string RouteForward => T("RouteForward");
         public static string RouteRight => T("RouteRight");

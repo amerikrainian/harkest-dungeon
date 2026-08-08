@@ -328,9 +328,8 @@ rows instead of swept widgets - the announcement separator, a free-text field
 (`TextEntryElement` + `ModTextEdit`), and the sensing range, a numeric text field
 ("sensing range, edit, 80") typed to any value and clamped to 20-200 on commit (garbage
 commits nothing, empty restores the default, spoken "reset to default"). The road layer
-reads it live for ALL its sensed objects - pickup pings directly, node identity ticks at
-half again the value, preserving their authored 80/120 ratio (live-verified 2026-08-02:
-raising it on the road started ten real pickup loops, restoring 80 drained them).
+reads it live for the pickup pings (live-verified 2026-08-02: raising it on the road
+started ten real pickup loops, restoring 80 drained them).
 
 - Enter opens the mod's own typing mode - "editing, enter when done" then the bare-Enter
   outcome spoken as a hint (the suggested value is spoken rather than prefilled, so typing
@@ -377,7 +376,7 @@ caption.
 Live-verified 2026-08-02 (logical and device-level key paths, remembered-tab reopen across a
 game restart); master volume row 2026-08-04; group tabs 2026-08-04. The mod's sounds
 glossary, the second mod tab: the master volume slider, then a group tab per sound family -
-road, nodes, combat, the assets/audio folders, derived from the cue names (`AudioCues.
+road, combat, the assets/audio folders, derived from the cue names (`AudioCues.
 GroupOf`) so a new cue lands in its tab by name alone - then one row per `AudioCue` in the
 active group naming what the sound is used for ("pickup nearby, 100 percent"). Left/Right on
 the group tab switch groups (rebuilding the rows below; a running preview stops); the group
@@ -1016,43 +1015,28 @@ keyboard.
 > WASD and arrows deliberately do not defer (their continuous actions re-fire harmlessly, and
 > cruising holds W).
 
-## 5.2 Road Audio Layer and Transients (RoadSense) - PARTIAL
+## 5.2 Road Audio Layer and Transients (RoadSense) - WORKS
 
-Cues live-verified by ear 2026-07-25 (pickup ping confirmed audible); several cue classes
-wired but pending an ear pass. The mod's own NAudio output (independent of FMOD;
-`assets/audio`, placeholders replace 1:1).
+Cues live-verified by ear 2026-07-25 (pickup ping) and 2026-08-04 (turning). The mod's own
+NAudio output (independent of FMOD; `assets/audio`, placeholders replace 1:1). The cue
+roster is deliberately minimal - pickups are the only road object worth steering at, so
+only they and the coach's own motion sound (pickup ping, collection, turning, turn-end,
+road edge); everything else on the road is speech.
 
 - **Every uncollected pickup in range loops** (one live loop voice each - louder as it nears,
-  parameter steps smoothed ~5 ms against zipper noise) and **every map node in range loops
-  its destination's identity timbre** (shared with the fork menu via `NodeCues`; its first
-  appearance also plays once louder as the announcement), each re-aimed EVERY frame so
-  steering reflects immediately. Distance and pan run hitbox to hitbox - the closest points
-  between the object's trigger colliders (the node set follows the game's own collision rule,
-  honoring `m_ignoredNodeColliders`) and the coach's solid colliders (control rig, horses,
+  parameter steps smoothed ~5 ms against zipper noise), re-aimed EVERY frame so steering
+  reflects immediately. Distance and pan run hitbox to hitbox - the closest points between
+  the pickup's trigger colliders and the coach's solid colliders (control rig, horses,
   wagon body) - so a wide zone whose edge is dead ahead sounds centered, touching reads as
   distance zero, and the coach's own width counts against the gap; a center-distance bound
-  pre-culls far candidates before any physics query. A loop cuts the frame its object is
-  collected/executed or drops out of range (a 10% exit margin keeps the boundary from
-  flapping). The allocating scene sweeps run on a 0.7 s clock to refresh the candidate
-  arrays and their cached collider sets (measured live: ~43 pickups loaded, 2 within the
-  80-unit range; 6 nodes loaded, 1-3 in range - a handful of concurrent voices, mixed under
-  one output limiter).
-- Collection plays a blip and speaks the item's own title; road damage plays the penalty cue
-  and speaks the combat damage wording (the coach's stop/start is left to the game's own
-  driving audio); a junction's banners coming up cue "fork ahead" (once per junction).
-- **Pickup titles ride the loot toast** (`EventLootToastPresented`): a road grant never raises
-  the inventory widgets' loot event (the mod's original hook, dead code on the road - found
-  live 2026-07-25 as "collection sound but no name"), so the item's own title speaks when the
-  game's corner toast presents - speech only, no mod cue, because the game's own pickup sfx
-  already marks the moment.
-- Wired 2026-07-25, by-ear pass pending: **road edge** (off-center distance against the road's
-  half-width from the game's own road geometry; bumps panned to the drifting side past 85%,
-  re-arming under 70%); **zone enter/exit** (the game's own road-event zone events; exit only
-  while still uncollected - a pickup passed by); **the opt-in prompt** (an event that fires
-  only on the game's Interact key - Space/Enter on keyboard - cues the prompt and speaks
-  "interact" instead of the zone blip); **ambush** (AMBUSH-category event executing); **danger
-  stretches** (the game's inkfire-tile flag, enter/exit on the flips); **Loathing** (a DOOM
-  run-value increase).
+  pre-culls far candidates before any physics query. A loop cuts the frame its pickup is
+  collected or drops out of range (a 10% exit margin keeps the boundary from flapping). The
+  allocating scene sweep runs on a 0.7 s clock to refresh the candidate array and its cached
+  collider sets (measured live: ~43 pickups loaded, 2 within the 80-unit range - a handful
+  of concurrent voices, mixed under one output limiter).
+- **Road edge** (wired 2026-07-25): off-center distance against the road's half-width from
+  the game's own road geometry; bumps panned to the drifting side past 85%, re-arming
+  under 70%.
 - **Turning** (wired 2026-08-04; player ear-passed same day, which caught the mirrored pan -
   the game's positive turn ratio is a LEFT turn): a loop while the coach actually rotates,
   panned toward the turn and louder the harder it is, with an end cue on the settle back to
@@ -1061,6 +1045,14 @@ wired but pending an ear pass. The mod's own NAudio output (independent of FMOD;
   road-snap curves the coach steers itself sound too; start over 25% strength, end under 12%,
   the gap against micro-correction chatter. A capture or mode change cuts the loop silently -
   the end cue marks only a real settle.
+- **Pickup titles ride the loot toast** (`EventLootToastPresented`): a road grant never raises
+  the inventory widgets' loot event (the mod's original hook, dead code on the road - found
+  live 2026-07-25 as "collection sound but no name"), so the item's own title speaks when the
+  game's corner toast presents - speech only, no mod cue, because the game's own pickup sfx
+  already marks the moment.
+- Speech-only road lines: road damage speaks the combat damage wording (the coach's
+  stop/start is left to the game's own driving audio); a junction's banners coming up speak
+  "fork ahead" (once per junction).
 - **Road transients** (all live-verified 2026-07-31 by firing the game's own paths): tutorial
   and message toasts route by mode through the toast postfixes (combat queue in battle, the
   road pending queue on the road; the patches attach at startup, not on the first combat
@@ -1069,12 +1061,7 @@ wired but pending an ear pass. The mod's own NAudio output (independent of FMOD;
   game's own "LOATHING RESIST" text (the English template carries no number slot); the
   low-flame ambush pop ("The Flame Exhausted") rides the combat pending queue outright,
   because it plays as the ambush battle spins up, and so speaks with the battle's opening
-  (queue-level verified; a real ambush is unexercised). The corner InkfireBanners carry no
-  text or tooltip - decorative; the danger cues carry that state.
-
-**Known gaps:** coach damage/break and barricade/cleared cues still have assets but no wiring
-(no dedicated game event surfaced - wheels/armor are stagecoach items, so a count poll is the
-likely wire; barricades want live confirmation of what spawns as force-stop obstacles).
+  (queue-level verified; a real ambush is unexercised).
 
 ## 5.3 Road Map (`MapScreen`, M while driving) - BUILT
 
@@ -1091,13 +1078,13 @@ any close).
   the coach keeps moving. Up crosses one road per press ("road, node"; a fork's first
   alternative is prefixed "choice"); Left/Right swap among that fork's alternatives; Down
   retraces the exact path taken, then the traveled road, then back onto the wagon. Home jumps
-  to the wagon, End to the biome's last row. Landings play the node-type audio tick.
+  to the wagon, End to the biome's last row.
   Auto-advance through no-choice stretches was tried and removed; it is planned to return as
   an opt-in setting.
 - **Fog of war is enforced by construction**: every node and road name reads through the
   game's own fog-gated tooltips (`MinimapIcon.GetTooltip()` returns the "Unknown" tooltip
-  until revealed; roads read the unknown-route tooltip until `IsRevealed()`), and unrevealed
-  landings tick as the unknown timbre, never the true type.
+  until revealed; roads read the unknown-route tooltip until `IsRevealed()`) - an unscouted
+  node never leaks its true type.
 - Node line: fog-gated name, then candle/loathing/contract markers (the sighted overlay icons,
   read from their live objects) and traveled/not-taken state. The buffer holds the full
   tooltip, marker tooltips, row position, and one line per road out ("Barricade combat, to
@@ -1113,9 +1100,8 @@ the whole screen is awaiting live verification.
 Not yet reached in play. Opens when the game's own junction wait halts the coach unchosen.
 
 - Routes in left-to-right order read "direction, destination" (the game's road-indicator
-  titles; "Unknown" unrevealed - the hidden type is never leaked), each focus playing the
-  destination's identity tick panned to its side. Buffers: description, which heroes prefer
-  the route, banner tooltips.
+  titles; "Unknown" unrevealed - the hidden type is never leaked). Buffers: description,
+  which heroes prefer the route, banner tooltips.
 - Enter commits via the banner's own OnClick (game audio + narration; the coach then drives
   itself); Escape dismisses that junction back to manual steering (steer at a banner holding
   W, the game's hold-to-fill).
@@ -2013,8 +1999,8 @@ Conditions/Story/Cosmetics tabs (4.2.3), the kingdoms wizard's mods step (1.5).
 
 ## 12.4 Audio Layers
 
-Road cues - pickups, node timbres, collection, damage, fork-ahead, edge, zones, ambush,
-danger, Loathing (5.2); combat target-validity beeps (7.1.2); map cursor node ticks (5.3).
+Road cues - the pickup ping and collection blip, turning, turn-end, road edge (5.2; only
+what can be steered at or steered with keeps a sound); combat target-validity beeps (7.1.2).
 
 ## 12.5 Uncovered Surfaces (consolidated)
 
