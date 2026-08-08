@@ -160,7 +160,9 @@ namespace DD2A11y.Screens {
             foreach (var slot in slots) {
                 (slot.IsRosterSlot ? party : pool).Add(slot);
             }
-            party.Sort((a, b) => a.RosterIndex.CompareTo(b.RosterIndex));
+            // Rank 4 leftmost, rank 1 last - the same left-to-right order the combat
+            // battlefield row walks the party in.
+            party.Sort((a, b) => b.RosterIndex.CompareTo(a.RosterIndex));
             pool.Sort(BySiblingIndex);
 
             AddStrip(S.CrossroadsParty, party);

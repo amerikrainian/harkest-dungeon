@@ -764,8 +764,10 @@ Live-verified 2026-07-23. The pre-run hub (the HERO_SELECT mode - `HeroSelectBhv
   dialog), and **Random Party**.
 - Each party slot LEADS WITH ITS RANK ("rank 1, Highwayman" / "rank 1, empty slot";
   live-verified 2026-08-02) - rank 1 is the front line, the same numbering combat uses, and
-  it is what tells the four otherwise identical empty slots apart. Pool heroes keep their
-  bare name, and a grab announces the hero, not the rank.
+  it is what tells the four otherwise identical empty slots apart. The slots run rank 4 to
+  1 left to right (reordered 2026-08-08), the same direction the combat battlefield row
+  walks the party. Pool heroes keep their bare name, and a grab announces the hero, not
+  the rank.
 - **Landing on a hero shows them** (the game's own `OnActorSelected`, silent - `playAudio`
   false): the canvas model, the stat block, and the targets of the name, reroll, and path
   controls all follow our focus. Display-only; it never touches the party. Without it those
