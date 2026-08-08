@@ -1,5 +1,12 @@
 # Changelog
 
+## V0.2.6
+
+- Skills should properly read their upgrades again. Splitting them into separate buffers seemed to have temporarily bricked them.
+- When purchasing skills at a Mastery trainer, we no longer say selected and use consistent "Mastered" verbage throughout.
+- In combat, your focus shall now land consistently on the round number at the start. It was landing on the combatant strip, and that bothered me.
+- We no longer double-announce who you've switched to on the Mastery screen. I know you love Paracelsus, you'll just have to switch back and forth to get her name twice now.
+
 ## V0.2.5
 
 - The battlefield is now one row laid out like the screen: your party right-to-left (rank 4
