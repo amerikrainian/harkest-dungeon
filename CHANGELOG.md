@@ -3,8 +3,7 @@
 ## V0.2.5
 
 - The battlefield is one row laid out like the screen: your party right-to-left (rank 4
-  leftmost, rank 1 at the front line), then the enemies rank 1 to 4.
-- The crossroads party slots run the same direction, rank 4 to 1.
+  leftmost, rank 1 at the front line), then the enemies rank 1 to 4. Party slot has been fixed accordingly.
 
 ## V0.2.4
 
