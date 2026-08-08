@@ -26,8 +26,9 @@ namespace DD2A11y.Game {
     /// <summary>
     /// The free-driving soundscape, ticked from the pump while the DRIVING mode runs uncaptured
     /// (the game keeps the keyboard for steering; cues carry what held keys would make speech
-    /// miss). EVERY uncollected roadside pickup in hearing range sounds as its own continuous
-    /// loop - the one thing on the road worth steering at - re-aimed every frame, hitbox to
+    /// miss). EVERY uncollected loot pickup in hearing range sounds as its own continuous
+    /// loop - the one thing on the road worth steering at; the loot-less destructible debris
+    /// sharing its event category stays silent - re-aimed every frame, hitbox to
     /// hitbox: distance and pan run between the closest points of the pickup's trigger zone and
     /// the coach's own body, so a wide zone whose edge is dead ahead sounds centered and the
     /// coach's bulk counts against the gap, louder as it nears, so the whole nearby layout stays
@@ -102,9 +103,11 @@ namespace DD2A11y.Game {
         private bool _edgeArmed = true;
         private IAudioLoop _turnLoop;
 
-        // Auto collect: the setting, the pickups eligible for it (loot-granting drive-through
-        // events, refreshed with the candidates), the ones seen clearly ahead, and the
-        // synthetic enters awaiting their balancing exit.
+        // Auto collect: the setting, the real pickups (loot-granting drive-through events,
+        // refreshed with the candidates - what both the ping and the collector treat as a
+        // pickup; the road also spawns loot-less destructible debris in the same event
+        // category, which neither voices), the ones seen clearly ahead, and the synthetic
+        // enters awaiting their balancing exit.
         private readonly Core.Settings.BoolSetting _autoCollect;
         private readonly bool _canCollect;
         private readonly HashSet<int> _collectible = new HashSet<int>();
@@ -234,23 +237,28 @@ namespace DD2A11y.Game {
             // in flight finishes regardless of what opens over it.
             TickPendingExits();
 
-            // The fork menu (or any captured screen) owns the moment; the ambient layer stays quiet.
-            if (_gate.Captured) {
-                StopAllLoops();
-                return;
-            }
-
             var vehicle = SingletonMonoBehaviour<MapMgrBhv>.HasInstance()
                 ? SingletonMonoBehaviour<MapMgrBhv>.Instance.GetVehicleControl() : null;
             if (vehicle == null) {
                 StopAllLoops();
                 return;
             }
+            // The pass detector also runs while a screen holds the keyboard - it makes no
+            // sound, and the coach can still be rolling under a just-opened panel.
+            bool collecting = _canCollect && _autoCollect.Value;
+            if (collecting) {
+                AutoCollectPassed(vehicle.transform);
+            }
+
+            // The fork menu (or any captured screen) owns the moment; the ambient layer stays quiet.
+            if (_gate.Captured) {
+                StopAllLoops();
+                return;
+            }
             // The continuous layers re-aim every frame over the cached candidates, so steering
             // lands in the ears the same frame it lands on the road.
-            if (_canCollect && _autoCollect.Value) {
+            if (collecting) {
                 StopPickupLoops();
-                AutoCollectPassed(vehicle.transform);
             } else {
                 UpdatePickupLoops(vehicle.transform);
             }
@@ -268,7 +276,7 @@ namespace DD2A11y.Game {
             AnnounceApproachingFork();
         }
 
-        // One loop per uncollected pickup in range, each re-aimed every frame; the volume
+        // One loop per uncollected loot pickup in range, each re-aimed every frame; the volume
         // dropoff separates them by distance. A loop past the exit margin (10% beyond the
         // range, so the boundary never flaps) or over a collected pickup goes stale and stops
         // the same frame.
@@ -279,7 +287,8 @@ namespace DD2A11y.Game {
             }
             foreach (var pickup in _pickupCandidates) {
                 if (pickup == null || pickup.RoadEventCategory != RoadEventCategory.OBJECTS
-                    || pickup.GetTriggerState() != TriggerState.None) {
+                    || pickup.GetTriggerState() != TriggerState.None
+                    || !_collectible.Contains(pickup.GetInstanceID())) {
                     continue;
                 }
                 int id = pickup.GetInstanceID();
@@ -502,9 +511,10 @@ namespace DD2A11y.Game {
                     continue;
                 }
                 _hitboxes[pickup.GetInstanceID()] = BuildHitbox(pickup, PickupTriggers(pickup));
-                // Auto collect only takes loot-granting drive-through events: an OBSTACLE
-                // event force-stops the coach on interact, and anything without a loot
-                // trigger grants nothing worth taking.
+                // A real pickup is a loot-granting drive-through event; the ping and auto
+                // collect both key on this. An OBSTACLE event force-stops the coach on
+                // interact, and an event without a loot trigger grants nothing - the final
+                // climb's destructible debris shares the OBJECTS category but only crumbles.
                 if (InteractionTypeField(pickup) == RoadEventInteractionType.DRIVE_THROUGH
                     && pickup.GetComponent<TriggerItemBhv>() != null) {
                     _collectible.Add(pickup.GetInstanceID());

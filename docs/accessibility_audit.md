@@ -1026,9 +1026,13 @@ roster is deliberately minimal - pickups are the only road object worth steering
 only they and the coach's own motion sound (pickup ping, turning, turn-end, road edge);
 collection is the game's own sfx plus speech, and everything else on the road is speech.
 
-- **Every uncollected pickup in range loops** (one live loop voice each - louder as it nears,
-  parameter steps smoothed ~5 ms against zipper noise), re-aimed EVERY frame so steering
-  reflects immediately. Distance and pan run hitbox to hitbox - the closest points between
+- **Every uncollected loot pickup in range loops** (one live loop voice each - louder as it
+  nears, parameter steps smoothed ~5 ms against zipper noise), re-aimed EVERY frame so
+  steering reflects immediately. A pickup means a loot-granting drive-through event
+  (`TriggerItemBhv`); the all-biome prefab audit (2026-08-07, every shipped OBJECTS event
+  loaded and inspected) found the final climb's mountain "pickups" are loot-less
+  destructible debris - those stay silent, and the hazard-skinned city events (iron spikes,
+  corpse, burning books) ARE loot and ping normally. Distance and pan run hitbox to hitbox - the closest points between
   the pickup's trigger colliders and the coach's solid colliders (control rig, horses,
   wagon body) - so a wide zone whose edge is dead ahead sounds centered, touching reads as
   distance zero, and the coach's own width counts against the gap; a center-distance bound
@@ -1065,7 +1069,9 @@ collection is the game's own sfx plus speech, and everything else on the road is
   force-stop the coach); other routes cannot be grabbed because the road width is far under
   branch separation and the game itself deactivates other branches' events on route
   selection. A pickup the coach physically rolls over stays the game's own collection (the
-  synthetic enter is skipped while a real collider sits in the zone).
+  synthetic enter is skipped while a real collider sits in the zone). The pass detector
+  keeps running while a screen holds the keyboard, so a pickup passed as the coach coasts
+  under a just-opened panel still collects.
 - Speech-only road lines: road damage speaks the combat damage wording (the coach's
   stop/start is left to the game's own driving audio); a junction's banners coming up speak
   "fork ahead" (once per junction).
