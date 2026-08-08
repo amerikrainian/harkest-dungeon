@@ -263,6 +263,12 @@ namespace DD2A11y.Core.Nav {
             AnnounceCurrent();
         }
 
+        /// <summary>Record the current focus line as the last announcement without speaking.
+        /// An adjust re-announce leaves focus on the element the user just heard; a rebuild
+        /// re-land that would repeat that line verbatim then stays silent
+        /// (<see cref="AnnounceCurrentIfChanged"/>).</summary>
+        protected void MarkCurrentLineAnnounced() => _lastAnnouncedLine = ComposeLine(0);
+
         /// <summary>Diff a pre-move snapshot against the settled path and speak the delta:
         /// newly-entered nodes in path order (descend/sibling), or just the new innermost element
         /// (ascend).</summary>

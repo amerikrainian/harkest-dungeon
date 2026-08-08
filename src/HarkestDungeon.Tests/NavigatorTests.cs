@@ -146,6 +146,24 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
+        public void RebuildReLandAfterAnAdjustReAnnounceStaysSilent() {
+            // A stepper whose adjust rebuilds the screen under it (the trainer's hero
+            // pager): the adjust feedback is the announcement, and the re-land on the
+            // element's replacement repeats it verbatim - one utterance total.
+            var pager = new TestElement("Hero", "hero") { Adjustable = true, Level = 1 };
+            var root = VerticalMenu(pager);
+            _nav.Attach(root);
+            _nav.AnnounceCurrent();
+            _spoken.Clear();
+            Assert.True(_nav.Handle(UiActions.Right));
+            root.Clear();
+            root.Add(new TestElement("Hero", "hero") { Adjustable = true, Level = 2 });
+            Assert.True(_nav.EnsureFocusValid());
+            _nav.AnnounceCurrentIfChanged();
+            Assert.Equal("2", Assert.Single(_spoken));
+        }
+
+        [Fact]
         public void EdgesConsumeWithoutWrapping() {
             _nav.Attach(VerticalMenu(new TestElement("A"), new TestElement("B")));
             Assert.False(_nav.Handle(UiActions.Up)); // top edge: no spill target

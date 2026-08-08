@@ -86,6 +86,10 @@ namespace DD2A11y.Core.Nav {
                 if (Current.InvokeAction(adjust)) {
                     bool changed = Current.GetValueText() != before;
                     Speak(Current.GetAdjustText(adjust, changed), interrupt: true);
+                    // An adjust that rebuilds the screen under the cursor (a pager) re-lands
+                    // on the element's replacement; recording the line keeps that re-land
+                    // from repeating what was just spoken.
+                    MarkCurrentLineAnnounced();
                     return true;
                 }
             }

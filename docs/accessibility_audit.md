@@ -1754,7 +1754,9 @@ own `CloseSubscreen`.
 Live-verified 2026-07-24 at the first Denial inn. Over `InnUpgradeSkillsBhv`.
 
 - The hero header (name + "mastery points N"; Left/Right page the party via the trainer's own
-  arrows), one element per skill (the game's own name - the base skill's until mastered, then
+  arrows - one utterance per switch: the adjust feedback carries the full new line, and the
+  pooled-button rebuild's re-land dedupes against it via the navigator's recorded
+  last-announcement, fixed 2026-08-08 user-caught), one element per skill (the game's own name - the base skill's until mastered, then
   the mastered variant's with its upgraded-skill glyph spoken as words, the same switch the
   sighted row makes; states "mastered" / "selected" / "unavailable"; full skill card in the
   buffer), the path seal, "Change Path" with its cost (caption from its tooltip - the visible
