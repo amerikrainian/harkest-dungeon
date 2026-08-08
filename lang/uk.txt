@@ -98,6 +98,7 @@ EditDeleted = {0} видалено
 TabModSettings = налаштування мода
 SettingSeparator = роздільник оголошень
 SettingSensingRange = дальність відчуття
+SettingAutoCollect = автоматичний збір предметів
 SettingMasterVolume = загальна гучність
 SettingReset = скинуто до типового значення
 TabModAnnouncements = оголошення мода

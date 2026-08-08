@@ -215,9 +215,12 @@ namespace DD2A11y.Core.Strings {
             D("TabModSettings", "mod settings"),
             // The separator joining the parts of a spoken line ("Exit game, button"). Noun phrase.
             D("SettingSeparator", "announcement separator"),
-            // How far away the road's sensed objects are audible (pickup pings, node identity
-            // ticks), in the road's own distance units. Noun phrase.
+            // How far away the road's pickup pings are audible, in the road's own distance
+            // units. Noun phrase.
             D("SettingSensingRange", "sensing range"),
+            // Toggle: passed roadside pickups collect themselves, no steering needed; the
+            // pickup ping stays quiet while it is on. Noun phrase.
+            D("SettingAutoCollect", "auto collect pickups"),
             // The baseline volume of every mod sound, the slider heading the sounds glossary
             // tab; the per-sound volumes below ride on it as offsets. Noun phrase.
             D("SettingMasterVolume", "master volume"),
@@ -667,6 +670,7 @@ namespace DD2A11y.Core.Strings {
         public static string TabModSettings => T("TabModSettings");
         public static string SettingSeparator => T("SettingSeparator");
         public static string SettingSensingRange => T("SettingSensingRange");
+        public static string SettingAutoCollect => T("SettingAutoCollect");
         public static string SettingMasterVolume => T("SettingMasterVolume");
         public static string SettingReset => T("SettingReset");
         public static string TabModAnnouncements => T("TabModAnnouncements");

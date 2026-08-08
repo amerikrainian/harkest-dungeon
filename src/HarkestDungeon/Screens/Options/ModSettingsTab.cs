@@ -26,6 +26,10 @@ namespace DD2A11y.Screens.Options {
 
         public override void Populate(Container items) {
             foreach (var setting in _settings.General) {
+                if (setting is BoolSetting toggle) {
+                    items.Add(new ToggleSettingElement(toggle));
+                    continue;
+                }
                 // A numeric setting edits as typed text (any value within its bounds, clamped
                 // on commit); nothing commits on garbage, empty restores the default.
                 if (setting is IntSetting number) {

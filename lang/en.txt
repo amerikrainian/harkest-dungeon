@@ -100,6 +100,7 @@ EditDeleted = {0} deleted
 TabModSettings = mod settings
 SettingSeparator = announcement separator
 SettingSensingRange = sensing range
+SettingAutoCollect = auto collect pickups
 SettingMasterVolume = master volume
 SettingReset = reset to default
 TabModAnnouncements = mod announcements

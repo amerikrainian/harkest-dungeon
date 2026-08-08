@@ -98,6 +98,7 @@ EditDeleted = {0} cancellato
 TabModSettings = opzioni mod
 SettingSeparator = separatore degli annunci
 SettingSensingRange = raggio di rilevamento
+SettingAutoCollect = raccolta automatica degli oggetti
 SettingMasterVolume = volume generale
 SettingReset = ripristinato il valore predefinito
 TabModAnnouncements = annunci mod

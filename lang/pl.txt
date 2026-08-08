@@ -98,6 +98,7 @@ EditDeleted = {0} usunięte
 TabModSettings = ustawienia moda
 SettingSeparator = separator komunikatów
 SettingSensingRange = zasięg wykrywania
+SettingAutoCollect = automatyczne zbieranie przedmiotów
 SettingMasterVolume = głośność główna
 SettingReset = przywrócono domyślne
 TabModAnnouncements = komunikaty moda

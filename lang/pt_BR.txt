@@ -98,6 +98,7 @@ EditDeleted = {0} apagado
 TabModSettings = opções do mod
 SettingSeparator = separador de anúncios
 SettingSensingRange = alcance de detecção
+SettingAutoCollect = coleta automática de coletáveis
 SettingMasterVolume = volume geral
 SettingReset = redefinido para o padrão
 TabModAnnouncements = anúncios do mod

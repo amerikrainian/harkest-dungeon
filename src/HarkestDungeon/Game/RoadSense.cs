@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Assets.Code.Actor.Events;
 using Assets.Code.Bark.Events;
 using Assets.Code.Events;
@@ -10,6 +11,7 @@ using Assets.Code.Item.Events;
 using Assets.Code.Map;
 using Assets.Code.Map.Generation.Row;
 using Assets.Code.Map.RoadEvents;
+using Assets.Code.Map.Triggers;
 using Assets.Code.Run;
 using Assets.Code.Run.Events;
 using Assets.Code.UI.Events;
@@ -31,7 +33,10 @@ namespace DD2A11y.Game {
     /// coach's bulk counts against the gap, louder as it nears, so the whole nearby layout stays
     /// audible and steering reflects immediately. Candidate discovery (the allocating scene sweep) stays on a slow
     /// clock; the per-frame work runs over the cached candidates allocation-free, and a loop
-    /// cuts the frame its pickup is collected or out of range. The coach's own motion keeps two
+    /// cuts the frame its pickup is collected or out of range. With the auto-collect setting
+    /// on, the pings fall silent and a loot pickup collects itself as the coach passes abeam,
+    /// through the pickup's own physics entry point, so the game's whole drive-over sequence
+    /// (gates, vfx, loot toast) runs unchanged. The coach's own motion keeps two
     /// cues: the turning loop and the road-edge bump. Everything else on the road is speech -
     /// collection, damage, barks, an approaching fork. Event listeners only compose pending
     /// lines; every sound and word goes out on the pump path.
@@ -39,10 +44,23 @@ namespace DD2A11y.Game {
     public sealed class RoadSense {
         private static readonly AccessTools.FieldRef<TriggerIntersectionBhv, IntersectionState> StateField =
             AccessTools.FieldRefAccess<TriggerIntersectionBhv, IntersectionState>("m_CurrentState");
+        private static readonly AccessTools.FieldRef<RoadEventBhv, RoadEventInteractionType> InteractionTypeField =
+            AccessTools.FieldRefAccess<RoadEventBhv, RoadEventInteractionType>("m_interactionType");
+        private static readonly AccessTools.FieldRef<RoadEventBhv, int> CollisionCountField =
+            AccessTools.FieldRefAccess<RoadEventBhv, int>("m_collisionCount");
+        // The pickup's own physics entry and exit points - the exact calls a real drive-over
+        // makes, so every game-side gate and listener behaves identically.
+        private static readonly MethodInfo TriggerEnterMethod =
+            AccessTools.Method(typeof(RoadEventBhv), "OnTriggerEnter");
+        private static readonly MethodInfo TriggerExitMethod =
+            AccessTools.Method(typeof(RoadEventBhv), "OnTriggerExit");
 
         // The sensing radius is the player's setting, read live per scan.
         private readonly Core.Settings.IntSetting _sensingRange;
         private const float ScanInterval = 0.7f;
+        // A pickup only counts as passed after having been clearly ahead, so enabling the
+        // setting mid-drive never collects what already lies abeam or behind.
+        private const float PassAheadMargin = 1f;
         // Off-center distance as a fraction of the road's half-width: the bump sounds past
         // Warn and arms again under Rearm, so riding the edge does not chatter.
         private const float EdgeWarn = 0.85f;
@@ -84,12 +102,36 @@ namespace DD2A11y.Game {
         private bool _edgeArmed = true;
         private IAudioLoop _turnLoop;
 
+        // Auto collect: the setting, the pickups eligible for it (loot-granting drive-through
+        // events, refreshed with the candidates), the ones seen clearly ahead, and the
+        // synthetic enters awaiting their balancing exit.
+        private readonly Core.Settings.BoolSetting _autoCollect;
+        private readonly bool _canCollect;
+        private readonly HashSet<int> _collectible = new HashSet<int>();
+        private readonly HashSet<int> _aheadPickups = new HashSet<int>();
+        private readonly struct PendingExit {
+            public PendingExit(RoadEventBhv roadEvent, Collider collider, int enterFrame) {
+                Event = roadEvent;
+                Collider = collider;
+                EnterFrame = enterFrame;
+            }
+            public readonly RoadEventBhv Event;
+            public readonly Collider Collider;
+            public readonly int EnterFrame;
+        }
+        private readonly List<PendingExit> _pendingExits = new List<PendingExit>();
+
         public RoadSense(IAudioEngine audio, Action<string, bool> speak, InputGate gate,
-                         Core.Settings.IntSetting sensingRange) {
+                         Core.Settings.IntSetting sensingRange, Core.Settings.BoolSetting autoCollect) {
             _audio = audio;
             _speak = speak;
             _gate = gate;
             _sensingRange = sensingRange;
+            _autoCollect = autoCollect;
+            _canCollect = TriggerEnterMethod != null && TriggerExitMethod != null;
+            if (!_canCollect) {
+                Plugin.Log.LogError("RoadSense: RoadEventBhv trigger methods not found; auto collect disabled");
+            }
             EventManager.AddListener<EventLootToastPresented>(HandleLootToast);
             EventManager.AddListener<EventActorHealthDamage>(HandleDamage);
             EventManager.AddListener<EventBark>(HandleBark);
@@ -171,6 +213,9 @@ namespace DD2A11y.Game {
                 _coachColliders = new Collider[0];
                 _coachExtent = 0f;
                 _hitboxWarned.Clear();
+                _collectible.Clear();
+                _aheadPickups.Clear();
+                _pendingExits.Clear();
                 StopAllLoops();
                 return;
             }
@@ -184,6 +229,10 @@ namespace DD2A11y.Game {
                 }
             }
             _pending.Clear();
+
+            // Balancing exits resolve even while a screen holds the keyboard - a collection
+            // in flight finishes regardless of what opens over it.
+            TickPendingExits();
 
             // The fork menu (or any captured screen) owns the moment; the ambient layer stays quiet.
             if (_gate.Captured) {
@@ -199,7 +248,12 @@ namespace DD2A11y.Game {
             }
             // The continuous layers re-aim every frame over the cached candidates, so steering
             // lands in the ears the same frame it lands on the road.
-            UpdatePickupLoops(vehicle.transform);
+            if (_canCollect && _autoCollect.Value) {
+                StopPickupLoops();
+                AutoCollectPassed(vehicle.transform);
+            } else {
+                UpdatePickupLoops(vehicle.transform);
+            }
             CheckRoadEdge(vehicle.transform);
             CheckTurning(vehicle);
 
@@ -231,7 +285,7 @@ namespace DD2A11y.Game {
                 int id = pickup.GetInstanceID();
                 float range = _sensingRange.Value;
                 float limit = _pickupLoops.ContainsKey(id) ? range * 1.1f : range;
-                Aim(coach, pickup.transform, _hitboxes[id], limit, out float distance, out float pan);
+                Aim(coach, pickup.transform, _hitboxes[id], limit, out float distance, out float pan, out _);
                 if (distance > limit) {
                     continue;
                 }
@@ -285,29 +339,105 @@ namespace DD2A11y.Game {
             _turnLoop.Update(volume, pan);
         }
 
-        private void StopAllLoops() {
+        private void StopPickupLoops() {
             foreach (var pair in _pickupLoops) {
                 pair.Value.Stop();
             }
             _pickupLoops.Clear();
+        }
+
+        private void StopAllLoops() {
+            StopPickupLoops();
             if (_turnLoop != null) {
                 _turnLoop.Stop();
                 _turnLoop = null;
             }
         }
 
-        // Distance and pan between the closest points on the target's trigger colliders and
-        // the coach's body colliders - the same geometry the game's own collection test runs
-        // on - so a wide zone whose edge is dead ahead sounds centered and the coach's own
-        // width counts against the gap. A cheap center-distance bound culls the far majority
-        // of candidates before any physics query; a culled target answers an infinite
-        // distance, which every caller's range gate drops.
+        // A collectible pickup first seen clearly ahead is taken the moment it passes abeam
+        // within the road's width - the reach a sighted driver covers by steering, and far
+        // under the gap to a parallel branch (whose events the game deactivates on route
+        // selection anyway). The take is the pickup's own physics entry point with a coach
+        // collider, so the game's whole drive-over sequence runs unchanged: its own gates,
+        // vfx and sfx, the loot grant, and the corner toast that already drives the spoken
+        // item title.
+        private void AutoCollectPassed(Transform coach) {
+            if (_coachColliders.Length == 0) {
+                return;
+            }
+            foreach (var pickup in _pickupCandidates) {
+                if (pickup == null || !pickup.gameObject.activeInHierarchy
+                    || pickup.RoadEventCategory != RoadEventCategory.OBJECTS
+                    || pickup.GetTriggerState() != TriggerState.None) {
+                    continue;
+                }
+                int id = pickup.GetInstanceID();
+                if (!_collectible.Contains(id)) {
+                    continue;
+                }
+                float reach = GameConstants.ROAD_SIZE;
+                Aim(coach, pickup.transform, _hitboxes[id], reach, out float distance, out _, out float forward);
+                if (distance > reach) {
+                    continue;
+                }
+                if (forward > PassAheadMargin) {
+                    _aheadPickups.Add(id);
+                } else if (forward <= 0f && _aheadPickups.Remove(id)) {
+                    Collect(pickup);
+                }
+            }
+        }
+
+        private void Collect(RoadEventBhv pickup) {
+            // A collider already inside the zone means the coach is physically on the pickup;
+            // the game's own collection is taking it.
+            if (CollisionCountField(pickup) > 0) {
+                return;
+            }
+            TriggerEnterMethod.Invoke(pickup, new object[] { _coachColliders[0] });
+            _pendingExits.Add(new PendingExit(pickup, _coachColliders[0], Time.frameCount));
+        }
+
+        // The balancing exit for each synthetic enter, once the event resolves - the same
+        // enter/exit lifecycle a physical drive-over produces, so the zone's collision count
+        // never wedges open. Completed is the normal end; an event still untriggered a frame
+        // after the enter was declined by the game's own interaction gate, which a
+        // loot-granting drive-through pickup is never expected to do.
+        private void TickPendingExits() {
+            for (int i = _pendingExits.Count - 1; i >= 0; i--) {
+                var pending = _pendingExits[i];
+                if (pending.Event == null || !pending.Event.gameObject.activeInHierarchy) {
+                    _pendingExits.RemoveAt(i);
+                    continue;
+                }
+                var state = pending.Event.GetTriggerState();
+                bool declined = state == TriggerState.None && Time.frameCount > pending.EnterFrame + 1;
+                if (state != TriggerState.Completed && !declined) {
+                    continue;
+                }
+                TriggerExitMethod.Invoke(pending.Event, new object[] { pending.Collider });
+                _pendingExits.RemoveAt(i);
+                if (declined) {
+                    Plugin.Log.LogWarning($"RoadSense: auto collect declined by {pending.Event.name}");
+                }
+            }
+        }
+
+        // Distance, pan, and forward reach between the closest points on the target's trigger
+        // colliders and the coach's body colliders - the same geometry the game's own
+        // collection test runs on - so a wide zone whose edge is dead ahead sounds centered
+        // and the coach's own width counts against the gap. Forward is the gap along the
+        // coach's heading: positive ahead, zero or negative abeam and behind. A cheap
+        // center-distance bound culls the far majority of candidates before any physics
+        // query; a culled target answers an infinite distance, which every caller's range
+        // gate drops.
         private void Aim(Transform coach, Transform target, Hitbox hitbox, float cullRange,
-                         out float distance, out float pan) {
+                         out float distance, out float pan, out float forward) {
             Vector3 center = target.position;
             if (Vector3.Distance(coach.position, center) - hitbox.Extent - _coachExtent > cullRange) {
                 distance = float.MaxValue;
                 pan = 0f;
+                forward = 0f;
                 return;
             }
             Vector3 targetPoint = ClosestOn(hitbox.Colliders, coach.position, center);
@@ -316,6 +446,7 @@ namespace DD2A11y.Game {
             Vector3 delta = targetPoint - coachPoint;
             distance = delta.magnitude;
             pan = PanOf(coach, delta);
+            forward = Vector3.Dot(delta, coach.forward);
         }
 
         // Touching or overlapping hitboxes read as dead ahead.
@@ -365,9 +496,18 @@ namespace DD2A11y.Game {
                 Plugin.Log.LogWarning("RoadSense: no solid colliders under the vehicle; aiming from its transform");
             }
             _hitboxes.Clear();
+            _collectible.Clear();
             foreach (var pickup in _pickupCandidates) {
-                if (pickup != null) {
-                    _hitboxes[pickup.GetInstanceID()] = BuildHitbox(pickup, PickupTriggers(pickup));
+                if (pickup == null) {
+                    continue;
+                }
+                _hitboxes[pickup.GetInstanceID()] = BuildHitbox(pickup, PickupTriggers(pickup));
+                // Auto collect only takes loot-granting drive-through events: an OBSTACLE
+                // event force-stops the coach on interact, and anything without a loot
+                // trigger grants nothing worth taking.
+                if (InteractionTypeField(pickup) == RoadEventInteractionType.DRIVE_THROUGH
+                    && pickup.GetComponent<TriggerItemBhv>() != null) {
+                    _collectible.Add(pickup.GetInstanceID());
                 }
             }
         }

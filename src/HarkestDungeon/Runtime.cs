@@ -105,7 +105,7 @@ namespace DD2A11y {
 
             _audioEngine = new Audio.NAudioEngine(Path.Combine(pluginDir, "assets", "audio"));
             Audio = new Core.Audio.VolumeScaledEngine(_audioEngine, Sounds);
-            _roadSense = new Game.RoadSense(Audio, speak, Gate, Settings.SensingRange);
+            _roadSense = new Game.RoadSense(Audio, speak, Gate, Settings.SensingRange, Settings.AutoCollect);
             // Eager: toasts pop on the road before any combat has resolved the lazy attach.
             Game.ToastEvents.RoadSink = _roadSense.Post;
             Game.ToastEvents.Attach();

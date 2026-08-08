@@ -98,6 +98,7 @@ EditDeleted = {0}已删除
 TabModSettings = 模组设置
 SettingSeparator = 播报分隔符
 SettingSensingRange = 感知范围
+SettingAutoCollect = 自动收集拾取物
 SettingMasterVolume = 主音量
 SettingReset = 已重置为默认值
 TabModAnnouncements = 模组播报

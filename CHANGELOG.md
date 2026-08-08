@@ -2,6 +2,10 @@
 
 ## V0.2.3
 
+- A new "auto collect pickups" toggle in mod settings (off by default): roadside pickups
+  collect themselves as the coach passes them, no steering needed, and the pickup pings stay
+  quiet while it is on. Collection is the game's own drive-over - same sounds, same item
+  announcements - and only ever takes loot on your own route.
 - Detail now spreads across purpose-built buffers instead of piling into one. Ctrl+Left/Right
   cycles only the buffers with something to say where you stand: control (the focused
   element, as before), mastery, hero, enemies, party, and combat.

@@ -325,11 +325,13 @@ Live-verified 2026-07-23; dropdowns 2026-07-28; mod tab 2026-07-27. The game's o
 The first of the mod's own tabs appended after the game's (live-verified 2026-07-27; each tab
 is a `ModTab` under `Screens/Options/`, the screen handling them generically): mod-authored
 rows instead of swept widgets - the announcement separator, a free-text field
-(`TextEntryElement` + `ModTextEdit`), and the sensing range, a numeric text field
+(`TextEntryElement` + `ModTextEdit`), the sensing range, a numeric text field
 ("sensing range, edit, 80") typed to any value and clamped to 20-200 on commit (garbage
-commits nothing, empty restores the default, spoken "reset to default"). The road layer
-reads it live for the pickup pings (live-verified 2026-08-02: raising it on the road
-started ten real pickup loops, restoring 80 drained them).
+commits nothing, empty restores the default, spoken "reset to default"), and the
+auto-collect toggle ("auto collect pickups, toggle, off", default off - the road layer's
+hands-free pickup mode, 5.2). The road layer reads the sensing range live for the pickup
+pings (live-verified 2026-08-02: raising it on the road started ten real pickup loops,
+restoring 80 drained them).
 
 - Enter opens the mod's own typing mode - "editing, enter when done" then the bare-Enter
   outcome spoken as a hint (the suggested value is spoken rather than prefilled, so typing
@@ -1051,6 +1053,19 @@ collection is the game's own sfx plus speech, and everything else on the road is
   live 2026-07-25 as "collection sound but no name"), so the item's own title speaks when the
   game's corner toast presents - speech only, no mod cue, because the game's own pickup sfx
   already marks the moment.
+- **Auto collect** (wired 2026-08-07, awaiting live verification; the "auto collect pickups"
+  toggle in the mod settings tab, default off): the pings fall silent and a pickup collects
+  itself as the coach passes it abeam - first seen clearly ahead, then within the road's
+  width (`GameConstants.ROAD_SIZE`) as its forward reach crosses zero - by invoking the
+  pickup's own `OnTriggerEnter` with a coach collider, so the game's whole drive-over
+  sequence runs unchanged (its interaction gates, vfx and sfx, the loot grant, the corner
+  toast that already drives the spoken title), with the balancing `OnTriggerExit` invoked
+  once the event completes. Only loot-granting drive-through events qualify
+  (`TriggerItemBhv` present, `DRIVE_THROUGH` interaction - an OBSTACLE event would
+  force-stop the coach); other routes cannot be grabbed because the road width is far under
+  branch separation and the game itself deactivates other branches' events on route
+  selection. A pickup the coach physically rolls over stays the game's own collection (the
+  synthetic enter is skipped while a real collider sits in the zone).
 - Speech-only road lines: road damage speaks the combat damage wording (the coach's
   stop/start is left to the game's own driving audio); a junction's banners coming up speak
   "fork ahead" (once per junction).

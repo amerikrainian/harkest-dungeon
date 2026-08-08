@@ -98,6 +98,7 @@ EditDeleted = {0} smazáno
 TabModSettings = nastavení modu
 SettingSeparator = oddělovač oznámení
 SettingSensingRange = dosah vnímání
+SettingAutoCollect = automatický sběr předmětů
 SettingMasterVolume = hlavní hlasitost
 SettingReset = obnovena výchozí hodnota
 TabModAnnouncements = oznámení modu
