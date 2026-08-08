@@ -66,8 +66,7 @@ namespace DD2A11y.Screens {
 
         private Container _root;
         private ReadoutElement _header;
-        private Container _enemies;
-        private Container _party;
+        private Container _battlefield;
         private Container _skills;
         private Container _commands;
         private uint _builtTurnGuid;
@@ -142,14 +141,11 @@ namespace DD2A11y.Screens {
             _root.Add(header);
             // One battlefield row laid out like the screen: the party right-to-left (rank 4
             // leftmost, rank 1 at the front line), then the enemies rank 1 to 4 continuing
-            // rightward. The two strips stay separate containers for the per-team readers
-            // (buffers, glances) but carry no names - the position IS the side.
-            var battlefield = new Container(ContainerShape.HorizontalList);
-            _root.Add(battlefield);
-            _party = new Container(ContainerShape.HorizontalList);
-            battlefield.Add(_party);
-            _enemies = new Container(ContainerShape.HorizontalList);
-            battlefield.Add(_enemies);
+            // rightward - one flat container, so arrows cross the meeting front lines by
+            // plain adjacency. The per-team readers (buffers, glances) filter it by each
+            // element's side; no strip carries a name - the position IS the side.
+            _battlefield = new Container(ContainerShape.HorizontalList);
+            _root.Add(_battlefield);
             _skills = new Container(ContainerShape.HorizontalList, GameLoc.TryGet("character_sheet_tab_skills"));
             _root.Add(_skills);
             _commands = new Container(ContainerShape.HorizontalList);
@@ -225,8 +221,8 @@ namespace DD2A11y.Screens {
         }
 
         // A settled turn line is logged to the combat buffer and spoken outright - focus can
-        // sit anywhere (a strip position survives the rebuild in place), so a focus
-        // re-announce would read the wrong thing or nothing. Handoffs pass through a
+        // sit anywhere, so a focus re-announce would read the wrong thing or nothing.
+        // Handoffs pass through a
         // transient nameless actor, which reads as null and records nothing. Under a held
         // entry the line is logged but stays unspoken: the entry announcement carries it.
         private void RecordTurnLine() {
@@ -381,8 +377,7 @@ namespace DD2A11y.Screens {
 
         private void Populate() {
             _builtTurnGuid = CurrentTurnGuid();
-            PopulateTeam(_enemies, friendly: false);
-            PopulateTeam(_party, friendly: true);
+            PopulateBattlefield();
             _builtCombatants = CombatantCount();
             PopulateActions();
             _lastInputState = _skillSelection != null
@@ -390,30 +385,39 @@ namespace DD2A11y.Screens {
             _lastTargetValid = null;
         }
 
-        private void PopulateTeam(Container strip, bool friendly) {
-            strip.Clear();
-            var team = Actors.Team(friendly);
-            // The party strip mirrors the sighted layout, rank 4 leftmost; everything that
-            // reads strip children in order (the party buffer, the QWER glances) follows
+        private void PopulateBattlefield() {
+            _battlefield.Clear();
+            // The party mirrors the sighted layout, rank 4 leftmost; everything that reads
+            // battlefield children in order (the team buffers, the QWER glances) follows
             // this left-to-right order.
-            if (friendly) {
-                team.Reverse();
+            var party = Actors.Team(friendly: true);
+            party.Reverse();
+            foreach (var actor in party) {
+                _battlefield.Add(new CombatantElement(actor.m_ActorGuid, friendly: true, _skillSelection));
             }
-            foreach (var actor in team) {
-                strip.Add(new CombatantElement(actor.m_ActorGuid, friendly, _skillSelection));
+            foreach (var actor in Actors.Team(friendly: false)) {
+                _battlefield.Add(new CombatantElement(actor.m_ActorGuid, friendly: false, _skillSelection));
+            }
+        }
+
+        // One side of the battlefield in row order, filtered from the flat container.
+        private IEnumerable<CombatantElement> Side(bool friendly) {
+            foreach (var child in _battlefield.Children) {
+                if (child is CombatantElement combatant && combatant.Friendly == friendly) {
+                    yield return combatant;
+                }
             }
         }
 
         /// <summary>The enemies/party buffer source: one overview line per combatant in rank
-        /// order, read from the built strips. Empty outside a battle, which hides the buffer
+        /// order, filtered by side from the battlefield row. Empty outside a battle, which hides the buffer
         /// from the review keys.</summary>
         public IEnumerable<string> TeamOverview(bool friendly) {
-            var strip = friendly ? _party : _enemies;
-            if (_combat == null || strip == null) {
+            if (_combat == null || _battlefield == null) {
                 yield break;
             }
-            foreach (var child in strip.Children) {
-                if (child is CombatantElement combatant && combatant.CanFocus) {
+            foreach (var combatant in Side(friendly)) {
+                if (combatant.CanFocus) {
                     string line = combatant.OverviewLine();
                     if (line != null) {
                         yield return line;
@@ -448,7 +452,7 @@ namespace DD2A11y.Screens {
 
         // ---- Glance hotkeys ----
 
-        // The combatant hotkeys speak one strip slot left to right - the battlefield row's
+        // The combatant hotkeys speak one side's slot left to right - the battlefield row's
         // own order - without moving focus: the digit row glances enemies (1 = their rank
         // 1), the QWER row the party (Q = the backmost, R = the front line). A slot with no
         // combatant is silent - the empty slot is the answer.
@@ -463,9 +467,17 @@ namespace DD2A11y.Screens {
             => Glance(friendly, index, e => e.GlanceResistsLine());
 
         private void Glance(bool friendly, int index, Func<CombatantElement, string> line) {
-            var strip = friendly ? _party : _enemies;
-            var element = strip != null && index < strip.Children.Count
-                ? strip.Children[index] as CombatantElement : null;
+            if (_battlefield == null) {
+                return;
+            }
+            CombatantElement element = null;
+            int slot = 0;
+            foreach (var combatant in Side(friendly)) {
+                if (slot++ == index) {
+                    element = combatant;
+                    break;
+                }
+            }
             if (element == null || !element.CanFocus) {
                 return;
             }
@@ -513,9 +525,9 @@ namespace DD2A11y.Screens {
             }
             var parts = new List<string>();
             if (targets != null && targets.Count > 0) {
-                foreach (var strip in new[] { _enemies, _party }) {
-                    foreach (var child in strip.Children) {
-                        if (child is CombatantElement combatant && ContainsGuid(targets, combatant.Guid)) {
+                foreach (bool friendly in new[] { false, true }) {
+                    foreach (var combatant in Side(friendly)) {
+                        if (ContainsGuid(targets, combatant.Guid)) {
                             parts.Add(SpokenLine.Join(
                                 Actors.SpokenName(Actors.Get(combatant.Guid)),
                                 Game.Targeting.PreviewText(performer, skill.SkillId, combatant.Guid, terse: true)));
@@ -534,11 +546,9 @@ namespace DD2A11y.Screens {
         }
 
         private CombatantElement FindCombatant(uint guid) {
-            foreach (var strip in new[] { _enemies, _party }) {
-                foreach (var child in strip.Children) {
-                    if (child is CombatantElement combatant && combatant.Guid == guid) {
-                        return combatant;
-                    }
+            foreach (var child in _battlefield.Children) {
+                if (child is CombatantElement combatant && combatant.Guid == guid) {
+                    return combatant;
                 }
             }
             return null;
@@ -564,10 +574,11 @@ namespace DD2A11y.Screens {
             if (!Game.Targeting.TryGetPick(out var performer, out _)) {
                 return;
             }
-            foreach (var strip in new[] { _enemies, _party }) {
-                foreach (var child in strip.Children) {
-                    if (child is CombatantElement combatant && combatant.CanFocus
-                        && Game.Targeting.IsValidTarget(performer, combatant.Guid)) {
+            // Enemies first, so a hostile pick snaps to an enemy and a friendly one to the
+            // party.
+            foreach (bool friendly in new[] { false, true }) {
+                foreach (var combatant in Side(friendly)) {
+                    if (combatant.CanFocus && Game.Targeting.IsValidTarget(performer, combatant.Guid)) {
                         _navigator.Focus(combatant, announce: true);
                         return;
                     }

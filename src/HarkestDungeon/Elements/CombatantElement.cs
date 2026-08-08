@@ -41,6 +41,10 @@ namespace DD2A11y.Elements {
 
         public uint Guid => _guid;
 
+        /// <summary>Which side of the battlefield this combatant fights on; the per-team
+        /// readers filter the flat battlefield row by it.</summary>
+        public bool Friendly => _friendly;
+
         private ActorInstance Actor => Actors.Get(_guid);
 
         public override bool CanFocus => Actor != null;

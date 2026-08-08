@@ -1374,8 +1374,12 @@ Top to bottom:
 - One battlefield row laid out like the screen (restructured 2026-08-08, awaiting live
   pass; previously two rank-ordered rows): the party right-to-left - rank 4 leftmost, rank
   1 at the front line - then the enemies rank 1 to 4 continuing rightward, so the two front
-  lines meet in the middle and Left/Right walks the whole field the way it looks. The two
-  strips stay separate containers for the per-team readers but carry no names - the
+  lines meet in the middle and Left/Right walks the whole field the way it looks. The row
+  is one flat container, so crossing the meeting front lines is plain list adjacency
+  (flattened 2026-08-08, user-caught: the nested per-team strips made Left from the enemy
+  front line enter the party strip at its remembered-else-first child - a jump to rank 4
+  whenever a turn rebuild had cleared the strip's memory). The per-team readers (team
+  buffers, glances, the target snap) filter the row by each element's side - the
   position IS the side (labels are name + Rank + HP read
   live; the rank is the game's front rank, so a combatant behind a size-2 monster reads rank
   3, not its team-list slot; a monster's name is its data id's loc string, the same source
