@@ -1,5 +1,10 @@
 # Changelog
 
+## V0.2.5
+
+- The battlefield is one row laid out like the screen: your party right-to-left (rank 4
+  leftmost, rank 1 at the front line), then the enemies rank 1 to 4.
+
 ## V0.2.4
 
 - Ordained (blessed) enemies now say so

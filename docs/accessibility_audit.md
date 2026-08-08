@@ -1356,7 +1356,12 @@ Top to bottom:
     ("Escalation 1") with its effect lines as the buffer, composed by the game at battle
     start (sighted access is the More Info hold). Live-verified 2026-08-02 in a Drakia
     siege.
-- The enemy strip and the party strip (both rank-ordered; labels are name + Rank + HP read
+- One battlefield row laid out like the screen (restructured 2026-08-08, awaiting live
+  pass; previously two rank-ordered rows): the party right-to-left - rank 4 leftmost, rank
+  1 at the front line - then the enemies rank 1 to 4 continuing rightward, so the two front
+  lines meet in the middle and Left/Right walks the whole field the way it looks. The two
+  strips stay separate containers for the per-team readers but carry no names - the
+  position IS the side (labels are name + Rank + HP read
   live; the rank is the game's front rank, so a combatant behind a size-2 monster reads rank
   3, not its team-list slot; a monster's name is its data id's loc string, the same source
   as the game's turn-order tooltips). Corpses and prop monsters (battle-complete classes) are in the strips like any
@@ -1403,13 +1408,14 @@ Top to bottom:
 
 ### 7.1.3 Glance hotkeys - WORKS
 
-Live-verified 2026-08-04 (player-pressed, all three layers). One key per strip slot in rank
-order - 1-4 the enemy strip, Q/W/E/R the party - spoken in place, focus stays put. A slot
-with no combatant is silent. The keys live in the Combat input category (declared by this
+Live-verified 2026-08-04 (player-pressed, all three layers; remapped 2026-08-08 to the
+battlefield row's left-to-right order). One key per row slot - 1-4 the enemies (1 = their
+rank 1), Q/W/E/R the party (Q = the backmost, R = the front line) - spoken in place, focus
+stays put. A slot with no combatant is silent. The keys live in the Combat input category (declared by this
 screen and the inspector overlay only), so they never shadow the roster rename or other
 screens' keys; all 24 are rebindable from the mod keys tab.
 
-- **Bare key**: the scroll-over read without the rank word (the key is the rank) -
+- **Bare key**: the scroll-over read without the rank word (the key names the row slot) -
   "Lost Soul, HP 13/13", "Bigby, HP 40/40, Stress 0/10" - including the target-validity
   reason/preview while a pick is pending.
 - **Shift**: the token/dot/buff summary, positives then negatives, each token as its bare

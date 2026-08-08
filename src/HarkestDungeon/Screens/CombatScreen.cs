@@ -22,8 +22,9 @@ namespace DD2A11y.Screens {
     /// <summary>
     /// A battle (the COMBAT game mode). Layout, top to bottom: the header row (round and acting
     /// combatant with torch, wave count, round detail, and retreat odds in the buffer; then the
-    /// turn order; then the battle goal when the fight has one), the enemy strip, the party
-    /// strip (both rank-ordered, full status in each combatant's buffer), then the acting
+    /// turn order; then the battle goal when the fight has one), one battlefield row laid out
+    /// like the screen - the party rank 4 to 1, then the enemies rank 1 to 4, full status in
+    /// each combatant's buffer - then the acting
     /// hero's skill bar (skills, move, pass, retreat). Enter on a skill runs the game's
     /// own pick and flips into target-select - focus snaps to the first valid target, every
     /// combatant reads its validity, and Enter on one sends the game's own actor-pick to
@@ -130,10 +131,16 @@ namespace DD2A11y.Screens {
             header.Add(new ReadoutElement(ModifierTitle, detail: ModifierDetail));
             header.Add(new ReadoutElement(EscalationTitle, detail: EscalationDetail));
             _root.Add(header);
-            _enemies = new Container(ContainerShape.HorizontalList, S.CombatEnemies);
-            _root.Add(_enemies);
-            _party = new Container(ContainerShape.HorizontalList, S.CrossroadsParty);
-            _root.Add(_party);
+            // One battlefield row laid out like the screen: the party right-to-left (rank 4
+            // leftmost, rank 1 at the front line), then the enemies rank 1 to 4 continuing
+            // rightward. The two strips stay separate containers for the per-team readers
+            // (buffers, glances) but carry no names - the position IS the side.
+            var battlefield = new Container(ContainerShape.HorizontalList);
+            _root.Add(battlefield);
+            _party = new Container(ContainerShape.HorizontalList);
+            battlefield.Add(_party);
+            _enemies = new Container(ContainerShape.HorizontalList);
+            battlefield.Add(_enemies);
             _skills = new Container(ContainerShape.HorizontalList, GameLoc.TryGet("character_sheet_tab_skills"));
             _root.Add(_skills);
             _commands = new Container(ContainerShape.HorizontalList);
@@ -346,7 +353,14 @@ namespace DD2A11y.Screens {
 
         private void PopulateTeam(Container strip, bool friendly) {
             strip.Clear();
-            foreach (var actor in Actors.Team(friendly)) {
+            var team = Actors.Team(friendly);
+            // The party strip mirrors the sighted layout, rank 4 leftmost; everything that
+            // reads strip children in order (the party buffer, the QWER glances) follows
+            // this left-to-right order.
+            if (friendly) {
+                team.Reverse();
+            }
+            foreach (var actor in team) {
                 strip.Add(new CombatantElement(actor.m_ActorGuid, friendly, _skillSelection));
             }
         }
@@ -395,9 +409,10 @@ namespace DD2A11y.Screens {
 
         // ---- Glance hotkeys ----
 
-        // The combatant hotkeys speak one strip slot (rank order) without moving focus: the
-        // digit row glances enemies, the QWER row the party. A slot with no combatant is
-        // silent - the empty rank is the answer.
+        // The combatant hotkeys speak one strip slot left to right - the battlefield row's
+        // own order - without moving focus: the digit row glances enemies (1 = their rank
+        // 1), the QWER row the party (Q = the backmost, R = the front line). A slot with no
+        // combatant is silent - the empty slot is the answer.
 
         public void GlanceStatus(bool friendly, int index)
             => Glance(friendly, index, e => e.GlanceLine());

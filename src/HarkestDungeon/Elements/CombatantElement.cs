@@ -127,7 +127,8 @@ namespace DD2A11y.Elements {
         // ---- Glance hotkeys (spoken in place, focus stays put) ----
 
         /// <summary>The bare-hotkey glance: the scroll-over read without the rank word (the
-        /// key itself is the rank), plus a hero's stress.</summary>
+        /// keys map to the battlefield row's slots left to right), plus a hero's
+        /// stress.</summary>
         public string GlanceLine() {
             var actor = Actor;
             if (actor == null) {
