@@ -154,12 +154,21 @@ namespace DD2A11y.Game {
             }
         }
 
+        // A token the library does not define, or defines as hidden, is internal logic state
+        // (the same gate the token icons and buffers apply); its id would leak raw into
+        // speech ("gained token_logic_temporary").
+        private static bool IsSpeakableToken(string tokenId) {
+            return SingletonMonoBehaviour<Library<string, TokenDefinition>>.Instance
+                       .TryGetLibraryElement(tokenId, out var definition)
+                && !definition.IsHidden;
+        }
+
         // A token landed on someone ("Audrey gained Weak"), honoring the game's own pop-text
         // visibility gate so hidden or load-restored applications stay silent. The name is the
         // game's own token string (a glyph, spoken through the sprite words) with the game's own
         // count format when stacked.
         private static void HandleTokenAdded(EventTokenAdded evt) {
-            if (!InCombat || !evt.m_IsPopTextValid) {
+            if (!InCombat || !evt.m_IsPopTextValid || !IsSpeakableToken(evt.m_TokenId)) {
                 return;
             }
             string owner = Actors.Name(Actors.Get(evt.m_ActorGuid));
@@ -179,12 +188,13 @@ namespace DD2A11y.Game {
         // A token was used up powering its effect ("Dismas spent Block" explains why a hit dealt
         // half damage). Only instant consumes speak, and only for tokens the game itself pops.
         private static void HandleTokenConsumed(EventTokenConsumed evt) {
-            if (!InCombat || evt.m_TokenConsumeType != TokenConsumeType.INSTANT) {
+            if (!InCombat || evt.m_TokenConsumeType != TokenConsumeType.INSTANT
+                || !IsSpeakableToken(evt.m_TokenId)) {
                 return;
             }
             var definition = SingletonMonoBehaviour<Library<string, TokenDefinition>>.Instance
                 .GetLibraryElement(evt.m_TokenId);
-            if (definition != null && !definition.m_ShowConsumePopText) {
+            if (!definition.m_ShowConsumePopText) {
                 return;
             }
             string owner = Actors.Name(Actors.Get(evt.m_ActorGuid));
@@ -196,7 +206,7 @@ namespace DD2A11y.Game {
 
         // A token was destroyed by an effect ("Widow lost Stealth").
         private static void HandleTokenNegated(EventTokenNegated evt) {
-            if (!InCombat || !evt.m_IsPopTextValid) {
+            if (!InCombat || !evt.m_IsPopTextValid || !IsSpeakableToken(evt.m_NegatedTokenId)) {
                 return;
             }
             string owner = Actors.Name(Actors.Get(evt.m_ActorGuid));

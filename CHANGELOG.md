@@ -9,6 +9,7 @@
 - Road banter finally speaks: hero chatter, relationship exchanges, node-approach barks, and
   the stagecoach pet all read as their bubbles appear. Only scattered reaction quips got
   through before.
+- Battle lines no longer leak the game's internal logic markers.
 
 ## V0.2.3
 

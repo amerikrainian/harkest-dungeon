@@ -1462,7 +1462,10 @@ gates mirror the game's own pop-text handlers. Covered:
 - Token, dot, buff, and quirk applications ("Dismas gained Crit", the game's own names and
   count format, honoring its pop-text visibility gates; buffs speak their stat text), token
   consumption and negation ("Sahar spent Speed" / "Sahar lost Weak"), resisted effects
-  ("Woodsman resisted Blight").
+  ("Woodsman resisted Blight"). A token the library does not define, or defines as hidden,
+  never speaks in any of these lines (fixed 2026-08-08: skills apply library-less logic
+  markers like "token_logic_temporary" whose ids leaked raw into the gained line - the same
+  IsHidden gate the combatant buffers always applied).
 - Retreat outcomes, wave starts, and the final round (all three via the game's own pop-text
   strings), wounds, affinity changes ("Dismas and Paracelsus, affinity +1"), barks ("Dismas: I
   line 'em up..."), hero objective completions, and tutorial/message toasts shown over combat
