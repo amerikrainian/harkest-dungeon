@@ -110,7 +110,6 @@ SoundTabRoad = road
 SoundTabCombat = combat
 StatusPlaying = playing
 SoundRoadPickup = pickup nearby
-SoundRoadPickupTaken = pickup collected
 SoundRoadEdgeBump = road edge
 SoundRoadTurning = coach turning
 SoundRoadTurnEnd = turn ended

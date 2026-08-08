@@ -244,7 +244,6 @@ namespace DD2A11y.Core.Strings {
             // Glossary row labels: when the mod plays each sound. Road driving events first.
             // The repeating positional ping while a roadside pickup is in sensing range.
             D("SoundRoadPickup", "pickup nearby"),
-            D("SoundRoadPickupTaken", "pickup collected"),
             // The coach is drifting off the road's edge.
             D("SoundRoadEdgeBump", "road edge"),
             // Loops while the coach turns; its end cue marks the settle back to straight.

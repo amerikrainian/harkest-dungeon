@@ -9,8 +9,6 @@ namespace DD2A11y.Core.Audio {
         // The road (assets/audio/road).
         /// <summary>A roadside pickup in sensing range (the repeating positional ping).</summary>
         RoadPickup,
-        /// <summary>A pickup was collected.</summary>
-        RoadPickupTaken,
         /// <summary>Drifting off the road's edge.</summary>
         RoadEdgeBump,
         /// <summary>The coach is turning (loops while the turn lasts, panned toward it).</summary>

@@ -108,7 +108,6 @@ SoundTabRoad = 道
 SoundTabCombat = 戦闘
 StatusPlaying = 再生中
 SoundRoadPickup = 近くにアイテム
-SoundRoadPickupTaken = アイテム取得
 SoundRoadEdgeBump = 道の端
 SoundRoadTurning = 馬車が旋回中
 SoundRoadTurnEnd = 旋回終了

@@ -108,7 +108,6 @@ SoundTabRoad = 道路
 SoundTabCombat = 戰鬥
 StatusPlaying = 播放中
 SoundRoadPickup = 拾取物在附近
-SoundRoadPickupTaken = 拾取物已收集
 SoundRoadEdgeBump = 道路邊緣
 SoundRoadTurning = 馬車轉彎中
 SoundRoadTurnEnd = 轉彎結束

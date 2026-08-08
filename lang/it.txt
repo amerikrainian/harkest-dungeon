@@ -108,7 +108,6 @@ SoundTabRoad = strada
 SoundTabCombat = combattimento
 StatusPlaying = in riproduzione
 SoundRoadPickup = oggetto vicino
-SoundRoadPickupTaken = oggetto raccolto
 SoundRoadEdgeBump = bordo strada
 SoundRoadTurning = diligenza in curva
 SoundRoadTurnEnd = curva terminata

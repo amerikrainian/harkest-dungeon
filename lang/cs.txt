@@ -108,7 +108,6 @@ SoundTabRoad = cesta
 SoundTabCombat = boj
 StatusPlaying = přehrává se
 SoundRoadPickup = předmět poblíž
-SoundRoadPickupTaken = předmět sebrán
 SoundRoadEdgeBump = okraj cesty
 SoundRoadTurning = dostavník zatáčí
 SoundRoadTurnEnd = konec zatáčení

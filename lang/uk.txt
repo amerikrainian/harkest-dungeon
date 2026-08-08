@@ -108,7 +108,6 @@ SoundTabRoad = дорога
 SoundTabCombat = бій
 StatusPlaying = відтворюється
 SoundRoadPickup = предмет поруч
-SoundRoadPickupTaken = предмет підібрано
 SoundRoadEdgeBump = край дороги
 SoundRoadTurning = диліжанс повертає
 SoundRoadTurnEnd = кінець повороту

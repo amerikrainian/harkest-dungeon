@@ -384,11 +384,12 @@ resets to road on each open, matching the settings screen's own no-remembered-ta
 
 - The master volume row heads the tab ("master volume, slider, 100 percent"): Left/Right
   step the baseline every mod sound plays at. Per-sound volumes are stored as signed offsets
-  from it (`Master = 80`, `RoadPickupTaken = -20` in the config's `[Sounds]` section), so a
+  from it (`Master = 80`, `RoadTurning = -20` in the config's `[Sounds]` section), so a
   master move carries every sound while their relative levels hold; the rows still display
-  the resolved absolute percent, never the offset (live-verified 2026-08-04: pickup collected
-  stepped to 60 under master 80 read "80 percent" again after master returned to 100 while
-  pickup nearby read "100 percent"). An effective volume clamps at 0 - never negative - and
+  the resolved absolute percent, never the offset (live-verified 2026-08-04, on the
+  since-removed collection cue: it stepped to 60 under master 80 and read "80 percent"
+  again after master returned to 100 while pickup nearby read "100 percent"). An effective
+  volume clamps at 0 - never negative - and
   the clamped offset survives a master dip below it intact. Pre-master configs (bare unsigned
   numbers) read as absolute percents against a full master, unchanged until next adjusted.
 - Enter plays the row's sound once; Space (the grab key) toggles it looping. Both are
@@ -1020,8 +1021,8 @@ keyboard.
 Cues live-verified by ear 2026-07-25 (pickup ping) and 2026-08-04 (turning). The mod's own
 NAudio output (independent of FMOD; `assets/audio`, placeholders replace 1:1). The cue
 roster is deliberately minimal - pickups are the only road object worth steering at, so
-only they and the coach's own motion sound (pickup ping, collection, turning, turn-end,
-road edge); everything else on the road is speech.
+only they and the coach's own motion sound (pickup ping, turning, turn-end, road edge);
+collection is the game's own sfx plus speech, and everything else on the road is speech.
 
 - **Every uncollected pickup in range loops** (one live loop voice each - louder as it nears,
   parameter steps smoothed ~5 ms against zipper noise), re-aimed EVERY frame so steering
@@ -1999,8 +2000,8 @@ Conditions/Story/Cosmetics tabs (4.2.3), the kingdoms wizard's mods step (1.5).
 
 ## 12.4 Audio Layers
 
-Road cues - the pickup ping and collection blip, turning, turn-end, road edge (5.2; only
-what can be steered at or steered with keeps a sound); combat target-validity beeps (7.1.2).
+Road cues - the pickup ping, turning, turn-end, road edge (5.2; only what can be steered
+at or steered with keeps a sound); combat target-validity beeps (7.1.2).
 
 ## 12.5 Uncovered Surfaces (consolidated)
 

@@ -108,7 +108,6 @@ SoundTabRoad = Straße
 SoundTabCombat = Kampf
 StatusPlaying = läuft
 SoundRoadPickup = Gegenstand in der Nähe
-SoundRoadPickupTaken = Gegenstand eingesammelt
 SoundRoadEdgeBump = Straßenrand
 SoundRoadTurning = Kutsche lenkt
 SoundRoadTurnEnd = Kurve beendet

@@ -90,7 +90,6 @@ namespace DD2A11y.Audio {
         private string CuePath(AudioCue cue) {
             switch (cue) {
                 case AudioCue.RoadPickup: return Road("pickup");
-                case AudioCue.RoadPickupTaken: return Road("pickup_taken");
                 case AudioCue.RoadEdgeBump: return Road("road_edge");
                 case AudioCue.RoadTurning: return Road("turning");
                 case AudioCue.RoadTurnEnd: return Road("end_turn");

@@ -108,7 +108,6 @@ SoundTabRoad = 길
 SoundTabCombat = 전투
 StatusPlaying = 재생 중
 SoundRoadPickup = 습득물 감지
-SoundRoadPickupTaken = 습득물 획득
 SoundRoadEdgeBump = 길 가장자리
 SoundRoadTurning = 마차 회전 중
 SoundRoadTurnEnd = 회전 종료
