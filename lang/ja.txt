@@ -62,6 +62,7 @@ InnStationedHeroes = 駐留中の英雄
 InnAtThisInn = この宿にいる
 ScreenAltar = 祭壇
 ScreenEmbark = 出発
+RelationshipUnrevealed = 未公開の関係
 AltarCandleCost = キャンドル{0}本
 AltarUnlocked = アンロック
 AltarMemoryReroll = 振り直し、キャンドル{0}本

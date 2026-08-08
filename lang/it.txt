@@ -62,6 +62,7 @@ InnStationedHeroes = eroi stazionati
 InnAtThisInn = in questa locanda
 ScreenAltar = tabernacolo
 ScreenEmbark = partenza
+RelationshipUnrevealed = rapporto non rivelato
 AltarCandleCost = {0} candela|{0} candele
 AltarUnlocked = sbloccato
 AltarMemoryReroll = sorteggia, {0} candela|sorteggia, {0} candele

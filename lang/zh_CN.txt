@@ -62,6 +62,7 @@ InnStationedHeroes = 驻扎英雄
 InnAtThisInn = 在本旅馆
 ScreenAltar = 祭坛
 ScreenEmbark = 启程
+RelationshipUnrevealed = 未揭晓的关系
 AltarCandleCost = {0}支蜡烛
 AltarUnlocked = 已解锁
 AltarMemoryReroll = 重骰，{0}支蜡烛

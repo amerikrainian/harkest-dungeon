@@ -5,15 +5,17 @@ using DD2A11y.Core.Nav;
 using DD2A11y.Core.Text;
 using DD2A11y.Game;
 using HarmonyLib;
+using S = DD2A11y.Core.Strings.Strings;
 using UnityEngine.UI;
 
 namespace DD2A11y.Elements {
     /// <summary>
     /// One hero relationship on the embark staging screen: the two heroes' names, then the
-    /// relationship's own localized name once it is applied (before that the game shows only
-    /// a mystery mark). Enter drives the game's own press, which commits the pending
-    /// relationship and plays the reveal; the revealed name reads from the row afterwards,
-    /// and the modified-skill tooltips land in the buffer.
+    /// relationship's own localized name once it is applied. Before that the game shows only
+    /// a question mark over the pair - spoken as the authored unrevealed value, never the
+    /// pending name the game is hiding. Enter drives the game's own press, which commits the
+    /// pending relationship and plays the reveal; the revealed name reads from the row
+    /// afterwards, and the modified-skill tooltips land in the buffer.
     /// </summary>
     public sealed class EmbarkRelationshipElement : SelectableElement {
         private static readonly AccessTools.FieldRef<EmbarkRelationshipBtnBhv, AffinityConnection> ConnectionField =
@@ -39,9 +41,15 @@ namespace DD2A11y.Elements {
         public override string Value {
             get {
                 var connection = ConnectionField(_button);
-                var relationship = connection == null ? null : connection.GetCurrentRelationship();
+                if (connection == null) {
+                    return base.Value;
+                }
+                var relationship = connection.GetCurrentRelationship();
                 if (relationship != null) {
                     return GameLoc.TryGet(relationship.m_Id);
+                }
+                if (connection.GetHasPendingRelationship()) {
+                    return S.RelationshipUnrevealed;
                 }
                 return base.Value;
             }

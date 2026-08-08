@@ -64,6 +64,7 @@ InnStationedHeroes = stationed heroes
 InnAtThisInn = at this inn
 ScreenAltar = altar
 ScreenEmbark = departure
+RelationshipUnrevealed = unrevealed relationship
 AltarCandleCost = {0} candle|{0} candles
 AltarUnlocked = unlocked
 AltarMemoryReroll = reroll {0} candle|reroll {0} candles

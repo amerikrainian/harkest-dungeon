@@ -936,9 +936,13 @@ Named "departure".
 
 - One element per pending hero relationship (`EmbarkRelationshipBtnBhv` rows are
   portrait-only; the element reads both heroes' names from the connection's actors, and the
-  relationship's own localized name as the value once applied). Enter is the game's own press:
-  it commits the pending relationship and plays the game's reveal sequence. The apply-all
-  button reads when the game shows one (reveal-relationships option, 2+ rows).
+  relationship's own localized name as the value once applied). Before the press the value is
+  the authored "unrevealed relationship" - the spoken form of the question mark the game
+  shows over the pair (added 2026-08-08, user-caught: the rows read as bare name-pair
+  buttons with nothing marking what they are). The pending name the game hides stays
+  unspoken. Enter is the game's own press: it commits the pending relationship and plays
+  the game's reveal sequence. The apply-all button reads when the game shows one
+  (reveal-relationships option, 2+ rows).
 - The depart button reads the game's own binding ("Continue", or "Continue: <region>" when a
   destination is set), "unavailable" while relationships are still pending. Enter drives the
   game's keyboard path, which self-validates: with pending relationships the game answers with

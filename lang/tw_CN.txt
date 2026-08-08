@@ -62,6 +62,7 @@ InnStationedHeroes = 駐紮英雄
 InnAtThisInn = 已在本客棧
 ScreenAltar = 祭壇
 ScreenEmbark = 啟程
+RelationshipUnrevealed = 未揭示的關係
 AltarCandleCost = {0}支蠟燭
 AltarUnlocked = 已解鎖
 AltarMemoryReroll = 重擲，{0}支蠟燭

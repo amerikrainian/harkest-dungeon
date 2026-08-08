@@ -62,6 +62,7 @@ InnStationedHeroes = héros stationnés
 InnAtThisInn = à cette auberge
 ScreenAltar = autel
 ScreenEmbark = départ
+RelationshipUnrevealed = relation non révélée
 AltarCandleCost = {0} bougie|{0} bougies
 AltarUnlocked = débloqué
 AltarMemoryReroll = actualiser pour {0} bougie|actualiser pour {0} bougies

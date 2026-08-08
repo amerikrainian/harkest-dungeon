@@ -62,6 +62,7 @@ InnStationedHeroes = stacjonujący bohaterowie
 InnAtThisInn = w tej gospodzie
 ScreenAltar = ołtarz
 ScreenEmbark = odjazd
+RelationshipUnrevealed = nieujawnione emocje
 AltarCandleCost = {0} świeca|{0} świece|{0} świec
 AltarUnlocked = odblokowano
 AltarMemoryReroll = przelosuj za {0} świecę|przelosuj za {0} świece|przelosuj za {0} świec

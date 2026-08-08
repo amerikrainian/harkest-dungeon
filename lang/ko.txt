@@ -62,6 +62,7 @@ InnStationedHeroes = 주둔한 영웅
 InnAtThisInn = 이 여관에 있음
 ScreenAltar = 제단
 ScreenEmbark = 출정
+RelationshipUnrevealed = 미공개 관계
 AltarCandleCost = 촛불 {0}개
 AltarUnlocked = 해금
 AltarMemoryReroll = 새로고침 촛불 {0}개

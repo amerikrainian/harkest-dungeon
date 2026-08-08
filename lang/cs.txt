@@ -62,6 +62,7 @@ InnStationedHeroes = umístění hrdinové
 InnAtThisInn = v tomto hostinci
 ScreenAltar = oltář
 ScreenEmbark = odjezd
+RelationshipUnrevealed = neodhalený vztah
 AltarCandleCost = {0} svíčka|{0} svíčky|{0} svíček
 AltarUnlocked = odemčeno
 AltarMemoryReroll = přehodit za {0} svíčku|přehodit za {0} svíčky|přehodit za {0} svíček

@@ -62,6 +62,7 @@ InnStationedHeroes = размещённые герои
 InnAtThisInn = в этом трактире
 ScreenAltar = алтарь
 ScreenEmbark = отправление
+RelationshipUnrevealed = нераскрытые отношения
 AltarCandleCost = {0} свеча|{0} свечи|{0} свечей
 AltarUnlocked = разблокировано
 AltarMemoryReroll = повторный выбор за {0} свечу|повторный выбор за {0} свечи|повторный выбор за {0} свечей

@@ -137,6 +137,9 @@ namespace DD2A11y.Core.Strings {
             // The embark staging scene between the crossroads (or an inn) and the drive, where
             // hero relationships reveal before the coach departs. Noun.
             D("ScreenEmbark", "departure"),
+            // An embark relationship row before its reveal press, where the game shows only
+            // a question mark over the two heroes' portraits. Spoken as the row's value.
+            D("RelationshipUnrevealed", "unrevealed relationship"),
             // The candle cost on an altar unlock button, where the game shows a candle icon
             // and a bare number; {0} = the number.
             D("AltarCandleCost", "{0} candle|{0} candles"),
@@ -650,6 +653,7 @@ namespace DD2A11y.Core.Strings {
         public static string InnAtThisInn => T("InnAtThisInn");
         public static string ScreenAltar => T("ScreenAltar");
         public static string ScreenEmbark => T("ScreenEmbark");
+        public static string RelationshipUnrevealed => T("RelationshipUnrevealed");
         public static string AltarCandleCost(int count) => P("AltarCandleCost", count);
         public static string AltarUnlocked => T("AltarUnlocked");
         public static string AltarMemoryReroll(int count) => P("AltarMemoryReroll", count);

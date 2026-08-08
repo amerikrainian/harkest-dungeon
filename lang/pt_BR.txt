@@ -62,6 +62,7 @@ InnStationedHeroes = heróis posicionados
 InnAtThisInn = nesta pousada
 ScreenAltar = altar
 ScreenEmbark = embarque
+RelationshipUnrevealed = relacionamento não revelado
 AltarCandleCost = {0} vela|{0} velas
 AltarUnlocked = desbloqueado
 AltarMemoryReroll = ressortear {0} vela|ressortear {0} velas

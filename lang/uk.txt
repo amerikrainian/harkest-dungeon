@@ -62,6 +62,7 @@ InnStationedHeroes = розміщені герої
 InnAtThisInn = у цьому трактирі
 ScreenAltar = вівтар
 ScreenEmbark = відправлення
+RelationshipUnrevealed = нерозкриті стосунки
 AltarCandleCost = {0} свічка|{0} свічки|{0} свічок
 AltarUnlocked = відкрито
 AltarMemoryReroll = замінити за {0} свічку|замінити за {0} свічки|замінити за {0} свічок

@@ -62,6 +62,7 @@ InnStationedHeroes = stationierte Helden
 InnAtThisInn = in diesem Gasthof
 ScreenAltar = Altar
 ScreenEmbark = Aufbruch
+RelationshipUnrevealed = nicht aufgedeckte Beziehung
 AltarCandleCost = {0} Kerze|{0} Kerzen
 AltarUnlocked = freigeschaltet
 AltarMemoryReroll = neu würfeln, {0} Kerze|neu würfeln, {0} Kerzen
