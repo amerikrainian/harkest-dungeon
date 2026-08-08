@@ -1770,7 +1770,11 @@ Live-verified 2026-07-24 at the first Denial inn. Over `InnUpgradeSkillsBhv`.
   the displayed card (fixed 2026-08-08, user-caught: every unmastered trainer skill answered
   "no upgrade available" and read the mastered card as its current one).
 - Enter queues a skill through the trainer's own `TrySelectSkillToUnlock` (the mouse holds);
-  the rebuild announces the new points.
+  the rebuild announces the new points. A skill selected for upgrade speaks "mastered", not
+  "selected" - the game's own row rule (`IsSkillVisiblyUpgraded`): the points are spent and
+  the row wears the full mastered look, with only the Reset button distinguishing pending
+  from committed (2026-08-08, user-caught; "selected" remains for a pending kingdom skill
+  unlock, which the game does not dress as mastered).
 - The path panel stays permanently active with a CanvasGroup riding visibility, so the view
   split keys on `blocksRaycasts`; the path view reads the comparison text (named children
   only - the panel carries unbound template labels) plus each path option and the purchase

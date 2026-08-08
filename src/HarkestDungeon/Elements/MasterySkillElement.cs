@@ -91,13 +91,25 @@ namespace DD2A11y.Elements {
             return base.GetSideBufferLines(bufferKey);
         }
 
-        // Trainer buttons carry the unlock id - the mastered variant's id - whatever the
-        // hero's mastery state (the game's own row strips the suffix before display the same
-        // way), so mastery is judged on the normalized id.
+        // Mastery as the game's row presents it (UpgradeSkillButton.IsSkillVisiblyUpgraded):
+        // the hero's committed masteries, plus a skill selected for upgrade this visit - its
+        // points are already spent and the row wears the full mastered look; only the
+        // trainer's Reset button distinguishes the two. The committed check runs on the
+        // normalized id: trainer buttons carry the unlock id - the mastered variant's -
+        // whatever the mastery state (the game's own row strips the suffix before display
+        // the same way).
         private bool IsMastered() {
             var actor = _button.ActorInstance;
-            return actor != null && actor.GetUpgradedCombatSkillIds()
-                .Contains(SkillCard.MasteredId(SkillCard.BaseId(_button.SkillId)));
+            if (actor == null) {
+                return false;
+            }
+            string id = _button.SkillId;
+            if (_panel.IsSkillSelectedForUnlock(actor, id)) {
+                return _panel.IsSkillSelectedForUpgrade(actor, id + "_u");
+            }
+            return _panel.IsSkillSelectedForUpgrade(actor, id)
+                || actor.GetUpgradedCombatSkillIds()
+                    .Contains(SkillCard.MasteredId(SkillCard.BaseId(id)));
         }
 
         // The id whose card the trainer is showing, matching the game's own tooltip: the
