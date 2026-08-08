@@ -1754,17 +1754,21 @@ own `CloseSubscreen`.
 Live-verified 2026-07-24 at the first Denial inn. Over `InnUpgradeSkillsBhv`.
 
 - The hero header (name + "mastery points N"; Left/Right page the party via the trainer's own
-  arrows), one element per skill (the game's own name with its upgraded-skill glyph spoken as
-  words; states "mastered" / "selected" / "unavailable"; full skill card in the buffer), the
-  path seal, "Change Path" with its cost (caption from its tooltip - the visible text is only
-  the cost), and Reset - whose visual is a hold gesture, so the element drives the real
-  `OnResetPressed`.
+  arrows), one element per skill (the game's own name - the base skill's until mastered, then
+  the mastered variant's with its upgraded-skill glyph spoken as words, the same switch the
+  sighted row makes; states "mastered" / "selected" / "unavailable"; full skill card in the
+  buffer), the path seal, "Change Path" with its cost (caption from its tooltip - the visible
+  text is only the cost), and Reset - whose visual is a hold gesture, so the element drives
+  the real `OnResetPressed`.
 - The buffers split the cards the sighted tooltip pairs (spliced form live-verified
   2026-08-03): a skill's control buffer holds its current card (the mastered card once
   mastered, the same switch the game's tooltip makes), and the mastery buffer holds the
   preview (`SkillCard.UpgradeBufferLines` - the `_u` variant's stat bar via
   `GetUpgradeTopBarString` and its per-target effects), or "no upgrade available" once
-  mastered.
+  mastered. The trainer's buttons carry the unlock id - the `_u` variant - whatever the
+  hero's mastery state, so the element normalizes the id before judging mastery and picking
+  the displayed card (fixed 2026-08-08, user-caught: every unmastered trainer skill answered
+  "no upgrade available" and read the mastered card as its current one).
 - Enter queues a skill through the trainer's own `TrySelectSkillToUnlock` (the mouse holds);
   the rebuild announces the new points.
 - The path panel stays permanently active with a CanvasGroup riding visibility, so the view

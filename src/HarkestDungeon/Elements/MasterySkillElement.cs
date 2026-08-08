@@ -32,7 +32,7 @@ namespace DD2A11y.Elements {
 
         public override string Label {
             get {
-                var skill = Actors.Skill(_button.SkillId);
+                var skill = Actors.Skill(DisplayedSkillId());
                 return skill != null ? SkillDescription.GetNameText(skill) : base.Label;
             }
         }
@@ -44,7 +44,7 @@ namespace DD2A11y.Elements {
                 if (actor == null || string.IsNullOrEmpty(id)) {
                     return null;
                 }
-                if (actor.GetUpgradedCombatSkillIds().Contains(id)) {
+                if (IsMastered()) {
                     return S.SkillMastered;
                 }
                 if (_panel.IsSkillSelectedForUpgrade(actor, id) || _panel.IsSkillSelectedForUnlock(actor, id)
@@ -63,7 +63,7 @@ namespace DD2A11y.Elements {
             yield return new ElementAction(ActionIds.Activate, () => {
                 var actor = _button.ActorInstance;
                 string id = _button.SkillId;
-                if (actor == null || actor.GetUpgradedCombatSkillIds().Contains(id)
+                if (actor == null || IsMastered()
                     || !(_panel.GetIsUpgradable(actor, id) || _panel.GetIsUnlockable(actor, id))
                     || !_panel.CanAffordSkill) {
                     SpeechPipeline.Instance?.Speak(S.StatusUnavailable, interrupt: true);
@@ -91,13 +91,21 @@ namespace DD2A11y.Elements {
             return base.GetSideBufferLines(bufferKey);
         }
 
-        // The id whose card the trainer is showing: the mastered variant once mastered, else
-        // the button's own.
-        private string DisplayedSkillId() {
-            string id = _button.SkillId;
+        // Trainer buttons carry the unlock id - the mastered variant's id - whatever the
+        // hero's mastery state (the game's own row strips the suffix before display the same
+        // way), so mastery is judged on the normalized id.
+        private bool IsMastered() {
             var actor = _button.ActorInstance;
-            bool mastered = actor != null && actor.GetUpgradedCombatSkillIds().Contains(id);
-            return mastered ? SkillCard.MasteredId(id) : id;
+            return actor != null && actor.GetUpgradedCombatSkillIds()
+                .Contains(SkillCard.MasteredId(SkillCard.BaseId(_button.SkillId)));
+        }
+
+        // The id whose card the trainer is showing, matching the game's own tooltip: the
+        // mastered variant once mastered, else the base skill - whose mastery preview then
+        // fills the upgrade buffer.
+        private string DisplayedSkillId() {
+            string baseId = SkillCard.BaseId(_button.SkillId);
+            return IsMastered() ? SkillCard.MasteredId(baseId) : baseId;
         }
     }
 }

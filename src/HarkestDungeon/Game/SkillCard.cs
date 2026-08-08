@@ -25,6 +25,12 @@ namespace DD2A11y.Game {
         public static string MasteredId(string skillId)
             => Actors.Skill(skillId + UpgradeSuffix) != null ? skillId + UpgradeSuffix : skillId;
 
+        /// <summary>The base skill's id: the mastered suffix stripped when present.</summary>
+        public static string BaseId(string skillId)
+            => IsMasteredId(skillId)
+                ? skillId.Substring(0, skillId.Length - UpgradeSuffix.Length)
+                : skillId;
+
         /// <summary>The upgrade buffer's spoken name: the game's own header over the mastery
         /// preview, its trailing colon trimmed (list punctuation, not information).</summary>
         public static string UpgradeTitle() {
