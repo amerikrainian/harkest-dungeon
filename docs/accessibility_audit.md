@@ -1075,11 +1075,17 @@ collection is the game's own sfx plus speech, and everything else on the road is
 - Speech-only road lines: road damage speaks the combat damage wording (the coach's
   stop/start is left to the game's own driving audio); a junction's banners coming up speak
   "fork ahead" (once per junction).
-- **Road transients** (all live-verified 2026-07-31 by firing the game's own paths): tutorial
+- **Road transients** (toasts live-verified 2026-07-31; barks rewired 2026-08-08): tutorial
   and message toasts route by mode through the toast postfixes (combat queue in battle, the
   road pending queue on the road; the patches attach at startup, not on the first combat
-  resolve). Hero barks (banter, act-outs - `EventBark`, the same event the combat listener
-  rides) speak speaker-prefixed on the road tick. The coach's Loathing-resist pop speaks the
+  resolve). Road barks speak speaker-prefixed through postfixes on the bark spawner's two
+  overloads (`BarkEvents`) - the one choke point every road bubble passes - because banter
+  act-outs and relationship exchanges spawn straight from the hero ribbon and NEVER raise
+  the bark event (found 2026-08-08: only queue-path reaction barks did, so banter had been
+  silent). The patch also picks up road-event reaction, node-approach, and pet-cage barks
+  (the pet's rides the world-anchored overload, no speaker prefix); combat bubbles run the
+  same spawner, so the patches gate on the DRIVING mode and battle barks stay with the
+  combat module's bark-event listener. The coach's Loathing-resist pop speaks the
   game's own "LOATHING RESIST" text (the English template carries no number slot); the
   low-flame ambush pop ("The Flame Exhausted") rides the combat pending queue outright,
   because it plays as the ambush battle spins up, and so speaks with the battle's opening

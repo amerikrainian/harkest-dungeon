@@ -6,6 +6,9 @@
 - A new "auto collect pickups" toggle in mod settings (off by default): roadside pickups
   collect themselves as the coach passes them, no steering needed, and the pickup pings stay
   quiet while it is on.
+- Road banter finally speaks: hero chatter, relationship exchanges, node-approach barks, and
+  the stagecoach pet all read as their bubbles appear. Only scattered reaction quips got
+  through before.
 
 ## V0.2.3
 

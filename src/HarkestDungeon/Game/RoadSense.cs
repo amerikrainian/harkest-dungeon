@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Assets.Code.Actor.Events;
-using Assets.Code.Bark.Events;
 using Assets.Code.Events;
 using Assets.Code.Game;
 using Assets.Code.Game.StageCoach;
@@ -39,8 +38,9 @@ namespace DD2A11y.Game {
     /// through the pickup's own physics entry point, so the game's whole drive-over sequence
     /// (gates, vfx, loot toast) runs unchanged. The coach's own motion keeps two
     /// cues: the turning loop and the road-edge bump. Everything else on the road is speech -
-    /// collection, damage, barks, an approaching fork. Event listeners only compose pending
-    /// lines; every sound and word goes out on the pump path.
+    /// collection, damage, barks (via the bark-spawner patches, BarkEvents), an approaching
+    /// fork. Event listeners and patches only compose pending lines; every sound and word
+    /// goes out on the pump path.
     /// </summary>
     public sealed class RoadSense {
         private static readonly AccessTools.FieldRef<TriggerIntersectionBhv, IntersectionState> StateField =
@@ -137,7 +137,6 @@ namespace DD2A11y.Game {
             }
             EventManager.AddListener<EventLootToastPresented>(HandleLootToast);
             EventManager.AddListener<EventActorHealthDamage>(HandleDamage);
-            EventManager.AddListener<EventBark>(HandleBark);
             EventManager.AddListener<EventRunResist>(HandleRunResist);
         }
 
@@ -174,22 +173,6 @@ namespace DD2A11y.Game {
             }
             _pending.Add(new KeyValuePair<AudioCue?, string>(
                 null, damage == 1 ? S.CombatTookDamageOne(name) : S.CombatTookDamage(name, damage)));
-        }
-
-        // A hero's speech bubble while driving (banter, act-outs); same wording as battle -
-        // the key is already resolved to the specific line by the game's bark selection.
-        private void HandleBark(EventBark evt) {
-            if (!OnRoad) {
-                return;
-            }
-            string speaker = Actors.Name(Actors.Get(evt.m_ActorGuid));
-            string text = GameLoc.TryGet(evt.m_BarkKey);
-            if (text == null) {
-                Plugin.Log.LogWarning($"RoadSense: bark key \"{evt.m_BarkKey}\" has no localized text");
-                return;
-            }
-            _pending.Add(new KeyValuePair<AudioCue?, string>(
-                null, speaker == null ? text : S.BarkLine(speaker, text)));
         }
 
         // A Loathing advance resisted: the same pop text the coach shows, the game's own

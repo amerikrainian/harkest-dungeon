@@ -109,6 +109,8 @@ namespace DD2A11y {
             // Eager: toasts pop on the road before any combat has resolved the lazy attach.
             Game.ToastEvents.RoadSink = _roadSense.Post;
             Game.ToastEvents.Attach();
+            Game.BarkEvents.RoadSink = _roadSense.Post;
+            Game.BarkEvents.Attach();
             Game.CombatEvents.Settings = Settings;
 
             Router = new ScreenRouter(Navigator, Gate, speak);
