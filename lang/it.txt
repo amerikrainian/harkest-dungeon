@@ -146,6 +146,7 @@ TutorialNew = Nuovo
 CombatHeader = round {0}, {1}
 CombatEnemies = nemici
 CombatTorch = fiamma {0}
+CombatOrdained = corroborato
 TargetOutOfRange = fuori portata
 TargetAlliesOnly = solo alleati
 TargetEnemiesOnly = solo nemici

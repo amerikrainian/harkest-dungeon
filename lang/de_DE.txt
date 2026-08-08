@@ -146,6 +146,7 @@ TutorialNew = Neu
 CombatHeader = Runde {0}, {1}
 CombatEnemies = Feinde
 CombatTorch = Fackel {0}
+CombatOrdained = geweiht
 TargetOutOfRange = außer Reichweite
 TargetAlliesOnly = nur Verbündete
 TargetEnemiesOnly = nur Feinde

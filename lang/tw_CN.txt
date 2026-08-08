@@ -146,6 +146,7 @@ TutorialNew = 新
 CombatHeader = 第{0}回合，{1}
 CombatEnemies = 敵人
 CombatTorch = 火炬{0}
+CombatOrdained = 授聖
 TargetOutOfRange = 超出範圍
 TargetAlliesOnly = 僅限友方
 TargetEnemiesOnly = 僅限敵方

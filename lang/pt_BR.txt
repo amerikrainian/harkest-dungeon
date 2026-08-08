@@ -146,6 +146,7 @@ TutorialNew = Novo
 CombatHeader = rodada {0}, {1}
 CombatEnemies = inimigos
 CombatTorch = tocha {0}
+CombatOrdained = ordenado
 TargetOutOfRange = fora de alcance
 TargetAlliesOnly = somente aliados
 TargetEnemiesOnly = somente inimigos

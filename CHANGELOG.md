@@ -2,6 +2,10 @@
 
 ## V0.2.3
 
+- Ordained (blessed) enemies now say so: the word leads the combatant's line everywhere it
+  reads - browsing the strip, the enemies buffer, the glance hotkeys - using the game's own
+  term in every language, and the buffer carries the blessing's icon tooltip: what the
+  ordainment grants, line by line.
 - A new "auto collect pickups" toggle in mod settings (off by default): roadside pickups
   collect themselves as the coach passes them, no steering needed, and the pickup pings stay
   quiet while it is on. Collection is the game's own drive-over - same sounds, same item

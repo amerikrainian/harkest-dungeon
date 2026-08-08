@@ -146,6 +146,7 @@ TutorialNew = Нове
 CombatHeader = раунд {0}, {1}
 CombatEnemies = вороги
 CombatTorch = смолоскип {0}
+CombatOrdained = благословення
 TargetOutOfRange = поза досяжністю
 TargetAlliesOnly = лише союзники
 TargetEnemiesOnly = лише вороги

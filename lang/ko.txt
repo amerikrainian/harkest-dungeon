@@ -146,6 +146,7 @@ TutorialNew = 신규
 CombatHeader = 라운드 {0}, {1}
 CombatEnemies = 적
 CombatTorch = 불꽃 {0}
+CombatOrdained = 서품 받음
 TargetOutOfRange = 범위 밖
 TargetAlliesOnly = 아군 전용
 TargetEnemiesOnly = 적 전용

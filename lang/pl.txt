@@ -146,6 +146,7 @@ TutorialNew = Nowe
 CombatHeader = runda {0}, {1}
 CombatEnemies = wrogowie
 CombatTorch = płomień {0}
+CombatOrdained = namaszczenie
 TargetOutOfRange = poza zasięgiem
 TargetAlliesOnly = tylko sojusznicy
 TargetEnemiesOnly = tylko wrogowie

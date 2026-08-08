@@ -345,6 +345,10 @@ namespace DD2A11y.Core.Strings {
             D("CombatEnemies", "enemies"),
             // The torch/flame meter readout; {0} = its value. The game shows it as a bare icon.
             D("CombatTorch", "torch {0}"),
+            // An ordained (blessed) combatant's line word - the game's blessed portrait icon
+            // as a word, using the game's own term for the state. The blessing's effects ride
+            // in the buffer as the icon's tooltip.
+            D("CombatOrdained", "ordained"),
             // Why a combatant cannot take the chosen skill, prepended to its line during
             // target-select (validity itself rides as the high/low beep). Mirrors the game's
             // own target checks, which it shows only as dimming.
@@ -734,6 +738,7 @@ namespace DD2A11y.Core.Strings {
         public static string CombatHeader(int round, string actor) => F("CombatHeader", round, actor);
         public static string CombatEnemies => T("CombatEnemies");
         public static string CombatTorch(int value) => F("CombatTorch", value);
+        public static string CombatOrdained => T("CombatOrdained");
         public static string CombatSkillAlsoGranted => T("CombatSkillAlsoGranted");
         public static string CombatTokenCount(string name, int count) => F("CombatTokenCount", name, count);
         public static string TargetOutOfRange => T("TargetOutOfRange");

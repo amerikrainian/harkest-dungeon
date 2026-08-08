@@ -17,15 +17,16 @@ using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// One combatant on the battlefield: name, with rank and HP. While a skill is waiting for
-    /// its target, validity rides as audio (the screen's beeps): an invalid target's line leads
-    /// with the reason it cannot be hit, a valid one ends with the game's own hit/crit/heal
-    /// preview. Enter sends the game's own actor-pick event (the mouse click equivalent:
-    /// executes the selected skill on a valid target, otherwise the game ignores it); the
-    /// inspect action opens the hero sheet. The buffer is the full status readout: an enemy's
-    /// monster type and speed first (the hover panel's identity facts, shown nowhere else),
-    /// HP, stress, then one line per token, dot, and combat buff, all from the game's own
-    /// describers.
+    /// One combatant on the battlefield: name, with rank and HP - an ordained (blessed) one
+    /// leads with the word, the game's portrait icon ahead of the name. While a skill is
+    /// waiting for its target, validity rides as audio (the screen's beeps): an invalid
+    /// target's line leads with the reason it cannot be hit, a valid one ends with the game's
+    /// own hit/crit/heal preview. Enter sends the game's own actor-pick event (the mouse
+    /// click equivalent: executes the selected skill on a valid target, otherwise the game
+    /// ignores it); the inspect action opens the hero sheet. The buffer is the full status
+    /// readout: an enemy's monster type and speed first (the hover panel's identity facts,
+    /// shown nowhere else), the ordainment tooltip when blessed, HP, stress, then one line
+    /// per token, dot, and combat buff, all from the game's own describers.
     /// </summary>
     public sealed class CombatantElement : UIElement {
         private readonly uint _guid;
@@ -65,6 +66,13 @@ namespace DD2A11y.Elements {
                 return SpokenLine.Join(RankText(actor), HpText(actor), preview);
             }
         }
+
+        public override string Status => OrdainedWord(Actor);
+
+        // The game marks an ordained combatant with a blessed icon on its portrait and
+        // turn-order slot; the word carries that mark at the head of every spoken line.
+        private static string OrdainedWord(ActorInstance actor)
+            => actor != null && actor.IsOrdained ? S.CombatOrdained : null;
 
         private bool PickPending(out ActorInstance performer, out Assets.Code.Skill.ActorDataSkill skill) {
             performer = null;
@@ -108,8 +116,8 @@ namespace DD2A11y.Elements {
             }
             string preview = PickPending(out var performer, out _) && Targeting.IsValidTarget(performer, _guid)
                 ? Targeting.PreviewText(performer, _guid) : null;
-            return SpokenLine.Join(Label, RankText(actor), HpText(actor), StressText(actor),
-                preview, GlanceEffectsLine());
+            return SpokenLine.Join(OrdainedWord(actor), Label, RankText(actor), HpText(actor),
+                StressText(actor), preview, GlanceEffectsLine());
         }
 
         public override IEnumerable<string> GetSideBufferLines(string bufferKey)
@@ -127,7 +135,7 @@ namespace DD2A11y.Elements {
             }
             string preview = PickPending(out var performer, out _) && Targeting.IsValidTarget(performer, _guid)
                 ? Targeting.PreviewText(performer, _guid) : null;
-            return SpokenLine.Join(Label, HpText(actor), StressText(actor), preview);
+            return SpokenLine.Join(OrdainedWord(actor), Label, HpText(actor), StressText(actor), preview);
         }
 
         /// <summary>The Shift-hotkey glance: every token stack, dot, and combat buff as a
@@ -242,6 +250,18 @@ namespace DD2A11y.Elements {
                     }
                 }
                 yield return S.SheetSpeed((int)actor.GetClampedStatValue(ActorStatType.SPEED));
+            }
+            // The blessed icon's own tooltip: the game's ordainment header, then the
+            // modifier's rolled effects.
+            if (actor.IsOrdained) {
+                string header = GameLoc.TryGet("actor_info_ordained_tooltip_label");
+                if (header != null) {
+                    yield return header;
+                }
+                foreach (var line in SpokenLine.NonEmptyLines(
+                             Assets.Code.Boss.BossDescription.GetBossModifierDescription(actor.BossModifier))) {
+                    yield return line;
+                }
             }
             string stress = StressText(actor);
             if (stress != null) {

@@ -146,6 +146,7 @@ TutorialNew = Nové
 CombatHeader = kolo {0}, {1}
 CombatEnemies = nepřátelé
 CombatTorch = plamen {0}
+CombatOrdained = zasvěcen
 TargetOutOfRange = mimo dosah
 TargetAlliesOnly = jen spojenci
 TargetEnemiesOnly = jen nepřátelé

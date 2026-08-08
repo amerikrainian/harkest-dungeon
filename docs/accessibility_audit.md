@@ -1470,6 +1470,13 @@ buffer opens with its monster type tags and speed (the hover panel's identity fa
 nowhere else - the inspector already spoke speed); a combat item on the bar reads the game's
 own "Quantity: N" beside its remaining limit uses.
 
+Ordainment (live-verified 2026-08-07): an ordained combatant - the game's blessed portrait
+icon, `ActorInstance.IsOrdained` - leads every spoken line with the game's own term
+("ordained, Pillager Hatchetman, Rank: 1, HP 22/22"; the focus line, the overview lines in
+the enemies/party buffers, and the bare glance alike), and its buffer carries the icon's
+tooltip after the identity facts: the game's ordainment header, then the modifier's rolled
+effects line by line, sprite glyphs read as words.
+
 **Known gaps:** dodge/heal/meltdown/retreat/final-round/wave-start/wound/quirk/objective/
 message-toast lines are deployed but not yet observed live (their handlers share gates and
 composition with the verified ones); the goal readout is unverified in a fight that has one;
