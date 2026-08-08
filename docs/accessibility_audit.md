@@ -973,7 +973,10 @@ keyboard.
   the state name ("Bright Light"), then each side's effects under the game's own captions,
   read live from the panel's DataContext, which the game re-stamps on every torch change.
   Live-verified 2026-07-31 at flame 88.
-- **Party panel**: one element per ribbon hero in marching order - name, HP, stress (the
+- **Party panel**: one element per ribbon hero, left to right as the game draws the strip -
+  rank 4 leftmost, the front line rightmost (measured live 2026-08-08: slot 0 sits at the
+  highest x), the same direction the combat battlefield row and the crossroads slots walk
+  the party - name, HP, stress (the
   game's status-bar strings from the live actor), the shared "New" marker while the ribbon
   shows its notification dot (unviewed sheet notifications, live-verified), every ribbon
   tooltip in the buffer (status effects, "Tense", diseases). Enter is the ribbon's own

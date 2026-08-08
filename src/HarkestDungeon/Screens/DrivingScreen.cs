@@ -251,7 +251,7 @@ namespace DD2A11y.Screens {
             _ribbonContainer.OnHeroRibbonRelease(dragged);
         }
 
-        // The resulting order, hero names first to last - what the strip now shows.
+        // The resulting order, hero names left to right - the strip as drawn.
         private string OrderLine() {
             var names = new List<string>();
             foreach (var ribbon in ActiveRibbons()) {
@@ -273,7 +273,10 @@ namespace DD2A11y.Screens {
                     ribbons.Add(ribbon);
                 }
             }
-            ribbons.Sort((a, b) => a.GetSlot().CompareTo(b.GetSlot()));
+            // Descending slots = left to right as the game draws the strip (slot 0, the
+            // front line, sits rightmost - measured live 2026-08-08), the same direction
+            // the combat battlefield row and the crossroads slots walk the party.
+            ribbons.Sort((a, b) => b.GetSlot().CompareTo(a.GetSlot()));
             return ribbons;
         }
 
