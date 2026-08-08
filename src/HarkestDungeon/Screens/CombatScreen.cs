@@ -29,7 +29,10 @@ namespace DD2A11y.Screens {
     /// own pick and flips into target-select - focus snaps to the first valid target, every
     /// combatant reads its validity, and Enter on one sends the game's own actor-pick to
     /// execute. Escape cancels target-select back onto the picked skill's button, else opens
-    /// the pause menu. Turn changes rebuild the tree; turn lines and battle events
+    /// the pause menu. Battle start resolves the screen before the first turn settles, so the
+    /// entry announcement waits for the turn line and lands focus on the header's battle
+    /// status - entry reads the round and acting combatant once, never a strip slot plus a
+    /// separate turn line. Turn changes rebuild the tree; turn lines and battle events
     /// (damage, deaths, enemy actions) are announced and kept in the combat buffer, which
     /// empties when the battle ends. The enemies and party buffers carry one overview line per
     /// combatant (<see cref="TeamOverview"/>), a battlefield review that never moves focus.
@@ -62,6 +65,7 @@ namespace DD2A11y.Screens {
         private BattleInfoUiBhv _battleInfo;
 
         private Container _root;
+        private ReadoutElement _header;
         private Container _enemies;
         private Container _party;
         private Container _skills;
@@ -84,6 +88,10 @@ namespace DD2A11y.Screens {
         private static readonly Core.Input.InputCategory[] CombatCategories =
             { Core.Input.InputCategory.Combat, Core.Input.InputCategory.UI };
         public override Core.Input.InputCategory[] InputCategories => CombatCategories;
+
+        // The first turn hands off for a beat after the screen resolves, during which the
+        // header reads empty; the entry announcement waits for the turn line.
+        public override bool EntrySettled => HeaderText() != null;
 
         public override object ResolveTarget() {
             if (GameModeMgr.CurrentMode != GameModeType.COMBAT || Singleton<GameModeMgr>.Instance.IsChangingState()) {
@@ -125,7 +133,8 @@ namespace DD2A11y.Screens {
         public override Container BuildRoot(object target) {
             _root = new RootContainer(ContainerShape.VerticalList, back: Back);
             var header = new Container(ContainerShape.HorizontalList);
-            header.Add(new ReadoutElement(HeaderText, detail: HeaderDetail));
+            _header = new ReadoutElement(HeaderText, detail: HeaderDetail);
+            header.Add(_header);
             header.Add(new ReadoutElement(TurnOrderText));
             header.Add(new ReadoutElement(GoalText));
             header.Add(new ReadoutElement(ModifierTitle, detail: ModifierDetail));
@@ -151,31 +160,34 @@ namespace DD2A11y.Screens {
 
         public override bool OnUpdate(object target) {
             // Battle events: each line is announced (queued, so act-out narration stacks in
-            // order) and appended to the combat buffer.
-            var events = CombatEvents.Drain();
-            if (events != null) {
-                foreach (var line in events) {
-                    CombatLog.Append(line);
-                    _speak(line, false);
+            // order) and appended to the combat buffer. Drained only once the entry
+            // announcement is out - its interrupt would cut off any event line spoken under
+            // the held entry.
+            if (EntryAnnounced) {
+                var events = CombatEvents.Drain();
+                if (events != null) {
+                    foreach (var line in events) {
+                        CombatLog.Append(line);
+                        _speak(line, false);
+                    }
                 }
             }
 
             uint turnGuid = CurrentTurnGuid();
             if (turnGuid != _builtTurnGuid) {
                 // A new turn: the skill bar belongs to the new actor and combatant state moved.
-                // The turn line is spoken outright - focus can sit anywhere (a strip position
-                // survives the rebuild in place), so a focus re-announce would read the wrong
-                // thing or nothing. The line is logged when it settles (handoffs pass through a
-                // transient nameless actor, which reads as null and speaks nothing).
                 Populate();
-                string line = HeaderText();
-                if (line != null && line != _lastTurnLine) {
-                    _lastTurnLine = line;
-                    CombatLog.Append(line);
-                    _speak(line, false);
-                }
+                RecordTurnLine();
             } else if (CombatantCount() != _builtCombatants) {
                 Populate();
+            }
+
+            if (!EntryAnnounced && HeaderText() != null) {
+                // The first turn settled under the held entry: focus moves to the header's
+                // battle status so the announcement the router now releases reads
+                // "combat, round N, name" - the turn line's one utterance.
+                RecordTurnLine();
+                _navigator.Focus(_header, announce: false);
             }
 
             // Entering target-select is the response to the player's skill pick: focus snaps
@@ -210,6 +222,23 @@ namespace DD2A11y.Screens {
             _lastTargetValid = valid;
             _audio.PlayCue(valid ? DD2A11y.Core.Audio.AudioCue.CombatTargetValid
                                  : DD2A11y.Core.Audio.AudioCue.CombatTargetInvalid, 1f, 0f);
+        }
+
+        // A settled turn line is logged to the combat buffer and spoken outright - focus can
+        // sit anywhere (a strip position survives the rebuild in place), so a focus
+        // re-announce would read the wrong thing or nothing. Handoffs pass through a
+        // transient nameless actor, which reads as null and records nothing. Under a held
+        // entry the line is logged but stays unspoken: the entry announcement carries it.
+        private void RecordTurnLine() {
+            string line = HeaderText();
+            if (line == null || line == _lastTurnLine) {
+                return;
+            }
+            _lastTurnLine = line;
+            CombatLog.Append(line);
+            if (EntryAnnounced) {
+                _speak(line, false);
+            }
         }
 
         // ---- Reads ----

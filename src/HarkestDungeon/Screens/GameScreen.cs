@@ -34,6 +34,11 @@ namespace DD2A11y.Screens {
         /// entry and that first announcement.</summary>
         public virtual bool EntrySettled => true;
 
+        /// <summary>Whether the current entry's name-then-landing announcement has been spoken.
+        /// Owned by the router. A screen that holds its entry checks this to keep its own
+        /// speech out of the announcement's words until they are out.</summary>
+        public bool EntryAnnounced { get; internal set; }
+
         /// <summary>Whether the input gate takes the whole keyboard for this screen. An overlay
         /// that shares the keyboard with live gameplay (the road map: our arrows, the game's
         /// WASD) answers false and suppresses the specific game bindings it claims instead.</summary>

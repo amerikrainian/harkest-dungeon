@@ -95,6 +95,7 @@ namespace DD2A11y.Screens {
             } else {
                 _gate.Release();
             }
+            screen.EntryAnnounced = false;
             _navigator.Attach(screen.BuildRoot(target));
             _entryPending = !screen.EntrySettled;
             _entryHeld = 0;
@@ -104,6 +105,7 @@ namespace DD2A11y.Screens {
         }
 
         private void AnnounceEntry() {
+            _active.EntryAnnounced = true;
             _speak(_active.Name, true);
             _navigator.AnnounceCurrent();
         }

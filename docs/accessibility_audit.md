@@ -1410,6 +1410,12 @@ Top to bottom:
   is the whole feedback - Enter picks it again cleanly; else Escape opens the pause menu.
 - Turn lines ("round 2, Audrey") are spoken outright on every turn change - focus can sit
   anywhere - and logged to the combat buffer once.
+- Battle start holds the entry announcement until the first turn settles (the screen
+  resolves mid-handoff, when the header still reads empty) and lands focus on the header's
+  battle status, so entry reads "combat" then "round 1, Audrey" once - never a strip slot
+  plus a separate turn line (live-verified 2026-08-08). If the hold cap ever expires
+  first (the router logs "entry never settled"), entry falls back to the strip landing with
+  the turn line spoken on settle.
 
 ### 7.1.3 Glance hotkeys - WORKS
 
