@@ -321,9 +321,19 @@ namespace DD2A11y.Screens {
             if (Singleton<GameTypeMgr>.Instance != null && Singleton<GameTypeMgr>.Instance.IsGameTypeStarted) {
                 yield return S.CombatTorch((int)Singleton<GameTypeMgr>.Instance.RunValues.GetValue(RunValueType.TORCH));
             }
-            var scenario = Scenario();
-            if (scenario != null && scenario.TotalNumberOfBattles > 1) {
-                yield return S.CombatBattleCount(scenario.CurrentBattleConfigurationIndex + 1, scenario.TotalNumberOfBattles);
+            // The wave readout mirrors the game's pip strip beside the round counter
+            // (BattleInfoUiBhv.AttemptToSetCombatMap): an enemy summon controller configured
+            // to show wave progress reads as two stages - the second still ahead while its
+            // wave queue holds - else the scenario's chained battles. A single battle shows
+            // no pips and speaks no line.
+            var waves = QuerySummonController.Query(1);
+            if (waves.m_ShowWaveProgress) {
+                yield return S.CombatBattleCount(waves.m_HasWaveQueue ? 1 : 2, 2);
+            } else {
+                var scenario = Scenario();
+                if (scenario != null && scenario.TotalNumberOfBattles > 1) {
+                    yield return S.CombatBattleCount(scenario.CurrentBattleConfigurationIndex + 1, scenario.TotalNumberOfBattles);
+                }
             }
             if (_battleInfo == null) {
                 yield break;

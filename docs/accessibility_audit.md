@@ -1347,8 +1347,14 @@ kills, turn handoffs, free-action stance swap - with the expanded event set and 
 Top to bottom:
 
 - **Header row** (Left/Right within it):
-  - The battle status ("round 1, Audrey"; torch value, wave count in chained fights, round
-    detail, and retreat odds as buffer lines).
+  - The battle status ("round 1, Audrey"; torch value, wave count, round detail, and
+    retreat odds as buffer lines). The wave count mirrors the game's pip strip beside the
+    round counter, both of its sources: chained battles ("battle 1 of 2" from the
+    scenario), and summon-controller wave fights (the `wave` configuration is the only one
+    the game ships with the display on; "battle 1 of 2" while the enemy wave queue still
+    holds, "battle 2 of 2" once the last wave is in - added 2026-08-08, unverified live,
+    needs a fight that uses the `wave` summon config). A fight with no waves speaks no
+    line, like the pipless single battle.
   - The **turn order** ("turn order, Sahar, Audrey, Widow...", current actor first, read live
     from `QueryTurnOrder`; the order is rolled per round, so the current round's remainder is
     all the information the game itself has). A name shared by several living enemies speaks
