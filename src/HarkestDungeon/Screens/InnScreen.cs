@@ -75,6 +75,7 @@ namespace DD2A11y.Screens {
             if (GameModeMgr.CurrentMode != GameModeType.INN || Singleton<GameModeMgr>.Instance.IsChangingState()) {
                 _collection = null;
                 _inventory = null;
+                Game.InnEvents.Clear();
                 return null;
             }
             var top = StackTop.Object();
@@ -127,6 +128,17 @@ namespace DD2A11y.Screens {
         }
 
         public override bool OnUpdate(object target) {
+            // The inn's transient text (rest-item barks and refusals, affinity changes):
+            // announced queued so a burst of reactions stacks in order, held until the entry
+            // announcement is out like the combat log.
+            if (EntryAnnounced) {
+                var events = Game.InnEvents.Drain();
+                if (events != null) {
+                    foreach (var line in events) {
+                        _speak(line, false);
+                    }
+                }
+            }
             if (ButtonsSignature() != _builtButtonsSignature) {
                 PopulateButtons();
             }

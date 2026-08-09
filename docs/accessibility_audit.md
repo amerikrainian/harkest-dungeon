@@ -1656,6 +1656,15 @@ Layout, top to bottom:
   and the free capacity collapsed to one live line ("15 empty slots").
 - Escape opens the pause menu.
 
+Transient text (`InnEvents`, drained by the hub's pump like the combat log, queued so bursts
+stack in order): bark bubbles at the inn - rest-item reactions, use-limit refusals, act-out
+quips - through the same bark-spawner patch as the road (`BarkEvents` routes by mode);
+rest-item refusal pop texts as the hero's name plus the same string the game floats (the
+blocking quirk's name, the condition-blocked sentence, or the blocking relationship's name);
+and floating affinity changes as the combat tick's line ("Dismas and Audrey, affinity +1").
+Plain successful item use has no game text - the bars animate and the slot reads the new
+values on demand.
+
 ### 8.2.1 Sort and Rebuilds - WORKS
 
 Sort speaks "sorted by type" on press (the game has exactly one sort - item type, then name;

@@ -111,6 +111,7 @@ namespace DD2A11y {
             Game.ToastEvents.Attach();
             Game.BarkEvents.RoadSink = _roadSense.Post;
             Game.BarkEvents.Attach();
+            Game.InnEvents.Attach();
             Game.CombatEvents.Settings = Settings;
 
             Router = new ScreenRouter(Navigator, Gate, speak);

@@ -8,14 +8,14 @@ using UnityEngine;
 
 namespace DD2A11y.Game {
     /// <summary>
-    /// Road bark speech, wired as postfixes on the bark spawner - the one choke point every
-    /// speech bubble on the road passes through: banter act-outs and relationship exchanges
-    /// (the hero ribbon spawns those directly, no bark event ever fires), road-event
-    /// reaction and node-approach barks, pet noises, and the barks the ribbon relays from
-    /// the bark event. The patches only compose pending lines into the road sense's queue;
-    /// speech goes out on the pump path. Combat runs the same spawner for its bubbles, so
-    /// everything here gates on the DRIVING mode - battle barks stay with the combat
-    /// module's own bark-event listener.
+    /// Road and inn bark speech, wired as postfixes on the bark spawner - the one choke point
+    /// every speech bubble outside combat passes through: banter act-outs and relationship
+    /// exchanges (the hero ribbon spawns those directly, no bark event ever fires), road-event
+    /// reaction and node-approach barks, pet noises, the barks the ribbon and the inn's rest
+    /// slots relay from the bark event, and rest-item reactions and refusals. The patches only
+    /// compose pending lines into the mode's queue (the road sense's on the road, the inn
+    /// events' at the inn); speech goes out on the pump path. Combat runs the same spawner for
+    /// its bubbles, so those stay with the combat module's own bark-event listener.
     /// </summary>
     public static class BarkEvents {
         private static bool _attached;
@@ -48,6 +48,7 @@ namespace DD2A11y.Game {
         }
 
         private static bool OnRoad => GameModeMgr.CurrentMode == GameModeType.DRIVING;
+        private static bool AtInn => GameModeMgr.CurrentMode == GameModeType.INN;
 
         // A hero's speech bubble. The key arrives already resolved by the game's cascading
         // lookup, so a miss is a shape change worth hearing about.
@@ -57,7 +58,7 @@ namespace DD2A11y.Game {
                 return;
             }
             string speaker = Actors.Name(Actors.Get(actorGuid));
-            RoadSink?.Invoke(speaker == null ? text : S.BarkLine(speaker, text));
+            Sink(speaker == null ? text : S.BarkLine(speaker, text));
         }
 
         // A bubble anchored to the world (the stagecoach pet's cage): no speaking actor, the
@@ -65,12 +66,20 @@ namespace DD2A11y.Game {
         private static void WorldBarkShown(string barkKey) {
             string text = Resolve(barkKey);
             if (text != null) {
-                RoadSink?.Invoke(text);
+                Sink(text);
+            }
+        }
+
+        private static void Sink(string line) {
+            if (OnRoad) {
+                RoadSink?.Invoke(line);
+            } else {
+                InnEvents.Enqueue(line);
             }
         }
 
         private static string Resolve(string barkKey) {
-            if (!OnRoad) {
+            if (!OnRoad && !AtInn) {
                 return null;
             }
             string text = GameLoc.TryGet(barkKey);
