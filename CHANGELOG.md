@@ -8,7 +8,10 @@
 - Duplicate enemies now carry their turn-order number everywhere.
 - The Shift glance no longer accidentally melds different dots into one entry.
 - The inn's floating text now speaks. This includes hero reactions to rest items, refusals and relationship changes.
-- The mod management is now fully accessible. I feel like this goes without saying, but I cannot guarantee the game will work as expected when other mods are enabled.
+- Mod management is now fully accessible. I feel like this goes without saying, but I cannot guarantee the game will work as expected when other mods are enabled.
+- Arrowing after a Home or End jump now walks from where you landed: in settings, End then
+  Home then Down used to teleport back to the bottom row, because the list remembered the
+  jumped-from position.
 
 ## V0.2.7
 

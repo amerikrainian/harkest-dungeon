@@ -370,6 +370,22 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
+        public void ArrowAfterHomeWalksInAtTheNestedListsFirstItem() {
+            // The settings shape: the tab selector, then the rows in a nested list. End leaves
+            // the last row remembered in that list; Home must forget it, or Down re-enters at
+            // the bottom instead of walking to the first row.
+            var rows = VerticalMenu(new TestElement("Row 1"), new TestElement("Row 2"), new TestElement("Row 3"));
+            var root = VerticalMenu(new TestElement("Tabs"), rows);
+            _nav.Attach(root);
+            _nav.Handle(UiActions.End);
+            Assert.Equal("Row 3", _nav.Current!.Label);
+            _nav.Handle(UiActions.Home);
+            Assert.Equal("Tabs", _nav.Current!.Label);
+            _nav.Handle(UiActions.Down);
+            Assert.Equal("Row 1", _nav.Current!.Label);
+        }
+
+        [Fact]
         public void HomeEndSpanTheScreenAcrossNestedLists_WhenNoPanelSplitsIt() {
             // The story screen's shape: one vertical flow holding the choices list then the
             // utility buttons list - End reaches the last button, Home the first hero.

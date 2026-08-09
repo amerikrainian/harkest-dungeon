@@ -224,6 +224,14 @@ namespace DD2A11y.Core.Nav {
 
             var snapshot = new List<UIElement>(Path);
             BuildPathTo(target);
+            // A jump resets the remembered focus of the lists it left: after Home lands above
+            // a nested list, Down walks in at its first item, not at whatever a prior End left
+            // remembered there. Arrow moves keep their memory (rows keep their column).
+            foreach (var element in snapshot) {
+                if (element is Container departed && !Path.Contains(departed)) {
+                    departed.SetFocusedChild(null);
+                }
+            }
             AnnounceDelta(snapshot, interrupt: true);
             return true;
         }
