@@ -15,19 +15,22 @@ namespace DD2A11y.Elements {
 
         public ActionElement(Func<string> label, string role, Action activate,
                              Func<IEnumerable<string>> extraBufferLines = null,
-                             Func<string> value = null, Func<string> status = null) {
+                             Func<string> value = null, Func<string> status = null,
+                             bool reannounceOnActivate = false) {
             _label = label;
             _role = role;
             _activate = activate;
             _extraBufferLines = extraBufferLines;
             _value = value;
             _status = status;
+            ReannounceOnActivate = reannounceOnActivate;
         }
 
         public override string Status => _status?.Invoke();
         public override string Label => _label();
         public override string Role => _role;
         public override string Value => _value?.Invoke();
+        public override bool ReannounceOnActivate { get; }
 
         public override IEnumerable<ElementAction> GetActions() {
             yield return new ElementAction(ActionIds.Activate, _activate);

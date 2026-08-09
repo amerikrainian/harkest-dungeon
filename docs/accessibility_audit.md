@@ -239,11 +239,12 @@ disclaimer flow. The game offers no cancel here, so Escape reports unavailable. 
 appears only while no profile exists - a restart auto-saves the default profile and it
 never returns, which used to strand first-time users past an unanswerable consent.
 
-## 1.8 Mods Manager - PARTIAL (menu flow works; panel is floor-swept)
+## 1.8 Mods Manager (`ModPanelScreen`) - WORKS
 
-Live-verified 2026-08-02. The Mods toggle flips the menu to its mods side (a camera
-timeline; the toggle relabels to "Return to Base Game", profiles switch to the separate mods
-set, Import Save Data appears).
+Live-verified 2026-08-02 (menu flow) and 2026-08-09 (the panel, with a Workshop mod
+installed). The Mods toggle flips the menu to its mods side (a camera timeline; the toggle
+relabels to "Return to Base Game", profiles switch to the separate mods set, Import Save
+Data appears).
 
 - The mods side's own Confessions and Kingdoms entries live OUTSIDE the menu's serialized
   selectable list and were keyboard-unreachable; the sweep now collects them from their
@@ -252,14 +253,22 @@ set, Import Save Data appears).
   submenus (whose back arrow is icon-only and invisible to the sweep) before falling through
   to open settings from the top level - this also fixed the base-game Confessions submenu,
   which previously could not be closed by keyboard.
-- Mod Confessions auto-opens the mods panel (`ModScreenWidgetBhv`, a stack screen the
-  generic floor reads: title "Darkest Dungeon 2 Mods", Browse Mods); Escape closes it,
-  revealing mod Continue / New Confession and the "Mods" button that reopens the panel.
+- Mod Confessions auto-opens the mods panel and swaps the menu behind it to mod Continue /
+  New Confession plus the "Mods" button that reopens the panel; Escape closes the panel
+  (which saves the load order), then the submenu - each step announced.
 
-**Known gaps:** the panel's Enable All / Disable All toggles and the "Showing N Mods" count
-do not read (their labels sit on sibling objects, invisible to the floor's own-text rule);
-per-mod rows (`ModItemBhv`: enable toggle, expand, drag-reorder) unverified - no mods
-installed on the dev box; the Browse Mods target (the mod.io browser) unexplored.
+The panel itself is a dedicated screen (`ModPanelScreen` over the `ModScreenWidgetBhv`
+stack entry - every control's caption sits on a sibling object, so the generic floor could
+only see Browse Mods). Top to bottom: the game's own "Showing N Mods" count; Enable All and
+Disable All as toggles; one row per installed mod - enabled state first, name, version
+("off, Deadku's Bounty Hunter Rework + Confessions, toggle, 1.00"), the short and expanded
+descriptions and any validation error in the buffer, Enter flips the mod's own enable
+toggle, Space grab-and-place reorders the load order through the game's own reorder submit
+(grab and cancel speak; a drop reads the resulting order back) - then Browse Mods. Rows
+rebuild on an instance-id signature (Workshop sync adds rows late; reorders re-sort), with
+elements reused per row so focus survives. Escape = the panel's own close button, which
+persists the list. Unverified live: a reorder drop (needs two installed mods) and the
+Browse Mods target (the Workshop overlay, external to the game's UI).
 
 ## 1.9 Journal - RESOLVED (it is the profile button)
 

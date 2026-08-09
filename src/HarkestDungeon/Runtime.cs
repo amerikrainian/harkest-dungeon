@@ -185,6 +185,8 @@ namespace DD2A11y {
             // The pause menu's Feedback form (legacy widgets the floor misreads).
             _feedback = new FeedbackScreen(speak);
             Router.Register(_feedback);
+            // The Workshop mod panel (the modded menu's Confessions/Kingdoms flows).
+            Router.Register(new ModPanelScreen(speak));
             // The floor for any other pushed screen (node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());
