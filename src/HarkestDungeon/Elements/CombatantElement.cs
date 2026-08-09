@@ -17,7 +17,8 @@ using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// One combatant on the battlefield: name, with rank and HP - an ordained (blessed) one
+    /// One combatant on the battlefield: name (the turn-order form - a name several living
+    /// teammates share carries its rank, "Lost Soul 2"), with rank and HP - an ordained (blessed) one
     /// leads with the word, the game's portrait icon ahead of the name. While a skill is
     /// waiting for its target, validity rides as audio (the screen's beeps): an invalid
     /// target's line leads with the reason it cannot be hit, a valid one ends with the game's
@@ -51,7 +52,7 @@ namespace DD2A11y.Elements {
 
         public override string Label {
             get {
-                string name = Actors.Name(Actor);
+                string name = Actors.SpokenName(Actor);
                 string reason = PickPending(out var performer, out var skill)
                                 && !Targeting.IsValidTarget(performer, _guid)
                     ? Targeting.InvalidReason(performer, skill, Actor) : null;

@@ -4,6 +4,9 @@
 
 - Reviewing the turn order in combat now steps one combatant per line instead of reading the
   whole order back as a single entry.
+- The battlefield now re-sorts the moment combatants change position, fixing trinkets like faceless vissage
+- Duplicate enemies now carry their turn-order number everywhere: scrolling the battlefield
+  and the rank glances say "Lost Soul 2" like the turn order does, not a bare "Lost Soul".
 
 ## V0.2.7
 

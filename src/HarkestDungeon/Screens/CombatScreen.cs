@@ -32,7 +32,9 @@ namespace DD2A11y.Screens {
     /// the pause menu. Battle start resolves the screen before the first turn settles, so the
     /// entry announcement waits for the turn line and lands focus on the header's battle
     /// status - entry reads the round and acting combatant once, never a strip slot plus a
-    /// separate turn line. Turn changes rebuild the tree; turn lines and battle events
+    /// separate turn line. Turn changes and battlefield reorders (a shuffle, a death, a
+    /// summon) rebuild the tree, keeping focus on the same combatant across the swap;
+    /// turn lines and battle events
     /// (damage, deaths, enemy actions) are announced and kept in the combat buffer, which
     /// empties when the battle ends. The enemies and party buffers carry one overview line per
     /// combatant (<see cref="TeamOverview"/>), a battlefield review that never moves focus.
@@ -71,7 +73,7 @@ namespace DD2A11y.Screens {
         private Container _skills;
         private Container _commands;
         private uint _builtTurnGuid;
-        private int _builtCombatants;
+        private List<uint> _builtOrder = new List<uint>();
         private SkillSelectionBhv.InputState _lastInputState;
         private string _lastTurnLine;
         private bool? _lastTargetValid;
@@ -174,10 +176,14 @@ namespace DD2A11y.Screens {
             uint turnGuid = CurrentTurnGuid();
             if (turnGuid != _builtTurnGuid) {
                 // A new turn: the skill bar belongs to the new actor and combatant state moved.
-                Populate();
+                Repopulate();
                 RecordTurnLine();
-            } else if (CombatantCount() != _builtCombatants) {
-                Populate();
+            } else if (RowOrderChanged()) {
+                // Combatants move without a turn or count change (shuffle trinkets at battle
+                // start, mid-turn repositioning), and deaths and summons change the roster;
+                // the row identity check catches both, so the glances and team buffers that
+                // read the row in built order never answer with a stale arrangement.
+                Repopulate();
             }
 
             if (!EntryAnnounced && HeaderText() != null) {
@@ -377,10 +383,25 @@ namespace DD2A11y.Screens {
 
         // ---- Build ----
 
+        // A rebuild replaces every row element; when focus sat on a combatant, re-land
+        // silently on its replacement so the cursor keeps its place (orphan recovery would
+        // drop it at the row's left end and announce the landing).
+        private void Repopulate() {
+            var focused = _navigator.Current as CombatantElement;
+            Populate();
+            if (focused == null) {
+                return;
+            }
+            var landed = FindCombatant(focused.Guid);
+            if (landed != null && landed.CanFocus) {
+                _navigator.Focus(landed, announce: false);
+            }
+        }
+
         private void Populate() {
             _builtTurnGuid = CurrentTurnGuid();
             PopulateBattlefield();
-            _builtCombatants = CombatantCount();
+            _builtOrder = RowOrder();
             PopulateActions();
             _lastInputState = _skillSelection != null
                 ? _skillSelection.CurrentInputState : SkillSelectionBhv.InputState.SKILL_SELECT;
@@ -428,8 +449,32 @@ namespace DD2A11y.Screens {
             }
         }
 
-        private int CombatantCount()
-            => Actors.Team(friendly: false).Count + Actors.Team(friendly: true).Count;
+        // The ordered guids the battlefield row would be built from right now, in the row's
+        // own layout (party rank 4 to 1, then enemies rank 1 to 4).
+        private static List<uint> RowOrder() {
+            var order = new List<uint>();
+            var party = Actors.Team(friendly: true);
+            for (int i = party.Count - 1; i >= 0; i--) {
+                order.Add(party[i].m_ActorGuid);
+            }
+            foreach (var actor in Actors.Team(friendly: false)) {
+                order.Add(actor.m_ActorGuid);
+            }
+            return order;
+        }
+
+        private bool RowOrderChanged() {
+            var order = RowOrder();
+            if (order.Count != _builtOrder.Count) {
+                return true;
+            }
+            for (int i = 0; i < order.Count; i++) {
+                if (order[i] != _builtOrder[i]) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         private void PopulateActions() {
             _skills.Clear();

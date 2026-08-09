@@ -1384,14 +1384,21 @@ Top to bottom:
   whenever a turn rebuild had cleared the strip's memory). The per-team readers (team
   buffers, glances, the target snap) filter the row by each element's side - the
   position IS the side (labels are name + Rank + HP read
-  live; the rank is the game's front rank, so a combatant behind a size-2 monster reads rank
+  live; the name is the turn-order form, so a name shared by several living enemies
+  carries its rank - "Lost Soul 2" - on focus, in the team buffers, and in the glances
+  alike; the rank is the game's front rank, so a combatant behind a size-2 monster reads rank
   3, not its team-list slot; a monster's name is its data id's loc string, the same source
   as the game's turn-order tooltips). Corpses and prop monsters (battle-complete classes) are in the strips like any
   combatant - they hold a rank, take hits, and are targets for corpse-clearing - matching the
   game's own hoverable battlefield entities (unverified live). Kingdoms militia allies
   (`kingdoms_ally` classes fighting AI-driven in the party's line) are in the party strip the
   same way - the game's character sheet excludes them from its pager only because they have
-  no hero sheet (unverified live, needs a siege).
+  no hero sheet (unverified live, needs a siege). The row rebuilds whenever its ordered
+  combatant guids change, not just on turns and count changes - a battle-start shuffle
+  (the Faceless Visage trinket moved the party after the entry build, leaving the QWER
+  glances answering the pre-shuffle arrangement), a mid-turn reposition, a death or summon
+  all re-sort it the frame they land - and every rebuild re-lands focus silently on the
+  same combatant instead of dropping the cursor at the row's left end.
 - The skills row (horizontal), with the game's own "Uses: N" limit text and the game's
   `invalid_skill_reason_<type>` wording when a skill cannot be used - wrong rank, cooldown,
   out of uses - instead of a bare "unavailable". When the game grants an always-equipped copy
