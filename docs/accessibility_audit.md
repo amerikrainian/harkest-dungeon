@@ -1359,7 +1359,8 @@ Top to bottom:
     line, like the pipless single battle.
   - The **turn order** ("turn order, Sahar, Audrey, Widow...", current actor first, read live
     from `QueryTurnOrder`; the order is rolled per round, so the current round's remainder is
-    all the information the game itself has). A name shared by several living enemies speaks
+    all the information the game itself has). Its buffer holds just one combatant name per
+    line so review steps the order name by name. A name shared by several living enemies speaks
     with its rank - "Lost Soul 1, Lost Soul 3" - matching the game's only pointer to the
     specific one (the model highlight under a hovered portrait); the numbers are read live, so
     they follow deaths and position changes, and drop when one survivor remains.

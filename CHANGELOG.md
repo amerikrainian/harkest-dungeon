@@ -1,5 +1,10 @@
 # Changelog
 
+## V0.2.8
+
+- Reviewing the turn order in combat now steps one combatant per line instead of reading the
+  whole order back as a single entry.
+
 ## V0.2.7
 
 - Inn screen path changes now read.

@@ -66,6 +66,7 @@ namespace DD2A11y.Screens {
 
         private Container _root;
         private ReadoutElement _header;
+        private TurnOrderElement _turnOrder;
         private Container _battlefield;
         private Container _skills;
         private Container _commands;
@@ -134,7 +135,8 @@ namespace DD2A11y.Screens {
             var header = new Container(ContainerShape.HorizontalList);
             _header = new ReadoutElement(HeaderText, detail: HeaderDetail);
             header.Add(_header);
-            header.Add(new ReadoutElement(TurnOrderText));
+            _turnOrder = new TurnOrderElement(TurnOrderNames);
+            header.Add(_turnOrder);
             header.Add(new ReadoutElement(GoalText));
             header.Add(new ReadoutElement(ModifierTitle, detail: ModifierDetail));
             header.Add(new ReadoutElement(EscalationTitle, detail: EscalationDetail));
@@ -253,19 +255,19 @@ namespace DD2A11y.Screens {
         }
 
         // The live remaining acting order, current actor first (the strip of portraits a
-        // sighted player plans around).
-        private string TurnOrderText() {
-            if (_combat == null || _combat.CurrentBattleState == BattleState.INACTIVE) {
-                return null;
-            }
+        // sighted player plans around); empty outside an active battle.
+        private List<string> TurnOrderNames() {
             var names = new List<string>();
+            if (_combat == null || _combat.CurrentBattleState == BattleState.INACTIVE) {
+                return names;
+            }
             foreach (uint guid in QueryTurnOrder.Trigger().m_RemainingTurnOrder) {
                 string name = Actors.SpokenName(Actors.Get(guid));
                 if (name != null) {
                     names.Add(name);
                 }
             }
-            return names.Count == 0 ? null : S.CombatTurnOrder(SpokenLine.Join(names.ToArray()));
+            return names;
         }
 
         // The battle's objective, in fights that carry one (kingdoms defenses); absent
@@ -498,7 +500,7 @@ namespace DD2A11y.Screens {
 
         /// <summary>Shift+T: the header's turn-order line from anywhere in the battle.</summary>
         public void GlanceTurnOrder() {
-            string line = TurnOrderText();
+            string line = _turnOrder.Label;
             if (line != null) {
                 _speak(line, true);
             }
