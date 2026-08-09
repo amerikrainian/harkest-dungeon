@@ -267,7 +267,10 @@ toggle, Space grab-and-place reorders the load order through the game's own reor
 (grab and cancel speak; a drop reads the resulting order back) - then Browse Mods. Rows
 rebuild on an instance-id signature (Workshop sync adds rows late; reorders re-sort), with
 elements reused per row so focus survives. Escape = the panel's own close button, which
-persists the list. Unverified live: a reorder drop (needs two installed mods) and the
+persists the list. The panel filters by the run type being entered (Confessions shows
+expedition-capable mods, Kingdoms shows kingdoms-capable ones; the lists save separately),
+so a kingdoms-only mod is absent from the Confessions panel by the game's own design.
+Player-verified 2026-08-09: the reorder drop (two mods, Kingdoms panel). Unverified: the
 Browse Mods target (the Workshop overlay, external to the game's UI).
 
 ## 1.9 Journal - RESOLVED (it is the profile button)
