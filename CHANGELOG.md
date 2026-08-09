@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.2.7
+
+- Inn screen path changes now read.
+
 ## V0.2.6
 
 - Skills should properly read their upgrades again. Splitting them into separate buffers seemed to have temporarily bricked them.
