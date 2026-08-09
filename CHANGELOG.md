@@ -4,7 +4,7 @@
 
 - Reviewing the turn order in combat now steps one combatant per line instead of reading the
   whole order back as a single entry.
-- Fixed the battlefield going out of sync as a result of  trinkets like faceless visage
+- Fixed the battlefield going out of sync as a result of  trinkets like faceless visage.
 - Duplicate enemies now carry their turn-order number everywhere.
 - The Shift glance no longer accidentally melds different dots into one entry.
 - The inn's floating text now speaks. This includes hero reactions to rest items, refusals and relationship changes.
