@@ -29,7 +29,8 @@ using S = DD2A11y.Core.Strings.Strings;
 namespace DD2A11y.Game {
     /// <summary>
     /// Battle-event lines: game events compose a spoken line the moment they fire (names read
-    /// while the state is current) into a pending queue; the combat screen's pump drains it,
+    /// while the state is current, in the turn-order form - a duplicated enemy carries its
+    /// rank, "Lost Soul 2 took 3 damage") into a pending queue; the combat screen's pump drains it,
     /// announcing each line and appending it to the combat log. Covered: damage (with crits),
     /// heals, stress, meltdowns, misses and dodges, death's door falls and survivals, deaths,
     /// retreat outcomes, wave starts, the final round, wounds, token/dot/buff/quirk gains and
@@ -103,7 +104,7 @@ namespace DD2A11y.Game {
             if (!InCombat) {
                 return;
             }
-            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             int damage = (int)evt.m_HealthDamage;
             if (name == null || damage <= 0) {
                 return;
@@ -124,7 +125,7 @@ namespace DD2A11y.Game {
             if (!InCombat || evt.m_SourceType == SourceType.DEBUG) {
                 return;
             }
-            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             int amount = (int)System.Math.Ceiling(evt.m_HealthHeal);
             if (name == null || amount <= 0) {
                 return;
@@ -148,7 +149,7 @@ namespace DD2A11y.Game {
             if (!Settings.CorpseDeaths.Value && dying != null && AudioConditionUtils.IsCorpse(dying)) {
                 return;
             }
-            string name = Actors.Name(dying) ?? GameLoc.TryGet(evt.m_DyingActorDataId);
+            string name = Actors.SpokenName(dying) ?? GameLoc.TryGet(evt.m_DyingActorDataId);
             if (name != null) {
                 _pending.Add(S.CombatDied(name));
             }
@@ -171,7 +172,7 @@ namespace DD2A11y.Game {
             if (!InCombat || !evt.m_IsPopTextValid || !IsSpeakableToken(evt.m_TokenId)) {
                 return;
             }
-            string owner = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string owner = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             string token = TokenDescription.GetNameString(evt.m_TokenId);
             if (owner == null || string.IsNullOrEmpty(token)) {
                 return;
@@ -197,7 +198,7 @@ namespace DD2A11y.Game {
             if (!definition.m_ShowConsumePopText) {
                 return;
             }
-            string owner = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string owner = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             string token = TokenDescription.GetNameString(evt.m_TokenId);
             if (owner != null && !string.IsNullOrEmpty(token)) {
                 _pending.Add(S.CombatSpent(owner, token));
@@ -209,7 +210,7 @@ namespace DD2A11y.Game {
             if (!InCombat || !evt.m_IsPopTextValid || !IsSpeakableToken(evt.m_NegatedTokenId)) {
                 return;
             }
-            string owner = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string owner = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             string token = TokenDescription.GetNameString(evt.m_NegatedTokenId);
             if (owner != null && !string.IsNullOrEmpty(token)) {
                 _pending.Add(S.CombatLost(owner, token));
@@ -221,7 +222,7 @@ namespace DD2A11y.Game {
             if (!InCombat) {
                 return;
             }
-            string owner = Actors.Name(evt.m_Actor);
+            string owner = Actors.SpokenName(evt.m_Actor);
             string dot = evt.m_DotDefinition == null ? null : DotDescription.GetName(evt.m_DotDefinition.m_Type);
             if (owner != null && !string.IsNullOrEmpty(dot)) {
                 _pending.Add(S.CombatGained(owner, dot));
@@ -238,7 +239,7 @@ namespace DD2A11y.Game {
             if (!isBuff && !evt.Buff.IsEligibleToShowAsDebuffPopText) {
                 return;
             }
-            string owner = Actors.Name(Actors.Get(evt.TargetActorGuid));
+            string owner = Actors.SpokenName(Actors.Get(evt.TargetActorGuid));
             if (owner == null) {
                 return;
             }
@@ -269,7 +270,7 @@ namespace DD2A11y.Game {
                 return;
             }
             var actor = Actors.Get(evt.m_ActorGuid);
-            string owner = Actors.Name(actor);
+            string owner = Actors.SpokenName(actor);
             var definition = SingletonMonoBehaviour<Library<string, QuirkDefinition>>.Instance
                 .GetLibraryElement(evt.m_QuirkId);
             if (owner == null || definition == null) {
@@ -284,7 +285,7 @@ namespace DD2A11y.Game {
             if (!InCombat || !evt.m_IsPopTextValid) {
                 return;
             }
-            string owner = Actors.Name(Actors.Get(evt.m_TargetActorGuid));
+            string owner = Actors.SpokenName(Actors.Get(evt.m_TargetActorGuid));
             if (owner == null) {
                 return;
             }
@@ -298,7 +299,7 @@ namespace DD2A11y.Game {
             if (!InCombat) {
                 return;
             }
-            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             int amount = (int)evt.m_StressDamageAmount;
             if (name != null && amount > 0) {
                 _pending.Add(S.CombatStressed(name, amount));
@@ -311,7 +312,7 @@ namespace DD2A11y.Game {
             if (!InCombat || evt.m_SourceType == SourceType.OVERSTRESS) {
                 return;
             }
-            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             int amount = (int)evt.m_StressHealAmount;
             if (name != null && amount > 0) {
                 _pending.Add(S.CombatStressHealed(name, amount));
@@ -324,7 +325,7 @@ namespace DD2A11y.Game {
             if (!InCombat || evt.m_OverstressDefinition == null) {
                 return;
             }
-            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             if (name == null) {
                 return;
             }
@@ -341,7 +342,7 @@ namespace DD2A11y.Game {
             if (!InCombat) {
                 return;
             }
-            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             if (name != null) {
                 _pending.Add(S.CombatDeathBlowResisted(name));
             }
@@ -351,7 +352,7 @@ namespace DD2A11y.Game {
             if (!InCombat || !evt.m_SourceType.m_IsPopTextEligible) {
                 return;
             }
-            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             if (name != null) {
                 _pending.Add(evt.m_WoundPercentChange > 0f ? S.CombatWounded(name) : S.CombatWoundHealed(name));
             }
@@ -368,12 +369,12 @@ namespace DD2A11y.Game {
                 if (result == null || result.IsHit) {
                     continue;
                 }
-                string target = Actors.Name(Actors.Get(result.m_TargetActorGuid));
+                string target = Actors.SpokenName(Actors.Get(result.m_TargetActorGuid));
                 if (target == null) {
                     continue;
                 }
                 if (result.IsMiss) {
-                    string performer = Actors.Name(Actors.Get(evt.PerformerGuid));
+                    string performer = Actors.SpokenName(Actors.Get(evt.PerformerGuid));
                     if (performer != null) {
                         _pending.Add(S.CombatMissed(performer, target));
                     }
@@ -425,8 +426,8 @@ namespace DD2A11y.Game {
             if (guids == null || guids.Count < 2) {
                 return;
             }
-            string first = Actors.Name(Actors.Get(guids[0]));
-            string second = Actors.Name(Actors.Get(guids[1]));
+            string first = Actors.SpokenName(Actors.Get(guids[0]));
+            string second = Actors.SpokenName(Actors.Get(guids[1]));
             if (first == null || second == null || instance.m_LeaningChange == 0) {
                 return;
             }
@@ -441,7 +442,7 @@ namespace DD2A11y.Game {
             if (!InCombat) {
                 return;
             }
-            string speaker = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string speaker = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             string text = GameLoc.TryGet(evt.m_BarkKey);
             if (text == null) {
                 Plugin.Log.LogWarning($"CombatEvents: bark key \"{evt.m_BarkKey}\" has no localized text");
@@ -454,7 +455,7 @@ namespace DD2A11y.Game {
             if (!InCombat) {
                 return;
             }
-            string name = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             if (name != null) {
                 _pending.Add(S.ToastObjective(name));
             }
@@ -481,9 +482,9 @@ namespace DD2A11y.Game {
             string skillId = performer.SelectedSkillId;
             var skill = Actors.Skill(skillId);
             string skillName = skill == null ? null : SkillDescription.GetNameText(skill);
-            string target = Actors.Name(Actors.Get(evt.m_ActorGuid));
+            string target = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             if (skillName != null && target != null) {
-                _pending.Add(S.CombatUsedSkill(Actors.Name(performer), skillName, target));
+                _pending.Add(S.CombatUsedSkill(Actors.SpokenName(performer), skillName, target));
             }
         }
     }

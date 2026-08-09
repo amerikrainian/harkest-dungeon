@@ -130,7 +130,7 @@ namespace DD2A11y.Game {
                     // over the guardian's bar. Spoken before the removals, which describe
                     // whoever actually takes the hit.
                     if (preview.m_IsToHitValid && preview.m_TargetActorGuid != targetGuid) {
-                        parts.Add(S.CombatIntercepted(Actors.Name(Actors.Get(preview.m_TargetActorGuid))));
+                        parts.Add(S.CombatIntercepted(Actors.SpokenName(Actors.Get(preview.m_TargetActorGuid))));
                     }
                     if (!terse) {
                         AddResistParts(parts, preview);

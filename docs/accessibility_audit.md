@@ -1489,7 +1489,9 @@ screens' keys; all 24 are rebindable from the mod keys tab.
 
 Announced as they happen (queued, so narration stacks in order) and kept in the **combat
 buffer** (Ctrl+Left/Right; follows the latest line; empties when the battle ends). Display
-gates mirror the game's own pop-text handlers. Covered:
+gates mirror the game's own pop-text handlers. Names use the turn-order form, so a
+duplicated enemy carries its rank ("Lost Soul 2 took 4 damage") in every event line, as does
+the interceptor named by a guarded pick's preview. Covered:
 
 - Damage taken ("Lost Soul took 4 damage"; number dropped at 1; ", crit" appended on crits),
   heals (with crit variant), misses and dodges from the finalized skill results ("Woodsman
