@@ -164,6 +164,7 @@ namespace DD2A11y {
             // The inn's station sub-screens, each outranking the floor's label-only sweep.
             // The store screen also serves road merchants (the Hoarder).
             Router.Register(new StoreScreen(Navigator));
+            Router.Register(new MasteryPathScreen());
             Router.Register(new MasteryScreen());
             Router.Register(new WainwrightScreen());
             Router.Register(new RelationshipMatrixScreen());

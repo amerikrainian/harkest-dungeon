@@ -13,13 +13,12 @@ using UnityEngine.UI;
 namespace DD2A11y.Screens {
     /// <summary>
     /// The inn's Mastery Trainer (an <c>InnUpgradeSkillsBhv</c> stack entry), named by the
-    /// inn header's station title. The skills view: the hero header (name and mastery points
-    /// left; Left/Right page the party through the trainer's own arrows), one element per
-    /// skill (name, "mastered"/"selected"/"unavailable" state, the full skill card in the
-    /// buffer; Enter queues the skill through the trainer's own selection), then the
-    /// trainer's remaining buttons (Change Path, Apply, Reset) swept with their own labels.
-    /// While the path panel is open it reads instead: the path comparison text, each path
-    /// option, and the purchase button. Escape folds the path panel first, then closes.
+    /// inn header's station title. The hero header (name and mastery points left; Left/Right
+    /// page the party through the trainer's own arrows), one element per skill (name,
+    /// "mastered"/"selected"/"unavailable" state, the full skill card in the buffer; Enter
+    /// queues the skill through the trainer's own selection), then the trainer's remaining
+    /// buttons (Change Path, Apply, Reset) swept with their own labels. The Change Path
+    /// panel reads as its own screen (<see cref="MasteryPathScreen"/>).
     /// </summary>
     public sealed class MasteryScreen : GameScreen {
         private static readonly HarmonyLib.AccessTools.FieldRef<InnUpgradeSkillsBhv, GameObject> ResetButtonField =
@@ -60,18 +59,14 @@ namespace DD2A11y.Screens {
         }
 
         private void Populate(InnUpgradeSkillsBhv panel) {
-            var paths = FindChild(panel.transform, "PathSelectionPanel");
-            if (PathViewOpen(paths)) {
-                PopulatePaths(paths);
-            } else {
-                PopulateSkills(panel, paths);
-            }
+            PopulateSkills(panel, FindChild(panel.transform, "PathSelectionPanel"));
             _builtSignature = Signature(panel);
         }
 
         // The path panel stays active with its visibility ridden by a CanvasGroup; its
         // interactivity is the reliable open/closed signal.
-        private static bool PathViewOpen(Transform paths) {
+        internal static bool PathViewOpen(InnUpgradeSkillsBhv panel) {
+            var paths = FindChild(panel.transform, "PathSelectionPanel");
             var group = paths == null ? null : paths.GetComponent<CanvasGroup>();
             return group != null && group.blocksRaycasts;
         }
@@ -136,31 +131,8 @@ namespace DD2A11y.Screens {
             }
         }
 
-        private void PopulatePaths(Transform paths) {
-            // The comparison panel carries unbound template labels alongside the live text,
-            // so only its named text objects are read.
-            var comparison = FindChild(paths, "PathComparisonPanel");
-            if (comparison != null) {
-                var title = FindChild(comparison, "Title");
-                var flavour = FindChild(comparison, "FlavourText");
-                var effects = FindChild(comparison, "EffectText");
-                _root.Add(new ReadoutElement(() => Core.Text.SpokenLine.Join(
-                    title == null ? null : UiText.AllText(title.gameObject),
-                    flavour == null ? null : UiText.AllText(flavour.gameObject),
-                    effects == null ? null : UiText.AllText(effects.gameObject))));
-            }
-            foreach (var selectable in paths.GetComponentsInChildren<Selectable>(includeInactive: false)) {
-                if (selectable is Scrollbar || !UiText.HasAnyTextSource(selectable.gameObject)) {
-                    continue;
-                }
-                _root.Add(new SelectableElement(selectable));
-            }
-        }
-
         private static int Signature(InnUpgradeSkillsBhv panel) {
             int signature = 17;
-            var paths = FindChild(panel.transform, "PathSelectionPanel");
-            signature = signature * 31 + (PathViewOpen(paths) ? 1 : 0);
             foreach (var button in panel.GetComponentsInChildren<UpgradeSkillButton>(includeInactive: false)) {
                 signature = signature * 31 + button.GetInstanceID();
             }

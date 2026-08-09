@@ -298,6 +298,11 @@ namespace DD2A11y.Core.Strings {
             // The readout carrying the previewed path's full card (flavour, rank and target
             // lines, effects) in its buffer. Noun phrase naming that section.
             D("PathDetails", "path details"),
+            // The comparison panel's launch and target pips as counts: how many of the hero's
+            // equipped skills can act from / hit each rank, 1 to 4, under the previewed path
+            // (the game draws each share as a pip's fill). {0} is the four counts joined.
+            D("PathLaunchSkills", "Skills per rank: {0}"),
+            D("PathTargetSkills", "Skills per enemy rank: {0}"),
             // The crossroads party-loadout overlay, when the game's own panel title is
             // unavailable. Noun phrase.
             D("ScreenPartyLoadouts", "party loadouts"),
@@ -722,6 +727,8 @@ namespace DD2A11y.Core.Strings {
         public static string CrossroadsRoster => T("CrossroadsRoster");
         public static string ScreenPathSelect => T("ScreenPathSelect");
         public static string PathDetails => T("PathDetails");
+        public static string PathLaunchSkills(string counts) => F("PathLaunchSkills", counts);
+        public static string PathTargetSkills(string counts) => F("PathTargetSkills", counts);
         public static string ScreenPartyLoadouts => T("ScreenPartyLoadouts");
         public static string LoadoutRename => T("LoadoutRename");
         public static string LoadoutDelete => T("LoadoutDelete");

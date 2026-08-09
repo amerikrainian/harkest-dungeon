@@ -889,8 +889,10 @@ by the panel's own title ("Hero Path").
   drives the comparison panel and arms the confirm button - the path itself changes on
   confirm, so browsing is side-effect-free.
 - A "path details" readout whose buffer carries the previewed path's whole card, line per
-  line (name, flavour, the Rank/Target headers, the effect and objective lines - verified:
-  "Wanderer", "To seek is to find.", "Reach the 2nd Inn").
+  line. Since 2026-08-08 the lines come from the shared `PathComparison` reader (the panel's
+  own data context plus the coverage pips as "Skills per rank" / "Skills per enemy rank"
+  count lines, replacing the bare header words) - the same reader live-verified on the
+  mastery trainer's panel; this surface not re-walked since the switch.
 - The confirm button commits (`SetSelectedActorPath`), reading "unavailable" while the
   previewed path is already the active one. Escape closes through the game's own toggle.
 
@@ -1791,14 +1793,30 @@ Live-verified 2026-07-24 at the first Denial inn. Over `InnUpgradeSkillsBhv`.
   the row wears the full mastered look, with only the Reset button distinguishing pending
   from committed (2026-08-08, user-caught; "selected" remains for a pending kingdom skill
   unlock, which the game does not dress as mastered).
-- The path panel stays permanently active with a CanvasGroup riding visibility, so the view
-  split keys on `blocksRaycasts`; the path view reads the comparison text (named children
-  only - the panel carries unbound template labels) plus each path option and the purchase
-  button.
+- The Change Path panel is its own screen (`MasteryPathScreen`, live-verified 2026-08-08),
+  so opening and closing announce themselves: named by the game's own panel title ("Change
+  Hero Paths"), it reads one element per path seal (the game's seal label with its bonus
+  candle glyphs; "selected" on the highlighted seal), the "path details" readout, then the
+  purchase button ("unavailable" while the selected path is the active one, armed once a
+  different path is previewed). The panel stays permanently active with a CanvasGroup riding
+  visibility, so the screen matches on `blocksRaycasts`.
+- A path seal's Enter previews through the trainer's own `SelectPath` (drives the comparison
+  panel and arms the purchase button; nothing commits) and re-announces "selected". Its
+  buffer carries that path's own card without needing selection (`GetDescriptionString`, the
+  hero-seal tooltip text: name, class path, quote, effects, affected skills), and the hero
+  buffer answers with the vitals. The "path details" buffer reads the live comparison panel
+  through `PathComparison`: title, flavour, and effects from the panel's own data context
+  (bound TMP applies a frame late), then the coverage pips as authored count lines -
+  "Skills per rank: 2, 2, 1, 0" / "Skills per enemy rank: 1, 2, 1, 1", ranks 1 to 4
+  ascending (the panel draws launch pips rank 4 down to 1). A pip's fill is the rank's
+  skill count over the equip limit, so the count decodes exactly.
 
 Live-verified: walk, hero paging wiring, queue ("selected", points drop), Reset (queue
-cleared, points restored). Unexercised: Apply/commit (the batch confirm), an actual path
-purchase, hero paging with a full party.
+cleared, points restored), the path panel (open/close announcements, seal cards, preview
+select, pip lines, purchase-button arming). Unexercised: Apply/commit (the batch confirm),
+an actual path purchase, hero paging with a full party. Known quirk: the trainer's entry
+announcement can read the inn's name instead of "Mastery Trainer" - the station header
+binds a frame late (`InnStations.Title`); the fold-back from the path panel reads it right.
 
 ## 8.5 The Wainwright (`WainwrightScreen`) - WORKS
 

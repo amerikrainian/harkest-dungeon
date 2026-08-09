@@ -118,14 +118,7 @@ namespace DD2A11y.Screens {
             }
         }
 
-        private static IEnumerable<string> ComparisonLines(HeroSelectBhv heroSelect) {
-            var comparison = ComparisonField(heroSelect);
-            if (comparison == null) {
-                yield break;
-            }
-            foreach (var line in UiText.AllTextLines(comparison.gameObject)) {
-                yield return line;
-            }
-        }
+        private static IEnumerable<string> ComparisonLines(HeroSelectBhv heroSelect)
+            => PathComparison.Lines(ComparisonField(heroSelect));
     }
 }
