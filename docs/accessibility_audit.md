@@ -1456,8 +1456,12 @@ screens' keys; all 24 are rebindable from the mod keys tab.
 - **Shift**: the token/dot/buff summary, positives then negatives, each token as its bare
   name with the stack count when above one (mod-authored "{0} x{1}" - the game's own format
   lacks the space a reader needs) and its duration when above one ("Death Armor x2",
-  "Block (3 Turns)"); dots as the game's condensed dot text; combat buffs (the
-  `IsEligibleToShowAsCombatUi` set) split by their buff/debuff tag. No effects = silence.
+  "Block (3 Turns)"); dots as the game's condensed dot text composed per dot type (the
+  game's composer serves one type per portrait icon; fed mixed types it merged them into
+  one line labeled by the first, which is how a death-blow regen vanished under a bleed -
+  user-reported 2026-08-09), healing dots (regen) sorted with the positives; combat buffs
+  (the `IsEligibleToShowAsCombatUi` set) split by their buff/debuff tag. No effects =
+  silence.
 - **Ctrl**: the resistance grid as one line, using the game's grid names with the shared
   RESIST word stripped (`CommonAffix`, language-agnostic character-level affix strip):
   "STUN 20%, BLIGHT 40%, ... DEATHBLOW 90%".

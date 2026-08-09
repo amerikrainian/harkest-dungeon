@@ -4,8 +4,9 @@
 
 - Reviewing the turn order in combat now steps one combatant per line instead of reading the
   whole order back as a single entry.
-- The battlefield now re-sorts the moment combatants change position, fixing trinkets like faceless vissage
+- Fixed the battlefield going out of sync as a result of  trinkets like faceless visage
 - Duplicate enemies now carry their turn-order number everywhere.
+- The Shift glance no longer accidentally melts different dots into one entry.
 
 ## V0.2.7
 

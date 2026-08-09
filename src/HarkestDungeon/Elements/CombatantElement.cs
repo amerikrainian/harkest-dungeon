@@ -3,6 +3,7 @@ using Assets.Code.Actor;
 using Assets.Code.Actor.Events;
 using Assets.Code.Buff;
 using Assets.Code.Combat;
+using Assets.Code.Dot;
 using Assets.Code.Duration;
 using Assets.Code.Token;
 using Assets.Code.UI;
@@ -169,8 +170,15 @@ namespace DD2A11y.Elements {
             }
             var dots = actor.DotContainer?.GetInstances();
             if (dots != null && dots.Count > 0) {
-                foreach (var line in SpokenLine.NonEmptyLines(DotTooltipBhv.MakeTooltipText(dots, condense: true))) {
-                    negatives.Add(line);
+                // The game's condensed dot text serves one type at a time (each portrait
+                // icon's tooltip holds only its own type): mixed types fed together merge
+                // into one line labeled by the first. Group by type and compose per group,
+                // healing dots (regen) riding with the positives.
+                foreach (var group in DotsByType(dots)) {
+                    var side = group[0].Definition.IsHoT ? positives : negatives;
+                    foreach (var line in SpokenLine.NonEmptyLines(DotTooltipBhv.MakeTooltipText(group, condense: true))) {
+                        side.Add(line);
+                    }
                 }
             }
             var buffs = actor.BuffContainer?.GetInstances();
@@ -194,6 +202,22 @@ namespace DD2A11y.Elements {
             }
             positives.AddRange(negatives);
             return SpokenLine.Join(positives.ToArray());
+        }
+
+        // The actor's dots split into one list per dot type, container order both across
+        // and within groups.
+        private static List<List<DotInstance>> DotsByType(IReadOnlyList<DotInstance> dots) {
+            var groups = new List<List<DotInstance>>();
+            var byType = new Dictionary<string, List<DotInstance>>();
+            foreach (var dot in dots) {
+                if (!byType.TryGetValue(dot.Definition.m_Type, out var group)) {
+                    group = new List<DotInstance>();
+                    byType.Add(dot.Definition.m_Type, group);
+                    groups.Add(group);
+                }
+                group.Add(dot);
+            }
+            return groups;
         }
 
         /// <summary>The Ctrl-hotkey glance: the resistance grid as one line, name and value
