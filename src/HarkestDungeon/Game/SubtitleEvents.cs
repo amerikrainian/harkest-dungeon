@@ -15,7 +15,6 @@ namespace DD2A11y.Game {
     /// subtitles on.
     /// </summary>
     public static class SubtitleEvents {
-        private const int Cap = 200;
         private static readonly List<string> _pending = new List<string>();
         private static readonly List<string> _log = new List<string>();
         private static readonly List<string> _none = new List<string>();
@@ -49,9 +48,6 @@ namespace DD2A11y.Game {
             }
             _pending.Add(line);
             _log.Add(line);
-            if (_log.Count > Cap) {
-                _log.RemoveAt(0);
-            }
         }
 
         public static IReadOnlyList<string> Drain() {

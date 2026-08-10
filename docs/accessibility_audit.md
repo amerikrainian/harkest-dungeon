@@ -150,9 +150,9 @@ is fully keyboard-usable. Device-verified alongside 1.3.
   manager's timed video lines and the general manager's in-run narration lines - and the
   spoken gate is the game's own `ShouldSubtitleBeVisible` (the Subtitles toggle in the game
   options tab plus its dev-pref overrides), so what fires on screen is what is spoken.
-- The lines collect into the subtitles buffer (capped rolling history, cursor following the
-  latest), reviewable wherever the mod next owns the keyboard; while the Subtitles setting
-  is off the buffer reads empty and drops out of the cycle.
+- The lines collect into the subtitles buffer (the session's full transcript, cursor
+  following the latest), reviewable wherever the mod next owns the keyboard; while the
+  Subtitles setting is off the buffer reads empty and drops out of the cycle.
 
 ## 1.5 Kingdoms Entry, Save Select, and Creation Wizard (`KingdomMenuScreen`) - WORKS
 
