@@ -548,6 +548,8 @@ namespace DD2A11y.Core.Strings {
             // The valid-targets glance, live while a skill is focused.
             D("InputCombatTargets", "Focused skill's valid targets"),
             D("InputCombatTurnOrder", "Turn order"),
+            // The affinity glance: the changes the focused skill or pending pick telegraphs.
+            D("InputCombatAffinity", "Telegraphed affinity changes"),
             // The road-story glance, live on the story screen's choices.
             D("InputStoryHero", "Focused choice's hero status"),
         };
@@ -860,6 +862,7 @@ namespace DD2A11y.Core.Strings {
         public static string InputCombatActor => T("InputCombatActor");
         public static string InputCombatTargets => T("InputCombatTargets");
         public static string InputCombatTurnOrder => T("InputCombatTurnOrder");
+        public static string InputCombatAffinity => T("InputCombatAffinity");
         public static string InputStoryHero => T("InputStoryHero");
     }
 }

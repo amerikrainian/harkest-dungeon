@@ -1484,6 +1484,15 @@ screens' keys; all 24 are rebindable from the mod keys tab.
   resist chips and removal lists stay per-target after the pick. A skill with no valid use
   speaks its grey reason; anywhere off the skill bar the key is silent.
 - **Shift+T**: the header's turn-order line from anywhere in the battle.
+- **A**: the telegraphed affinity changes (the icon the game shows on the responding hero) -
+  on a focused skill every valid target's, in the announced-change form ("Dismas and Audrey,
+  affinity +1"; a per-target change carries the target's name first); on a focused combatant
+  while a pick is pending, that pick's change against them. Nothing telegraphed = silence.
+  The chord is shared with the inspector's combatant cycling - the cycle acts only inside
+  the inspector view, the glance only on a skill/target focus. The same change also closes
+  the per-target preview itself (the target-select landing, the slot glances, the team
+  buffers' overview lines) - the hover moment where the sighted icon appears - so A is the
+  re-check and the per-skill view.
 
 ### 7.1.4 Buffers - WORKS
 
@@ -1492,7 +1501,10 @@ screens' keys; all 24 are rebindable from the mod keys tab.
   "please file a bug" placeholder), per dot, and per combat buff (filtered to
   `IsEligibleToShowAsCombatUi`, e.g. Preparation's "On Riposte: heal Self 10%"), all from the
   game's own describers.
-- Skill buffers: the full skill card (shared `SkillCard` composer with the hero sheet).
+- Skill buffers: the full skill card (shared `SkillCard` composer with the hero sheet),
+  then any affinity change the skill telegraphs (`QuerySkillPreview` per valid target,
+  gated by the game's own `m_IsTelegraphed`): one shared line when every target telegraphs
+  the same change, else one line per telegraphing target, that target's name first.
 - The **enemies** and **party** buffers (unverified live): one overview line per living
   combatant in rank order - name (with the target-validity reason while a pick is pending),
   rank, HP, a hero's stress, the pending pick's preview, and the token/dot/buff summary the

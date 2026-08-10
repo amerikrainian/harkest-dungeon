@@ -255,4 +255,5 @@ InputCombatHeroResists = 英雄{0}の耐性
 InputCombatActor = 行動中の戦闘員の状態
 InputCombatTargets = フォーカス中のスキルの有効な対象
 InputCombatTurnOrder = ターン順
+InputCombatAffinity = 予告された親密度の変化
 InputStoryHero = フォーカス中の選択肢の英雄の状態

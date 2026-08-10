@@ -418,22 +418,13 @@ namespace DD2A11y.Game {
 
         // The relationship meter between two heroes moved ("Dismas and Audrey, affinity +1").
         private static void HandleAffinityTick(EventAffinityTickTriggerApplied evt) {
-            if (!InCombat || evt.m_AffinityTickTriggerInstance == null) {
+            if (!InCombat) {
                 return;
             }
-            var instance = evt.m_AffinityTickTriggerInstance;
-            var guids = instance.m_Connection?.ActorGuids;
-            if (guids == null || guids.Count < 2) {
-                return;
+            string line = Targeting.AffinityLine(evt.m_AffinityTickTriggerInstance);
+            if (line != null) {
+                _pending.Add(line);
             }
-            string first = Actors.SpokenName(Actors.Get(guids[0]));
-            string second = Actors.SpokenName(Actors.Get(guids[1]));
-            if (first == null || second == null || instance.m_LeaningChange == 0) {
-                return;
-            }
-            string change = instance.m_LeaningChange > 0
-                ? "+" + instance.m_LeaningChange : instance.m_LeaningChange.ToString();
-            _pending.Add(S.CombatAffinity(first, second, change));
         }
 
         // A speech bubble ("Dismas: I've had worse odds"); the key is already resolved to the

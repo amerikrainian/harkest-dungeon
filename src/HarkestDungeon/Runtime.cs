@@ -383,6 +383,11 @@ namespace DD2A11y {
                 InputCategory.Combat).AddBinding(K(Key.T));
             Reg("combat.turnorder", S.InputCombatTurnOrder, () => _combat.GlanceTurnOrder(),
                 InputCategory.Combat).AddBinding(K(Key.T, shift: true));
+            // The affinity glance shares A with the inspector's combatant cycling: the cycle
+            // acts only while the inspector view is up, the glance only on a focused skill or
+            // target, so each press answers exactly one of the two.
+            Reg("combat.affinity", S.InputCombatAffinity, () => _combat.GlanceAffinity(),
+                InputCategory.Combat).AddBinding(K(Key.A));
             // The focused story choice's hero vitals - what the choice line no longer carries.
             Reg("story.hero", S.InputStoryHero, () => _storyScreen.GlanceSelf(),
                 InputCategory.Story).AddBinding(K(Key.S));

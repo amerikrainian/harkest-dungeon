@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Assets.Code.Actor;
+using Assets.Code.Affinity;
 using Assets.Code.Combat;
 using Assets.Code.Condition;
 using Assets.Code.Skill;
@@ -12,7 +13,8 @@ using S = DD2A11y.Core.Strings.Strings;
 namespace DD2A11y.Game {
     /// <summary>
     /// Target-side reads for target-select: whether a combatant can take the chosen skill, why
-    /// it cannot, and the game's own precomputed per-target preview numbers. The reason walk
+    /// it cannot, the game's own precomputed per-target preview numbers, and the affinity
+    /// change a pick telegraphs. The reason walk
     /// mirrors the game's target-validity checks in its exact order; the game itself keeps only
     /// a boolean per target, so the reason is re-derived here from the same model calls.
     /// </summary>
@@ -82,6 +84,80 @@ namespace DD2A11y.Game {
             return null;
         }
 
+        /// <summary>The valid targets the game precomputed for one of the actor's skills at
+        /// turn start; null when the skill has none.</summary>
+        public static IReadOnlyList<uint> ValidTargets(ActorInstance performer, string skillId) {
+            var entries = performer?.Controller?.GetValidSkillTargetEntries();
+            if (entries != null) {
+                foreach (var entry in entries) {
+                    if (entry.m_SkillId == skillId) {
+                        return entry.m_ValidTargetActorGuids;
+                    }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>The affinity change a tick trigger moves, in the announced-change form
+        /// ("Dismas and Audrey, affinity +1"); null when it names a missing actor or moves
+        /// nothing.</summary>
+        public static string AffinityLine(AffinityTickTriggerInstance instance) {
+            var guids = instance?.m_Connection?.ActorGuids;
+            if (guids == null || guids.Count < 2 || instance.m_LeaningChange == 0) {
+                return null;
+            }
+            string first = Actors.SpokenName(Actors.Get(guids[0]));
+            string second = Actors.SpokenName(Actors.Get(guids[1]));
+            if (first == null || second == null) {
+                return null;
+            }
+            string change = instance.m_LeaningChange > 0
+                ? "+" + instance.m_LeaningChange : instance.m_LeaningChange.ToString();
+            return S.CombatAffinity(first, second, change);
+        }
+
+        /// <summary>The affinity change using the skill on one target would apply - what the
+        /// game telegraphs as an icon on the responding hero while a sighted player hovers the
+        /// target - as the announced-change line; null when that pick telegraphs none. Reads
+        /// the turn-start precomputed result, so no roll happens here.</summary>
+        public static string AffinityPreview(ActorInstance performer, string skillId, uint targetGuid) {
+            var query = QuerySkillPreview.Trigger(performer.m_ActorGuid, skillId, targetGuid);
+            return AffinityLine(query.m_AffinityTickTriggerInstance);
+        }
+
+        /// <summary>Every affinity change one skill telegraphs across its valid targets: the
+        /// one shared line when every target telegraphs the same change, else one line per
+        /// telegraphing target, that target's name first. Empty when nothing telegraphs.</summary>
+        public static IEnumerable<string> AffinityPreviews(ActorInstance performer, string skillId) {
+            var targets = ValidTargets(performer, skillId);
+            if (targets == null) {
+                yield break;
+            }
+            var names = new List<string>();
+            var lines = new List<string>();
+            foreach (uint target in targets) {
+                string line = AffinityPreview(performer, skillId, target);
+                if (line != null) {
+                    names.Add(Actors.SpokenName(Actors.Get(target)));
+                    lines.Add(line);
+                }
+            }
+            if (lines.Count == 0) {
+                yield break;
+            }
+            bool uniform = lines.Count == targets.Count;
+            for (int i = 1; uniform && i < lines.Count; i++) {
+                uniform = lines[i] == lines[0];
+            }
+            if (uniform) {
+                yield return lines[0];
+                yield break;
+            }
+            for (int i = 0; i < lines.Count; i++) {
+                yield return SpokenLine.Join(names[i], lines[i]);
+            }
+        }
+
         /// <summary>The game's precomputed preview against one valid target: hit and crit
         /// chances for attacks, the heal range for friendly skills; null when the game holds no
         /// preview (invalid target, no pick pending).</summary>
@@ -90,13 +166,11 @@ namespace DD2A11y.Game {
 
         /// <summary>The preview for any of the actor's skills (the game precomputes every valid
         /// skill x target pair at turn start, so no pick needs to be pending). Terse drops the
-        /// per-target resist chips and token-removal lists - the T glance reads several targets
+        /// per-target resist chips, token-removal lists, and the telegraphed affinity change -
+        /// the T glance reads several targets
         /// in one line, and that tail is read per target after the pick.</summary>
         public static string PreviewText(ActorInstance performer, string skillId, uint targetGuid, bool terse) {
             var query = QuerySkillPreview.Trigger(performer.m_ActorGuid, skillId, targetGuid);
-            if (!query.IsValid) {
-                return null;
-            }
             var parts = new System.Collections.Generic.List<string>();
             foreach (var preview in query.m_SkillPreviews) {
                 if (preview.m_PerformerActorGuid != performer.m_ActorGuid) {
@@ -140,6 +214,16 @@ namespace DD2A11y.Game {
                            && preview.m_TargetActorGuid == performer.m_ActorGuid
                            && preview.m_IsDamageValid) {
                     parts.Add(S.CombatRiposte(Range((int)preview.m_DamageLow, (int)preview.m_DamageHigh)));
+                }
+            }
+            // The telegraphed affinity change closes the line - the icon the game shows on
+            // the responding hero the moment this target is hovered. A move pick can
+            // telegraph with no numeric preview at all, so it rides even an otherwise
+            // preview-less target.
+            if (!terse) {
+                string affinity = AffinityLine(query.m_AffinityTickTriggerInstance);
+                if (affinity != null) {
+                    parts.Add(affinity);
                 }
             }
             return parts.Count == 0 ? null : Core.Text.SpokenLine.Join(parts.ToArray());

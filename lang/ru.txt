@@ -255,4 +255,5 @@ InputCombatHeroResists = Сопротивления героя {0}
 InputCombatActor = Состояние действующего бойца
 InputCombatTargets = Допустимые цели навыка в фокусе
 InputCombatTurnOrder = Порядок ходов
+InputCombatAffinity = Предстоящие изменения отношений
 InputStoryHero = Состояние героя выбора в фокусе

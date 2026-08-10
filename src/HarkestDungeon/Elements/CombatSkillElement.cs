@@ -13,7 +13,9 @@ namespace DD2A11y.Elements {
     /// One skill on the combat bar (a regular skill, a combat item, move, or pass): the skill's
     /// name, with the selected and mastered states, remaining limited uses, an item's quantity,
     /// and usability read live. Enter runs the game's own skill-pick handler (validity,
-    /// presentation gating, audio, then target-select). The full skill card is buffer lines.
+    /// presentation gating, audio, then target-select). The full skill card is buffer lines,
+    /// followed by any affinity change the skill telegraphs (the icon the game shows on the
+    /// responding hero).
     /// </summary>
     public sealed class CombatSkillElement : UIElement {
         private readonly SkillButtonBhv _button;
@@ -126,6 +128,12 @@ namespace DD2A11y.Elements {
         protected override IEnumerable<string> GetDetailLines() {
             foreach (var line in SkillCard.Lines(_button.SkillId, _button.ActorGuid)) {
                 yield return line;
+            }
+            var actor = Actors.Get(_button.ActorGuid);
+            if (actor != null) {
+                foreach (var line in Targeting.AffinityPreviews(actor, _button.SkillId)) {
+                    yield return line;
+                }
             }
             if (HasGrantedCopy()) {
                 yield return S.CombatSkillAlsoGranted;

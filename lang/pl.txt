@@ -255,4 +255,5 @@ InputCombatHeroResists = Odporności bohatera {0}
 InputCombatActor = Stan aktywnej postaci
 InputCombatTargets = Prawidłowe cele wskazanej umiejętności
 InputCombatTurnOrder = Kolejność tur
+InputCombatAffinity = Zapowiedziane zmiany relacji
 InputStoryHero = Stan bohatera wskazanego wyboru

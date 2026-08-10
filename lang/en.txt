@@ -257,4 +257,5 @@ InputCombatHeroResists = Hero {0} resistances
 InputCombatActor = Acting combatant status
 InputCombatTargets = Focused skill's valid targets
 InputCombatTurnOrder = Turn order
+InputCombatAffinity = Telegraphed affinity changes
 InputStoryHero = Focused choice's hero status

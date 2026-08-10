@@ -255,4 +255,5 @@ InputCombatHeroResists = 英雄{0}抗性
 InputCombatActor = 行動中戰鬥者狀態
 InputCombatTargets = 焦點技能的有效目標
 InputCombatTurnOrder = 行動順序
+InputCombatAffinity = 預告的好感度變化
 InputStoryHero = 焦點選項的英雄狀態

@@ -560,16 +560,7 @@ namespace DD2A11y.Screens {
                 return;
             }
             var performer = Actors.Get(skill.ActorGuid);
-            var entries = performer?.Controller?.GetValidSkillTargetEntries();
-            IReadOnlyList<uint> targets = null;
-            if (entries != null) {
-                foreach (var entry in entries) {
-                    if (entry.m_SkillId == skill.SkillId) {
-                        targets = entry.m_ValidTargetActorGuids;
-                        break;
-                    }
-                }
-            }
+            var targets = Game.Targeting.ValidTargets(performer, skill.SkillId);
             var parts = new List<string>();
             if (targets != null && targets.Count > 0) {
                 foreach (bool friendly in new[] { false, true }) {
@@ -589,6 +580,30 @@ namespace DD2A11y.Screens {
             string reason = skill.InvalidReasonText();
             if (reason != null) {
                 _speak(reason, true);
+            }
+        }
+
+        /// <summary>A: the telegraphed affinity changes - on a focused skill every valid
+        /// target's, on a focused combatant while a pick is pending the pick's change against
+        /// them (the icon a sighted player sees on the responding hero when hovering). A skill
+        /// or target that telegraphs nothing answers with silence. The chord is shared with
+        /// the inspector's combatant cycling; the focus gates keep exactly one of the two
+        /// live at a time.</summary>
+        public void GlanceAffinity() {
+            string text = null;
+            if (_navigator.Current is CombatSkillElement skill) {
+                var performer = Actors.Get(skill.ActorGuid);
+                if (performer != null) {
+                    text = SpokenLine.Join("; ",
+                        Game.Targeting.AffinityPreviews(performer, skill.SkillId));
+                }
+            } else if (_navigator.Current is CombatantElement combatant
+                       && Game.Targeting.TryGetPick(out var performer2, out _)) {
+                text = Game.Targeting.AffinityPreview(
+                    performer2, performer2.SelectedSkillId, combatant.Guid);
+            }
+            if (!string.IsNullOrEmpty(text)) {
+                _speak(text, true);
             }
         }
 

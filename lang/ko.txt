@@ -255,4 +255,5 @@ InputCombatHeroResists = 영웅 {0} 저항
 InputCombatActor = 행동 중인 전투원 상태
 InputCombatTargets = 포커스된 스킬의 유효 대상
 InputCombatTurnOrder = 턴 순서
+InputCombatAffinity = 예고된 호감도 변화
 InputStoryHero = 포커스된 선택지의 영웅 상태

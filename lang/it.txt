@@ -255,4 +255,5 @@ InputCombatHeroResists = Resistenze dell'eroe {0}
 InputCombatActor = Stato del combattente attivo
 InputCombatTargets = Bersagli validi dell'abilità focalizzata
 InputCombatTurnOrder = Ordine dei turni
+InputCombatAffinity = Cambiamenti di affinità annunciati
 InputStoryHero = Stato dell'eroe della scelta focalizzata
