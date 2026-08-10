@@ -1,5 +1,11 @@
 # Changelog
 
+## V0.2.9
+
+- Added `a` key to preview skill affinities while you're on one that would cause a change. They should also be present in targetting previews now where applicable. Note that the base game only broadcasts negative changes; positive come as a surprise.
+- Remove the announcement of subscreens when they're used as a component of something, e.g., inventory as a part of an inn.
+- The subtitle toggle in game now actually does something for us, mainly speak them.
+
 ## V0.2.8
 
 - Reviewing the turn order in combat now steps one combatant per line instead of reading the
