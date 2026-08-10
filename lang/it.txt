@@ -217,6 +217,7 @@ SpriteBaubles = ninnoli
 TextUnknown = sconosciuto
 BufferControl = controllo
 BufferCombat = combattimento
+BufferSubtitles = sottotitoli
 BufferMastery = maestria
 BufferHero = eroe
 BufferNone = nessuna riga nel buffer

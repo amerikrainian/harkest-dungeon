@@ -217,6 +217,7 @@ SpriteBaubles = безделицы
 TextUnknown = неизвестно
 BufferControl = элемент
 BufferCombat = бой
+BufferSubtitles = субтитры
 BufferMastery = закалка
 BufferHero = герой
 BufferNone = буферы пусты

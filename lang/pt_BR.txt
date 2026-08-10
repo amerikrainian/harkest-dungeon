@@ -217,6 +217,7 @@ SpriteBaubles = bugigangas
 TextUnknown = desconhecido
 BufferControl = controle
 BufferCombat = combate
+BufferSubtitles = legendas
 BufferMastery = maestria
 BufferHero = herói
 BufferNone = sem linhas de buffer

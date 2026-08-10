@@ -217,6 +217,7 @@ SpriteBaubles = minucias
 TextUnknown = desconocido
 BufferControl = control
 BufferCombat = combate
+BufferSubtitles = subtítulos
 BufferMastery = maestría
 BufferHero = héroe
 BufferNone = sin líneas de búfer

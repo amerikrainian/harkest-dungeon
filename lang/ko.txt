@@ -217,6 +217,7 @@ SpriteBaubles = 패물
 TextUnknown = 알 수 없음
 BufferControl = 컨트롤
 BufferCombat = 전투
+BufferSubtitles = 자막
 BufferMastery = 숙련
 BufferHero = 영웅
 BufferNone = 버퍼 줄 없음

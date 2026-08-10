@@ -495,6 +495,9 @@ namespace DD2A11y.Core.Strings {
             D("BufferControl", "control"),
             // The battle-event log buffer, non-empty only during combat. Noun naming that buffer.
             D("BufferCombat", "combat"),
+            // The subtitle-history buffer's name, used only when the game's own subtitles
+            // option label is missing. Noun naming that buffer.
+            D("BufferSubtitles", "subtitles"),
             // The skill-upgrade preview buffer's name, used only when the game's own upgrade
             // header string is missing. Noun naming that buffer.
             D("BufferMastery", "mastery"),
@@ -823,6 +826,7 @@ namespace DD2A11y.Core.Strings {
 
         public static string BufferControl => T("BufferControl");
         public static string BufferCombat => T("BufferCombat");
+        public static string BufferSubtitles => T("BufferSubtitles");
         public static string BufferMastery => T("BufferMastery");
         public static string BufferHero => T("BufferHero");
         public static string BufferNone => T("BufferNone");

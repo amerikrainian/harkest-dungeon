@@ -217,6 +217,7 @@ SpriteBaubles = 安物の宝石
 TextUnknown = 不明
 BufferControl = コントロール
 BufferCombat = 戦闘
+BufferSubtitles = 字幕
 BufferMastery = 熟達
 BufferHero = 英雄
 BufferNone = バッファは空

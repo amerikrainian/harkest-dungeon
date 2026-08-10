@@ -93,6 +93,13 @@ namespace DD2A11y {
             var combatBuffer = Buffers.Add(new Core.Buffers.Buffer(BufferKeys.Combat, () => S.BufferCombat));
             combatBuffer.FollowLatest = true;
             combatBuffer.SetSource(Game.CombatLog.Lines);
+            // The on-screen subtitle history, named by the game's own Subtitles option label;
+            // empty (and so hidden) while the setting is off or nothing has fired.
+            var subtitlesBuffer = Buffers.Add(new Core.Buffers.Buffer(BufferKeys.Subtitles,
+                () => Game.GameLoc.TryGet("options_menu_game_subtitles_toggle_label") ?? S.BufferSubtitles));
+            subtitlesBuffer.FollowLatest = true;
+            subtitlesBuffer.SetSource(Game.SubtitleEvents.Lines);
+            Game.SubtitleEvents.Attach();
 
             Core.Text.SpriteText.Resolver = Game.SpriteWords.Resolve;
             Core.Nav.UIElement.BufferGlossary = Game.TokenGlossary.Lines;
@@ -478,6 +485,15 @@ namespace DD2A11y {
                 }
                 Router.Tick();
                 _roadSense.Tick();
+                // Subtitle lines speak from the pump wherever they fire - a cinematic holds
+                // no screen (the keyboard stays with the game's skip handling), so the drain
+                // cannot live on a screen's update.
+                var subtitles = Game.SubtitleEvents.Drain();
+                if (subtitles != null) {
+                    foreach (var line in subtitles) {
+                        Speech.Speak(line);
+                    }
+                }
                 Gate.Reassert();
                 _textEdit.Tick();
                 _rebind.Tick();

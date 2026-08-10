@@ -217,6 +217,7 @@ SpriteBaubles = Schmuckstücke
 TextUnknown = unbekannt
 BufferControl = Steuerelement
 BufferCombat = Kampf
+BufferSubtitles = Untertitel
 BufferMastery = Meisterschaft
 BufferHero = Held
 BufferNone = keine Pufferzeilen

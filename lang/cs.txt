@@ -217,6 +217,7 @@ SpriteBaubles = tretky
 TextUnknown = neznámé
 BufferControl = prvek
 BufferCombat = boj
+BufferSubtitles = titulky
 BufferMastery = mistrovství
 BufferHero = hrdina
 BufferNone = žádné řádky bufferu

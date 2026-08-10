@@ -217,6 +217,7 @@ SpriteBaubles = 珍寶
 TextUnknown = 未知
 BufferControl = 控制項
 BufferCombat = 戰鬥
+BufferSubtitles = 字幕
 BufferMastery = 精通
 BufferHero = 英雄
 BufferNone = 無緩衝區內容

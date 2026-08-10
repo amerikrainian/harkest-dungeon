@@ -217,6 +217,7 @@ SpriteBaubles = абищиці
 TextUnknown = невідомо
 BufferControl = елемент
 BufferCombat = бій
+BufferSubtitles = субтитри
 BufferMastery = загартування
 BufferHero = герой
 BufferNone = буфери порожні

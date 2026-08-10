@@ -217,6 +217,7 @@ SpriteBaubles = świecidełka
 TextUnknown = nieznane
 BufferControl = kontrolka
 BufferCombat = walka
+BufferSubtitles = napisy
 BufferMastery = mistrzostwo
 BufferHero = bohater
 BufferNone = brak linii bufora

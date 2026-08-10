@@ -39,8 +39,11 @@ Conventions every supported screen follows. Individual sections below note only 
   (the focused skill's upgrade preview, named by the game's own upgrade header; "no upgrade
   available" on a skill with nothing left to preview), hero (the vitals of the hero the
   focused element concerns - a skill's owner, a story choice's hero, the sheet's paged hero),
-  enemies and party (one overview line per combatant, combat only), and combat (the battle
-  log). Empty buffers are skipped, so each surface cycles only the buffers that answer there.
+  enemies and party (one overview line per combatant, combat only), combat (the battle
+  log), and subtitles (the on-screen subtitle history, named by the game's own Subtitles
+  option label; lines speak as they appear and collect only while that setting is on, so
+  the buffer exists only with subtitles enabled). Empty buffers are skipped, so each
+  surface cycles only the buffers that answer there.
 - Modals read their text first, then each choice, all on Up/Down. A modal announces itself on
   appearance; its dismissal is spoken too (the underlying screen re-announces).
 - **Screens under the transition veil stay silent** (live-verified 2026-08-09 on Continue
@@ -137,10 +140,19 @@ buttons).
 **Known gaps:** the End cinematic button (unlocked by a "body" boss victory) is swept
 generically but was inactive on the dev profile, so it is unverified.
 
-## 1.4 Cinematic Playback (CINEMATIC mode) - N/A
+## 1.4 Cinematic Playback (CINEMATIC mode) - WORKS
 
 The mod stands down and releases the keyboard; the game's own skip flow (any key, hold Space)
 is fully keyboard-usable. Device-verified alongside 1.3.
+
+- Subtitles speak as each line appears, from the pump (no screen stands during the video).
+  Both subtitle surfaces funnel through `SubtitlesUtils.TryUpdateDisplay` - the cinematic
+  manager's timed video lines and the general manager's in-run narration lines - and the
+  spoken gate is the game's own `ShouldSubtitleBeVisible` (the Subtitles toggle in the game
+  options tab plus its dev-pref overrides), so what fires on screen is what is spoken.
+- The lines collect into the subtitles buffer (capped rolling history, cursor following the
+  latest), reviewable wherever the mod next owns the keyboard; while the Subtitles setting
+  is off the buffer reads empty and drops out of the cycle.
 
 ## 1.5 Kingdoms Entry, Save Select, and Creation Wizard (`KingdomMenuScreen`) - WORKS
 

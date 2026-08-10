@@ -219,6 +219,7 @@ SpriteBaubles = baubles
 TextUnknown = unknown
 BufferControl = control
 BufferCombat = combat
+BufferSubtitles = subtitles
 BufferMastery = mastery
 BufferHero = hero
 BufferNone = no buffer lines

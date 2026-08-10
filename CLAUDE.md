@@ -192,8 +192,9 @@ remembers its last tab across close/reopen.
 in cycling order (`BufferKeys`): `ui` (the focused element's own lines), `upgrade` (the focused
 skill's mastery preview, titled by the game's own upgrade header; a skill with nothing to preview
 answers with one no-upgrade line), `hero` (the vitals of the hero the focused element concerns),
-`enemies` and `party` (one overview line per combatant, filled only in combat), and `combat` (the
-battle-event log, FollowLatest). An empty buffer is skipped by the review keys, so each surface
+`enemies` and `party` (one overview line per combatant, filled only in combat), `combat` (the
+battle-event log, FollowLatest), and `subtitles` (the on-screen subtitle history, FollowLatest,
+filled and shown only while the game's Subtitles setting is on). An empty buffer is skipped by the review keys, so each surface
 cycles only the buffers that answer there. On every focus change the plugin re-binds the
 element-fed buffers to the landed element: the `ui` buffer gets the element's own line first
 (status, label, value - never the role word; buffers review content, and the control type is not

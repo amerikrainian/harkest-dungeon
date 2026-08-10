@@ -217,6 +217,7 @@ SpriteBaubles = babioles
 TextUnknown = inconnu
 BufferControl = contrôle
 BufferCombat = combat
+BufferSubtitles = sous-titres
 BufferMastery = maîtrise
 BufferHero = héros
 BufferNone = aucune ligne de tampon
