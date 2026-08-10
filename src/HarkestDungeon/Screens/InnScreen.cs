@@ -70,9 +70,11 @@ namespace DD2A11y.Screens {
         }
 
         // Matches only while the stack shows nothing above the inn's own inventory panel - any
-        // station sub-screen on top hands the surface to that screen's reader instead.
+        // station sub-screen on top hands the surface to that screen's reader instead. The
+        // veil gate keeps the hub from resolving early against a hidden stack and swapping
+        // to the inventory target (a re-announce) when the reveal finishes.
         public override object ResolveTarget() {
-            if (GameModeMgr.CurrentMode != GameModeType.INN || Singleton<GameModeMgr>.Instance.IsChangingState()) {
+            if (GameModeMgr.CurrentMode != GameModeType.INN || StackTop.Veiled) {
                 _collection = null;
                 _inventory = null;
                 Game.InnEvents.Clear();

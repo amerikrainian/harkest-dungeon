@@ -15,7 +15,7 @@ namespace DD2A11y.Screens {
         public override string Name => S.ScreenDialog;
 
         public override object ResolveTarget() {
-            var top = StackTop.Object();
+            var top = StackTop.Raw();
             _modal = top == null ? null : top.GetComponent<UiModalBhv>();
             return _modal;
         }

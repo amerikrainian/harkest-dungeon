@@ -39,7 +39,7 @@ namespace DD2A11y.Screens {
         }
 
         public override object ResolveTarget() {
-            if (!SingletonMonoBehaviour<ScreenStackBhv>.HasInstance()) {
+            if (!SingletonMonoBehaviour<ScreenStackBhv>.HasInstance() || StackTop.Veiled) {
                 return null;
             }
             var top = SingletonMonoBehaviour<ScreenStackBhv>.Instance.GetTopMostScreenInstance();

@@ -25,7 +25,7 @@ namespace DD2A11y.Screens {
         public override string Name => S.ScreenDialog;
 
         public override object ResolveTarget() {
-            var top = StackTop.Object();
+            var top = StackTop.Raw();
             _dialog = top == null ? null : top.GetComponentInChildren<ConfirmationDialogBhv>(includeInactive: false);
             return _dialog;
         }

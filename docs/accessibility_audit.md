@@ -43,6 +43,12 @@ Conventions every supported screen follows. Individual sections below note only 
   log). Empty buffers are skipped, so each surface cycles only the buffers that answer there.
 - Modals read their text first, then each choice, all on Up/Down. A modal announces itself on
   appearance; its dismissal is spoken too (the underlying screen re-announces).
+- **Screens under the transition veil stay silent** (live-verified 2026-08-09 on Continue
+  Confession into an inn): through a game-mode change and while the screen fader's curtain
+  or wipe is up, stack screens and the generic floor read nothing - the game pushes screens
+  under the curtain while assembling the next mode (the inn's inventory panel used to read
+  "Inventory, All Items, tab" mid-load), and a screen nobody saw must not read. The gate is
+  `StackTop.Veiled`; modals bypass it, so a dialog interrupting a transition still speaks.
 - Tabbed screens put the tab selector first: Left/Right switch tabs, Down enters the tab's
   items, and the screen remembers its tab across close/reopen.
 - **Advertised hotkeys work on captured screens** (live-verified 2026-07-25 on a road story):
