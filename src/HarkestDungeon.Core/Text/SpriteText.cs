@@ -32,6 +32,15 @@ namespace DD2A11y.Core.Text {
             });
         }
 
+        /// <summary>Removes sprite tags outright, for composing a line where the glyph is
+        /// decorative - its word already stands beside it as text.</summary>
+        public static string Strip(string raw) {
+            if (raw.IndexOf("<sprite", StringComparison.Ordinal) < 0) {
+                return raw;
+            }
+            return SpriteTag.Replace(raw, string.Empty);
+        }
+
         /// <summary>The sprite names embedded in raw text, in order of appearance.</summary>
         public static IEnumerable<string> Names(string? raw) {
             if (raw == null || raw.IndexOf("<sprite", StringComparison.Ordinal) < 0) {

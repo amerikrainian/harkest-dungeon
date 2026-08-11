@@ -1897,18 +1897,27 @@ covers the read-only road sheet on Z (5.6).
 Live-verified: full walk. Unexercised: a repair press (stats were full), equip/unequip on this
 sheet.
 
-## 8.6 Select Route (`RouteSelectScreen`) - PARTIAL
+## 8.6 Select Route (`RouteSelectScreen`) - WORKS
 
 Over `SubScreenBiomeChoiceBhv`.
 
-- One element per offered route - the destination's own name, "selected" state,
-  goal/modifier/reward tooltips in the buffer, Enter marking the choice through the game's own
-  submit - or "empty" when the inn offers none.
+- One element per offered route - the destination's own name, "selected" state, Enter marking
+  the choice through the game's own submit - or "empty" when the inn offers none.
+- The buffer carries the offer in the slot's visible order: the modifier name (full from the
+  model, where the label may be ellipsized) with its effect tooltip, the goal name with the
+  goal tooltip, then the game's own "Reward:" header and the rewards - mastery points as the
+  game's "+2 Mastery" run-log wording with the count from the model (the slot's bound label
+  shows only "+2" and a glyph), an item through the reward icon's tooltip (title, type with
+  stack count, description). Tooltips outside that composition (the mountain's equip-trophy
+  prompt) still read, after it.
 
-Live-verified ONLY in the empty state: the Denial inn tested wants 2 biome choices but rolled
-zero, and `GetCanEmbark` is false - either a stuck save state (many dev restarts mid-inn) or
-choices that appear after an inn step; the populated reader is model-built and untested.
-**If departure refuses, this zero-choice state is why.**
+Live-verified 2026-08-10 at a candle-reward inn: both routes' full buffers (the modifier and
+goal names and the reward header/mastery count did not read before). The mastery-point branch
+was exercised by swapping a forged hero-points reward into the in-memory model (restored
+after). The empty state was live-verified earlier at a Denial inn that rolled zero choices
+(`GetCanEmbark` false there - if departure refuses, that state is why). Unexercised: the
+mountain slot's equip-trophy prompt, the heropoints description tooltip on a real mastery
+offer.
 
 ## 8.7 Relationships Matrix (`RelationshipMatrixScreen`, Kingdoms) - WORKS
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.3.0
+
+- Biome choices now include all their information.
+
 ## V0.2.9
 
 - Added `a` key to preview skill affinities while you're on one that would cause a change. They should also be present in targetting previews now where applicable. Note that the base game only broadcasts negative changes; positive come as a surprise.

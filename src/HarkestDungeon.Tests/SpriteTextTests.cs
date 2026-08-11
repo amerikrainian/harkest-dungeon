@@ -37,6 +37,12 @@ namespace DD2A11y.Tests {
                 "<sprite name=\"token_combo\" color=#FFFFFFFF>"));
 
         [Fact]
+        public void StripRemovesTheGlyphAWordAlreadyStandsBesideOf()
+            => Assert.Equal("+2 Mastery", WithResolver(
+                name => name == "icon_heropoints" ? "heropoints" : null,
+                SpriteText.Strip("+2<font=\"NDDunkelD-Bold SDF\"><sprite name=\"icon_heropoints\"></font> Mastery")));
+
+        [Fact]
         public void ResolvedWordInsideColorMarkupReadsInline()
             => Assert.Equal("when target Combo", WithResolver(
                 name => name == "token_combo" ? "Combo" : null,
