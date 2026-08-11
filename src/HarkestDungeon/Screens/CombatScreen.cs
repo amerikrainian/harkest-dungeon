@@ -4,6 +4,7 @@ using Assets.Code.Actor;
 using Assets.Code.Buff;
 using Assets.Code.Combat;
 using Assets.Code.Combat.Queries;
+using Assets.Code.Data;
 using Assets.Code.Game;
 using Assets.Code.Run;
 using Assets.Code.UI;
@@ -21,7 +22,8 @@ using UnityEngine.UI;
 namespace DD2A11y.Screens {
     /// <summary>
     /// A battle (the COMBAT game mode). Layout, top to bottom: the header row (round and acting
-    /// combatant with torch, wave count, round detail, and retreat odds in the buffer; then the
+    /// combatant with torch value, flame state and effects, wave count, round detail, and
+    /// retreat odds in the buffer; then the
     /// turn order; then the battle goal when the fight has one), one battlefield row laid out
     /// like the screen - the party rank 4 to 1, then the enemies rank 1 to 4, full status in
     /// each combatant's buffer - then the acting
@@ -324,6 +326,9 @@ namespace DD2A11y.Screens {
         private IEnumerable<string> HeaderDetail() {
             if (Singleton<GameTypeMgr>.Instance != null && Singleton<GameTypeMgr>.Instance.IsGameTypeStarted) {
                 yield return S.CombatTorch((int)Singleton<GameTypeMgr>.Instance.RunValues.GetValue(RunValueType.TORCH));
+                foreach (var line in FlameDetail()) {
+                    yield return line;
+                }
             }
             // The wave readout mirrors the game's pip strip beside the round counter
             // (BattleInfoUiBhv.AttemptToSetCombatMap): an enemy summon controller configured
@@ -354,6 +359,30 @@ namespace DD2A11y.Screens {
                     yield return line;
                 }
             }
+        }
+
+        // The flame's hover panel: the state name, then each side's current effects under the
+        // game's own Heroes/Enemies labels. The panel itself activates only on mouse hover,
+        // but the widget keeps its data-bound values current on every flame change, so the
+        // lines read from those. A mid flame grants neither side anything and reads only the
+        // state name.
+        private IEnumerable<string> FlameDetail() {
+            var torch = _battleInfo == null ? null : TorchField(_battleInfo);
+            var context = torch == null ? null : torch.GetComponent<DataContextBhv>();
+            if (context == null) {
+                yield break;
+            }
+            yield return context.GetStringValue("torch_title");
+            yield return FlameSide("party_heroes_label", context.GetStringValue("torch_effects_heroes"));
+            yield return FlameSide("party_enemies_label", context.GetStringValue("torch_effects_enemies"));
+        }
+
+        private static string FlameSide(string labelKey, string effects) {
+            string joined = SpokenLine.Join(", ", SpokenLine.NonEmptyLines(effects));
+            if (joined.Length == 0) {
+                return null;
+            }
+            return SpokenLine.Join(", ", new[] { GameLoc.TryGet(labelKey), joined });
         }
 
         // The Kingdoms gang-escalation ribbon, its own header stop like the battle modifier;

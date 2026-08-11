@@ -1379,8 +1379,17 @@ kills, turn handoffs, free-action stance swap - with the expanded event set and 
 Top to bottom:
 
 - **Header row** (Left/Right within it):
-  - The battle status ("round 1, Audrey"; torch value, wave count, round detail, and
-    retreat odds as buffer lines). The wave count mirrors the game's pip strip beside the
+  - The battle status ("round 1, Audrey"; torch value, flame state and effects, wave count,
+    round detail, and retreat odds as buffer lines). The flame lines mirror the flame's
+    hover panel - the state name ("Bright Light"), then each side's current effects under
+    the game's own Heroes/Enemies labels, read from the widget's data-bound values (the
+    game re-stamps them on every flame change; a mid flame grants neither side anything and
+    reads only the state name). A token glyph in the effect lines gets its glossary line
+    ("Blind: 50% chance to miss next attack"). The retreat tooltip's Loathing/stress cost
+    lines read as the game writes them; the game offers no description of either on this
+    surface (the Loathing meter with its tooltip exists on the driving HUD and inn results,
+    both read there), so none is spoken - live-verified 2026-08-10. The wave count mirrors
+    the game's pip strip beside the
     round counter, both of its sources: chained battles ("battle 1 of 2" from the
     scenario), and summon-controller wave fights (the `wave` configuration is the only one
     the game ships with the display on; "battle 1 of 2" while the enemy wave queue still
