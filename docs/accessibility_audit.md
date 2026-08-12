@@ -1538,7 +1538,13 @@ screens' keys; all 24 are rebindable from the mod keys tab.
 - Skill buffers: the full skill card (shared `SkillCard` composer with the hero sheet),
   then any affinity change the skill telegraphs (`QuerySkillPreview` per valid target,
   gated by the game's own `m_IsTelegraphed`): one shared line when every target telegraphs
-  the same change, else one line per telegraphing target, that target's name first.
+  the same change, else one line per telegraphing target, that target's name first. The
+  trailing token-glossary lines resolve path-variant tokens through the skill's own id
+  (fixed 2026-08-12: a hero path swaps a token for a suffixed variant with its own
+  description - the Duelist's stances become `dul_*_stance_p<n>` - while the skill text
+  keeps the base glyph, so an Antagoniste Duelist's cards glossed the base stance text; the
+  skill id carries the same `_p<n>` suffix and now picks the variant. Applies wherever a
+  skill card is read: combat bar, hero sheet, trainer, the inspector's studied skills.)
 - The **enemies** and **party** buffers (unverified live): one overview line per living
   combatant in rank order - name (with the target-validity reason while a pick is pending),
   rank, HP, a hero's stress, the pending pick's preview, and the token/dot/buff summary the

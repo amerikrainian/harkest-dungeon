@@ -59,6 +59,8 @@ namespace DD2A11y.Elements {
 
         public override bool ReannounceOnActivate => true;
 
+        public override string GlossaryContext => DisplayedSkillId();
+
         public override IEnumerable<ElementAction> GetActions() {
             yield return new ElementAction(ActionIds.Activate, () => {
                 var actor = _button.ActorInstance;

@@ -176,12 +176,14 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
-        public void Glossary_SeesCollectedLines_AndAppends() {
+        public void Glossary_SeesCollectedLines_AndContext_AndAppends() {
             var element = new FakeElement {
                 L = "Skill", Details = { "Self: <sprite name=\"token_block\">" },
+                GlossaryContext = "dul_disengage_p2",
             };
-            UIElement.BufferGlossary = lines => {
+            UIElement.BufferGlossary = (lines, context) => {
                 Assert.Equal(new[] { "Skill", "Self: <sprite name=\"token_block\">" }, lines);
+                Assert.Equal("dul_disengage_p2", context);
                 return new[] { "Block: halves the next hit" };
             };
             try {

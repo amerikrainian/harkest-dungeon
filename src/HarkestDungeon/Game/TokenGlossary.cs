@@ -15,14 +15,14 @@ namespace DD2A11y.Game {
     public static class TokenGlossary {
         private const string SpritePrefix = "token_";
 
-        public static IEnumerable<string> Lines(IReadOnlyList<string> bufferLines) {
+        public static IEnumerable<string> Lines(IReadOnlyList<string> bufferLines, string context) {
             var ids = new List<string>();
             foreach (var line in bufferLines) {
                 foreach (var sprite in SpriteText.Names(line)) {
                     if (!sprite.StartsWith(SpritePrefix, System.StringComparison.Ordinal)) {
                         continue;
                     }
-                    string id = TokenIdOf(sprite);
+                    string id = WithVariant(TokenIdOf(sprite), context);
                     if (id != null && !ids.Contains(id)) {
                         ids.Add(id);
                     }
@@ -35,6 +35,23 @@ namespace DD2A11y.Game {
                 }
                 yield return Compose(id, description);
             }
+        }
+
+        // A hero path swaps a token for a suffixed variant with its own description (the
+        // Duelist's stances: "dul_defensive_stance_p2" on her second path) while the skill
+        // text keeps the base glyph. The describing surface's own id carries the same suffix
+        // ("dul_disengage_p2"), so a glyph resolves to the variant that surface concerns.
+        private static string WithVariant(string id, string context) {
+            if (id == null || context == null) {
+                return id;
+            }
+            var suffix = System.Text.RegularExpressions.Regex.Match(context, "_p[0-9]+");
+            if (!suffix.Success) {
+                return id;
+            }
+            string variant = id + suffix.Value;
+            return SingletonMonoBehaviour<Library<string, TokenDefinition>>.Instance
+                .GetLibraryElement(variant) != null ? variant : id;
         }
 
         /// <summary>The token id behind a glyph's sprite name. Usually the sprite is

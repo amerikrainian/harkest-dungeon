@@ -90,10 +90,15 @@ namespace DD2A11y.Core.Nav {
         }
 
         /// <summary>Supplies trailing glossary lines for a buffer: receives every line the
-        /// buffer collected, returns lines to append after them. The plugin wires the game's
-        /// token descriptions here - the mouse-over half of a token glyph; null appends
-        /// nothing (unit tests, boot).</summary>
-        public static Func<IReadOnlyList<string>, IEnumerable<string>>? BufferGlossary { get; set; }
+        /// buffer collected plus the element's <see cref="GlossaryContext"/>, returns lines to
+        /// append after them. The plugin wires the game's token descriptions here - the
+        /// mouse-over half of a token glyph; null appends nothing (unit tests, boot).</summary>
+        public static Func<IReadOnlyList<string>, string?, IEnumerable<string>>? BufferGlossary { get; set; }
+
+        /// <summary>The id of the thing this buffer's lines describe (a skill card element's
+        /// skill id), handed to <see cref="BufferGlossary"/> so glyph resolution can pick the
+        /// variant that surface concerns; null when the buffer has no such identity.</summary>
+        public virtual string? GlossaryContext { get; set; }
 
         /// <summary>The element's review lines for the buffer system: its role-less own line
         /// first (<see cref="GetBufferHeadText"/>), then one line per detail the focus message
@@ -123,7 +128,7 @@ namespace DD2A11y.Core.Nav {
             if (glossary == null) {
                 yield break;
             }
-            foreach (var line in glossary(collected)) {
+            foreach (var line in glossary(collected, GlossaryContext)) {
                 yield return line;
             }
         }

@@ -74,6 +74,8 @@ namespace DD2A11y.Elements {
 
         public override string Role => S.RoleButton;
 
+        public override string GlossaryContext => _button.SkillId;
+
         public override string Status {
             get {
                 var actor = Actors.Get(_button.ActorGuid);

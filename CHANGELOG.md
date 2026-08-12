@@ -5,7 +5,8 @@
 - Biome choices now include all their information.
 - Tokens that only define a plain name (the Violinist's song-part markers, for instance) no longer leak their raw id into combat speech; they now read by the game's own name.
 - Buffs the game names only through a tooltip override no longer read as a raw stat key.
-- The deathblow resist icon now speaks as "deathblow" instead of "death": Toe to Toe's mastered Ravager rider reads "+4% deathblow" on the card, matching the "+4% deathblow RES" it grants.
+- The deathblow resist icon now speaks as "deathblow" instead of "death"
+- Path-modified tokens now read their own descriptions on skill cards: an Antagoniste Duelist's stance glossary lines describe her path's stances instead of the base ones.
 
 ## V0.2.9
 

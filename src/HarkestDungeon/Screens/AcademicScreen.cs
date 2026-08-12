@@ -165,7 +165,7 @@ namespace DD2A11y.Screens {
                 _skills.Add(new ReadoutElement(
                     () => Study.SkillName(captured),
                     () => SkillUsesText(captured),
-                    () => Study.SkillLines(captured, guid)));
+                    () => Study.SkillLines(captured, guid)) { GlossaryContext = captured.Id });
             }
             foreach (var item in Study.TrinketsOf(actor)) {
                 var captured = item;
