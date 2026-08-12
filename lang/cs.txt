@@ -213,6 +213,7 @@ SpriteStress = stres
 SpriteDisease = choroba
 SpriteSpeed = rychlost
 SpriteHealth = ZDR
+SpriteDeathblow = smrtící úder
 SpriteBaubles = tretky
 TextUnknown = neznámé
 BufferControl = prvek

@@ -65,10 +65,13 @@ Conventions every supported screen follows. Individual sections below note only 
   order on the kingdom map, marching order on the road.
 - **Inline effect glyphs in game text speak as words**, pipeline-wide: token and dot names
   resolve through the game's own `token_name_*` / `dot_name_*` strings; the icons with no name
-  string anywhere in the game (heal, buff, debuff, stress, disease, speed, HP) carry authored
-  words; any other icon speaks its humanized sprite name rather than silently dropping ("-2
-  speed" on a trinket, not a bare "-2"). Known-decorative glyphs (the hero-seal mark) are the
-  only ones dropped.
+  string anywhere in the game (heal, buff, debuff, stress, disease, speed, HP, deathblow)
+  carry authored words; any other icon speaks its humanized sprite name rather than silently
+  dropping ("-2 speed" on a trinket, not a bare "-2"). Known-decorative glyphs (the hero-seal
+  mark) are the only ones dropped. (Fixed 2026-08-12: the deathblow-resist glyph
+  `icon_death_outline` humanized to "death", so Toe to Toe's mastered Ravager rider read
+  "+4% death" where the icon means deathblow RES; it now reads "+4% deathblow" on the card
+  and "+4% deathblow RES" where the game's buff strings append their own "RES".)
 - **The game's "???" placeholder reads as "unknown"**: a free-standing run of question marks (a
   locked confession's name, "Rewards: ???") is voiced as NOTHING by synthesizers; the text
   filter speaks it as the authored word "unknown", pipeline-wide. Runs attached to a word

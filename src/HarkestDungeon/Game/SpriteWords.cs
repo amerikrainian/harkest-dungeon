@@ -58,6 +58,9 @@ namespace DD2A11y.Game {
                 case "icon_speed": return S.SpriteSpeed;
                 case "icon_health":
                 case "icon_health_v2": return S.SpriteHealth;
+                // The deathblow-resist glyph; its humanized name ("death") loses the resist
+                // meaning the icon carries ("+4% death" for a deathblow-RES buff).
+                case "icon_death_outline": return S.SpriteDeathblow;
                 // Decorative: the seal glyph always precedes the path's own name text, the
                 // laurel glyph the "Upgrade" caption's own word.
                 case "icon_heroseal": return null;

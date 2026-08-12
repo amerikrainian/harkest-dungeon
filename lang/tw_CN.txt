@@ -213,6 +213,7 @@ SpriteStress = 心理壓力
 SpriteDisease = 疾病
 SpriteSpeed = 速度
 SpriteHealth = 生命值
+SpriteDeathblow = 致命一擊
 SpriteBaubles = 珍寶
 TextUnknown = 未知
 BufferControl = 控制項

@@ -213,6 +213,7 @@ SpriteStress = Stress
 SpriteDisease = Krankheit
 SpriteSpeed = Geschwindigkeit
 SpriteHealth = LP
+SpriteDeathblow = Todesstoß
 SpriteBaubles = Schmuckstücke
 TextUnknown = unbekannt
 BufferControl = Steuerelement

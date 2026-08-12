@@ -213,6 +213,7 @@ SpriteStress = стресс
 SpriteDisease = болезнь
 SpriteSpeed = скорость
 SpriteHealth = ОЗ
+SpriteDeathblow = смертельный удар
 SpriteBaubles = безделицы
 TextUnknown = неизвестно
 BufferControl = элемент

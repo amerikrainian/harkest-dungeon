@@ -213,6 +213,7 @@ SpriteStress = estrés
 SpriteDisease = enfermedad
 SpriteSpeed = velocidad
 SpriteHealth = PV
+SpriteDeathblow = golpe mortal
 SpriteBaubles = minucias
 TextUnknown = desconocido
 BufferControl = control

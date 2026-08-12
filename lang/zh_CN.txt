@@ -213,6 +213,7 @@ SpriteStress = 压力
 SpriteDisease = 疾病
 SpriteSpeed = 迅捷
 SpriteHealth = HP
+SpriteDeathblow = 致命一击
 SpriteBaubles = 珍宝
 TextUnknown = 未知
 BufferControl = 控件

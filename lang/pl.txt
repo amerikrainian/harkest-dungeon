@@ -213,6 +213,7 @@ SpriteStress = stres
 SpriteDisease = choroba
 SpriteSpeed = prędkość
 SpriteHealth = PŻ
+SpriteDeathblow = śmiertelny cios
 SpriteBaubles = świecidełka
 TextUnknown = nieznane
 BufferControl = kontrolka

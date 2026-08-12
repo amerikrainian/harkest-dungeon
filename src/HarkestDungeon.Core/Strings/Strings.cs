@@ -483,6 +483,9 @@ namespace DD2A11y.Core.Strings {
             D("SpriteSpeed", "speed"),
             // The health stat, as the game abbreviates it in its own status text.
             D("SpriteHealth", "HP"),
+            // The deathblow-resistance icon (the death's-door survival check). Skill cards
+            // show the bare icon; buff lines append their own "RES" after it.
+            D("SpriteDeathblow", "deathblow"),
             // The faction currency's cost glyph (the Wainwright's repair prices); the game
             // calls the currency Baubles but spells it only in a tooltip.
             D("SpriteBaubles", "baubles"),
@@ -821,6 +824,7 @@ namespace DD2A11y.Core.Strings {
         public static string SpriteDisease => T("SpriteDisease");
         public static string SpriteSpeed => T("SpriteSpeed");
         public static string SpriteHealth => T("SpriteHealth");
+        public static string SpriteDeathblow => T("SpriteDeathblow");
         public static string SpriteBaubles => T("SpriteBaubles");
         public static string TextUnknown => T("TextUnknown");
 

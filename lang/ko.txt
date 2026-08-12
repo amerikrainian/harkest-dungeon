@@ -213,6 +213,7 @@ SpriteStress = 스트레스
 SpriteDisease = 질병
 SpriteSpeed = 속도
 SpriteHealth = 체력
+SpriteDeathblow = 죽음의 일격
 SpriteBaubles = 패물
 TextUnknown = 알 수 없음
 BufferControl = 컨트롤

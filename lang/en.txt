@@ -215,6 +215,7 @@ SpriteStress = stress
 SpriteDisease = disease
 SpriteSpeed = speed
 SpriteHealth = HP
+SpriteDeathblow = deathblow
 SpriteBaubles = baubles
 TextUnknown = unknown
 BufferControl = control
