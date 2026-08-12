@@ -1563,7 +1563,13 @@ the interceptor named by a guarded pick's preview. Covered:
   ("Woodsman resisted Blight"). A token the library does not define, or defines as hidden,
   never speaks in any of these lines (fixed 2026-08-08: skills apply library-less logic
   markers like "token_logic_temporary" whose ids leaked raw into the gained line - the same
-  IsHidden gate the combatant buffers always applied).
+  IsHidden gate the combatant buffers always applied). A visible token with no glyphed name
+  entry speaks by its plain `token_name` string instead (fixed 2026-08-12: the Violinist's
+  song-part markers define only the plain name, and the gained line leaked the raw id - which
+  also spells out the riposte mechanic the game's own strings never mention; the marker now
+  reads "Last Played" everywhere, the song part staying in the combatant buffer's tooltip
+  line, exactly the sighted hover); the target preview's removes/steals/converts names take
+  the same fallback.
 - Retreat outcomes, wave starts, and the final round (all three via the game's own pop-text
   strings), wounds, affinity changes ("Dismas and Paracelsus, affinity +1"), barks ("Dismas: I
   line 'em up..."), hero objective completions, and tutorial/message toasts shown over combat

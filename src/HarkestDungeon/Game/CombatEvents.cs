@@ -173,7 +173,7 @@ namespace DD2A11y.Game {
                 return;
             }
             string owner = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
-            string token = TokenDescription.GetNameString(evt.m_TokenId);
+            string token = TokenNames.Spoken(evt.m_TokenId);
             if (owner == null || string.IsNullOrEmpty(token)) {
                 return;
             }
@@ -199,7 +199,7 @@ namespace DD2A11y.Game {
                 return;
             }
             string owner = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
-            string token = TokenDescription.GetNameString(evt.m_TokenId);
+            string token = TokenNames.Spoken(evt.m_TokenId);
             if (owner != null && !string.IsNullOrEmpty(token)) {
                 _pending.Add(S.CombatSpent(owner, token));
             }
@@ -211,7 +211,7 @@ namespace DD2A11y.Game {
                 return;
             }
             string owner = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
-            string token = TokenDescription.GetNameString(evt.m_NegatedTokenId);
+            string token = TokenNames.Spoken(evt.m_NegatedTokenId);
             if (owner != null && !string.IsNullOrEmpty(token)) {
                 _pending.Add(S.CombatLost(owner, token));
             }

@@ -3,6 +3,7 @@
 ## V0.3.0
 
 - Biome choices now include all their information.
+- Tokens that only define a plain name (the Violinist's song-part markers) no longer leak their raw id into combat speech; they now read by the game's own name, e.g. "gained Last Played", with the song part where the tooltip lives, in the combatant's buffer.
 
 ## V0.2.9
 

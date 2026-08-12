@@ -268,7 +268,7 @@ namespace DD2A11y.Game {
             var stolen = new List<string>();
             var converted = new List<string>();
             foreach (var token in Actors.VisibleTokens(target)) {
-                string name = TokenDescription.GetNameString(token.Definition.Id);
+                string name = TokenNames.Spoken(token.Definition.Id);
                 if (string.IsNullOrEmpty(name)) {
                     continue;
                 }
