@@ -21,21 +21,29 @@ namespace DD2A11y.Game {
             return string.IsNullOrEmpty(actor.ActorName) ? GameLoc.TryGet(actor.ActorDataId) : actor.ActorName;
         }
 
-        /// <summary>The combatant's battle identity: its name, with the rank appended when
-        /// several living teammates share it (a pack of Lost Souls reads by rank - the game
-        /// points at the specific one only visually, by highlighting the model under the
-        /// hovered portrait). Team and ranks are read live, so the numbering follows deaths
-        /// and position changes on its own.</summary>
+        /// <summary>The per-battle duplicate-name numbering (the game points at the specific
+        /// one only visually, by highlighting the model under the hovered portrait); the
+        /// combat screen resets it when the battle ends.</summary>
+        public static readonly CombatantNames Numbering = new CombatantNames();
+
+        /// <summary>The combatant's battle identity: its name, with a stable ordinal appended
+        /// while several living teammates share it (a pack of Lost Souls). Ordinals follow
+        /// first-sight position order, so shuffles never rename anyone; the team is read live,
+        /// so a death compacts the surviving numbers down.</summary>
         public static string SpokenName(ActorInstance actor) {
             string name = Name(actor);
             if (name == null) {
                 return null;
             }
-            var teamNames = new List<string>();
-            foreach (var teammate in Team(friendly: actor.TeamIndex == 0)) {
-                teamNames.Add(Name(teammate));
+            var team = Team(friendly: actor.TeamIndex == 0);
+            var order = new List<uint>(team.Count);
+            var named = new List<KeyValuePair<uint, string>>(team.Count);
+            foreach (var teammate in team) {
+                order.Add(teammate.m_ActorGuid);
+                named.Add(new KeyValuePair<uint, string>(teammate.m_ActorGuid, Name(teammate)));
             }
-            return CombatantNames.Spoken(name, actor.GetFrontRank() + 1, teamNames);
+            Numbering.Observe(order);
+            return Numbering.Spoken(actor.m_ActorGuid, name, named);
         }
 
         /// <summary>One side of the battle in rank order, as the game keeps the team: living

@@ -6,7 +6,8 @@
 - Tokens that only define a plain name (the Violinist's song-part markers, for instance) no longer leak their raw id into combat speech; they now read by the game's own name.
 - Buffs the game names only through a tooltip override no longer read as a raw stat key.
 - The deathblow resist icon now speaks as "deathblow" instead of "death"
-- Path-modified tokens now read their own descriptions on skill cards: an Antagoniste Duelist's stance glossary lines describe her path's stances instead of the base ones.
+- Path-modified tokens now read their own descriptions on skill cards.
+- Duplicate enemies now number 1 to N in the order you meet them, instead of by rank. I thought by rank would be more intuitive; 
 
 ## V0.2.9
 

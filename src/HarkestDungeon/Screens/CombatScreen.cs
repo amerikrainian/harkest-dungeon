@@ -132,6 +132,7 @@ namespace DD2A11y.Screens {
             _battleInfo = null;
             CombatLog.Clear();
             CombatEvents.Clear();
+            Actors.Numbering.Reset();
         }
 
         public override Container BuildRoot(object target) {

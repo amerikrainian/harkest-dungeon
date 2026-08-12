@@ -1426,11 +1426,13 @@ Top to bottom:
   whenever a turn rebuild had cleared the strip's memory). The per-team readers (team
   buffers, glances, the target snap) filter the row by each element's side - the
   position IS the side (labels are name + Rank + HP read
-  live; the name is the turn-order form, so a name shared by several living enemies
-  carries its rank - "Lost Soul 2" - on focus, in the team buffers, and in the glances
-  alike; the rank is the game's front rank, so a combatant behind a size-2 monster reads rank
-  3, not its team-list slot; a monster's name is its data id's loc string, the same source
-  as the game's turn-order tooltips). Corpses and prop monsters (battle-complete classes) are in the strips like any
+  live; a name shared by several living enemies carries a stable ordinal - "Lost Soul 2" -
+  on focus, in the team buffers, and in the glances alike. Ordinals count 1..N in
+  first-sight position order, not by rank (changed 2026-08-12: two Widows at ranks 3 and 4
+  read Widow 1 and Widow 2): a position shuffle never renames anyone, a death compacts the
+  survivors down (Widow 2 becomes Widow 1), and a sole survivor drops the number; the
+  first-sight order is the one remembered piece, reset when the battle ends. A monster's
+  name is its data id's loc string, the same source as the game's turn-order tooltips.) Corpses and prop monsters (battle-complete classes) are in the strips like any
   combatant - they hold a rank, take hits, and are targets for corpse-clearing - matching the
   game's own hoverable battlefield entities (unverified live). Kingdoms militia allies
   (`kingdoms_ally` classes fighting AI-driven in the party's line) are in the party strip the
@@ -1557,9 +1559,9 @@ screens' keys; all 24 are rebindable from the mod keys tab.
 
 Announced as they happen (queued, so narration stacks in order) and kept in the **combat
 buffer** (Ctrl+Left/Right; follows the latest line; empties when the battle ends). Display
-gates mirror the game's own pop-text handlers. Names use the turn-order form, so a
-duplicated enemy carries its rank ("Lost Soul 2 took 4 damage") in every event line, as does
-the interceptor named by a guarded pick's preview. Covered:
+gates mirror the game's own pop-text handlers. Names use the battlefield form, so a
+duplicated enemy carries its stable ordinal ("Lost Soul 2 took 4 damage") in every event
+line, as does the interceptor named by a guarded pick's preview. Covered:
 
 - Damage taken ("Lost Soul took 4 damage"; number dropped at 1; ", crit" appended on crits),
   heals (with crit variant), misses and dodges from the finalized skill results ("Woodsman
