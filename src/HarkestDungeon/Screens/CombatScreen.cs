@@ -316,7 +316,7 @@ namespace DD2A11y.Screens {
             if (modifier.ActorDataExternalBuffs != null) {
                 foreach (var buff in modifier.ActorDataExternalBuffs.GetBuffs()) {
                     foreach (var line in SpokenLine.NonEmptyLines(
-                        BuffDescription.GetDescription(buff, addLineOnActorDataEffect: false))) {
+                        BuffText.Description(buff))) {
                         yield return line;
                     }
                 }

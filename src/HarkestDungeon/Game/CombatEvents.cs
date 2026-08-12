@@ -243,7 +243,7 @@ namespace DD2A11y.Game {
             if (owner == null) {
                 return;
             }
-            string text = BuffDescription.GetDescription(evt.Buff, addLineOnActorDataEffect: false);
+            string text = BuffText.Description(evt.Buff);
             if (string.IsNullOrWhiteSpace(text)) {
                 text = isBuff ? S.SpriteBuff : S.SpriteDebuff;
             } else {

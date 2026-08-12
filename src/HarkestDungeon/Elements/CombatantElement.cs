@@ -187,7 +187,7 @@ namespace DD2A11y.Elements {
                     if (buff?.Definition == null || !buff.Definition.IsEligibleToShowAsCombatUi) {
                         continue;
                     }
-                    string text = BuffDescription.GetDescriptionWithDuration(buff);
+                    string text = BuffText.Description(buff);
                     if (string.IsNullOrWhiteSpace(text)) {
                         continue;
                     }
@@ -320,7 +320,7 @@ namespace DD2A11y.Elements {
                     if (buff?.Definition == null || !buff.Definition.IsEligibleToShowAsCombatUi) {
                         continue;
                     }
-                    string text = BuffDescription.GetDescriptionWithDuration(buff);
+                    string text = BuffText.Description(buff);
                     if (string.IsNullOrWhiteSpace(text)) {
                         continue;
                     }

@@ -1527,7 +1527,11 @@ screens' keys; all 24 are rebindable from the mod keys tab.
   the game's own `IsHidden` gate - they are internal logic-control state whose loc text is a
   "please file a bug" placeholder), per dot, and per combat buff (filtered to
   `IsEligibleToShowAsCombatUi`, e.g. Preparation's "On Riposte: heal Self 10%"), all from the
-  game's own describers.
+  game's own describers. Buff lines honor the game's `buff_tooltip_<id>_override` strings
+  with the same precedence its tooltip composers apply (fixed 2026-08-12: the Weapon Rack's
+  positive-token immunity is named only by that override - its stat has no formatted loc
+  string, so the per-buff describer leaked "actor_stat_type_formatted_resistance_positivetoken",
+  the same raw key the game's own panel shows; it now reads "Cannot Gain Positive Tokens").
 - Skill buffers: the full skill card (shared `SkillCard` composer with the hero sheet),
   then any affinity change the skill telegraphs (`QuerySkillPreview` per valid target,
   gated by the game's own `m_IsTelegraphed`): one shared line when every target telegraphs
