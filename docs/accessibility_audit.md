@@ -32,6 +32,15 @@ Conventions every supported screen follows. Individual sections below note only 
 
 - Arrows move the mod's own focus; Enter activates; Escape backs out; Home/End jump;
   Tab/Shift-Tab cross panels.
+- Run-status glances (2026-08-12), global and rebindable, composed from the run model so
+  they answer from any screen and stay silent outside a run: **F** the flame level ("Flame
+  47"), **H** the coach ("Armor: 2/2, Wheel: 2/2", the sheet's own strings), **B** the
+  wallet - Relics, Mastery (minus points pending at an inn trainer, like the game's bar),
+  the Baubles total with each faction currency held by its own item name, and a kingdom's
+  Materials. A screen category claiming the same chord wins there (combat's F/H/B are free,
+  so all three answer in combat too); the letters are ones the game leaves unbound even on
+  the shared road keyboard - R, the natural key for the wallet, is the game's own
+  relationships key on the road, the rename key at the crossroads, and a combat glance.
 - Focus lines are terse (label, role, value). Tooltips and detail are buffer lines:
   Ctrl+Up/Down step lines, Ctrl+Left/Right switch buffers. Buffers repopulate live on every
   buffer keypress, so they never go stale.

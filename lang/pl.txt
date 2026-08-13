@@ -261,3 +261,6 @@ InputCombatTargets = Prawidłowe cele wskazanej umiejętności
 InputCombatTurnOrder = Kolejność tur
 InputCombatAffinity = Zapowiedziane zmiany relacji
 InputStoryHero = Stan bohatera wskazanego wyboru
+InputFlame = Poziom płomienia
+InputCoach = Pancerz i koła dyliżansu
+InputWallet = Sakiewka

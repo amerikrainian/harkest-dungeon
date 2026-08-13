@@ -261,3 +261,6 @@ InputCombatTargets = Bersagli validi dell'abilità focalizzata
 InputCombatTurnOrder = Ordine dei turni
 InputCombatAffinity = Cambiamenti di affinità annunciati
 InputStoryHero = Stato dell'eroe della scelta focalizzata
+InputFlame = Livello della fiamma
+InputCoach = Corazza e ruote della carrozza
+InputWallet = Portafoglio

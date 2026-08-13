@@ -261,3 +261,6 @@ InputCombatTargets = 焦点技能的有效目标
 InputCombatTurnOrder = 行动顺序
 InputCombatAffinity = 预告的和睦值变化
 InputStoryHero = 焦点选项的英雄状态
+InputFlame = 火焰等级
+InputCoach = 马车护甲与车轮
+InputWallet = 钱包

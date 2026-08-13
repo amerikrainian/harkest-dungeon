@@ -261,3 +261,6 @@ InputCombatTargets = Допустимі цілі навички у фокусі
 InputCombatTurnOrder = Порядок ходів
 InputCombatAffinity = Майбутні зміни думок
 InputStoryHero = Стан героя вибору у фокусі
+InputFlame = Рівень полум'я
+InputCoach = Броня та колеса диліжанса
+InputWallet = Гаманець

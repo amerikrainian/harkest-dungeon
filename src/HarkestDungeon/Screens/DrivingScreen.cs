@@ -309,12 +309,12 @@ namespace DD2A11y.Screens {
             // The same game strings the stagecoach sheet composes, over the live run values.
             var armor = FindChild(transform, "ArmorContainer");
             _status.Add(new ReadoutElement(
-                () => StatLine("stage_coach_sheet_armor_stat_label",
+                () => RunStatus.CoachStat("stage_coach_sheet_armor_stat_label",
                     RunValueType.STAGE_COACH_ARMOR, RunStatType.STAGE_COACH_ARMOR_MAX_VALUE),
                 detail: () => TooltipReader.Lines(armor == null ? null : armor.gameObject)));
             var wheels = FindChild(transform, "WheelContainer");
             _status.Add(new ReadoutElement(
-                () => StatLine("stage_coach_sheet_wheel_stat_label",
+                () => RunStatus.CoachStat("stage_coach_sheet_wheel_stat_label",
                     RunValueType.STAGE_COACH_WHEELS, RunStatType.STAGE_COACH_WHEELS_MAX_VALUE),
                 detail: () => TooltipReader.Lines(wheels == null ? null : wheels.gameObject)));
             // The Loathing meter names itself through its own tooltip.
@@ -455,16 +455,6 @@ namespace DD2A11y.Screens {
             if (button != null) {
                 _buttons.Add(new SelectableElement(button));
             }
-        }
-
-        private static string StatLine(string locKey, RunValueType value, RunStatType max) {
-            string format = GameLoc.TryGet(locKey);
-            if (format == null) {
-                return null;
-            }
-            var mgr = Singleton<GameTypeMgr>.Instance;
-            return string.Format(format,
-                mgr.RunValues.GetValue(value), mgr.RunDataManager.GetBaseStatValue(max));
         }
 
         private int Signature(GameUIBhv hud) {

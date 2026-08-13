@@ -261,3 +261,6 @@ InputCombatTargets = 포커스된 스킬의 유효 대상
 InputCombatTurnOrder = 턴 순서
 InputCombatAffinity = 예고된 호감도 변화
 InputStoryHero = 포커스된 선택지의 영웅 상태
+InputFlame = 불꽃 레벨
+InputCoach = 마차 장갑과 바퀴
+InputWallet = 소지금

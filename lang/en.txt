@@ -263,3 +263,6 @@ InputCombatTargets = Focused skill's valid targets
 InputCombatTurnOrder = Turn order
 InputCombatAffinity = Telegraphed affinity changes
 InputStoryHero = Focused choice's hero status
+InputFlame = Flame level
+InputCoach = Coach armor and wheels
+InputWallet = Wallet

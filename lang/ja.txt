@@ -261,3 +261,6 @@ InputCombatTargets = フォーカス中のスキルの有効な対象
 InputCombatTurnOrder = ターン順
 InputCombatAffinity = 予告された親密度の変化
 InputStoryHero = フォーカス中の選択肢の英雄の状態
+InputFlame = 炎レベル
+InputCoach = 馬車の装甲と車輪
+InputWallet = 所持金

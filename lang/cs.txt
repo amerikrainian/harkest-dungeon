@@ -261,3 +261,6 @@ InputCombatTargets = Platné cíle zaměřené dovednosti
 InputCombatTurnOrder = Pořadí tahů
 InputCombatAffinity = Chystané změny náklonnosti
 InputStoryHero = Stav hrdiny zaměřené možnosti
+InputFlame = Úroveň plamene
+InputCoach = Pancíř a kola dostavníku
+InputWallet = Peněženka

@@ -401,6 +401,15 @@ namespace DD2A11y {
             // The focused story choice's hero vitals - what the choice line no longer carries.
             Reg("story.hero", S.InputStoryHero, () => _storyScreen.GlanceSelf(),
                 InputCategory.Story).AddBinding(K(Key.S));
+            // Run-status glances, answering from any screen and silent outside a run. Global,
+            // so a screen category claiming the same key wins there; the keys are ones the
+            // game leaves unbound even on the shared road keyboard.
+            Reg("glance.flame", S.InputFlame, () => GlanceRun(Game.RunStatus.FlameLine()))
+                .AddBinding(K(Key.F));
+            Reg("glance.coach", S.InputCoach, () => GlanceRun(Game.RunStatus.CoachLine()))
+                .AddBinding(K(Key.H));
+            Reg("glance.wallet", S.InputWallet, () => GlanceRun(Game.RunStatus.WalletLine()))
+                .AddBinding(K(Key.B));
             // Rename the focused hero, and roll them a random name. The game puts both on one
             // key by tap-versus-hold; a hold is poor for a screen-reader user, so they get a
             // key each. Roster-category (live only where hero slots advertise the actions);
@@ -440,6 +449,13 @@ namespace DD2A11y {
             Reg("ui.grab", S.InputGrab, () => ToggleGrab(takeOne: false)).AddBinding(K(Key.Space));
             Reg("ui.place.one", S.InputPlaceOne, () => ToggleGrab(takeOne: true))
                 .AddBinding(K(Key.Space, shift: true));
+        }
+
+        // A run-status glance: speak in place, silence when the run has nothing to say.
+        private void GlanceRun(string line) {
+            if (line != null) {
+                Speech.Speak(line, interrupt: true);
+            }
         }
 
         // A focus move re-binds the element-fed buffers to the landed element and re-homes

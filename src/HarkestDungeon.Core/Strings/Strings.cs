@@ -563,6 +563,10 @@ namespace DD2A11y.Core.Strings {
             D("InputCombatAffinity", "Telegraphed affinity changes"),
             // The road-story glance, live on the story screen's choices.
             D("InputStoryHero", "Focused choice's hero status"),
+            // Run-status glances, answering from any screen during a run.
+            D("InputFlame", "Flame level"),
+            D("InputCoach", "Coach armor and wheels"),
+            D("InputWallet", "Wallet"),
         };
 
         private static readonly Dictionary<string, string> English = BuildEnglish();
@@ -879,5 +883,8 @@ namespace DD2A11y.Core.Strings {
         public static string InputCombatTurnOrder => T("InputCombatTurnOrder");
         public static string InputCombatAffinity => T("InputCombatAffinity");
         public static string InputStoryHero => T("InputStoryHero");
+        public static string InputFlame => T("InputFlame");
+        public static string InputCoach => T("InputCoach");
+        public static string InputWallet => T("InputWallet");
     }
 }

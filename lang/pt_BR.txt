@@ -261,3 +261,6 @@ InputCombatTargets = Alvos válidos da habilidade em foco
 InputCombatTurnOrder = Ordem de turnos
 InputCombatAffinity = Mudanças de afinidade anunciadas
 InputStoryHero = Estado do herói da escolha em foco
+InputFlame = Nível da chama
+InputCoach = Blindagem e rodas da carruagem
+InputWallet = Carteira

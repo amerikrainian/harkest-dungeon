@@ -261,3 +261,6 @@ InputCombatTargets = Gültige Ziele der fokussierten Fähigkeit
 InputCombatTurnOrder = Zugreihenfolge
 InputCombatAffinity = Angekündigte Affinitätsänderungen
 InputStoryHero = Status des Helden der fokussierten Entscheidung
+InputFlame = Flammenstufe
+InputCoach = Panzerung und Räder der Kutsche
+InputWallet = Geldbeutel

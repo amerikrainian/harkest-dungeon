@@ -13,6 +13,7 @@
 - The hero sheet's conditions tab is no longer a hot mess of one line.
 - The crossroads path seals now read their own path's card in the buffer.
 - The Infernal Flame Vitrine is now a regular button in the crossroads actions, next to Embark. The game only ever opened it on the Z hotkey, which nothing announced.
+- Three run-status glance keys, answering from any screen during a run and silent outside one: F speaks the flame level, H the coach's armor and wheels, B the wallet - Relics, Mastery, the Baubles total plus each faction currency you hold by name, and a kingdom's Materials.
 
 ## V0.2.9
 
