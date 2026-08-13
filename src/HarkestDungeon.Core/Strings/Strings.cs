@@ -464,9 +464,6 @@ namespace DD2A11y.Core.Strings {
             // A hero completed their run objective; {0} = the hero.
             D("ToastObjective", "{0} objective complete"),
 
-            // Driving. Spoken (with the fork cue) when a junction comes into range; the route
-            // menu follows when the coach stops there.
-            D("RoadForkAhead", "fork ahead"),
             // Route directions at a fork. The game shows arrows with no words to reuse.
             D("RouteLeft", "left"),
             D("RouteForward", "forward"),
@@ -827,7 +824,6 @@ namespace DD2A11y.Core.Strings {
         public static string ToastTutorial(string title) => F("ToastTutorial", title);
         public static string ToastObjective(string name) => F("ToastObjective", name);
 
-        public static string RoadForkAhead => T("RoadForkAhead");
         public static string RouteLeft => T("RouteLeft");
         public static string RouteForward => T("RouteForward");
         public static string RouteRight => T("RouteRight");

@@ -8,7 +8,6 @@ using Assets.Code.Game.StageCoach;
 using Assets.Code.Item;
 using Assets.Code.Item.Events;
 using Assets.Code.Map;
-using Assets.Code.Map.Generation.Row;
 using Assets.Code.Map.RoadEvents;
 using Assets.Code.Map.Triggers;
 using Assets.Code.Run;
@@ -38,13 +37,11 @@ namespace DD2A11y.Game {
     /// through the pickup's own physics entry point, so the game's whole drive-over sequence
     /// (gates, vfx, loot toast) runs unchanged. The coach's own motion keeps two
     /// cues: the turning loop and the road-edge bump. Everything else on the road is speech -
-    /// collection, damage, barks (via the bark-spawner patches, BarkEvents), an approaching
-    /// fork. Event listeners and patches only compose pending lines; every sound and word
+    /// collection, damage, barks (via the bark-spawner patches, BarkEvents). Event listeners
+    /// and patches only compose pending lines; every sound and word
     /// goes out on the pump path.
     /// </summary>
     public sealed class RoadSense {
-        private static readonly AccessTools.FieldRef<TriggerIntersectionBhv, IntersectionState> StateField =
-            AccessTools.FieldRefAccess<TriggerIntersectionBhv, IntersectionState>("m_CurrentState");
         private static readonly AccessTools.FieldRef<RoadEventBhv, RoadEventInteractionType> InteractionTypeField =
             AccessTools.FieldRefAccess<RoadEventBhv, RoadEventInteractionType>("m_interactionType");
         private static readonly AccessTools.FieldRef<RoadEventBhv, int> CollisionCountField =
@@ -78,7 +75,6 @@ namespace DD2A11y.Game {
         // Cue and/or line to deliver on the next pump tick; a null cue is speech-only (the
         // game's own sfx already marks the moment).
         private readonly List<KeyValuePair<AudioCue?, string>> _pending = new List<KeyValuePair<AudioCue?, string>>();
-        private readonly HashSet<int> _announcedForks = new HashSet<int>();
         private float _nextScanTime;
         private RoadEventBhv[] _pickupCandidates = new RoadEventBhv[0];
         // Hitbox geometry per candidate, rebuilt on the scan clock alongside the candidate
@@ -193,7 +189,6 @@ namespace DD2A11y.Game {
         public void Tick() {
             if (!OnRoad) {
                 _pending.Clear();
-                _announcedForks.Clear();
                 _pickupCandidates = new RoadEventBhv[0];
                 _hitboxes.Clear();
                 _coachColliders = new Collider[0];
@@ -233,7 +228,7 @@ namespace DD2A11y.Game {
                 AutoCollectPassed(vehicle.transform);
             }
 
-            // The fork menu (or any captured screen) owns the moment; the ambient layer stays quiet.
+            // A captured screen owns the moment; the ambient layer stays quiet.
             if (_gate.Captured) {
                 StopAllLoops();
                 return;
@@ -256,7 +251,6 @@ namespace DD2A11y.Game {
             // refresh is enough; everything per-frame reads this array.
             _pickupCandidates = UnityEngine.Object.FindObjectsOfType<RoadEventBhv>();
             RefreshHitboxes(vehicle);
-            AnnounceApproachingFork();
         }
 
         // One loop per uncollected loot pickup in range, each re-aimed every frame; the volume
@@ -590,20 +584,6 @@ namespace DD2A11y.Game {
                 _audio.PlayCue(AudioCue.RoadEdgeBump, 1f, pan);
             } else if (!_edgeArmed && offCenter <= EdgeRearm) {
                 _edgeArmed = true;
-            }
-        }
-
-        // Each junction announces once, as its banners come up on approach; the route menu
-        // itself opens when the coach halts there.
-        private void AnnounceApproachingFork() {
-            foreach (var intersection in UnityEngine.Object.FindObjectsOfType<TriggerIntersectionBhv>()) {
-                var state = StateField(intersection);
-                if (state != IntersectionState.ENTER && state != IntersectionState.SLOW_DOWN) {
-                    continue;
-                }
-                if (_announcedForks.Add(intersection.GetInstanceID())) {
-                    _speak(S.RoadForkAhead, false);
-                }
             }
         }
 

@@ -204,7 +204,6 @@ StoryAgrees = {0} stimmt zu
 StoryDisagrees = {0} widerspricht
 ToastTutorial = Tutorial, {0}
 ToastObjective = {0}, Ziel erfüllt
-RoadForkAhead = Gabelung voraus
 RouteLeft = links
 RouteForward = geradeaus
 RouteRight = rechts

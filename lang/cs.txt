@@ -204,7 +204,6 @@ StoryAgrees = {0} souhlasí
 StoryDisagrees = {0} nesouhlasí
 ToastTutorial = výuka, {0}
 ToastObjective = {0}, cíl splněn
-RoadForkAhead = křižovatka vpředu
 RouteLeft = vlevo
 RouteForward = rovně
 RouteRight = vpravo

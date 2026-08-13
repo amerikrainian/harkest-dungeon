@@ -14,8 +14,8 @@ namespace DD2A11y.Elements {
     /// <summary>
     /// One route at a road fork: its direction and destination (the game's own road-indicator
     /// title; "Unknown" while unrevealed - what the sighted banner shows, never the hidden
-    /// type). The buffer carries the destination's description, which heroes prefer this
-    /// route, and the banner's tooltips. Enter commits through the game's own selection
+    /// type), then which heroes prefer it as the value. The buffer carries the destination's
+    /// description and the banner's tooltips. Enter commits through the game's own selection
     /// (audio and narration included), after which the coach drives itself.
     /// </summary>
     public sealed class RouteElement : UIElement {
@@ -33,6 +33,14 @@ namespace DD2A11y.Elements {
         public override string Label => SpokenLine.Join(DirectionWord(), DestinationTitle());
 
         public override string Role => S.RoleButton;
+
+        // Who prefers the route rides the focus line - the choice-driving fact, not detail.
+        public override string Value {
+            get {
+                string preferrers = Preferrers();
+                return preferrers == null ? null : S.RoutePreferredBy(preferrers);
+            }
+        }
 
         private string DirectionWord() {
             switch (DirectionField(_indicator)) {
@@ -63,10 +71,6 @@ namespace DD2A11y.Elements {
                 if (description != null) {
                     yield return description;
                 }
-            }
-            string preferrers = Preferrers();
-            if (preferrers != null) {
-                yield return S.RoutePreferredBy(preferrers);
             }
             foreach (var line in TooltipReader.Lines(_indicator.gameObject)) {
                 yield return line;

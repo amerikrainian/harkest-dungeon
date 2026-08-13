@@ -204,7 +204,6 @@ StoryAgrees = {0} concorda
 StoryDisagrees = {0} discorda
 ToastTutorial = tutorial, {0}
 ToastObjective = {0}, objetivo concluído
-RoadForkAhead = bifurcação à frente
 RouteLeft = esquerda
 RouteForward = em frente
 RouteRight = direita

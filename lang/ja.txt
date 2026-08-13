@@ -204,7 +204,6 @@ StoryAgrees = {0} は賛成
 StoryDisagrees = {0} は反対
 ToastTutorial = チュートリアル、{0}
 ToastObjective = {0}の目標達成
-RoadForkAhead = 前方に分岐
 RouteLeft = 左
 RouteForward = 直進
 RouteRight = 右

@@ -204,7 +204,6 @@ StoryAgrees = {0} одобряет
 StoryDisagrees = {0} не одобряет
 ToastTutorial = обучение, {0}
 ToastObjective = {0}, цель выполнена
-RoadForkAhead = впереди развилка
 RouteLeft = налево
 RouteForward = прямо
 RouteRight = направо

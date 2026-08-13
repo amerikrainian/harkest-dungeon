@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Assets.Code.Game;
+using Assets.Code.Map.Generation.Row;
 using Assets.Code.Run;
+using Assets.Code.UI;
 using Assets.Code.UI.Banter;
 using Assets.Code.Utils;
 using DD2A11y.Core.Nav;
@@ -16,7 +18,7 @@ using UnityEngine.UI;
 
 namespace DD2A11y.Screens {
     /// <summary>
-    /// Free driving (the DRIVING mode floor, below the fork menu and the road map). The first
+    /// Free driving (the DRIVING mode floor, below the road map). The first
     /// Tab stop is the driving area, where every key stays the game's - arrows and WASD drive,
     /// M, I, C, Z, G, Alt, Ctrl, and Escape all work as shipped - and the mod claims only Tab
     /// (the game's second minimap key) for panel traversal. The other stops read the rest of
@@ -28,6 +30,14 @@ namespace DD2A11y.Screens {
     /// the HUD buttons. Off the driving area the arrows, Space, Enter, and bare Ctrl rest so
     /// our list navigation cannot steer the coach; WASD and the letter hotkeys stay live
     /// everywhere. Escape stays the game's pause everywhere.
+    /// A road fork is a transient popup in this same tree, mirroring the sighted surface (the
+    /// route banners overlay the live HUD; the junction itself refuses driving until a route
+    /// is chosen): while a junction stands waiting, a Fork stop replaces the driving area -
+    /// steering is refused, so the road stop IS the routes - with one element per route,
+    /// focus jumps there as it appears, Up/Down walk the routes and Enter commits through the
+    /// game's own selection - and the whole HUD stays reachable around it, Tab crossing the
+    /// panels and the game's letter keys live. On the commit the routes empty and focus
+    /// re-homes to the driving area as the coach drives itself through the branch.
     /// </summary>
     public sealed class DrivingScreen : GameScreen {
         private static readonly AccessTools.FieldRef<GameUIBhv, GameObject> MutatorContainerField =
@@ -46,6 +56,10 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<GameUIBhv, Assets.Code.UI.StageCoachTorchUiBhv>("m_stageCoachTorch");
         private static readonly AccessTools.FieldRef<Assets.Code.UI.StageCoachTorchUiBhv, Assets.Code.Data.DataContextBhv> TorchPanelField =
             AccessTools.FieldRefAccess<Assets.Code.UI.StageCoachTorchUiBhv, Assets.Code.Data.DataContextBhv>("m_tooltipDataContext");
+        private static readonly AccessTools.FieldRef<TriggerIntersectionBhv, IntersectionState> IntersectionStateField =
+            AccessTools.FieldRefAccess<TriggerIntersectionBhv, IntersectionState>("m_CurrentState");
+        private static readonly AccessTools.FieldRef<TriggerIntersectionBhv, List<RoadIndicatorUIBhv>> PreviewIconsField =
+            AccessTools.FieldRefAccess<TriggerIntersectionBhv, List<RoadIndicatorUIBhv>>("m_PreviewIcons");
 
         private readonly Action<string, bool> _speak;
         private readonly TraditionalNavigator _navigator;
@@ -60,18 +74,24 @@ namespace DD2A11y.Screens {
             new Dictionary<HeroRibbonBhv, HeroRibbonElement>();
         private readonly Dictionary<UnityEngine.Object, UIElement> _goalRows =
             new Dictionary<UnityEngine.Object, UIElement>();
+        private readonly Dictionary<RoadIndicatorUIBhv, RouteElement> _routeElements =
+            new Dictionary<RoadIndicatorUIBhv, RouteElement>();
 
         private GameUIBhv _hud;
         private HeroRibbonContainerBhv _ribbonContainer;
         private Container _root;
+        private Container _routes;
         private Container _status;
         private Container _heroes;
         private Container _goals;
         private Container _buttons;
         private UIElement _drivingArea;
         private HeroRibbonBhv _held;
+        private TriggerIntersectionBhv _intersection;
+        private float _nextForkScanTime;
         private int _builtSignature;
         private bool _goalsWereOpen;
+        private bool _forkWasUp;
 
         public DrivingScreen(Action<string, bool> speak, TraditionalNavigator navigator,
                              Core.Input.InputManager input) {
@@ -116,6 +136,20 @@ namespace DD2A11y.Screens {
             _root = new RootContainer(ContainerShape.Panel);
             _root.WrapTabStops = true;
 
+            // While a junction holds the coach the fork takes the driving area's place as the
+            // first stop (the area's line answers null then): steering is refused, so the road
+            // stop is the routes.
+            _routes = new Container(ContainerShape.VerticalList, S.ScreenFork);
+            _routeElements.Clear();
+            _intersection = null;
+            _nextForkScanTime = 0f;
+            UpdateIntersection();
+            PopulateRoutes();
+            // The jump-to-fork edge fires on the first update even when the junction predates
+            // the entry (the map closed over a waiting fork): the fork IS the pending decision.
+            _forkWasUp = false;
+            _root.Add(_routes);
+
             _drivingArea = new ReadoutElement(AreaLine);
             _root.Add(_drivingArea);
 
@@ -157,10 +191,28 @@ namespace DD2A11y.Screens {
             } else {
                 _listKeys.Reassert();
             }
+            UpdateIntersection();
             if (Signature(hud) != _builtSignature) {
                 PopulateHeroes();
                 PopulateGoals(hud);
+                PopulateRoutes();
                 _builtSignature = Signature(hud);
+            }
+            // The fork popup's appearance edge: focus jumps to the first route and the router
+            // reads the landing (the Fork container label heads it); the commit empties the
+            // routes and the orphan path re-homes to the driving area.
+            if (_intersection != null) {
+                if (!_forkWasUp) {
+                    var firstRoute = _routes.FirstFocusable();
+                    if (firstRoute != null) {
+                        _forkWasUp = true;
+                        _navigator.Focus(firstRoute, announce: false);
+                        _listKeys.Reassert();
+                        return true;
+                    }
+                }
+            } else {
+                _forkWasUp = false;
             }
             // The goals panel is player-summoned (G or its button), so on the open's edge -
             // once, when its rows become focusable a beat after the toggle - focus jumps to
@@ -283,7 +335,12 @@ namespace DD2A11y.Screens {
         // ---- Tree ----
 
         // The biome name the minimap widget shows; the authored fallback covers its absence.
+        // Null while a junction holds the coach - navigation skips the stop live, the fork
+        // standing in its place.
         private string AreaLine() {
+            if (_intersection != null) {
+                return null;
+            }
             var label = FindChild(_hud == null ? null : _hud.transform, "ActiveBiomeLabel");
             var tmp = label == null ? null : label.GetComponent<TMP_Text>();
             string biome = tmp == null ? null : tmp.text;
@@ -367,6 +424,52 @@ namespace DD2A11y.Screens {
             if (tmp != null) {
                 _status.Add(new ReadoutElement(
                     () => tmp == null || !tmp.gameObject.activeInHierarchy ? null : tmp.text));
+            }
+        }
+
+        // The junction's own "stopped and waiting for a route" condition.
+        private static bool AwaitingChoice(TriggerIntersectionBhv intersection) {
+            return intersection != null
+                && IntersectionStateField(intersection) == IntersectionState.SLOW_DOWN
+                && intersection.SelectedIntersectionOptionIndex == -1;
+        }
+
+        // The current junction stays valid frame-to-frame without a scene scan; scanning for
+        // a new waiting one is throttled - the game's own wait is indefinite, so a beat of
+        // latency opening the popup is invisible.
+        private void UpdateIntersection() {
+            if (AwaitingChoice(_intersection)) {
+                return;
+            }
+            _intersection = null;
+            if (Time.unscaledTime < _nextForkScanTime) {
+                return;
+            }
+            _nextForkScanTime = Time.unscaledTime + 0.25f;
+            foreach (var candidate in UnityEngine.Object.FindObjectsOfType<TriggerIntersectionBhv>()) {
+                if (AwaitingChoice(candidate)) {
+                    _intersection = candidate;
+                    break;
+                }
+            }
+        }
+
+        // One element per route banner in left-to-right order, reused across populates so a
+        // hero-strip or goals rebuild mid-fork cannot orphan the route focus.
+        private void PopulateRoutes() {
+            _routes.Clear();
+            if (_intersection == null) {
+                return;
+            }
+            foreach (var indicator in PreviewIconsField(_intersection)) {
+                if (indicator == null || !indicator.gameObject.activeInHierarchy) {
+                    continue;
+                }
+                if (!_routeElements.TryGetValue(indicator, out var element)) {
+                    element = new RouteElement(indicator);
+                    _routeElements[indicator] = element;
+                }
+                _routes.Add(element);
             }
         }
 
@@ -459,6 +562,7 @@ namespace DD2A11y.Screens {
 
         private int Signature(GameUIBhv hud) {
             int signature = 17;
+            signature = signature * 31 + (_intersection == null ? 0 : _intersection.GetInstanceID());
             foreach (var ribbon in ActiveRibbons()) {
                 signature = signature * 31 + ribbon.GetInstanceID();
                 signature = signature * 31 + ribbon.GetSlot();

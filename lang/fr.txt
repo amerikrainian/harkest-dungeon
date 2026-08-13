@@ -204,7 +204,6 @@ StoryAgrees = {0} approuve
 StoryDisagrees = {0} désapprouve
 ToastTutorial = tutoriel, {0}
 ToastObjective = {0}, objectif accompli
-RoadForkAhead = embranchement devant
 RouteLeft = gauche
 RouteForward = tout droit
 RouteRight = droite

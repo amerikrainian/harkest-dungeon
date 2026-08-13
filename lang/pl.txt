@@ -204,7 +204,6 @@ StoryAgrees = {0} się zgadza
 StoryDisagrees = {0} się nie zgadza
 ToastTutorial = samouczek, {0}
 ToastObjective = {0}, cel wykonany
-RoadForkAhead = rozwidlenie przed nami
 RouteLeft = w lewo
 RouteForward = prosto
 RouteRight = w prawo

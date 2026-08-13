@@ -206,7 +206,6 @@ StoryAgrees = {0} agrees
 StoryDisagrees = {0} disagrees
 ToastTutorial = tutorial, {0}
 ToastObjective = {0} objective complete
-RoadForkAhead = fork ahead
 RouteLeft = left
 RouteForward = forward
 RouteRight = right

@@ -1209,16 +1209,27 @@ where the game links them); reveal events (scouting, watchtowers) are not announ
 happen; no points-of-interest jump or user markers yet (the STS2 features staged for phase 2);
 the whole screen is awaiting live verification.
 
-## 5.4 Fork Menu (`RouteChoiceScreen`) - BUILT
+## 5.4 Fork Popup (in `DrivingScreen`) - WORKS
 
-Not yet reached in play. Opens when the game's own junction wait halts the coach unchosen.
+Verified live 2026-08-12 (player-driven: routes walked, buffers read, commit + re-home, the
+full Tab cycle at the halt). A transient Fork stop inside the driving tree, mirroring the
+sighted surface: the route banners overlay the live HUD and the junction itself refuses
+driving until a route is chosen, so the rest of driving stays fully available around the
+choice. While a junction waits, focus jumps to the fork as it appears - and the fork
+replaces the driving area as the first stop (steering is refused, so the road stop IS the
+routes; the biome readout returns when the coach rolls again).
 
-- Routes in left-to-right order read "direction, destination" (the game's road-indicator
-  titles; "Unknown" unrevealed - the hidden type is never leaked). Buffers: description,
-  which heroes prefer the route, banner tooltips.
-- Enter commits via the banner's own OnClick (game audio + narration; the coach then drives
-  itself); Escape dismisses that junction back to manual steering (steer at a banner holding
-  W, the game's hold-to-fill).
+- Routes in left-to-right order read "direction, destination, preferred by X" (the game's
+  road-indicator titles; "Unknown" unrevealed - the hidden type is never leaked). Buffers:
+  description, banner tooltips.
+- Up/Down walk the routes; Enter commits via the banner's own OnClick (game audio +
+  narration; the coach then drives itself and focus re-homes to the driving area).
+- Tab still crosses the HUD panels (status, heroes, goals, buttons) and back to the fork;
+  the game's own letter keys (M, I, C, Z, G) stay live - the map opens over a waiting fork
+  and closing it re-lands there. Escape stays the game's pause; WASD is refused by the
+  junction's own can-drive gate, not by the mod.
+- No approach announcement: the popup itself is the fork's arrival (the old "fork ahead"
+  cue raced the popup and said nothing the popup does not).
 
 ## 5.5 Confession Select (`BossSelectScreen`) - BUILT
 

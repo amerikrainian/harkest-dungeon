@@ -204,7 +204,6 @@ StoryAgrees = {0} 赞同
 StoryDisagrees = {0} 反对
 ToastTutorial = 教程，{0}
 ToastObjective = {0}英雄目标完成
-RoadForkAhead = 前方岔路
 RouteLeft = 左
 RouteForward = 直行
 RouteRight = 右
