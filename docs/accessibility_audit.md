@@ -792,9 +792,12 @@ Live-verified 2026-07-23. The pre-run hub (the HERO_SELECT mode - `HeroSelectBhv
 
 - Party ranks (the game's "roster slots", Rank1-4), then the hero pool as horizontal strips,
   then the actions strip: the party's name when the composition has one, the shown hero's
-  name controls, the two overlay openers, **Embark** (appears once all four ranks are filled -
-  drives the game's own `ConfirmRosterSelection`, including its unequipped-skills confirmation
-  dialog), and **Random Party**.
+  name controls, the two overlay openers, the **Infernal Flame Vitrine** button (added
+  2026-08-12, expeditions only: the game opens the vitrine solely on the StageCoach hotkey,
+  which the captured gate swallows and nothing on screen advertises; named by the vitrine's
+  own title, and the opened screen reads through the generic floor), **Embark** (appears once
+  all four ranks are filled - drives the game's own `ConfirmRosterSelection`, including its
+  unequipped-skills confirmation dialog), and **Random Party**.
 - Each party slot LEADS WITH ITS RANK ("rank 1, Highwayman" / "rank 1, empty slot";
   live-verified 2026-08-02) - rank 1 is the front line, the same numbering combat uses, and
   it is what tells the four otherwise identical empty slots apart. The slots run rank 4 to

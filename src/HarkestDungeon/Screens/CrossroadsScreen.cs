@@ -4,6 +4,7 @@ using Assets.Code.Campaign;
 using Assets.Code.Game;
 using Assets.Code.UI;
 using Assets.Code.UI.HeroSelect;
+using Assets.Code.UI.Managers;
 using Assets.Code.Utils;
 using DD2A11y.Core.Nav;
 using DD2A11y.Elements;
@@ -195,6 +196,17 @@ namespace DD2A11y.Screens {
             var loadoutButton = LoadoutButtonField(_heroSelect);
             if (loadoutButton != null && loadoutButton.gameObject.activeInHierarchy) {
                 actions.Add(new SelectableElement(loadoutButton));
+            }
+
+            // The Infernal Flame Vitrine (boss blessings and torch trophies on the coach),
+            // which the game itself opens only on the StageCoach hotkey in expeditions - a
+            // key the captured gate swallows and nothing on screen advertises. Named by the
+            // vitrine's own title; it reads as its own screen once open.
+            if (Singleton<GameTypeMgr>.Instance != null
+                && Singleton<GameTypeMgr>.Instance.CurrentGameType == GameType.EXPEDITION) {
+                actions.Add(new ActionElement(
+                    () => GameLoc.TryGet("infernal_torch_boss_completion_title"), S.RoleButton,
+                    () => SingletonMonoBehaviour<CommonUiBhv>.Instance.ToggleTorchCompletionScreen()));
             }
 
             var confirm = ConfirmButtonField(_heroSelect);
