@@ -121,6 +121,10 @@ namespace DD2A11y {
             Game.InnEvents.Attach();
             Game.AffinityEvents.RoadSink = _roadSense.Post;
             Game.AffinityEvents.Attach();
+            Game.PartyEvents.RoadSink = _roadSense.Post;
+            // Eager: the combat listeners double as the non-combat party-event routers, so
+            // they must exist before the first battle ever resolves.
+            Game.CombatEvents.Attach();
             Game.CombatEvents.Settings = Settings;
 
             Router = new ScreenRouter(Navigator, Gate, speak);

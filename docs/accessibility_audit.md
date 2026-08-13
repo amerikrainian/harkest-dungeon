@@ -1340,10 +1340,16 @@ pressed in testing.
   routed to the road queue, the inn queue, or straight to speech by mode; combat keeps its
   own tick handler.
 
+- Story outcomes speak in full (added 2026-08-12, `PartyEvents`): quirks gained, stress
+  dealt and relieved, heals, damage, next-battle tokens and buffs, resists, and wounds -
+  the pop texts the game floats over the hero ribbons in every mode. The combat listeners
+  route each event to `PartyEvents` outside combat, so one listener serves both sides and
+  neither can double-speak; gates mirror the game's non-combat pop handlers (already-shown
+  heals, debug/dot/regen/hospital sources skipped), road collision damage stays with
+  RoadSense, and lines ride the road or inn transient queue, else queued speech.
+
 **Known gaps:** choices spawning after screen entry leave focus on the utility buttons until
-the player moves (Home reaches the choices); story RESULT presentation beyond loot, damage,
-and affinity (quirk gains, stress deltas) is still unspoken - the pop texts over ribbons
-carry it for sighted players (investigated 2026-08-12, fix designed, not yet built).
+the player moves (Home reaches the choices).
 
 ## 6.4 Hero Story Intro (`HeroStoryIntroScreen`, HERO_STORY_INTRO mode) - BUILT
 

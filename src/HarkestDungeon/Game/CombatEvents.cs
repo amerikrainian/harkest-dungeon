@@ -46,7 +46,9 @@ namespace DD2A11y.Game {
         /// per event, so a change in the settings tab applies to the next line.</summary>
         internal static Core.Settings.ModSettings Settings;
 
-        /// <summary>Idempotent; first called when the combat screen resolves.</summary>
+        /// <summary>Idempotent; attached eagerly at load - the shared handlers route each
+        /// event to <see cref="PartyEvents"/> outside combat, so one listener serves both
+        /// sides and neither can double-speak.</summary>
         public static void Attach() {
             if (_attached) {
                 return;
@@ -102,6 +104,7 @@ namespace DD2A11y.Game {
 
         private static void HandleDamage(EventActorHealthDamage evt) {
             if (!InCombat) {
+                PartyEvents.HandleDamage(evt);
                 return;
             }
             string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
@@ -122,7 +125,11 @@ namespace DD2A11y.Game {
         // The model event fires once per heal regardless of which of the game's two display
         // paths shows it, so no HasDisplayed gate here - every heal speaks exactly once.
         private static void HandleHeal(EventActorHealthHeal evt) {
-            if (!InCombat || evt.m_SourceType == SourceType.DEBUG) {
+            if (!InCombat) {
+                PartyEvents.HandleHeal(evt);
+                return;
+            }
+            if (evt.m_SourceType == SourceType.DEBUG) {
                 return;
             }
             string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
@@ -157,8 +164,8 @@ namespace DD2A11y.Game {
 
         // A token the library does not define, or defines as hidden, is internal logic state
         // (the same gate the token icons and buffers apply); its id would leak raw into
-        // speech ("gained token_logic_temporary").
-        private static bool IsSpeakableToken(string tokenId) {
+        // speech ("gained token_logic_temporary"). Shared with the non-combat party events.
+        internal static bool IsSpeakableToken(string tokenId) {
             return SingletonMonoBehaviour<Library<string, TokenDefinition>>.Instance
                        .TryGetLibraryElement(tokenId, out var definition)
                 && !definition.IsHidden;
@@ -169,7 +176,11 @@ namespace DD2A11y.Game {
         // game's own token string (a glyph, spoken through the sprite words) with the game's own
         // count format when stacked.
         private static void HandleTokenAdded(EventTokenAdded evt) {
-            if (!InCombat || !evt.m_IsPopTextValid || !IsSpeakableToken(evt.m_TokenId)) {
+            if (!InCombat) {
+                PartyEvents.HandleTokenAdded(evt);
+                return;
+            }
+            if (!evt.m_IsPopTextValid || !IsSpeakableToken(evt.m_TokenId)) {
                 return;
             }
             string owner = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
@@ -220,6 +231,7 @@ namespace DD2A11y.Game {
         // A damage-over-time landed ("Dismas gained stress").
         private static void HandleDotAdded(EventDotAdded evt) {
             if (!InCombat) {
+                PartyEvents.HandleDotAdded(evt);
                 return;
             }
             string owner = Actors.SpokenName(evt.m_Actor);
@@ -232,7 +244,11 @@ namespace DD2A11y.Game {
         // A stat buff or debuff landed; the spoken line carries the game's own stat text
         // ("Audrey gained +25% DMG") with the full breakdown living in her combatant buffer.
         private static void HandleBuffAdded(EventBuffAdded evt) {
-            if (!InCombat || !evt.SourceType.m_IsPopTextEligible || !evt.Buff.m_showPopText) {
+            if (!InCombat) {
+                PartyEvents.HandleBuffAdded(evt);
+                return;
+            }
+            if (!evt.SourceType.m_IsPopTextEligible || !evt.Buff.m_showPopText) {
                 return;
             }
             bool isBuff = evt.Buff.IsEligibleToShowAsBuffPopText;
@@ -256,6 +272,7 @@ namespace DD2A11y.Game {
         // own pop-text condition.
         private static void HandleQuirkAdded(EventQuirkAdded evt) {
             if (!InCombat) {
+                PartyEvents.HandleQuirkAdded(evt);
                 return;
             }
             bool hasSource = !string.IsNullOrEmpty(evt.m_SourceId);
@@ -282,7 +299,11 @@ namespace DD2A11y.Game {
         // An applied effect bounced off ("Woodsman resisted Blight") - without this line, a
         // skill whose rider fails reads as unexplained silence after its damage.
         private static void HandleResist(EventActorResist evt) {
-            if (!InCombat || !evt.m_IsPopTextValid) {
+            if (!InCombat) {
+                PartyEvents.HandleResist(evt);
+                return;
+            }
+            if (!evt.m_IsPopTextValid) {
                 return;
             }
             string owner = Actors.SpokenName(Actors.Get(evt.m_TargetActorGuid));
@@ -297,6 +318,7 @@ namespace DD2A11y.Game {
 
         private static void HandleStressDamage(EventStressDamage evt) {
             if (!InCombat) {
+                PartyEvents.HandleStressDamage(evt);
                 return;
             }
             string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
@@ -309,7 +331,11 @@ namespace DD2A11y.Game {
         // Overstress-sourced stress restores are the meltdown's own reset; the meltdown lines
         // already cover that moment.
         private static void HandleStressHeal(EventStressHeal evt) {
-            if (!InCombat || evt.m_SourceType == SourceType.OVERSTRESS) {
+            if (!InCombat) {
+                PartyEvents.HandleStressHeal(evt);
+                return;
+            }
+            if (evt.m_SourceType == SourceType.OVERSTRESS) {
                 return;
             }
             string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
@@ -349,7 +375,11 @@ namespace DD2A11y.Game {
         }
 
         private static void HandleWound(EventActorWoundApplied evt) {
-            if (!InCombat || !evt.m_SourceType.m_IsPopTextEligible) {
+            if (!InCombat) {
+                PartyEvents.HandleWound(evt);
+                return;
+            }
+            if (!evt.m_SourceType.m_IsPopTextEligible) {
                 return;
             }
             string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
