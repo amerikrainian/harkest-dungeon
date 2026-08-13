@@ -251,6 +251,7 @@ InputInspectorNext = Inspector next combatant
 InputDiscard = Discard item
 InputRename = Rename hero
 InputReroll = Roll a new hero name
+InputVitrine = Toggle Infernal Flame Vitrine
 InputCombatEnemy = Enemy {0} status
 InputCombatEnemyEffects = Enemy {0} buffs and debuffs
 InputCombatEnemyResists = Enemy {0} resistances

@@ -249,6 +249,7 @@ InputInspectorNext = 상세정보 다음 전투원
 InputDiscard = 아이템 버리기
 InputRename = 영웅 이름 변경
 InputReroll = 영웅 이름 새로고침
+InputVitrine = 지옥불 진열장 전환
 InputCombatEnemy = 적 {0} 상태
 InputCombatEnemyEffects = 적 {0} 강화 및 약화
 InputCombatEnemyResists = 적 {0} 저항

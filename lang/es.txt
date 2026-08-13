@@ -249,6 +249,7 @@ InputInspectorNext = Inspector, combatiente siguiente
 InputDiscard = Tirar objeto
 InputRename = Renombrar héroe
 InputReroll = Generar otro nombre de héroe
+InputVitrine = Alternar la Vitrina de la Llama Infernal
 InputCombatEnemy = Estado del enemigo {0}
 InputCombatEnemyEffects = Potenciadores y mermas del enemigo {0}
 InputCombatEnemyResists = Resistencias del enemigo {0}

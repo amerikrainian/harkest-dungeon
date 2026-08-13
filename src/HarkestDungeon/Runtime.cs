@@ -415,6 +415,17 @@ namespace DD2A11y {
                     Speech.Speak(S.StatusUnavailable, interrupt: true);
                 }
             }, InputCategory.Roster).AddBinding(K(Key.R, shift: true));
+            // The game's own crossroads key for the Infernal Flame Vitrine (its "StageCoach"
+            // action), which the captured gate swallows; the vitrine also sits in the
+            // actions strip for arrow reach. The vitrine screen declares the category too,
+            // so the key toggles closed like the game's.
+            Reg("ui.vitrine", S.InputVitrine, () => {
+                var types = Assets.Code.Utils.Singleton<Assets.Code.Game.GameTypeMgr>.Instance;
+                if (types != null && types.CurrentGameType == Assets.Code.Game.GameType.EXPEDITION) {
+                    Assets.Code.Utils.SingletonMonoBehaviour<Assets.Code.UI.Managers.CommonUiBhv>
+                        .Instance.ToggleTorchCompletionScreen();
+                }
+            }, InputCategory.Roster).AddBinding(K(Key.Z));
             // Discard the focused item (the game's shift-click); the element advertises the
             // action only where the game allows the discard, so anything else answers
             // "unavailable" rather than silence.

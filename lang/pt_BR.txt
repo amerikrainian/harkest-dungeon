@@ -249,6 +249,7 @@ InputInspectorNext = Inspetor, próximo combatente
 InputDiscard = Descartar item
 InputRename = Renomear herói
 InputReroll = Sortear um novo nome de herói
+InputVitrine = Alternar a Vitrine da Chama Infernal
 InputCombatEnemy = Estado do inimigo {0}
 InputCombatEnemyEffects = Benefícios e penalidades do inimigo {0}
 InputCombatEnemyResists = Resistências do inimigo {0}

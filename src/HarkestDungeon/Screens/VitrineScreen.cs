@@ -23,7 +23,14 @@ namespace DD2A11y.Screens {
     /// widget draws its diamonds from. Escape closes through the game's own close.
     /// </summary>
     public sealed class VitrineScreen : GameScreen {
+        // Declares the vitrine key's category, so the same key that opened it toggles it
+        // closed, like the game's own.
+        private static readonly Core.Input.InputCategory[] Categories =
+            { Core.Input.InputCategory.Roster, Core.Input.InputCategory.UI };
+
         private Container _root;
+
+        public override Core.Input.InputCategory[] InputCategories => Categories;
 
         public override string Name
             => GameLoc.TryGet("infernal_torch_boss_completion_title") ?? S.ScreenGeneric;

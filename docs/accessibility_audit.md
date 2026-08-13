@@ -971,9 +971,11 @@ the Party Loadouts button, named by the panel's title.
 ### 4.3.3 Infernal Flame Vitrine (`VitrineScreen`) - WORKS
 
 Live-verified 2026-08-12. The flame completion tracker, opened at the crossroads by the
-actions-strip button (or the game's "StageCoach" key, Z, which the captured gate swallows) -
-`HeroSelectBhv.HandleInputVitrine` routes that key to
-`CommonUiBhv.ToggleTorchCompletionScreen`, NOT to a stagecoach panel. Nothing on the screen
+actions-strip button or by Z - the game's own "StageCoach" key
+(`HeroSelectBhv.HandleInputVitrine` routes it to `CommonUiBhv.ToggleTorchCompletionScreen`,
+NOT to a stagecoach panel), which the captured gate swallows, so the mod mirrors it as the
+rebindable Roster-category `ui.vitrine` key; the vitrine screen declares the category too,
+so Z toggles it closed like the game's. Nothing on the screen
 activates - the flame widgets are `UninteractableRewardItemBhv` display selectables, which
 the generic floor misread as buttons whose Enter went nowhere - so the dedicated reader
 composes everything from the widget's own model (the "infernal_flame" unlock track's items,

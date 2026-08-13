@@ -249,6 +249,7 @@ InputInspectorNext = 检视器下一个战斗者
 InputDiscard = 丢弃物品
 InputRename = 重命名英雄
 InputReroll = 重骰英雄名字
+InputVitrine = 切换地狱火焰陈列柜
 InputCombatEnemy = 敌人{0}状态
 InputCombatEnemyEffects = 敌人{0}增益与减益
 InputCombatEnemyResists = 敌人{0}抗性

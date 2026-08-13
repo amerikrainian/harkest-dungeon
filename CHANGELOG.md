@@ -13,7 +13,6 @@
 - The hero sheet's conditions tab is no longer a hot mess of one line.
 - The crossroads path seals now read their own path's card in the buffer.
 - The Infernal Flame Vitrine is now a regular button in the crossroads actions, next to Embark. The game only ever opened it on the Z hotkey, which nothing announced.
-- The vitrine itself now reads as what it is, a completion tracker: each flame with its full card in the buffer, and one row per confession boss with its completion tally and the felled flames. Nothing on it is activatable; it used to read every flame as a button whose Enter went nowhere.
 
 ## V0.2.9
 

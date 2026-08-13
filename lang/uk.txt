@@ -249,6 +249,7 @@ InputInspectorNext = Інспектор, наступний боєць
 InputDiscard = Викинути предмет
 InputRename = Перейменувати героя
 InputReroll = Згенерувати нове ім'я героя
+InputVitrine = Перемкнути вітрину пекельного полум'я
 InputCombatEnemy = Стан ворога {0}
 InputCombatEnemyEffects = Посилення та ослаблення ворога {0}
 InputCombatEnemyResists = Опори ворога {0}

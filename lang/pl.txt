@@ -249,6 +249,7 @@ InputInspectorNext = Inspektor, następna postać
 InputDiscard = Wyrzuć przedmiot
 InputRename = Zmień imię bohatera
 InputReroll = Wylosuj nowe imię bohatera
+InputVitrine = Przełącz gablotę piekielnego płomienia
 InputCombatEnemy = Stan wroga {0}
 InputCombatEnemyEffects = Wzmocnienia i osłabienia wroga {0}
 InputCombatEnemyResists = Odporności wroga {0}
