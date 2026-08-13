@@ -17,7 +17,6 @@
 - Three run-status glance keys answering from any screen during a run: F speaks the flame level, H the coach's armor and wheels, B the wallet - Relics, Mastery, the Baubles total plus each faction currency you hold by name, and a kingdom's Materials.
 - Affinity and party changes outside combat now speak.
 - Story choices now tell you who would agree before you commit.
-- The road fork is no longer a screen of its own that takes the whole keyboard; it is a transient popup inside the driving surface, the way sighted players get it. While the coach is held at the junction the fork replaces the driving area as the first Tab stop, arrows walk the routes and Enter commits as before, and each route now says who prefers it right on its line. Everything else keeps working: Tab reaches coach status and the rest of the HUD, the game's own keys (M, I, C, Z, G) stay live, and the game itself refuses to drive until you choose. The now-redundant "fork ahead" call is gone.
 - The road fork is no longer a screen of its own that takes the whole keyboard; it is now a transient popup inside the driving surface, matching the rest of the game. Incidentally, this re-enables looking at things like the map while you're stopped.
 
 ## V0.2.9
