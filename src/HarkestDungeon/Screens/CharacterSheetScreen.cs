@@ -54,6 +54,14 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<CharacterSheetCosmeticsBhv, IList<ResourceActorWeaponKit>>("m_spawnedActorWeaponKits");
         private static readonly AccessTools.FieldRef<CharacterSheetCosmeticsBhv, IList<ResourceActorSkin>> SkinsField =
             AccessTools.FieldRefAccess<CharacterSheetCosmeticsBhv, IList<ResourceActorSkin>>("m_SpawnedActorSkins");
+        private static readonly AccessTools.FieldRef<CharacterSheetConditionsUiBhv, List<GameObject>> ConditionRowsField =
+            AccessTools.FieldRefAccess<CharacterSheetConditionsUiBhv, List<GameObject>>("m_objectsAdded");
+        private static readonly AccessTools.FieldRef<CharacterSheetConditionsUiBhv, GameObject> GoalContainerField =
+            AccessTools.FieldRefAccess<CharacterSheetConditionsUiBhv, GameObject>("m_goalContainer");
+        private static readonly AccessTools.FieldRef<CharacterSheetConditionsUiBhv, TMPro.TextMeshProUGUI> GoalLabelField =
+            AccessTools.FieldRefAccess<CharacterSheetConditionsUiBhv, TMPro.TextMeshProUGUI>("m_goalLabel");
+        private static readonly AccessTools.FieldRef<CharacterSheetConditionsUiBhv, GameObject> MemoriesContainerField =
+            AccessTools.FieldRefAccess<CharacterSheetConditionsUiBhv, GameObject>("m_memoriesContainer");
 
         private struct ResistanceRow {
             public AccessTools.FieldRef<CharacterSheetStatsUiBhv, TextTooltipBhv> Tip;
@@ -201,6 +209,8 @@ namespace DD2A11y.Screens {
                 BuildSkillsTab(sheet);
             } else if (sheet.ActiveTab == CharacterSheetUiBhv.Tab.Cosmetic) {
                 BuildCosmeticsTab(sheet);
+            } else if (sheet.ActiveTab == CharacterSheetUiBhv.Tab.Conditions) {
+                BuildConditionsTab(sheet);
             } else {
                 BuildGenericTab(sheet);
             }
@@ -213,6 +223,18 @@ namespace DD2A11y.Screens {
             if (sheet.ActiveTab == CharacterSheetUiBhv.Tab.Skills) {
                 var actor = Actors.Get(sheet.ActorGuid);
                 return actor?.QuirkContainer == null ? 0 : actor.QuirkContainer.GetInstances().Count;
+            }
+            if (sheet.ActiveTab == CharacterSheetUiBhv.Tab.Conditions) {
+                var panel = sheet.GetComponentInChildren<CharacterSheetConditionsUiBhv>(includeInactive: true);
+                if (panel == null) {
+                    return 0;
+                }
+                var goal = GoalContainerField(panel);
+                int rows = ConditionRowsField(panel).Count + (goal != null && goal.activeInHierarchy ? 1 : 0);
+                foreach (var memory in MemoryRows(panel)) {
+                    rows++;
+                }
+                return rows;
             }
             int count = 0;
             foreach (var selectable in SweepPanel(sheet)) {
@@ -421,6 +443,73 @@ namespace DD2A11y.Screens {
             }
             var resource = resources[index] as Object;
             return resource == null ? null : GameLoc.TryGet(resource.name) ?? resource.name;
+        }
+
+        // The conditions tab: one row per condition (its source - the granting inn, the
+        // trophy - is the tooltip in the buffer), then the hero's run goal and memories under
+        // the game's own section titles. Empty sections vanish rather than reading as stops,
+        // matching the inspector's conditions row.
+        private void BuildConditionsTab(CharacterSheetUiBhv sheet) {
+            var panel = sheet.GetComponentInChildren<CharacterSheetConditionsUiBhv>(includeInactive: true);
+            if (panel == null) {
+                BuildGenericTab(sheet);
+                return;
+            }
+            foreach (var row in ConditionRowsField(panel)) {
+                var captured = row;
+                _items.Add(new ReadoutElement(
+                    () => captured == null ? null : UiText.AllText(captured),
+                    detail: () => TooltipReader.Lines(captured)));
+            }
+            var goalContainer = GoalContainerField(panel);
+            if (goalContainer != null && goalContainer.activeInHierarchy) {
+                var goals = new Container(ContainerShape.VerticalList, GameLoc.TryGet("hero_objectives_title_label"));
+                var label = GoalLabelField(panel);
+                goals.Add(new ReadoutElement(
+                    () => label == null ? null : label.text,
+                    detail: () => TooltipReader.Lines(label == null ? null : label.gameObject)));
+                _items.Add(goals);
+            }
+            var memories = new Container(ContainerShape.VerticalList, GameLoc.TryGet("character_sheet_memories_label"));
+            foreach (var row in MemoryRows(panel)) {
+                var captured = row;
+                memories.Add(new ReadoutElement(
+                    () => captured == null ? null : UiText.AllText(captured),
+                    detail: () => TooltipReader.Lines(captured)));
+            }
+            if (!memories.IsEmptyContainer) {
+                _items.Add(memories);
+            }
+            if (_items.IsEmptyContainer) {
+                _items.Add(new StaticTextElement(() => S.PanelEmpty));
+            }
+        }
+
+        // The memory rows live under the memories section's inner container, filled by their
+        // own binder; the section's title and separators are not rows.
+        private static IEnumerable<GameObject> MemoryRows(CharacterSheetConditionsUiBhv panel) {
+            var container = MemoriesContainerField(panel);
+            if (container == null || !container.activeInHierarchy) {
+                yield break;
+            }
+            var inner = FindChild(container.transform, "Container");
+            if (inner == null) {
+                yield break;
+            }
+            foreach (Transform row in inner) {
+                if (row.gameObject.activeInHierarchy && UiText.HasAnyTextSource(row.gameObject)) {
+                    yield return row.gameObject;
+                }
+            }
+        }
+
+        private static Transform FindChild(Transform root, string name) {
+            foreach (var child in root.GetComponentsInChildren<Transform>(includeInactive: false)) {
+                if (child.name == name) {
+                    return child;
+                }
+            }
+            return null;
         }
 
         // Any other tab: the panel's labeled selectables, with the panel's own text as the floor

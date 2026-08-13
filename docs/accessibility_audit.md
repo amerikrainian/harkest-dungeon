@@ -894,9 +894,17 @@ shared so buffers carry its description) and the Kingdoms duration line.
 
 ### 4.2.3 Other Tabs (Conditions, Story, Cosmetics) - WORKS
 
-Conditions and Story read as a generic sweep of the tab panel's labeled selectables, with the
-panel's own text - or "empty" - as the floor. Verified live: Relationships "empty" pre-run,
-Conditions "Memories", Story its unlock hint.
+Story reads as a generic sweep of the tab panel's labeled selectables, with the panel's own
+text - or "empty" - as the floor. Verified live: Relationships "empty" pre-run, Story its
+unlock hint.
+
+The Conditions tab (2026-08-12) reads one row per condition - the panel has no selectables,
+so the sweep used to fall to the all-text floor and the whole tab smooshed into one line -
+with the condition's source (the granting inn, the trophy) as its tooltip in the buffer,
+then the hero's run goal under the game's "Hero Goals" title (progress in the game's own
+text, the candle/loot reward tooltip in the buffer) and any memories under its "Memories"
+title. Empty sections vanish rather than reading as stops; a hero with nothing at all reads
+"empty".
 
 The Cosmetics tab (2026-08-12) reads as the game's own three sections - "Hero Palette",
 "Weapon Kit", and "Hero Skin" when the hero has skins - one named swatch per cosmetic: the

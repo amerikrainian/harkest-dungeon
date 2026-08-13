@@ -10,6 +10,7 @@
 - Duplicate enemies now number 1 to N in the order you meet them, instead of by rank. I thought by the latter would be more intuitive; I was wrong.
 - The hero sheet's cosmetics tab now reads properly: palettes, weapon kits, and hero skins by the game's own names with "selected" on the applied one, locked skins refusing with their unlock hint in the buffer.
 - The stagecoach's livery cycler now reads as "Stagecoach Livery" with the applied skin's name, and speaks the new skin after cycling. It used to be a bare unlabeled button.
+- The hero sheet's conditions tab now reads row by row: each condition with its source in the buffer, the hero goal with its reward, and memories, instead of the whole tab smooshed into one line.
 
 ## V0.2.9
 
