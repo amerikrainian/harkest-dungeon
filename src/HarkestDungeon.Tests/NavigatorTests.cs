@@ -236,6 +236,52 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
+        public void UpIntoANestedVerticalListEntersAtItsBottom() {
+            // A labeled section between plain rows (the conditions tab's "Hero Goals"): End
+            // jumps below it; Up must walk back in at its last item, not re-enter at the first.
+            var section = new Container(ContainerShape.VerticalList, "Hero Goals");
+            section.Add(new TestElement("First Goal"));
+            section.Add(new TestElement("Second Goal"));
+            section.Add(new TestElement("Third Goal"));
+            var root = new Container(ContainerShape.VerticalList);
+            root.Add(new TestElement("Condition"));
+            root.Add(section);
+            root.Add(new TestElement("Embark"));
+
+            _nav.Attach(root);
+            Assert.True(_nav.Handle(UiActions.End));
+            Assert.Equal("Embark", _nav.Current!.Label);
+            Assert.True(_nav.Handle(UiActions.Up));
+            Assert.Equal("Third Goal", _nav.Current!.Label);
+            Assert.True(_nav.Handle(UiActions.Up));
+            Assert.Equal("Second Goal", _nav.Current!.Label);
+        }
+
+        [Fact]
+        public void DownIntoANestedVerticalListEntersAtItsTop_EvenWithAMemory() {
+            var inner = new Container(ContainerShape.VerticalList);
+            inner.Add(new TestElement("x"));
+            inner.Add(new TestElement("y"));
+            var root = new Container(ContainerShape.VerticalList);
+            root.Add(new TestElement("A"));
+            root.Add(inner);
+            root.Add(new TestElement("B"));
+
+            _nav.Attach(root);
+            _nav.Handle(UiActions.Down); // x
+            _nav.Handle(UiActions.Down); // y - remembered
+            _nav.Handle(UiActions.Down); // B
+            _nav.Handle(UiActions.Down); // stays B (edge)
+            Assert.Equal("B", _nav.Current!.Label);
+            _nav.Handle(UiActions.Up);   // back in at the bottom: y
+            Assert.Equal("y", _nav.Current!.Label);
+            _nav.Handle(UiActions.Up);   // x
+            _nav.Handle(UiActions.Up);   // A
+            _nav.Handle(UiActions.Down); // and down again in at the top: x
+            Assert.Equal("x", _nav.Current!.Label);
+        }
+
+        [Fact]
         public void ContainerEntryAnnouncesItsLabelBeforeTheLanding() {
             var strip = new Container(ContainerShape.HorizontalList, "roster");
             strip.Add(new TestElement("Hero"));

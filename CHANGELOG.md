@@ -2,7 +2,7 @@
 
 ## V0.3.0
 
-- Biome choices now include all their information.
+- Biome choices now include all their information like flavor text (Whoops?).
 - Tokens that only define a plain name (the Violinist's song-part markers, for instance) no longer leak their raw id into combat speech; they now read by the game's own name.
 - Buffs the game names only through a tooltip override no longer read as a raw stat key.
 - The deathblow resist icon now speaks as "deathblow" instead of "death"
@@ -10,7 +10,7 @@
 - Duplicate enemies now number 1 to N in the order you meet them, instead of by rank. I thought by the latter would be more intuitive; I was wrong.
 - The hero sheet's cosmetics tab now reads properly: palettes, weapon kits, and hero skins by the game's own names with "selected" on the applied one, locked skins refusing with their unlock hint in the buffer.
 - The stagecoach's livery cycler now reads as "Stagecoach Livery" with the applied skin's name, and speaks the new skin after cycling. It used to be a bare unlabeled button.
-- The hero sheet's conditions tab now reads row by row: each condition with its source in the buffer, the hero goal with its reward, and memories, instead of the whole tab smooshed into one line.
+- The hero sheet's conditions tab is no longer a hot mess of one line.
 
 ## V0.2.9
 

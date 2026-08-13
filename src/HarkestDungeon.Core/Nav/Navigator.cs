@@ -223,6 +223,36 @@ namespace DD2A11y.Core.Nav {
             }
         }
 
+        /// <summary>Append an element reached by an arrow move, descending direction-aware:
+        /// entering a list along its own axis lands on the edge child facing the move (Up into
+        /// a vertical list lands on its last), so nested lists read as one continuous flow;
+        /// entering across the axis keeps the remembered child (a row keeps its column).</summary>
+        protected void AppendWithDescend(UIElement element, NavDirection dir) {
+            Path.Add(element);
+            var container = element as Container;
+            while (container != null) {
+                var next = EntryChild(container, dir);
+                if (next == null) {
+                    break;
+                }
+                container.SetFocusedChild(next);
+                Path.Add(next);
+                container = next as Container;
+            }
+        }
+
+        private static UIElement? EntryChild(Container c, NavDirection dir) {
+            bool vertical = dir == NavDirection.Up || dir == NavDirection.Down;
+            bool aligned = vertical
+                ? c.Shape == ContainerShape.VerticalList
+                : c.Shape == ContainerShape.HorizontalList;
+            if (!aligned) {
+                return RepresentativeChild(c);
+            }
+            bool enteringFromStart = dir == NavDirection.Down || dir == NavDirection.Right;
+            return enteringFromStart ? c.FirstFocusable() : c.LastFocusable();
+        }
+
         /// <summary>The child to land on when entering a container: remembered focus, else first
         /// focusable.</summary>
         protected static UIElement? RepresentativeChild(Container c) {

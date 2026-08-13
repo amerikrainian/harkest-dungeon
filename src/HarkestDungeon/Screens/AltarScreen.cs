@@ -15,8 +15,8 @@ using UnityEngine.UI;
 
 namespace DD2A11y.Screens {
     /// <summary>
-    /// The Altar of Hope hub (the ALTAR_OF_HOPE game mode): the candle balance, then the six
-    /// region markers of the altar map in one list - each named by the game's own region
+    /// The Altar of Hope hub (the ALTAR_OF_HOPE game mode), one flat list: the candle
+    /// balance, the six region markers of the altar map - each named by the game's own region
     /// string, locked ones reading "unavailable" (the intro restricts the map to one region) -
     /// then The Recollection (the collection gallery, which has no region marker: the sighted
     /// path is the panel tab bar), then Embark. Enter on a region runs the game's own submit,
@@ -57,14 +57,12 @@ namespace DD2A11y.Screens {
             var regions = new List<AltarRegionTag>(
                 UnityEngine.Object.FindObjectsOfType<AltarRegionTag>());
             regions.Sort((a, b) => a.transform.GetSiblingIndex().CompareTo(b.transform.GetSiblingIndex()));
-            var list = new Container(ContainerShape.VerticalList);
             foreach (var region in regions) {
                 var selectable = region.GetComponent<Selectable>();
                 if (selectable != null) {
-                    list.Add(new AltarRegionElement(region, selectable));
+                    _root.Add(new AltarRegionElement(region, selectable));
                 }
             }
-            _root.Add(list);
 
             // The Recollection: the collection gallery is a bar-only panel, opened through
             // the game's own toggle - the same call the bar button's click lands in. Hidden

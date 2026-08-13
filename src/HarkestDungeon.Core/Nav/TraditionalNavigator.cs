@@ -110,10 +110,11 @@ namespace DD2A11y.Core.Nav {
 
         // Vertical movement that cannot proceed inside the current block spills into the adjacent
         // block of an enclosing VerticalList. Climbs to the block that is a direct child of such a
-        // list, steps to the neighbor in the move direction, and enters it: Down lands on its first
-        // focusable, Up on its remembered child. A list at its own edge keeps climbing - a
-        // horizontal row at the top of an inner list still spills to whatever sits above that list.
-        // Returns false at the outer edge so the caller consumes without wrapping.
+        // list, steps to the neighbor in the move direction, and enters it direction-aware: a
+        // vertical list entered from below lands on its last focusable, a row keeps its remembered
+        // column. A list at its own edge keeps climbing - a horizontal row at the top of an inner
+        // list still spills to whatever sits above that list. Returns false at the outer edge so
+        // the caller consumes without wrapping.
         private bool TrySpillVertical(NavDirection dir) {
             UIElement? block = Current;
             while (block != null) {
@@ -135,7 +136,7 @@ namespace DD2A11y.Core.Nav {
                 if (idx >= 0) {
                     Path.RemoveRange(idx, Path.Count - idx);
                 }
-                AppendWithDescend(neighbor);
+                AppendWithDescend(neighbor, dir);
                 list.SetFocusedChild(neighbor);
                 AnnounceDelta(snapshot, interrupt: true);
                 return true;
@@ -154,7 +155,7 @@ namespace DD2A11y.Core.Nav {
                     if (idx >= 0) {
                         Path.RemoveRange(idx, Path.Count - idx);
                     }
-                    AppendWithDescend(next);
+                    AppendWithDescend(next, dir);
                     container.SetFocusedChild(next);
                     return true;
                 }
