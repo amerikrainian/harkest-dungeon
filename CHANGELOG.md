@@ -11,6 +11,7 @@
 - The hero sheet's cosmetics tab now reads properly: palettes, weapon kits, and hero skins by the game's own names with "selected" on the applied one, locked skins refusing with their unlock hint in the buffer.
 - The stagecoach's livery cycler now reads as "Stagecoach Livery" with the applied skin's name, and speaks the new skin after cycling. It used to be a bare unlabeled button.
 - The hero sheet's conditions tab is no longer a hot mess of one line.
+- Opening the hero sheet from the road no longer lands on a bare "hero".
 - The crossroads path seals now read their own path's card in the buffer.
 - The Infernal Flame Vitrine is now a regular button in the crossroads actions, next to Embark. The game only ever opened it on the Z hotkey, which nothing announced.
 - Three run-status glance keys, answering from any screen during a run and silent outside one: F speaks the flame level, H the coach's armor and wheels, B the wallet - Relics, Mastery, the Baubles total plus each faction currency you hold by name, and a kingdom's Materials.

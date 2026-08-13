@@ -135,10 +135,14 @@ namespace DD2A11y.Screens {
             }
             // A hero switch, a mouse tab click, or a content change (a quirk reroll) rebuilds the
             // items; announcing is left to whoever moved (the header/tab adjust spoke already, and
-            // the router re-homes and re-announces an orphaned focus).
+            // the router re-homes and re-announces an orphaned focus). The exception is the hero
+            // ARRIVING: some open paths stamp the sheet's guid a frame after our entry (the road's
+            // C key), so the announced header was a bare "hero" - re-announce with the hero in it.
             if (sheet.ActorGuid != _builtGuid || ActiveTabIndex(sheet) != _builtTab || ContentCount(sheet) != _builtCount) {
+                bool heroArrived = _builtGuid == 0 && sheet.ActorGuid != 0;
                 RebuildTabIndices(sheet);
                 RebuildItems(sheet);
+                return heroArrived;
             }
             return false;
         }
