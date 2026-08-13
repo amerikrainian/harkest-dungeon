@@ -129,6 +129,7 @@ CrossroadsParty = група
 CrossroadsRoster = загін
 ScreenPathSelect = шлях героя
 PathDetails = деталі шляху
+VitrineFlames = {0} з {1} вогнів
 PathLaunchSkills = Навички на позицію: {0}
 PathTargetSkills = Навички на позицію ворога: {0}
 ScreenPartyLoadouts = конфігурації групи

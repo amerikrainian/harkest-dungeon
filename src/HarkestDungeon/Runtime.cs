@@ -194,6 +194,9 @@ namespace DD2A11y {
             Router.Register(_feedback);
             // The Workshop mod panel (the modded menu's Confessions/Kingdoms flows).
             Router.Register(new ModPanelScreen(speak));
+            // The Infernal Flame Vitrine (a completion tracker whose widgets the floor would
+            // misread as buttons).
+            Router.Register(new VitrineScreen());
             // The floor for any other pushed screen (node panels) sits
             // ABOVE the mode screens: a pushed screen always covers the scene behind it.
             Router.Register(new GenericScreen());

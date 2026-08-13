@@ -129,6 +129,7 @@ CrossroadsParty = パーティ
 CrossroadsRoster = 名簿
 ScreenPathSelect = 英雄の進路
 PathDetails = 進路の詳細
+VitrineFlames = {0}/{1} の炎
 PathLaunchSkills = ランクごとのスキル: {0}
 PathTargetSkills = 敵ランクごとのスキル: {0}
 ScreenPartyLoadouts = パーティ編成

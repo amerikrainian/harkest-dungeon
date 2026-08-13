@@ -298,6 +298,9 @@ namespace DD2A11y.Core.Strings {
             // The readout carrying the previewed path's full card (flavour, rank and target
             // lines, effects) in its buffer. Noun phrase naming that section.
             D("PathDetails", "path details"),
+            // A vitrine boss row's completion tally; {0} = flames this boss fell under,
+            // {1} = all flame tiers.
+            D("VitrineFlames", "{0} of {1} flames"),
             // The comparison panel's launch and target pips as counts: how many of the hero's
             // equipped skills can act from / hit each rank, 1 to 4, under the previewed path
             // (the game draws each share as a pip's fill). {0} is the four counts joined.
@@ -735,6 +738,7 @@ namespace DD2A11y.Core.Strings {
         public static string CrossroadsRoster => T("CrossroadsRoster");
         public static string ScreenPathSelect => T("ScreenPathSelect");
         public static string PathDetails => T("PathDetails");
+        public static string VitrineFlames(int completed, int total) => F("VitrineFlames", completed, total);
         public static string PathLaunchSkills(string counts) => F("PathLaunchSkills", counts);
         public static string PathTargetSkills(string counts) => F("PathTargetSkills", counts);
         public static string ScreenPartyLoadouts => T("ScreenPartyLoadouts");

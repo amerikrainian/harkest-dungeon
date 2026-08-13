@@ -795,7 +795,7 @@ Live-verified 2026-07-23. The pre-run hub (the HERO_SELECT mode - `HeroSelectBhv
   name controls, the two overlay openers, the **Infernal Flame Vitrine** button (added
   2026-08-12, expeditions only: the game opens the vitrine solely on the StageCoach hotkey,
   which the captured gate swallows and nothing on screen advertises; named by the vitrine's
-  own title, and the opened screen reads through the generic floor), **Embark** (appears once
+  own title, and the opened screen has its own reader, 4.3.3), **Embark** (appears once
   all four ranks are filled - drives the game's own `ConfirmRosterSelection`, including its
   unequipped-skills confirmation dialog), and **Random Party**.
 - Each party slot LEADS WITH ITS RANK ("rank 1, Highwayman" / "rank 1, empty slot";
@@ -968,18 +968,24 @@ the Party Loadouts button, named by the panel's title.
 - Save Loadout stores the current party (needs at least one hero); the panel's Continue
   button and Escape both close.
 
-### 4.3.3 Infernal Flame Vitrine - WORKS (generic floor)
+### 4.3.3 Infernal Flame Vitrine (`VitrineScreen`) - WORKS
 
-Live-verified 2026-08-02. The run's boss-blessing modifier gallery, opened at the crossroads
-by the game's "StageCoach" key (Z) - `HeroSelectBhv.HandleInputVitrine` routes that key to
-`CommonUiBhv.ToggleTorchCompletionScreen`, NOT to a stagecoach panel. Read by the generic
-floor and complete as-is: the screen names itself, one row per flame ("The Fragile Flame",
-"The Doom Candle", ...), each row's buffer carrying the whole modifier card - flavour, then
-the mechanics line by line ("+20% Traveling Flame Drain", "Loathing Max: -1", the per-flame-
-level hero and enemy effects). Escape returns to the crossroads.
+Live-verified 2026-08-12. The flame completion tracker, opened at the crossroads by the
+actions-strip button (or the game's "StageCoach" key, Z, which the captured gate swallows) -
+`HeroSelectBhv.HandleInputVitrine` routes that key to
+`CommonUiBhv.ToggleTorchCompletionScreen`, NOT to a stagecoach panel. Nothing on the screen
+activates - the flame widgets are `UninteractableRewardItemBhv` display selectables, which
+the generic floor misread as buttons whose Enter went nowhere - so the dedicated reader
+composes everything from the widget's own model (the "infernal_flame" unlock track's items,
+the VALLEY boss library, the profile's per-boss flame victories):
 
-**Known gaps:** the currently active flame is not marked (unverified - the test run has no
-blessing set).
+- One informational entry per flame tier ("The Fragile Flame", "The Despairing Flare", ...),
+  its whole item card in the buffer - type, flavour, the modifier mechanics line by line
+  ("vs Cosmic: -25% DMG").
+- One row per confession boss: the boss's name with its completion tally ("I. Denial, 0 of
+  9 flames" - the diamonds a sighted player counts), the completed flames' names as buffer
+  lines.
+- Escape closes through the game's own close. The close settles a beat after the press.
 
 **There is NO stagecoach config at the crossroads.** An earlier audit pass listed one; live
 probing found no `StageCoachConfigUiBhv` in the hero-select scene and no coach field on

@@ -129,6 +129,7 @@ CrossroadsParty = compagnia
 CrossroadsRoster = formazione
 ScreenPathSelect = percorso dell'eroe
 PathDetails = dettagli del percorso
+VitrineFlames = {0} di {1} fiamme
 PathLaunchSkills = Abilità per posizione: {0}
 PathTargetSkills = Abilità per posizione nemica: {0}
 ScreenPartyLoadouts = preselezioni compagnia

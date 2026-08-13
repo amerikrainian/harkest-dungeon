@@ -129,6 +129,7 @@ CrossroadsParty = Gruppe
 CrossroadsRoster = Aufgebot
 ScreenPathSelect = Heldenpfad
 PathDetails = Pfaddetails
+VitrineFlames = {0} von {1} Flammen
 PathLaunchSkills = Fähigkeiten pro Position: {0}
 PathTargetSkills = Fähigkeiten pro gegnerischer Position: {0}
 ScreenPartyLoadouts = Gruppenkonfigurationen

@@ -129,6 +129,7 @@ CrossroadsParty = grupo
 CrossroadsRoster = plantilla
 ScreenPathSelect = camino de héroe
 PathDetails = detalles del camino
+VitrineFlames = {0} de {1} llamas
 PathLaunchSkills = Habilidades por posición: {0}
 PathTargetSkills = Habilidades por posición enemiga: {0}
 ScreenPartyLoadouts = configuraciones de grupo

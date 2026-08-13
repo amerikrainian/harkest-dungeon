@@ -129,6 +129,7 @@ CrossroadsParty = družina
 CrossroadsRoster = soupiska
 ScreenPathSelect = specializace hrdiny
 PathDetails = podrobnosti specializace
+VitrineFlames = {0} z {1} plamenů
 PathLaunchSkills = Dovednosti na pozici: {0}
 PathTargetSkills = Dovednosti na pozici nepřítele: {0}
 ScreenPartyLoadouts = sestavy družiny

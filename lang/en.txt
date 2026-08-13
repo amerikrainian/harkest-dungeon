@@ -131,6 +131,7 @@ CrossroadsParty = party
 CrossroadsRoster = roster
 ScreenPathSelect = hero path
 PathDetails = path details
+VitrineFlames = {0} of {1} flames
 PathLaunchSkills = Skills per rank: {0}
 PathTargetSkills = Skills per enemy rank: {0}
 ScreenPartyLoadouts = party loadouts

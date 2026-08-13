@@ -129,6 +129,7 @@ CrossroadsParty = 원정대
 CrossroadsRoster = 영웅 목록
 ScreenPathSelect = 영웅의 길
 PathDetails = 길 상세 정보
+VitrineFlames = {0}/{1} 불꽃
 PathLaunchSkills = 위치별 스킬: {0}
 PathTargetSkills = 적 위치별 스킬: {0}
 ScreenPartyLoadouts = 원정대 목록

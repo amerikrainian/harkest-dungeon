@@ -129,6 +129,7 @@ CrossroadsParty = grupo
 CrossroadsRoster = heróis
 ScreenPathSelect = caminho de herói
 PathDetails = detalhes do caminho
+VitrineFlames = {0} de {1} chamas
 PathLaunchSkills = Habilidades por posição: {0}
 PathTargetSkills = Habilidades por posição inimiga: {0}
 ScreenPartyLoadouts = arsenais do grupo

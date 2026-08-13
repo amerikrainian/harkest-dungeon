@@ -129,6 +129,7 @@ CrossroadsParty = drużyna
 CrossroadsRoster = bohaterowie
 ScreenPathSelect = ścieżka bohatera
 PathDetails = szczegóły ścieżki
+VitrineFlames = {0} z {1} płomieni
 PathLaunchSkills = Umiejętności na pozycję: {0}
 PathTargetSkills = Umiejętności na pozycję wroga: {0}
 ScreenPartyLoadouts = konfiguracje drużyny
