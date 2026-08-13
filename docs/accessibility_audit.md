@@ -937,12 +937,17 @@ by the panel's own title ("Hero Path").
 
 - One row per available path. Enter previews through the game's own `SelectPath`, which only
   drives the comparison panel and arms the confirm button - the path itself changes on
-  confirm, so browsing is side-effect-free.
+  confirm, so browsing is side-effect-free. Each seal's buffer is its own path's card from
+  the model (`PathComparison.Card`, the composition the inn's Change Path seals share), so
+  any path reads without previewing it first (fixed 2026-08-12: the seals' buffers read the
+  shared comparison panel, which shows only the previewed path - browsing to Surgeon without
+  Enter read the Wanderer's or the last-previewed path's card, and every seal read the same
+  text).
 - A "path details" readout whose buffer carries the previewed path's whole card, line per
   line. Since 2026-08-08 the lines come from the shared `PathComparison` reader (the panel's
   own data context plus the coverage pips as "Skills per rank" / "Skills per enemy rank"
   count lines, replacing the bare header words) - the same reader live-verified on the
-  mastery trainer's panel; this surface not re-walked since the switch.
+  mastery trainer's panel.
 - The confirm button commits (`SetSelectedActorPath`), reading "unavailable" while the
   previewed path is already the active one. Escape closes through the game's own toggle.
 

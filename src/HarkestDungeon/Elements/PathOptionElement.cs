@@ -1,9 +1,6 @@
 using System.Collections.Generic;
-using Assets.Code.Actor;
-using Assets.Code.Library;
 using Assets.Code.UI;
 using Assets.Code.UI.Screens;
-using Assets.Code.Utils;
 using DD2A11y.Core.Buffers;
 using DD2A11y.Core.Nav;
 using DD2A11y.Game;
@@ -48,17 +45,9 @@ namespace DD2A11y.Elements {
 
         protected override IEnumerable<string> GetDetailLines() {
             var select = _pathObject.GetComponent<ActorPathSelectBhv>();
-            var path = select == null ? null
-                : SingletonMonoBehaviour<Library<string, ActorDataPath>>.Instance.GetLibraryElement(select.PathId);
-            var actor = Actors.Get(_panel.ActiveActorGuid);
-            if (path == null || actor == null) {
-                yield break;
-            }
-            foreach (var line in ActorPathDescription
-                .GetDescriptionString(path, actor, modifyQuoteLineHeight: false, addAffectedSkills: true)
-                .Split('\n')) {
-                yield return line;
-            }
+            return select == null
+                ? System.Linq.Enumerable.Empty<string>()
+                : PathComparison.Card(select.PathId, _panel.ActiveActorGuid);
         }
 
         public override IEnumerable<string> GetSideBufferLines(string bufferKey)

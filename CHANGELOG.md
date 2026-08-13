@@ -11,6 +11,7 @@
 - The hero sheet's cosmetics tab now reads properly: palettes, weapon kits, and hero skins by the game's own names with "selected" on the applied one, locked skins refusing with their unlock hint in the buffer.
 - The stagecoach's livery cycler now reads as "Stagecoach Livery" with the applied skin's name, and speaks the new skin after cycling. It used to be a bare unlabeled button.
 - The hero sheet's conditions tab is no longer a hot mess of one line.
+- The crossroads path seals now read their own path's card in the buffer.
 
 ## V0.2.9
 

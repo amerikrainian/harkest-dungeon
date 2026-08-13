@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using Assets.Code.Actor;
 using Assets.Code.Data;
+using Assets.Code.Library;
 using Assets.Code.UI;
+using Assets.Code.Utils;
 using DD2A11y.Core.Text;
 using HarmonyLib;
 using S = DD2A11y.Core.Strings.Strings;
@@ -25,6 +28,24 @@ namespace DD2A11y.Game {
             AccessTools.FieldRefAccess<ActorPathComparisonBhv, List<GameObject>>("m_targetPipsAdded");
         private static readonly AccessTools.FieldRef<SkillAveragePositionPipBhv, List<RectTransform>> FillsField =
             AccessTools.FieldRefAccess<SkillAveragePositionPipBhv, List<RectTransform>>("m_fillTransforms");
+
+        /// <summary>One path's full card (name, flavour, effects, affected skills) for one
+        /// hero - the hero-seal tooltip's own text, composed from the model so any seal reads
+        /// without being previewed first. Shared by the inn's Change Path seals and the
+        /// crossroads overlay's.</summary>
+        public static IEnumerable<string> Card(string pathId, uint actorGuid) {
+            var path = SingletonMonoBehaviour<Library<string, ActorDataPath>>.Instance
+                .GetLibraryElement(pathId);
+            var actor = Actors.Get(actorGuid);
+            if (path == null || actor == null) {
+                yield break;
+            }
+            foreach (var line in ActorPathDescription
+                .GetDescriptionString(path, actor, modifyQuoteLineHeight: false, addAffectedSkills: true)
+                .Split('\n')) {
+                yield return line;
+            }
+        }
 
         public static IEnumerable<string> Lines(ActorPathComparisonBhv comparison) {
             if (comparison == null) {

@@ -33,10 +33,12 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<HeroSelectBhv, ActorPathComparisonBhv>("m_pathComparisonBhv");
         private static readonly AccessTools.FieldRef<HeroSelectBhv, UnityEngine.Playables.PlayableDirector> PanelField =
             AccessTools.FieldRefAccess<HeroSelectBhv, UnityEngine.Playables.PlayableDirector>("m_pathSelectionPanelDirector");
+        private static readonly AccessTools.FieldRef<HeroSelectBhv, uint> SpawnedGuidField =
+            AccessTools.FieldRefAccess<HeroSelectBhv, uint>("m_SpawnedActorGuid");
 
         private HeroSelectBhv _heroSelect;
         private Container _root;
-        private int _builtPaths;
+        private int _builtSignature;
 
         public override string Name {
             get {
@@ -68,21 +70,30 @@ namespace DD2A11y.Screens {
 
         public override bool OnUpdate(object target) {
             var heroSelect = (HeroSelectBhv)target;
-            // The panel spawns its path rows a beat after opening.
-            if (PathCount(heroSelect) != _builtPaths) {
+            // The panel spawns its path rows a beat after opening, and repopulates them from
+            // a pool on every hero switch - the same seal objects come back carrying another
+            // hero's paths, so the signature keys on the ids too, never just the count.
+            if (PathsSignature(heroSelect) != _builtSignature) {
                 _root.Clear();
                 Populate(heroSelect);
             }
             return false;
         }
 
-        private static int PathCount(HeroSelectBhv heroSelect) {
+        private static int PathsSignature(HeroSelectBhv heroSelect) {
             var paths = PathsField(heroSelect);
-            return paths == null ? 0 : paths.Count;
+            int signature = 17;
+            if (paths != null) {
+                foreach (var entry in paths) {
+                    signature = signature * 31 + (entry.Key == null ? 0 : entry.Key.GetInstanceID());
+                    signature = signature * 31 + (entry.Value == null ? 0 : entry.Value.GetHashCode());
+                }
+            }
+            return signature;
         }
 
         private void Populate(HeroSelectBhv heroSelect) {
-            _builtPaths = PathCount(heroSelect);
+            _builtSignature = PathsSignature(heroSelect);
             var paths = PathsField(heroSelect);
             if (paths != null) {
                 var row = new Container(ContainerShape.HorizontalList);
@@ -92,11 +103,15 @@ namespace DD2A11y.Screens {
                         continue;
                     }
                     // Preview only: the game's SelectPath drives the comparison panel and arms
-                    // the confirm button; the path itself changes on confirm.
+                    // the confirm button; the path itself changes on confirm. The buffer is
+                    // this seal's own card, read through the seal widget live (the pool
+                    // re-purposes seals across heroes) - so any path reads without previewing
+                    // it first; the comparison panel shows only the previewed path, and
+                    // reading it under an unpreviewed seal spoke the wrong one.
                     row.Add(new ActionElement(
                         () => UiText.FirstLabel(pathObject), S.RoleButton,
                         () => heroSelect.SelectPath(pathObject),
-                        extraBufferLines: () => ComparisonLines(heroSelect)));
+                        extraBufferLines: () => SealCard(heroSelect, pathObject)));
                 }
                 if (!row.IsEmptyContainer) {
                     _root.Add(row);
@@ -120,5 +135,12 @@ namespace DD2A11y.Screens {
 
         private static IEnumerable<string> ComparisonLines(HeroSelectBhv heroSelect)
             => PathComparison.Lines(ComparisonField(heroSelect));
+
+        private static IEnumerable<string> SealCard(HeroSelectBhv heroSelect, GameObject sealObject) {
+            var select = sealObject == null ? null : sealObject.GetComponent<ActorPathSelectBhv>();
+            return select == null
+                ? System.Linq.Enumerable.Empty<string>()
+                : PathComparison.Card(select.PathId, SpawnedGuidField(heroSelect));
+        }
     }
 }
