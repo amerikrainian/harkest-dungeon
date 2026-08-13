@@ -1324,16 +1324,26 @@ pressed in testing.
   the button face (bark line, quirk gate, relationship banner when bound) and the sighted Alt
   panel's previews grouped per side ("Bigby: Life's luxuries are wasted here, party, Relics
   -12, Flame 30"). The buffer reviews it per line: the hero's vitals (name, HP, stress), the
-  bark, then one line per preview ("party, Flame 30"), split party/enemy.
+  bark, then one line per preview ("party, Flame 30"), split party/enemy, then the
+  alignment telegraph (added 2026-08-12): "Sarmenti agrees" / "Bonnie disagrees" per other
+  hero whose own choice's alignment matches or clashes with this one - the verdicts the
+  game colors the other cards green or red with while a sighted player hovers this choice.
+  The verdicts ride the focus line too, so scrolling the choices hears them in place.
 - S glances the focused choice's hero vitals in place (Story input category, live only here);
   off a choice the key is silent.
 - Enter fires the game's own selection event (the click-and-hold equivalent), honoring its
   hoverable gate; C inspects the hero. The narration itself is the game's voiced narrator,
   already audible.
+- After the commit, affinity leaning changes speak (added 2026-08-12, `AffinityEvents`):
+  the game's non-combat leaning event - which it shows only as hearts over the ribbons plus
+  the outcome sting - reads as the announced-change form ("Dismas and Audrey, affinity +1"),
+  routed to the road queue, the inn queue, or straight to speech by mode; combat keeps its
+  own tick handler.
 
 **Known gaps:** choices spawning after screen entry leave focus on the utility buttons until
-the player moves (Home reaches the choices); story RESULT presentation is unread beyond the
-narrator; affinity change previews unspoken.
+the player moves (Home reaches the choices); story RESULT presentation beyond loot, damage,
+and affinity (quirk gains, stress deltas) is still unspoken - the pop texts over ribbons
+carry it for sighted players (investigated 2026-08-12, fix designed, not yet built).
 
 ## 6.4 Hero Story Intro (`HeroStoryIntroScreen`, HERO_STORY_INTRO mode) - BUILT
 

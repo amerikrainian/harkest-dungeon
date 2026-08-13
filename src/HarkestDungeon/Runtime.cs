@@ -119,6 +119,8 @@ namespace DD2A11y {
             Game.BarkEvents.RoadSink = _roadSense.Post;
             Game.BarkEvents.Attach();
             Game.InnEvents.Attach();
+            Game.AffinityEvents.RoadSink = _roadSense.Post;
+            Game.AffinityEvents.Attach();
             Game.CombatEvents.Settings = Settings;
 
             Router = new ScreenRouter(Navigator, Gate, speak);

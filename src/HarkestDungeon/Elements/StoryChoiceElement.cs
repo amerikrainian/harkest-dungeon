@@ -47,6 +47,7 @@ namespace DD2A11y.Elements {
                 if (choice != null) {
                     parts.Add(PreviewGroup(choice, player: true));
                     parts.Add(PreviewGroup(choice, player: false));
+                    parts.AddRange(AlignmentLines(choice));
                 }
                 return SpokenLine.Join(SpokenLine.Separator, parts);
             }
@@ -125,6 +126,33 @@ namespace DD2A11y.Elements {
             }
             for (int i = 0; i < choice.m_EnemyStoryChoicePreviewIds.Count; i++) {
                 yield return SpokenLine.Join(S.CombatEnemies, PreviewLine(choice, i, player: false));
+            }
+            foreach (var line in AlignmentLines(choice)) {
+                yield return line;
+            }
+        }
+
+        // Who would agree or disagree with this pick: each other hero's own choice alignment
+        // against this one, the same comparison the game colors their cards green or red with
+        // while a sighted player hovers this choice. A neutral pairing says nothing.
+        private IEnumerable<string> AlignmentLines(StoryChoiceDefinition choice) {
+            var roster = Assets.Code.Utils.Singleton<Assets.Code.Game.GameTypeMgr>.Instance?.RosterManager;
+            if (roster == null) {
+                yield break;
+            }
+            foreach (var partyActor in roster.GetPartyActors()) {
+                if (partyActor == null || partyActor.ActorGuid == _button.ActorGuid) {
+                    continue;
+                }
+                var reaction = ChoiceFor(partyActor.ActorGuid);
+                switch (StoryCalculation.GetAlignmentType(choice, reaction)) {
+                    case StoryAlignmentType.HARMONIOUS:
+                        yield return S.StoryAgrees(Actors.Name(partyActor));
+                        break;
+                    case StoryAlignmentType.DISHARMONIOUS:
+                        yield return S.StoryDisagrees(Actors.Name(partyActor));
+                        break;
+                }
             }
         }
 

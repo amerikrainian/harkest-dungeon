@@ -14,7 +14,9 @@
 - Opening the hero sheet from the road no longer lands on a bare "hero".
 - The crossroads path seals now read their own path's card in the buffer.
 - The Infernal Flame Vitrine is now a regular button in the crossroads actions, next to Embark. The game only ever opened it on the Z hotkey, which nothing announced.
-- Three run-status glance keys, answering from any screen during a run and silent outside one: F speaks the flame level, H the coach's armor and wheels, B the wallet - Relics, Mastery, the Baubles total plus each faction currency you hold by name, and a kingdom's Materials.
+- Three run-status glance keys answering from any screen during a run: F speaks the flame level, H the coach's armor and wheels, B the wallet - Relics, Mastery, the Baubles total plus each faction currency you hold by name, and a kingdom's Materials.
+- Affinity changes outside combat now speak.
+- Story choices now tell you who would agree before you commit: each choice's buffer ends with "Sarmenti agrees" / "Bonnie disagrees" lines, the same verdicts the game colors the other hero cards green or red with while a sighted player hovers.
 
 ## V0.2.9
 

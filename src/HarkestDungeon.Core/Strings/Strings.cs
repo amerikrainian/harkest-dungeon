@@ -454,6 +454,10 @@ namespace DD2A11y.Core.Strings {
             D("InspectorCooldown", "cooldown {0}"),
             // A speech-bubble line a combatant says; {0} = the speaker, {1} = the game's line.
             D("BarkLine", "{0}: {1}"),
+            // A story choice's alignment telegraph: whether another hero's own leanings match
+            // the focused pick (the game colors their card green or red); {0} = that hero.
+            D("StoryAgrees", "{0} agrees"),
+            D("StoryDisagrees", "{0} disagrees"),
 
             // Toasts (corner notifications). A tutorial toast; {0} = the game's tutorial title.
             D("ToastTutorial", "tutorial, {0}"),
@@ -817,6 +821,8 @@ namespace DD2A11y.Core.Strings {
         public static string InspectorConditions => T("InspectorConditions");
         public static string InspectorCooldown(int rounds) => F("InspectorCooldown", rounds);
         public static string BarkLine(string speaker, string text) => F("BarkLine", speaker, text);
+        public static string StoryAgrees(string name) => F("StoryAgrees", name);
+        public static string StoryDisagrees(string name) => F("StoryDisagrees", name);
 
         public static string ToastTutorial(string title) => F("ToastTutorial", title);
         public static string ToastObjective(string name) => F("ToastObjective", name);

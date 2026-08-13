@@ -101,9 +101,12 @@ namespace DD2A11y.Game {
         /// <summary>The affinity change a tick trigger moves, in the announced-change form
         /// ("Dismas and Audrey, affinity +1"); null when it names a missing actor or moves
         /// nothing.</summary>
-        public static string AffinityLine(AffinityTickTriggerInstance instance) {
-            var guids = instance?.m_Connection?.ActorGuids;
-            if (guids == null || guids.Count < 2 || instance.m_LeaningChange == 0) {
+        public static string AffinityLine(AffinityTickTriggerInstance instance)
+            => instance == null ? null : AffinityLine(instance.m_Connection, instance.m_LeaningChange);
+
+        public static string AffinityLine(Assets.Code.Affinity.AffinityConnection connection, int leaningChange) {
+            var guids = connection?.ActorGuids;
+            if (guids == null || guids.Count < 2 || leaningChange == 0) {
                 return null;
             }
             string first = Actors.SpokenName(Actors.Get(guids[0]));
@@ -111,8 +114,7 @@ namespace DD2A11y.Game {
             if (first == null || second == null) {
                 return null;
             }
-            string change = instance.m_LeaningChange > 0
-                ? "+" + instance.m_LeaningChange : instance.m_LeaningChange.ToString();
+            string change = leaningChange > 0 ? "+" + leaningChange : leaningChange.ToString();
             return S.CombatAffinity(first, second, change);
         }
 
