@@ -894,18 +894,27 @@ shared so buffers carry its description) and the Kingdoms duration line.
 
 ### 4.2.3 Other Tabs (Conditions, Story, Cosmetics) - WORKS
 
-Read as a generic sweep of the tab panel's labeled selectables, with the panel's own text - or
-"empty" - as the floor. Verified live: Relationships "empty" pre-run, Conditions "Memories",
-Story its unlock hint, Cosmetics its palette buttons.
+Conditions and Story read as a generic sweep of the tab panel's labeled selectables, with the
+panel's own text - or "empty" - as the floor. Verified live: Relationships "empty" pre-run,
+Conditions "Memories", Story its unlock hint.
+
+The Cosmetics tab (2026-08-12) reads as the game's own three sections - "Hero Palette",
+"Weapon Kit", and "Hero Skin" when the hero has skins - one named swatch per cosmetic: the
+name is the game's own string for the resource (the swatch itself is a color patch or a
+two-letter code; only the tooltip named it before, and the row read as bare numbers),
+"selected" marks the applied choice live, a locked skin refuses with "unavailable" (its
+unlock hint stays in the buffer), an unviewed cosmetic carries the game's "New" marker, and
+Enter applies through the button's own submit. The game offers the tab only at the inn and
+the crossroads (`IsTabAvailable`); a tab activating late no longer stays missing from the
+selector - tab availability is part of the per-frame signature.
 
 Verified overall: equip toggle round-trip (on/off/on), hero switching rebuilds all content,
 tab switching (both our selector and the game keeping the tab across hero switches), Escape
 closes through `HideCharacterSheet` with the crossroads re-announcing, physical **I** key
 entry from a hero slot.
 
-**Known gaps:** hero rename (the name input field and edit button) is not modeled; the
-cosmetics tab is floor-level (palette slots read as bare numbers); the game's own tab hotkeys
-and tooltip-view mode are not used.
+**Known gaps:** hero rename (the name input field and edit button) is not modeled; the game's
+own tab hotkeys and tooltip-view mode are not used.
 
 ## 4.3 Crossroads Overlays - MOSTLY COVERED
 
@@ -1923,6 +1932,13 @@ covers the read-only road sheet on Z (5.6).
   baubles 8" button per stat (the game's own transaction; `cost_` currency glyphs speak - the
   faction glyph as the authored "baubles", no game string spells it), the livery cycler, and
   the upgrade slots as equip slots (altar-locked ones carry their lock text).
+- The livery cycler (2026-08-12) reads as the game's "Stagecoach Livery" title with the
+  applied skin's name as its value ("Stagecoach Livery, Ironclad, button"; it read as a bare
+  unlabeled button before), and Enter's cycle re-reads the landing so the new skin is spoken.
+  Names are the game's `stagecoach_skin_<id>` strings; the base and kingdom-faction liveries
+  have none anywhere in the game, so the id's own words stand in ("beastmen", "coven"), the
+  base one as the game's "Default". The game greys the button below two unlocked liveries,
+  read as unavailable.
 
 Live-verified: full walk. Unexercised: a repair press (stats were full), equip/unequip on this
 sheet.

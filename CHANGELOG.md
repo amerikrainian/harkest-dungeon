@@ -7,7 +7,9 @@
 - Buffs the game names only through a tooltip override no longer read as a raw stat key.
 - The deathblow resist icon now speaks as "deathblow" instead of "death"
 - Path-modified tokens now read their own descriptions on skill cards.
-- Duplicate enemies now number 1 to N in the order you meet them, instead of by rank. I thought by rank would be more intuitive; 
+- Duplicate enemies now number 1 to N in the order you meet them, instead of by rank. I thought by the latter would be more intuitive; I was wrong.
+- The hero sheet's cosmetics tab now reads properly: palettes, weapon kits, and hero skins by the game's own names with "selected" on the applied one, locked skins refusing with their unlock hint in the buffer.
+- The stagecoach's livery cycler now reads as "Stagecoach Livery" with the applied skin's name, and speaks the new skin after cycling. It used to be a bare unlabeled button.
 
 ## V0.2.9
 

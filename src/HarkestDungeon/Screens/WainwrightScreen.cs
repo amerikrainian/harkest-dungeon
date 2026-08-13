@@ -95,7 +95,7 @@ namespace DD2A11y.Screens {
             if (skin != null && skin.gameObject.activeInHierarchy) {
                 var button = skin.GetComponent<Button>();
                 if (button != null) {
-                    _root.Add(new SelectableElement(button, null, skin.parent.gameObject));
+                    _root.Add(new CoachLiveryElement(button, skin.parent.gameObject));
                 }
             }
 

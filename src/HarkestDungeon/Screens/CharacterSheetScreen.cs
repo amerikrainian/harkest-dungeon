@@ -42,6 +42,18 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<CharacterSheetStatsUiBhv, List<GameObject>>("m_combatItemsAdded");
         private static readonly AccessTools.FieldRef<CharacterSheetStatsUiBhv, Assets.Code.UI.Items.TrinketInventoryItemContainerBhv> TrinketsField =
             AccessTools.FieldRefAccess<CharacterSheetStatsUiBhv, Assets.Code.UI.Items.TrinketInventoryItemContainerBhv>("m_trinketContainerBhv");
+        private static readonly AccessTools.FieldRef<CharacterSheetCosmeticsBhv, List<CharacterSheetCosmeticButtonBhv>> PaletteButtonsField =
+            AccessTools.FieldRefAccess<CharacterSheetCosmeticsBhv, List<CharacterSheetCosmeticButtonBhv>>("m_paletteButtonsAdded");
+        private static readonly AccessTools.FieldRef<CharacterSheetCosmeticsBhv, List<CharacterSheetCosmeticButtonBhv>> KitButtonsField =
+            AccessTools.FieldRefAccess<CharacterSheetCosmeticsBhv, List<CharacterSheetCosmeticButtonBhv>>("m_kitButtonsAdded");
+        private static readonly AccessTools.FieldRef<CharacterSheetCosmeticsBhv, List<CharacterSheetCosmeticButtonBhv>> SkinButtonsField =
+            AccessTools.FieldRefAccess<CharacterSheetCosmeticsBhv, List<CharacterSheetCosmeticButtonBhv>>("m_skinButtonsAdded");
+        private static readonly AccessTools.FieldRef<CharacterSheetCosmeticsBhv, IList<ResourceActorPalette>> PalettesField =
+            AccessTools.FieldRefAccess<CharacterSheetCosmeticsBhv, IList<ResourceActorPalette>>("m_spawnedActorPalettes");
+        private static readonly AccessTools.FieldRef<CharacterSheetCosmeticsBhv, IList<ResourceActorWeaponKit>> KitsField =
+            AccessTools.FieldRefAccess<CharacterSheetCosmeticsBhv, IList<ResourceActorWeaponKit>>("m_spawnedActorWeaponKits");
+        private static readonly AccessTools.FieldRef<CharacterSheetCosmeticsBhv, IList<ResourceActorSkin>> SkinsField =
+            AccessTools.FieldRefAccess<CharacterSheetCosmeticsBhv, IList<ResourceActorSkin>>("m_SpawnedActorSkins");
 
         private struct ResistanceRow {
             public AccessTools.FieldRef<CharacterSheetStatsUiBhv, TextTooltipBhv> Tip;
@@ -73,6 +85,7 @@ namespace DD2A11y.Screens {
         private uint _builtGuid;
         private int _builtTab = -1;
         private int _builtCount = -1;
+        private int _builtTabsSignature;
 
         public override string Name => S.ScreenHeroSheet;
 
@@ -107,6 +120,11 @@ namespace DD2A11y.Screens {
 
         public override bool OnUpdate(object target) {
             var sheet = (CharacterSheetUiBhv)target;
+            // A tab arriving or leaving late (the cosmetics tab activates a beat after the
+            // sheet opens) refreshes the selector's index list; the selector reads it live.
+            if (TabsSignature(sheet) != _builtTabsSignature) {
+                RebuildTabIndices(sheet);
+            }
             // A hero switch, a mouse tab click, or a content change (a quirk reroll) rebuilds the
             // items; announcing is left to whoever moved (the header/tab adjust spoke already, and
             // the router re-homes and re-announces an orphaned focus).
@@ -128,6 +146,19 @@ namespace DD2A11y.Screens {
                     _tabIndices.Add(i);
                 }
             }
+            _builtTabsSignature = TabsSignature(sheet);
+        }
+
+        private static int TabsSignature(CharacterSheetUiBhv sheet) {
+            var topBar = TopBarField(sheet);
+            int signature = 0;
+            for (int i = 0; i < topBar.TabCount; i++) {
+                var tab = topBar.GetTab(i);
+                if (tab.gameObject.activeSelf && tab.Button.interactable) {
+                    signature |= 1 << i;
+                }
+            }
+            return signature;
         }
 
         private int ActiveTabIndex(CharacterSheetUiBhv sheet) {
@@ -168,6 +199,8 @@ namespace DD2A11y.Screens {
             _items.Clear();
             if (sheet.ActiveTab == CharacterSheetUiBhv.Tab.Skills) {
                 BuildSkillsTab(sheet);
+            } else if (sheet.ActiveTab == CharacterSheetUiBhv.Tab.Cosmetic) {
+                BuildCosmeticsTab(sheet);
             } else {
                 BuildGenericTab(sheet);
             }
@@ -347,6 +380,47 @@ namespace DD2A11y.Screens {
             container.Add(itemSlot != null
                 ? new EquipSlotElement(itemSlot, button, rowScope)
                 : new SelectableElement(button, null, rowScope));
+        }
+
+        // The cosmetics rows, each titled by the game's own section label: the palettes, the
+        // weapon kits, and any hero skins, one named swatch per unlocked cosmetic (skins list
+        // locked ones too, with the unlock hint in the buffer). The game offers this tab only
+        // at the inn and the crossroads.
+        private void BuildCosmeticsTab(CharacterSheetUiBhv sheet) {
+            var cosmetics = sheet.GetComponentInChildren<CharacterSheetCosmeticsBhv>(includeInactive: true);
+            if (cosmetics == null) {
+                BuildGenericTab(sheet);
+                return;
+            }
+            AddCosmeticRow(GameLoc.TryGet("hero_palette_label"), PaletteButtonsField(cosmetics),
+                index => CosmeticName((System.Collections.IList)PalettesField(cosmetics), index));
+            AddCosmeticRow(GameLoc.TryGet("weapon_kit_label"), KitButtonsField(cosmetics),
+                index => CosmeticName((System.Collections.IList)KitsField(cosmetics), index));
+            AddCosmeticRow(GameLoc.TryGet("hero_skin_label"), SkinButtonsField(cosmetics),
+                index => CosmeticName((System.Collections.IList)SkinsField(cosmetics), index));
+        }
+
+        private void AddCosmeticRow(string title, List<CharacterSheetCosmeticButtonBhv> buttons,
+                System.Func<int, string> nameOf) {
+            var row = new Container(ContainerShape.HorizontalList, title);
+            foreach (var button in buttons) {
+                if (button != null && button.gameObject.activeInHierarchy) {
+                    row.Add(new CosmeticButtonElement(button, nameOf));
+                }
+            }
+            if (!row.IsEmptyContainer) {
+                _items.Add(row);
+            }
+        }
+
+        // A cosmetic's display name: the loc string keyed by the resource asset's own name,
+        // the same lookup the game's tooltip does.
+        private static string CosmeticName(System.Collections.IList resources, int index) {
+            if (resources == null || index < 0 || index >= resources.Count) {
+                return null;
+            }
+            var resource = resources[index] as Object;
+            return resource == null ? null : GameLoc.TryGet(resource.name) ?? resource.name;
         }
 
         // Any other tab: the panel's labeled selectables, with the panel's own text as the floor
