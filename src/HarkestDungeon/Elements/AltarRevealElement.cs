@@ -5,9 +5,9 @@ using DD2A11y.Core.Text;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// The altar reveal modal's text: the just-unlocked item's name and description, spoken
-    /// in full on entry and reviewable line by line in the buffer. Enter continues past the
-    /// reveal - the game's own Submit step.
+    /// A text-plus-continue modal's whole content as one element: name and description
+    /// spoken in full on entry and reviewable line by line in the buffer, Enter firing the
+    /// screen's own continue. Serves the altar reveals and the Loathing reset screen.
     /// </summary>
     public sealed class AltarRevealElement : UIElement {
         private readonly Action _resume;

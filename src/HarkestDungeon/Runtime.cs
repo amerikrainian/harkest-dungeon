@@ -147,6 +147,7 @@ namespace DD2A11y {
             _storyScreen = new StoryScreen(speak, Navigator);
             Router.Register(_storyScreen);
             Router.Register(new BossSelectScreen());
+            Router.Register(new DoomResetScreen());
             Router.Register(new TokenGlossaryScreen());
             Router.Register(new TutorialArchiveScreen());
             Router.Register(new PatchNotesScreen(Navigator));

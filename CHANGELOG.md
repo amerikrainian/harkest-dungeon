@@ -6,6 +6,7 @@
 - Toasts now speak in every mode, not just combat and the road.
 - Token conversions, quirk removals, and dot cleanses now speak, matching the game's own
   pop text.
+- The Loathing reset screen now reads its full text instead of one bare button.
 
 ## V0.3.0
 

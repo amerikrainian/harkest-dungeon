@@ -1284,6 +1284,23 @@ and from the loot screen.
 - The inn outranks this screen by registration order and keeps its inline copy; dedicated
   station screens above both take their own surfaces.
 
+## 5.8 Loathing Reset (`DoomResetScreen`) - BUILT
+
+Verified 2026-08-13 on a synthetic push (the real trigger needs the Loathing meter to max
+mid-drive). The screen the game pushes itself when the Loathing maxes
+(`DoomResetScreenWidgetBhv`, Modal layer): the confession boss's empowerment. Previously the
+generic floor took it and read one bare button - the whole screen is a single click-anywhere
+Button whose onClick is the game's own close, and the body text is invisible to a selectable
+sweep.
+
+- Reads as a dialog: the game's own title ("The Mountain shudders...") with the composed
+  description - the stacking boss max-HP buff and the boss's visible reset effects, glyphs
+  spoken as words - as the one element, line by line in the buffer. The widget writes the
+  DataContext in its open step, a beat after the object tops the stack, so the entry can
+  read the title alone once; the description's arrival requests the one re-announce
+  (observed on the synthetic push: title-only entry, full line after the re-announce).
+- Enter and Escape are the click-anywhere dismiss; the driving surface re-announces.
+
 ---
 
 # Phase 6: Roadside Nodes
