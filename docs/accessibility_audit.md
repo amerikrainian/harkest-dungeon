@@ -1074,6 +1074,14 @@ keyboard.
   the state name ("Bright Light"), then each side's effects under the game's own captions,
   read live from the panel's DataContext, which the game re-stamps on every torch change.
   Live-verified 2026-07-31 at flame 88.
+  The **stagecoach pet** follows the wheels while one rides the coach's pet slot
+  (`DrivingPetElement` over the HUD's pet icon, skipped live while the icon is hidden): its
+  name from the run model (the player's own if renamed, else the item's title), the icon's
+  hover description as the buffer - a stress-barking pet carries no hover text in the game
+  either, its barks are its voice - and Enter is the icon's own click, which pets the pet
+  (its sound answers). Live-verified 2026-08-13 via pet injection (owl: name + full
+  description read; boiled head: name only; slot emptied: element skipped both directions;
+  the slot's lock state is memory-only, so the test left the run untouched).
 - **Party panel**: one element per ribbon hero, left to right as the game draws the strip -
   rank 4 leftmost, the front line rightmost (measured live 2026-08-08: slot 0 sits at the
   highest x), the same direction the combat battlefield row and the crossroads slots walk

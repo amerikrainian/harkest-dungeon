@@ -23,7 +23,8 @@ namespace DD2A11y.Screens {
     /// M, I, C, Z, G, Alt, Ctrl, and Escape all work as shipped - and the mod claims only Tab
     /// (the game's second minimap key) for panel traversal. The other stops read the rest of
     /// the HUD: the status readouts (distance, region, the flame with its Alt panel's state
-    /// and effects in the buffer, armor, wheels, the Loathing meter), the hero ribbons (name
+    /// and effects in the buffer, armor, wheels, the stagecoach pet while one rides, the
+    /// Loathing meter), the hero ribbons (name
     /// with HP and stress; Enter is
     /// the ribbon's own inspect, Space grabs for a marching-order move that shifts slots the
     /// way the game's drag does), the goals panel while the game shows it (G toggles it), and
@@ -374,6 +375,12 @@ namespace DD2A11y.Screens {
                 () => RunStatus.CoachStat("stage_coach_sheet_wheel_stat_label",
                     RunValueType.STAGE_COACH_WHEELS, RunStatType.STAGE_COACH_WHEELS_MAX_VALUE),
                 detail: () => TooltipReader.Lines(wheels == null ? null : wheels.gameObject)));
+            // The stagecoach pet's icon; inactive (and so skipped) while no pet rides.
+            var petIcon = FindChild(transform, "DrivingPetIcon", includeInactive: true);
+            var petBhv = petIcon == null ? null : petIcon.GetComponent<DrivingPetIconBhv>();
+            if (petBhv != null) {
+                _status.Add(new DrivingPetElement(petBhv));
+            }
             // The Loathing meter names itself through its own tooltip.
             var doom = FindChild(transform, "DoomMeter");
             if (doom != null) {

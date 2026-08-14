@@ -44,6 +44,17 @@ namespace DD2A11y.Game {
                 mgr.RunValues.GetValue(value), mgr.RunDataManager.GetBaseStatValue(max));
         }
 
+        /// <summary>The pet riding the stagecoach's pet slot, or null.</summary>
+        public static IReadOnlyItemInstance Pet() {
+            var mgr = Singleton<GameTypeMgr>.Instance;
+            var coach = mgr == null ? null : mgr.StageCoach;
+            if (coach == null) {
+                return null;
+            }
+            var items = coach.GetSlotInventory(ItemSlotType.PET).GetValidItems();
+            return items.Count > 0 ? items[0] : null;
+        }
+
         /// <summary>The wallet the game's currency bar shows: Relics (the gold item), Mastery
         /// (minus points pending at an inn trainer, like the bar), the Baubles total over the
         /// faction-tagged currency items with each held type by its own name, and a kingdom's
