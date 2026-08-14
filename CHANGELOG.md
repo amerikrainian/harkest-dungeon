@@ -7,6 +7,8 @@
 - Token conversions, quirk removals, and dot cleanses now speak, matching the game's own
   pop text.
 - The Loathing reset screen now reads its full text instead of one bare button.
+- Skill loadouts can now be accessed from the hero sheet.
+- Pets now show up as an item within the coach overview.
 
 ## V0.3.0
 
