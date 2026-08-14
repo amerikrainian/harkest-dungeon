@@ -115,6 +115,7 @@ SoundRoadTurning = 馬車轉彎中
 SoundRoadTurnEnd = 轉彎結束
 SoundCombatTargetValid = 目標有效
 SoundCombatTargetInvalid = 目標無效
+SoundCombatAffinitySkill = 技能改變好感度
 TabModKeys = 模組按鍵
 KeyAddBinding = 新增按鍵
 KeyAddPadBinding = 新增手把按鈕

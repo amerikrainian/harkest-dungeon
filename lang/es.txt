@@ -115,6 +115,7 @@ SoundRoadTurning = diligencia girando
 SoundRoadTurnEnd = giro terminado
 SoundCombatTargetValid = objetivo válido
 SoundCombatTargetInvalid = objetivo no válido
+SoundCombatAffinitySkill = habilidad que cambia la afinidad
 TabModKeys = teclas del mod
 KeyAddBinding = añadir tecla
 KeyAddPadBinding = añadir botón

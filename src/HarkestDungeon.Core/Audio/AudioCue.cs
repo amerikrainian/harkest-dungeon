@@ -21,6 +21,9 @@ namespace DD2A11y.Core.Audio {
         CombatTargetValid,
         /// <summary>Focus landed on an invalid target for the chosen skill (440 Hz).</summary>
         CombatTargetInvalid,
+        /// <summary>Focus landed on a skill that telegraphs an affinity change (the A glance
+        /// reads the changes themselves).</summary>
+        CombatAffinitySkill,
     }
 
     /// <summary>The glossary's grouping of cues, mirroring the assets/audio folders.</summary>

@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.3.1
+
+- Added affinity sound as you scroll over a skill that impacts party relations.
+
 ## V0.3.0
 
 - Biome choices now include all their information like flavor text (Whoops?).

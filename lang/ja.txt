@@ -115,6 +115,7 @@ SoundRoadTurning = 馬車が旋回中
 SoundRoadTurnEnd = 旋回終了
 SoundCombatTargetValid = 対象有効
 SoundCombatTargetInvalid = 対象無効
+SoundCombatAffinitySkill = 親密度が変化するスキル
 TabModKeys = モッドキー
 KeyAddBinding = キーを追加
 KeyAddPadBinding = ボタンを追加

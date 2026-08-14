@@ -245,7 +245,8 @@ namespace DD2A11y {
             // area, with the fork popup transient in the same tree.
             _driving = new DrivingScreen(speak, Navigator, Input);
             Router.Register(_driving);
-            // Target-select feedback: validity beeps fire on focus landings, not per frame.
+            // Combat focus-landing audio (validity beeps, the affinity-skill cue) fires on
+            // landings, not per frame.
             Navigator.FocusSettled += element => {
                 if (Router.Active == _combat) {
                     _combat.OnFocusSettled(element);

@@ -115,6 +115,7 @@ SoundRoadTurning = diligence en virage
 SoundRoadTurnEnd = fin du virage
 SoundCombatTargetValid = cible valide
 SoundCombatTargetInvalid = cible invalide
+SoundCombatAffinitySkill = compétence modifiant l'affinité
 TabModKeys = touches du mod
 KeyAddBinding = ajouter une touche
 KeyAddPadBinding = ajouter un bouton

@@ -115,6 +115,7 @@ SoundRoadTurning = Kutsche lenkt
 SoundRoadTurnEnd = Kurve beendet
 SoundCombatTargetValid = Ziel gültig
 SoundCombatTargetInvalid = Ziel ungültig
+SoundCombatAffinitySkill = Fähigkeit ändert Affinität
 TabModKeys = Mod-Tasten
 KeyAddBinding = Taste hinzufügen
 KeyAddPadBinding = Controllertaste hinzufügen

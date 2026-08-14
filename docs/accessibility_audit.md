@@ -1517,7 +1517,9 @@ Top to bottom:
   out of uses - instead of a bare "unavailable". When the game grants an always-equipped copy
   of a skill the player also equipped, it shows two identical buttons that select the same
   skill - the mod reads only the first and ends its buffer with "also granted as a bonus
-  skill".
+  skill". Landing on a skill that telegraphs an affinity change plays the affinity-skill
+  cue (`assets/audio/combat/affinity_skill.wav`) - the audible pointer to the A glance,
+  which reads the changes themselves.
 - The commands row (Move, Pass, and Retreat when the game offers it).
 
 ### 7.1.2 The Turn and Targeting - WORKS
@@ -2277,7 +2279,8 @@ Conditions/Story/Cosmetics tabs (4.2.3), the kingdoms wizard's mods step (1.5).
 ## 12.4 Audio Layers
 
 Road cues - the pickup ping, turning, turn-end, road edge (5.2; only what can be steered
-at or steered with keeps a sound); combat target-validity beeps (7.1.2).
+at or steered with keeps a sound); combat target-validity beeps (7.1.2) and the
+affinity-skill landing cue (7.1.1).
 
 ## 12.5 Uncovered Surfaces (consolidated)
 

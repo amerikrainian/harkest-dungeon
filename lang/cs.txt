@@ -115,6 +115,7 @@ SoundRoadTurning = dostavník zatáčí
 SoundRoadTurnEnd = konec zatáčení
 SoundCombatTargetValid = platný cíl
 SoundCombatTargetInvalid = neplatný cíl
+SoundCombatAffinitySkill = dovednost mění náklonnost
 TabModKeys = klávesy modu
 KeyAddBinding = přidat klávesu
 KeyAddPadBinding = přidat tlačítko

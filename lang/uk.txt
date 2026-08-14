@@ -115,6 +115,7 @@ SoundRoadTurning = диліжанс повертає
 SoundRoadTurnEnd = кінець повороту
 SoundCombatTargetValid = ціль допустима
 SoundCombatTargetInvalid = ціль недопустима
+SoundCombatAffinitySkill = навичка змінює думки
 TabModKeys = клавіші мода
 KeyAddBinding = додати клавішу
 KeyAddPadBinding = додати кнопку

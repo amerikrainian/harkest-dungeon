@@ -127,6 +127,22 @@ namespace DD2A11y.Game {
             return AffinityLine(query.m_AffinityTickTriggerInstance);
         }
 
+        /// <summary>Whether the skill telegraphs an affinity change against any valid target -
+        /// the existence answer behind <see cref="AffinityPreviews"/>, stopping at the first
+        /// telegraphing target.</summary>
+        public static bool TelegraphsAffinity(ActorInstance performer, string skillId) {
+            var targets = ValidTargets(performer, skillId);
+            if (targets == null) {
+                return false;
+            }
+            foreach (uint target in targets) {
+                if (AffinityPreview(performer, skillId, target) != null) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /// <summary>Every affinity change one skill telegraphs across its valid targets: the
         /// one shared line when every target telegraphs the same change, else one line per
         /// telegraphing target, that target's name first. Empty when nothing telegraphs.</summary>

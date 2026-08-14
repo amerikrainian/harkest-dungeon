@@ -115,6 +115,7 @@ SoundRoadTurning = 马车转弯中
 SoundRoadTurnEnd = 转弯结束
 SoundCombatTargetValid = 目标有效
 SoundCombatTargetInvalid = 目标无效
+SoundCombatAffinitySkill = 技能改变和睦值
 TabModKeys = 模组按键
 KeyAddBinding = 添加按键
 KeyAddPadBinding = 添加手柄按钮

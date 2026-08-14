@@ -117,6 +117,7 @@ SoundRoadTurning = coach turning
 SoundRoadTurnEnd = turn ended
 SoundCombatTargetValid = target valid
 SoundCombatTargetInvalid = target invalid
+SoundCombatAffinitySkill = skill changes affinity
 TabModKeys = mod keys
 KeyAddBinding = add key
 KeyAddPadBinding = add button

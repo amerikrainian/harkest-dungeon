@@ -115,6 +115,7 @@ SoundRoadTurning = dyliżans skręca
 SoundRoadTurnEnd = koniec skrętu
 SoundCombatTargetValid = cel prawidłowy
 SoundCombatTargetInvalid = cel nieprawidłowy
+SoundCombatAffinitySkill = umiejętność zmieniająca relacje
 TabModKeys = klawisze moda
 KeyAddBinding = dodaj klawisz
 KeyAddPadBinding = dodaj przycisk

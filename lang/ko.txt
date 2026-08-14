@@ -115,6 +115,7 @@ SoundRoadTurning = 마차 회전 중
 SoundRoadTurnEnd = 회전 종료
 SoundCombatTargetValid = 대상 유효
 SoundCombatTargetInvalid = 대상 무효
+SoundCombatAffinitySkill = 호감도 변경 스킬
 TabModKeys = 모드 키
 KeyAddBinding = 키 추가
 KeyAddPadBinding = 버튼 추가

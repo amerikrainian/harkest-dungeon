@@ -212,10 +212,20 @@ namespace DD2A11y.Screens {
             return false;
         }
 
-        // Target validity rides as audio while a pick is pending: a high beep on landing on a
-        // valid target, a low one on an invalid target, and only when the validity CHANGED from
-        // the previously focused combatant - a run of same-validity targets stays silent.
+        // Focus-landing audio. On the skill bar, a skill that telegraphs an affinity change
+        // lands with its own cue - the audible pointer to the A glance, which reads the
+        // changes themselves. Target validity rides as audio while a pick is pending: a high
+        // beep on landing on a valid target, a low one on an invalid target, and only when the
+        // validity CHANGED from the previously focused combatant - a run of same-validity
+        // targets stays silent.
         public void OnFocusSettled(UIElement element) {
+            if (element is CombatSkillElement skill) {
+                var actor = Actors.Get(skill.ActorGuid);
+                if (actor != null && Game.Targeting.TelegraphsAffinity(actor, skill.SkillId)) {
+                    _audio.PlayCue(DD2A11y.Core.Audio.AudioCue.CombatAffinitySkill, 1f, 0f);
+                }
+                return;
+            }
             if (_skillSelection == null
                 || _skillSelection.CurrentInputState != SkillSelectionBhv.InputState.ACTOR_SELECT
                 || !(element is CombatantElement combatant)

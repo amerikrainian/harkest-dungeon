@@ -94,6 +94,7 @@ namespace DD2A11y.Audio {
                 case AudioCue.RoadTurning: return Road("turning");
                 case AudioCue.RoadTurnEnd: return Road("end_turn");
                 case AudioCue.CombatTargetValid: return Combat("target_valid");
+                case AudioCue.CombatAffinitySkill: return Combat("affinity_skill");
                 default: return Combat("target_invalid");
             }
         }

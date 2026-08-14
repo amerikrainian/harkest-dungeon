@@ -115,6 +115,7 @@ SoundRoadTurning = diligenza in curva
 SoundRoadTurnEnd = curva terminata
 SoundCombatTargetValid = bersaglio valido
 SoundCombatTargetInvalid = bersaglio non valido
+SoundCombatAffinitySkill = abilità che cambia l'affinità
 TabModKeys = tasti mod
 KeyAddBinding = aggiungi tasto
 KeyAddPadBinding = aggiungi pulsante

@@ -258,6 +258,8 @@ namespace DD2A11y.Core.Strings {
             // Combat target-selection beeps: focus landed on a valid / invalid target.
             D("SoundCombatTargetValid", "target valid"),
             D("SoundCombatTargetInvalid", "target invalid"),
+            // Focus landed on a skill that telegraphs an affinity change.
+            D("SoundCombatAffinitySkill", "skill changes affinity"),
 
             // The mod's own key-rebinding tab on the game's settings screen: one row per mod
             // command showing its current keys. Enter opens the row's menu (add a key, delete
