@@ -42,6 +42,7 @@ namespace DD2A11y {
         private InnScreen _inn;
         private FeedbackScreen _feedback;
         private PartyLoadoutScreen _partyLoadouts;
+        private SkillLoadoutScreen _skillLoadouts;
         private InventoryScreen _inventory;
         private InnStorageScreen _innStorage;
         private KingdomInnPanelScreen _kingdomInnPanel;
@@ -143,6 +144,9 @@ namespace DD2A11y {
             }));
             Router.Register(new PauseScreen());
             Router.Register(new CharacterSheetScreen());
+            // The sheet's saved-skill-sets screen, pushed above the sheet by its button.
+            _skillLoadouts = new SkillLoadoutScreen(speak);
+            Router.Register(_skillLoadouts);
             Router.Register(new LootScreen());
             _storyScreen = new StoryScreen(speak, Navigator);
             Router.Register(_storyScreen);
@@ -274,7 +278,7 @@ namespace DD2A11y {
                 // key must become the binding.
                 bool typing = Game.TextEntry.IsTyping || _textEdit.Active || _profileSelect.EditingName
                     || _firstProfile.EditingName || _keyBindings.RebindActive || _rebind.Active
-                    || _feedback.Editing || _partyLoadouts.EditingName;
+                    || _feedback.Editing || _partyLoadouts.EditingName || _skillLoadouts.EditingName;
                 bool suppress = typing || _wasTyping;
                 _wasTyping = typing;
                 return suppress;

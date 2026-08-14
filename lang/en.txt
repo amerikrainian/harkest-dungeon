@@ -136,6 +136,7 @@ VitrineFlames = {0} of {1} flames
 PathLaunchSkills = Skills per rank: {0}
 PathTargetSkills = Skills per enemy rank: {0}
 ScreenPartyLoadouts = party loadouts
+ScreenSkillLoadouts = skill loadouts
 LoadoutRename = rename
 LoadoutDelete = delete
 HeroNameField = hero name

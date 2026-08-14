@@ -134,6 +134,7 @@ VitrineFlames = {0}/{1} 불꽃
 PathLaunchSkills = 위치별 스킬: {0}
 PathTargetSkills = 적 위치별 스킬: {0}
 ScreenPartyLoadouts = 원정대 목록
+ScreenSkillLoadouts = 스킬 목록
 LoadoutRename = 이름 변경
 LoadoutDelete = 삭제
 HeroNameField = 영웅 이름

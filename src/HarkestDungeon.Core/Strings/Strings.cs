@@ -311,6 +311,9 @@ namespace DD2A11y.Core.Strings {
             // The crossroads party-loadout overlay, when the game's own panel title is
             // unavailable. Noun phrase.
             D("ScreenPartyLoadouts", "party loadouts"),
+            // The hero sheet's saved-skill-sets screen, when the game's own title label is
+            // unavailable. Noun phrase.
+            D("ScreenSkillLoadouts", "skill loadouts"),
             // The icon-only buttons on a saved loadout's row (no text or tooltip in the game's
             // own UI): rename the loadout, delete it. Verb phrases.
             D("LoadoutRename", "rename"),
@@ -751,6 +754,7 @@ namespace DD2A11y.Core.Strings {
         public static string PathLaunchSkills(string counts) => F("PathLaunchSkills", counts);
         public static string PathTargetSkills(string counts) => F("PathTargetSkills", counts);
         public static string ScreenPartyLoadouts => T("ScreenPartyLoadouts");
+        public static string ScreenSkillLoadouts => T("ScreenSkillLoadouts");
         public static string LoadoutRename => T("LoadoutRename");
         public static string LoadoutDelete => T("LoadoutDelete");
         public static string HeroNameField => T("HeroNameField");

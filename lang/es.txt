@@ -134,6 +134,7 @@ VitrineFlames = {0} de {1} llamas
 PathLaunchSkills = Habilidades por posición: {0}
 PathTargetSkills = Habilidades por posición enemiga: {0}
 ScreenPartyLoadouts = grupos guardados
+ScreenSkillLoadouts = conjuntos de habilidades
 LoadoutRename = renombrar
 LoadoutDelete = eliminar
 HeroNameField = nombre del héroe

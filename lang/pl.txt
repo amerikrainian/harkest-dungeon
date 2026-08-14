@@ -134,6 +134,7 @@ VitrineFlames = {0} z {1} płomieni
 PathLaunchSkills = Umiejętności na pozycję: {0}
 PathTargetSkills = Umiejętności na pozycję wroga: {0}
 ScreenPartyLoadouts = konfiguracje drużyny
+ScreenSkillLoadouts = konfiguracje umiejętności
 LoadoutRename = zmień nazwę
 LoadoutDelete = usuń
 HeroNameField = imię bohatera

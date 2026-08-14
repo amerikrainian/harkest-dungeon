@@ -876,6 +876,9 @@ Reads from the game model:
   carries the `_u` id, so its card already reads the upgraded values) leads its state with
   "mastered", the laurel's spoken form, and its mastery buffer answers "no upgrade
   available"; the combat bar speaks the same "mastered" word.
+- The Skill Loadouts button (after the skills row, as on screen), read from the game's own
+  caption beside it; the game shows it only where skills are editable and the hero qualifies,
+  and Enter opens the loadout screen (4.2.4) through the button's own click.
 - The combat item and trinket slots. Resistances, quirks, skills, combat items and trinkets
   are one horizontal row each (Left/Right within a row, Up/Down between sections).
 - Equip slots (trinkets, combat items) are `EquipSlotElement`s: occupied slots read the item's
@@ -935,6 +938,23 @@ entry from a hero slot.
 
 **Known gaps:** hero rename (the name input field and edit button) is not modeled; the game's
 own tab hotkeys and tooltip-view mode are not used.
+
+### 4.2.4 Skill Loadouts (`SkillLoadoutScreen`) - WORKS
+
+The sheet's saved-skill-sets screen (a stack screen on the Actor layer, pushed by the Skill
+Loadouts button), named by the game's own title. The same pooled row prefab as the party
+loadouts (4.3.2), so the reader mirrors that screen:
+
+- One block per saved loadout: its name (the game's numbered "Loadout" default or the typed
+  one), with the row's icon-only rename and delete buttons as their own authored-label
+  controls. The row shows nothing of the skills it holds in the game's UI either.
+- Enter on the loadout applies it to the hero (the game's `OnClickSubmit`); rename runs the
+  game's inline edit with keystroke echo and the accepted name spoken; delete repopulates
+  the pooled rows (instance-id signature, focus re-homes).
+- Save Loadout stores the hero's current skill set (the game disables it at the loadout
+  cap); Continue and Escape close through the game's own close, which persists the manager.
+- The entry announcement holds until the screen's own state reads Open - the rows spawn in
+  the open step, a beat after the object tops the stack.
 
 ## 4.3 Crossroads Overlays - MOSTLY COVERED
 
@@ -2292,7 +2312,8 @@ presses.
 ## 12.2 Stack Screens with Dedicated Readers
 
 Settings (2.1), pause (2.2), confirmation dialogs (2.3), generic modal (2.4), token glossary
-(2.5), tutorial archive (2.6), patch notes (1.6), hero sheet (4.2), inventory (5.7), road map
+(2.5), tutorial archive (2.6), patch notes (1.6), hero sheet (4.2), skill loadouts (4.2.4),
+inventory (5.7), road map
 (5.3), fork menu (5.4), confession select (5.5), stagecoach sheet (5.6/8.5), node prompt
 (6.1), road stories (6.3), field hospital (6.5), store (6.6/8.3), loot (7.3), inspector (7.2),
 travelogue (8.1), mastery trainer (8.4), select route (8.6), relationships matrix (8.7), inn

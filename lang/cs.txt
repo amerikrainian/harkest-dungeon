@@ -134,6 +134,7 @@ VitrineFlames = {0} z {1} plamenů
 PathLaunchSkills = Dovednosti na pozici: {0}
 PathTargetSkills = Dovednosti na pozici nepřítele: {0}
 ScreenPartyLoadouts = sestavy družiny
+ScreenSkillLoadouts = sestavy dovedností
 LoadoutRename = přejmenovat
 LoadoutDelete = smazat
 HeroNameField = jméno hrdiny

@@ -134,6 +134,7 @@ VitrineFlames = {0} из {1} огней
 PathLaunchSkills = Навыки на позицию: {0}
 PathTargetSkills = Навыки на позицию врага: {0}
 ScreenPartyLoadouts = сочетания группы
+ScreenSkillLoadouts = сочетания навыков
 LoadoutRename = переименовать
 LoadoutDelete = удалить
 HeroNameField = имя героя

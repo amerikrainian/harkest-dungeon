@@ -134,6 +134,7 @@ VitrineFlames = {0}/{1} 火焰
 PathLaunchSkills = 每个位置的技能: {0}
 PathTargetSkills = 每个敌方位置的技能: {0}
 ScreenPartyLoadouts = 队伍配置
+ScreenSkillLoadouts = 技能配置
 LoadoutRename = 重命名
 LoadoutDelete = 删除
 HeroNameField = 英雄名字

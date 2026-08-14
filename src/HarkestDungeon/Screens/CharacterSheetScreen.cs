@@ -20,7 +20,8 @@ namespace DD2A11y.Screens {
     /// party's heroes), then the sheet's tab selector, then the active tab's content. The
     /// Skills tab is read fully from the game model: health/stress/speed, the resistances, the
     /// quirks, each combat skill (Enter equips/unequips through the game's own button) with its
-    /// full card as buffer lines, the combat item and trinket slots. Resistances, quirks,
+    /// full card as buffer lines, the Skill Loadouts button (where the game offers it), the
+    /// combat item and trinket slots. Resistances, quirks,
     /// skills, combat items and trinkets are one horizontal row each (Left/Right within,
     /// Up/Down across). The Relationships tab reads
     /// each partner row with its affinity readout on the focus line; the other tabs read as a
@@ -62,6 +63,8 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<CharacterSheetConditionsUiBhv, TMPro.TextMeshProUGUI>("m_goalLabel");
         private static readonly AccessTools.FieldRef<CharacterSheetConditionsUiBhv, GameObject> MemoriesContainerField =
             AccessTools.FieldRefAccess<CharacterSheetConditionsUiBhv, GameObject>("m_memoriesContainer");
+        private static readonly AccessTools.FieldRef<CharacterSheetUiBhv, Button> SkillLoadoutButtonField =
+            AccessTools.FieldRefAccess<CharacterSheetUiBhv, Button>("m_skillLoadoutButton");
 
         private struct ResistanceRow {
             public AccessTools.FieldRef<CharacterSheetStatsUiBhv, TextTooltipBhv> Tip;
@@ -368,6 +371,12 @@ namespace DD2A11y.Screens {
             }
             if (!skills.IsEmptyContainer) {
                 _items.Add(skills);
+            }
+            // The game shows the button only where loadouts apply (editable skills at the
+            // crossroads/inn); its caption lives on the container beside it.
+            var loadoutButton = SkillLoadoutButtonField(sheet);
+            if (loadoutButton != null && loadoutButton.gameObject.activeInHierarchy) {
+                _items.Add(new SelectableElement(loadoutButton, null, loadoutButton.transform.parent.gameObject));
             }
             var combatItems = new Container(ContainerShape.HorizontalList,
                 GameLoc.TryGet("item_type_combat") ?? S.SheetCombatItems);
