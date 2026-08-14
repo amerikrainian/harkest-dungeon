@@ -16,7 +16,6 @@ using Assets.Code.Game;
 using Assets.Code.Library;
 using Assets.Code.Quirk;
 using Assets.Code.Quirk.Events;
-using Assets.Code.Run.Events;
 using Assets.Code.Skill;
 using Assets.Code.Skill.Events;
 using Assets.Code.Source;
@@ -77,7 +76,6 @@ namespace DD2A11y.Game {
             EventManager.AddListener<EventFinalRound>(HandleFinalRound);
             EventManager.AddListener<EventAffinityTickTriggerApplied>(HandleAffinityTick);
             EventManager.AddListener<EventBark>(HandleBark);
-            EventManager.AddListener<EventRunGoalCompleted>(HandleGoalCompleted);
             ToastEvents.Attach();
         }
 
@@ -470,16 +468,6 @@ namespace DD2A11y.Game {
                 return;
             }
             _pending.Add(speaker == null ? text : S.BarkLine(speaker, text));
-        }
-
-        private static void HandleGoalCompleted(EventRunGoalCompleted evt) {
-            if (!InCombat) {
-                return;
-            }
-            string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
-            if (name != null) {
-                _pending.Add(S.ToastObjective(name));
-            }
         }
 
         // An AI target pick: the same event a player click sends, distinguished by

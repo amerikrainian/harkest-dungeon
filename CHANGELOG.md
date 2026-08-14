@@ -3,6 +3,7 @@
 ## V0.3.1
 
 - Added affinity sound as you scroll over a skill that impacts party relations.
+- Toasts now speak in every mode, not just combat and the road.
 
 ## V0.3.0
 
