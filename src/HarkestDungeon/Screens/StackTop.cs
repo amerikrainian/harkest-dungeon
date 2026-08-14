@@ -13,9 +13,10 @@ namespace DD2A11y.Screens {
     internal static class StackTop {
         /// <summary>The transition veil: a game-mode change or a screen-fader wipe in
         /// progress - the frames where the player sees the curtain, not the screens under
-        /// it.</summary>
+        /// it. The first boot frames, before the mode manager exists, are veiled too.</summary>
         public static bool Veiled
-            => Singleton<GameModeMgr>.Instance.IsChangingState()
+            => !Singleton<GameModeMgr>.HasInstance()
+               || Singleton<GameModeMgr>.Instance.IsChangingState()
                || (SingletonMonoBehaviour<ScreenFaderBhv>.HasInstance()
                    && !SingletonMonoBehaviour<ScreenFaderBhv>.Instance.IsClear);
 
