@@ -21,6 +21,7 @@ using Assets.Code.Skill.Events;
 using Assets.Code.Source;
 using Assets.Code.Token;
 using Assets.Code.Token.Events;
+using Assets.Code.UI;
 using Assets.Code.Utils;
 using DD2A11y.Core.Text;
 using S = DD2A11y.Core.Strings.Strings;
@@ -33,9 +34,10 @@ namespace DD2A11y.Game {
     /// announcing each line and appending it to the combat log. Covered: damage (with crits),
     /// heals, stress, meltdowns, misses and dodges, death's door falls and survivals, deaths,
     /// retreat outcomes, wave starts, the final round, wounds, token/dot/buff/quirk gains and
-    /// losses, affinity changes, barks, objective completions, and what enemies do - never the
-    /// player's own skill picks. Display gates mirror the game's own pop-text handlers, so
-    /// what a sighted player sees pop is what gets spoken.
+    /// losses (token conversions included), quirk and dot cures, affinity changes, barks,
+    /// objective completions, and what enemies do - never the player's own skill picks.
+    /// Display gates mirror the game's own pop-text handlers, so what a sighted player sees
+    /// pop is what gets spoken.
     /// </summary>
     public static class CombatEvents {
         private static readonly List<string> _pending = new List<string>();
@@ -60,9 +62,12 @@ namespace DD2A11y.Game {
             EventManager.AddListener<EventTokenAdded>(HandleTokenAdded);
             EventManager.AddListener<EventTokenConsumed>(HandleTokenConsumed);
             EventManager.AddListener<EventTokenNegated>(HandleTokenNegated);
+            EventManager.AddListener<EventTokenReplaced>(HandleTokenReplaced);
             EventManager.AddListener<EventDotAdded>(HandleDotAdded);
+            EventManager.AddListener<EventDotRemoved>(HandleDotRemoved);
             EventManager.AddListener<EventBuffAdded>(HandleBuffAdded);
             EventManager.AddListener<EventQuirkAdded>(HandleQuirkAdded);
+            EventManager.AddListener<EventQuirkRemoved>(HandleQuirkRemoved);
             EventManager.AddListener<EventActorResist>(HandleResist);
             EventManager.AddListener<EventStressDamage>(HandleStressDamage);
             EventManager.AddListener<EventStressHeal>(HandleStressHeal);
@@ -226,6 +231,20 @@ namespace DD2A11y.Game {
             }
         }
 
+        // A conversion shows as a gain of the token that took the slot - the game's own pop
+        // funnels the replacement id into its token-added handler with a count of one, and
+        // only its combat listeners hear the event.
+        private static void HandleTokenReplaced(EventTokenReplaced evt) {
+            if (!InCombat || !evt.m_IsPopTextValid || !IsSpeakableToken(evt.m_ReplaceAddTokenId)) {
+                return;
+            }
+            string owner = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
+            string token = TokenNames.Spoken(evt.m_ReplaceAddTokenId);
+            if (owner != null && !string.IsNullOrEmpty(token)) {
+                _pending.Add(S.CombatGained(owner, token));
+            }
+        }
+
         // A damage-over-time landed ("Dismas gained stress").
         private static void HandleDotAdded(EventDotAdded evt) {
             if (!InCombat) {
@@ -237,6 +256,50 @@ namespace DD2A11y.Game {
             if (owner != null && !string.IsNullOrEmpty(dot)) {
                 _pending.Add(S.CombatGained(owner, dot));
             }
+        }
+
+        private static void HandleDotRemoved(EventDotRemoved evt) {
+            if (!InCombat) {
+                PartyEvents.HandleDotRemoved(evt);
+                return;
+            }
+            string line = DotCuredLine(evt);
+            if (line != null) {
+                _pending.Add(line);
+            }
+        }
+
+        // The game pops "Cured" only for a skill or trinket cleanse of a dot whose resource
+        // wants the text, never over a corpse; natural expiry stays silent. Shared with the
+        // non-combat side, whose gate is identical.
+        internal static string DotCuredLine(EventDotRemoved evt) {
+            if (!evt.Source.m_IsPopTextEligible
+                || (evt.Source != SourceType.SKILL && evt.Source != SourceType.TRINKET)) {
+                return null;
+            }
+            var resource = DotResource(evt.Dot);
+            if (resource == null || !resource.m_ShowCuredText) {
+                return null;
+            }
+            if (evt.Actor == null || evt.Actor.ContainsTag("corpse")) {
+                return null;
+            }
+            string owner = Actors.SpokenName(evt.Actor);
+            string cured = GameLoc.TryGet("pop_text_cured");
+            return owner == null || cured == null ? null : SpokenLine.Join(owner, cured);
+        }
+
+        // The show-cured flag lives on the dot's resource, reachable only through the pop
+        // manager's serialized database.
+        private static readonly HarmonyLib.AccessTools.FieldRef<PopTextManager, ResourceDatabaseDots> DotDatabaseField =
+            HarmonyLib.AccessTools.FieldRefAccess<PopTextManager, ResourceDatabaseDots>("m_DotResourceDatabase");
+
+        private static ResourceDot DotResource(DotDefinition dot) {
+            if (dot == null || !SingletonMonoBehaviour<PopTextManager>.HasInstance()) {
+                return null;
+            }
+            var database = DotDatabaseField(SingletonMonoBehaviour<PopTextManager>.Instance);
+            return database == null ? null : database.GetResource(dot.m_Type);
         }
 
         // A stat buff or debuff landed; the spoken line carries the game's own stat text
@@ -293,6 +356,31 @@ namespace DD2A11y.Game {
             }
             _pending.Add(S.CombatGained(owner, QuirkDescription.GetNameString(definition, actor, appendRareIcon: false)));
         }
+
+        // A quirk cured mid-battle pops as the bare "Cured" word; the spoken line adds the
+        // hero it floated over.
+        private static void HandleQuirkRemoved(EventQuirkRemoved evt) {
+            if (!InCombat) {
+                PartyEvents.HandleQuirkRemoved(evt);
+                return;
+            }
+            if (!IsCuredQuirkSource(evt.m_Source)
+                || SingletonMonoBehaviour<Library<string, QuirkDefinition>>.Instance
+                    .GetLibraryElement(evt.m_QuirkId) == null) {
+                return;
+            }
+            string owner = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
+            string cured = GameLoc.TryGet("pop_text_cured");
+            if (owner != null && cured != null) {
+                _pending.Add(SpokenLine.Join(owner, cured));
+            }
+        }
+
+        // The game's quirk-removal pops fire for these sources only (its combat and
+        // non-combat handlers share the filter).
+        internal static bool IsCuredQuirkSource(SourceType source) =>
+            source == SourceType.REST_ITEM || source == SourceType.TRINKET
+            || source == SourceType.SKILL || source == SourceType.COMBAT;
 
         // An applied effect bounced off ("Woodsman resisted Blight") - without this line, a
         // skill whose rider fails reads as unexplained silence after its damage.

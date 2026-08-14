@@ -1651,8 +1651,13 @@ line, as does the interceptor named by a guarded pick's preview. Covered:
   player-controlled hero.
 - Token, dot, buff, and quirk applications ("Dismas gained Crit", the game's own names and
   count format, honoring its pop-text visibility gates; buffs speak their stat text), token
-  consumption and negation ("Sahar spent Speed" / "Sahar lost Weak"), resisted effects
-  ("Woodsman resisted Blight"). A token the library does not define, or defines as hidden,
+  consumption and negation ("Sahar spent Speed" / "Sahar lost Weak"), token conversions (a
+  replacement speaks as gaining the token that took the slot, the game's own pop treatment),
+  quirk and dot cures (2026-08-13, mirroring the game's pop gates: a mid-battle removal and
+  a cleansed curse or disease pop the bare "Cured" - spoken with the hero's name leading; a
+  regular quirk removed outside combat pops its name, spoken as "lost X"; a dot cure speaks
+  only for skill/trinket cleanses of a dot whose resource wants the text, so natural expiry
+  stays silent), resisted effects ("Woodsman resisted Blight"). A token the library does not define, or defines as hidden,
   never speaks in any of these lines (fixed 2026-08-08: skills apply library-less logic
   markers like "token_logic_temporary" whose ids leaked raw into the gained line - the same
   IsHidden gate the combatant buffers always applied). A visible token with no glyphed name

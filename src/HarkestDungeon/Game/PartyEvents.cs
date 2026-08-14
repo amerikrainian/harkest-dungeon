@@ -163,6 +163,34 @@ namespace DD2A11y.Game {
             }
         }
 
+        internal static void HandleDotRemoved(EventDotRemoved evt) {
+            Deliver(CombatEvents.DotCuredLine(evt));
+        }
+
+        // Outside combat the game names a removed regular quirk and pops the bare "Cured"
+        // for a curse or disease; the named removal speaks as a loss so it cannot read as a
+        // gain.
+        internal static void HandleQuirkRemoved(EventQuirkRemoved evt) {
+            if (!CombatEvents.IsCuredQuirkSource(evt.m_Source)) {
+                return;
+            }
+            var actor = Actors.Get(evt.m_ActorGuid);
+            string owner = Actors.SpokenName(actor);
+            var definition = SingletonMonoBehaviour<Library<string, QuirkDefinition>>.Instance
+                .GetLibraryElement(evt.m_QuirkId);
+            if (owner == null || definition == null) {
+                return;
+            }
+            if (definition.IsCurse || definition.IsDisease) {
+                string cured = GameLoc.TryGet("pop_text_cured");
+                if (cured != null) {
+                    Deliver(SpokenLine.Join(owner, cured));
+                }
+            } else {
+                Deliver(S.CombatLost(owner, QuirkDescription.GetNameString(definition, actor, appendRareIcon: false)));
+            }
+        }
+
         internal static void HandleResist(EventActorResist evt) {
             if (!evt.m_IsPopTextValid) {
                 return;
