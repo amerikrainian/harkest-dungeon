@@ -3,7 +3,8 @@
 ## V0.3.2
 
 - Fixed single trinkets not being able to be removed. Your heroes loved them so much they refused to lose them!
-- You can now press `c` while inventory is open to pull up your character sheet. Shhh
+- You can now press `c` while inventory is open to pull up your character sheet. You should have always been able to do this, my bad.
+- `m` likewise toggles the road map while the inventory is open, matching the game's own key. It stays refused while the character sheet is up, because the game refuses it there too.
 
 ## V0.3.1
 

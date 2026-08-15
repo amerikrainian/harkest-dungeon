@@ -341,19 +341,38 @@ namespace DD2A11y {
 
             // The focused element's inspect action (the hero sheet at the crossroads and in
             // combat). C, matching the game's own "Hero Sheet (C)" hint; where the focused
-            // element has no inspect, a button captioned "(C)" takes the press instead.
+            // element has no inspect, a button captioned "(C)" takes the press instead, and on
+            // the road's item screens the press runs the game's own driving hotkey (the sheet
+            // toggle DrivingUiBhv performs, live for sighted players over the open bag and the
+            // open sheet alike).
             Reg("ui.inspect", S.InputInspect, () => {
-                if (Navigator.Current?.InvokeAction("inspect") != true && Gate.Captured) {
-                    Navigator.ActivateCaptionHotkey("(C)");
+                if (Navigator.Current?.InvokeAction("inspect") == true || !Gate.Captured) {
+                    return;
+                }
+                if (!Navigator.ActivateCaptionHotkey("(C)") && OnRoadItemScreen) {
+                    Assets.Code.Utils.SingletonMonoBehaviour<Assets.Code.UI.Managers.CommonUiBhv>
+                        .Instance.ToggleCharacterSheetWithDefault(
+                            Assets.Code.UI.Widgets.CharacterSheetUiBhv.Tab.Skills,
+                            isSkillsEditable: true, isInventoryEditable: true,
+                            autoSelectTrinketSlot: false);
                 }
             }).AddBinding(K(Key.C));
             // The game captions its screen shortcuts on the buttons themselves ("Map (M)",
             // "Inventory (I)"); a captured screen swallows those keys, so the advertised key
             // presses the advertising button. On a shared-keyboard screen (driving) the game's
-            // own key already fires - pressing the button too would double-toggle.
+            // own key already fires - pressing the button too would double-toggle. On the
+            // road's item screens M runs the minimap's own tap handler, whose guards match the
+            // game's key exactly (it refuses while the hero sheet is open); the map opens
+            // beside the bag with the game's own audio as feedback, and closing the bag lands
+            // on the readable map.
             Reg("ui.hotkey.map", S.InputHotkeyMap, () => {
-                if (Gate.Captured) {
-                    Navigator.ActivateCaptionHotkey("(M)");
+                if (!Gate.Captured) {
+                    return;
+                }
+                if (!Navigator.ActivateCaptionHotkey("(M)") && OnRoadItemScreen
+                    && Assets.Code.Utils.SingletonMonoBehaviour<Assets.Code.Map.MapMgrBhv>.HasInstance()) {
+                    Assets.Code.Utils.SingletonMonoBehaviour<Assets.Code.Map.MapMgrBhv>
+                        .Instance.GetMinimapMgr().HandleInputToggleMinimapTap();
                 }
             }).AddBinding(K(Key.M));
             Reg("ui.hotkey.inventory", S.InputHotkeyInventory, () => {
@@ -462,6 +481,14 @@ namespace DD2A11y {
             Reg("ui.place.one", S.InputPlaceOne, () => ToggleGrab(takeOne: true))
                 .AddBinding(K(Key.Space, shift: true));
         }
+
+        // The road's stacked item surfaces. The game's own driving hotkeys (DrivingUiBhv's C,
+        // the minimap's M) stay live over these for sighted players - their listeners span the
+        // whole DRIVING mode - but the captured gate swallows the keys, so the mod mirrors the
+        // presses through the game's own handlers there.
+        private bool OnRoadItemScreen =>
+            Assets.Code.Game.GameModeMgr.CurrentMode == Assets.Code.Game.GameModeType.DRIVING
+            && (Router.Active is InventoryScreen || Router.Active is CharacterSheetScreen);
 
         // A run-status glance: speak in place, silence when the run has nothing to say.
         private void GlanceRun(string line) {

@@ -1320,6 +1320,13 @@ and from the loot screen.
   detail in 8.2.
 - The inn outranks this screen by registration order and keeps its inline copy; dedicated
   station screens above both take their own surfaces.
+- The game's own road hotkeys stay live here for sighted players (their listeners span the
+  DRIVING mode), so the captured screen mirrors C and M through the game's own handlers
+  (live-verified 2026-08-15): C toggles the hero sheet over the open bag - the keyboard
+  I-then-C equip/unequip flow - and toggles it closed again from the sheet; M toggles the
+  road map (the map reader takes over while it shows, and closing it re-announces the bag).
+  While the hero sheet is open M refuses through the minimap handler's own guard, exactly as
+  the game refuses the real key.
 
 ## 5.8 Loathing Reset (`DoomResetScreen`) - BUILT
 
