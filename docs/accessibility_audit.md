@@ -884,6 +884,15 @@ Reads from the game model:
 - Equip slots (trinkets, combat items) are `EquipSlotElement`s: occupied slots read the item's
   own title from the model, empty ones their caption, and activation speaks the landed state
   (live-verified 2026-07-24 via the inn equip flow, both directions).
+- Enter on an occupied slot on the road with the bag closed unequips in one press: the game's
+  own submit there only opens the bag (the first click of its two-click mouse flow, which
+  would carry focus off the sheet into the inventory screen with no way back to a second
+  press), so the element performs the bag-open transfer of the slot's auto-transfer directly -
+  same sounds, same full-bag refusal click - and the slot's re-read ("Equip Trinket") is the
+  feedback. With the bag already open, and on every other surface, Enter stays the slot's own
+  submit (live-verified 2026-08-15 on the road: bagless trinket and combat-item unequips, the
+  bag-open unequip via the game's auto-transfer, and the empty-slot press still opening the
+  trinket-filtered bag).
 
 ### 4.2.2 Relationships Tab - WORKS
 

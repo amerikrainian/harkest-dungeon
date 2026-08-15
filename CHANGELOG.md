@@ -1,5 +1,10 @@
 # Changelog
 
+## V0.3.2
+
+- Fixed single trinkets not being able to be removed. Your heroes loved them so much they refused to lose them!
+- You can now press `c` while inventory is open to pull up your character sheet. Shhh
+
 ## V0.3.1
 
 - Added affinity sound as you scroll over a skill that impacts party relations.
@@ -39,7 +44,7 @@
 
 - Reviewing the turn order in combat now steps one combatant per line instead of reading the
   whole order back as a single entry.
-- Fixed the battlefield going out of sync as a result of  trinkets like faceless visage.
+- Fixed the battlefield going out of sync as a result of trinkets like faceless visage.
 - Duplicate enemies now carry their turn-order number everywhere.
 - The Shift glance no longer accidentally melds different dots into one entry.
 - The inn's floating text now speaks. This includes hero reactions to rest items, refusals and relationship changes.
