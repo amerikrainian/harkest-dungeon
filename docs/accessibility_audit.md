@@ -893,6 +893,16 @@ Reads from the game model:
   submit (live-verified 2026-08-15 on the road: bagless trinket and combat-item unequips, the
   bag-open unequip via the game's auto-transfer, and the empty-slot press still opening the
   trinket-filtered bag).
+- The game's pick-a-slot flow (Enter on a bag trinket) reads as a guided placement
+  (live-verified 2026-08-15, both entries): the game locks the whole bag and waits for a
+  press on a sheet slot, so while the pick is armed the sheet keeps the surface even under a
+  stack-top bag, with focus landing on the destination slot the game itself selects (first
+  empty, else first - "hero sheet, Trinkets, Equip Trinket"). Enter places through the
+  slot's own submit (the slot re-read confirms, then the unlocked bag takes the surface
+  back for the next item); Escape aborts the pick - the game's own back behavior - and the
+  bag's re-announce is the feedback, with no authored mode lines anywhere. Entering with
+  the sheet closed rides the game's own flow (it opens the sheet armed) and snaps to the
+  same slot once the arming lands.
 
 ### 4.2.2 Relationships Tab - WORKS
 
@@ -1321,12 +1331,13 @@ and from the loot screen.
 - The inn outranks this screen by registration order and keeps its inline copy; dedicated
   station screens above both take their own surfaces.
 - The game's own road hotkeys stay live here for sighted players (their listeners span the
-  DRIVING mode), so the captured screen mirrors C and M through the game's own handlers
+  DRIVING mode), so the captured screen mirrors C, M and I through the game's own handlers
   (live-verified 2026-08-15): C toggles the hero sheet over the open bag - the keyboard
   I-then-C equip/unequip flow - and toggles it closed again from the sheet; M toggles the
-  road map (the map reader takes over while it shows, and closing it re-announces the bag).
-  While the hero sheet is open M refuses through the minimap handler's own guard, exactly as
-  the game refuses the real key.
+  road map (the map reader takes over while it shows, and closing it re-announces the bag);
+  I toggles the bag itself, from the sheet and from the bag alike, with the HUD button
+  highlight the game's key drives. While the hero sheet is open M refuses through the
+  minimap handler's own guard, exactly as the game refuses the real key.
 
 ## 5.8 Loathing Reset (`DoomResetScreen`) - BUILT
 

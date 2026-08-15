@@ -143,7 +143,7 @@ namespace DD2A11y {
                 new Screens.Options.ModKeysTab(Input, Keymap, _rebind, speak),
             }));
             Router.Register(new PauseScreen());
-            Router.Register(new CharacterSheetScreen());
+            Router.Register(new CharacterSheetScreen(Navigator));
             // The sheet's saved-skill-sets screen, pushed above the sheet by its button.
             _skillLoadouts = new SkillLoadoutScreen(speak);
             Router.Register(_skillLoadouts);
@@ -375,9 +375,20 @@ namespace DD2A11y {
                         .Instance.GetMinimapMgr().HandleInputToggleMinimapTap();
                 }
             }).AddBinding(K(Key.M));
+            // On the road's item screens I runs the toggle the game's own driving key performs
+            // (open the bag beside the sheet, or close it again), highlight included.
             Reg("ui.hotkey.inventory", S.InputHotkeyInventory, () => {
-                if (Gate.Captured) {
-                    Navigator.ActivateCaptionHotkey("(I)");
+                if (!Gate.Captured) {
+                    return;
+                }
+                if (!Navigator.ActivateCaptionHotkey("(I)") && OnRoadItemScreen) {
+                    bool shown = Assets.Code.Utils.SingletonMonoBehaviour<Assets.Code.UI.Managers.CommonUiBhv>
+                        .Instance.TogglePlayerInventory();
+                    var hud = Assets.Code.Utils.SingletonMonoBehaviour<Assets.Code.Game.GameUIBhv>.Instance;
+                    hud.HighlightInventoryButton(shown);
+                    if (shown) {
+                        hud.ToggleMoreInfo(active: false);
+                    }
                 }
             }).AddBinding(K(Key.I));
             // The combat inspector (the game's academic view): I toggles it on the focused
@@ -482,10 +493,10 @@ namespace DD2A11y {
                 .AddBinding(K(Key.Space, shift: true));
         }
 
-        // The road's stacked item surfaces. The game's own driving hotkeys (DrivingUiBhv's C,
-        // the minimap's M) stay live over these for sighted players - their listeners span the
-        // whole DRIVING mode - but the captured gate swallows the keys, so the mod mirrors the
-        // presses through the game's own handlers there.
+        // The road's stacked item surfaces. The game's own driving hotkeys (DrivingUiBhv's C
+        // and I, the minimap's M) stay live over these for sighted players - their listeners
+        // span the whole DRIVING mode - but the captured gate swallows the keys, so the mod
+        // mirrors the presses through the game's own handlers there.
         private bool OnRoadItemScreen =>
             Assets.Code.Game.GameModeMgr.CurrentMode == Assets.Code.Game.GameModeType.DRIVING
             && (Router.Active is InventoryScreen || Router.Active is CharacterSheetScreen);

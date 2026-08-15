@@ -40,6 +40,13 @@ namespace DD2A11y.Elements {
 
         public override string GetValueText() => Label;
 
+        /// <summary>Whether the game's armed pick holds an item this slot's row can receive -
+        /// the game marks the destination container by handing it the held item as its
+        /// SelectedItem when the pick begins.</summary>
+        public bool PickDestination => _slot != null && _slot.ItemContainer.SelectedItem != null;
+
+        public bool Occupied => _slot != null && ItemUtils.IsValid(_slot.Item);
+
         public override IEnumerable<ElementAction> GetActions() {
             foreach (var action in base.GetActions()) {
                 yield return action.Id == ActionIds.Activate

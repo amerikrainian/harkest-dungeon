@@ -26,7 +26,9 @@ namespace DD2A11y.Screens {
     /// Up/Down across). The Relationships tab reads
     /// each partner row with its affinity readout on the focus line; the other tabs read as a
     /// generic sweep of their panel's labeled selectables. Escape closes through the sheet's own
-    /// teardown.
+    /// teardown. While the game's pick-a-slot holds a bag item for this sheet, the sheet keeps
+    /// the surface over the locked bag with focus on the destination slot, Enter places through
+    /// the slot's own submit, and Escape aborts the pick instead of closing.
     /// </summary>
     public sealed class CharacterSheetScreen : GameScreen {
         private static readonly AccessTools.FieldRef<CharacterSheetUiBhv, CharacterSheetTopBarUiBhv> TopBarField =
@@ -89,20 +91,34 @@ namespace DD2A11y.Screens {
             LocKey = locKey,
         };
 
+        private readonly TraditionalNavigator _navigator;
         private CharacterSheetUiBhv _sheet;
         private Container _root;
         private Container _items;
+        private Container _trinkets;
+        private Container _combatItems;
+        private bool _wasArmed;
         private readonly List<int> _tabIndices = new List<int>(); // our tab position -> top-bar index
         private uint _builtGuid;
         private int _builtTab = -1;
         private int _builtCount = -1;
         private int _builtTabsSignature;
 
+        public CharacterSheetScreen(TraditionalNavigator navigator) {
+            _navigator = navigator;
+        }
+
         public override string Name => S.ScreenHeroSheet;
 
         public override object ResolveTarget() {
             var top = StackTop.Object();
             _sheet = top == null ? null : top.GetComponent<CharacterSheetUiBhv>();
+            // While the game's pick holds an item for this sheet, the bag above it is locked
+            // whole (every row non-interactable) and the destinations are the sheet's own
+            // slots - the sheet keeps the surface even though the bag is the stack top.
+            if (_sheet == null && Game.SlotSelect.ArmedForSheet) {
+                _sheet = Game.SlotSelect.Sheet();
+            }
             return _sheet;
         }
 
@@ -126,11 +142,72 @@ namespace DD2A11y.Screens {
             _items = new Container(ContainerShape.VerticalList);
             _root.Add(_items);
             RebuildItems(sheet);
+            // Entered under an armed pick: the entry lands on the slot the held item is for,
+            // the same first-empty-else-first choice the game's own arming selects.
+            _wasArmed = Game.SlotSelect.ArmedForSheet;
+            if (_wasArmed) {
+                SeedFocus(PickDestinationSlot());
+            }
             return _root;
+        }
+
+        // Route the entry descent (root -> items -> row -> slot) to the element, so the
+        // attach lands there and the entry announcement reads it.
+        private void SeedFocus(UIElement element) {
+            if (element == null) {
+                return;
+            }
+            foreach (var row in new[] { _trinkets, _combatItems }) {
+                if (row == null) {
+                    continue;
+                }
+                foreach (var child in row.Children) {
+                    if (child == element) {
+                        _root.SetFocusedChild(_items);
+                        _items.SetFocusedChild(row);
+                        row.SetFocusedChild(element);
+                        return;
+                    }
+                }
+            }
+        }
+
+        // The slot the armed pick is for: the game hands the held item to the matching row's
+        // container as its SelectedItem and selects its first empty slot, else its first.
+        private UIElement PickDestinationSlot() {
+            UIElement first = null;
+            foreach (var row in new[] { _trinkets, _combatItems }) {
+                if (row == null) {
+                    continue;
+                }
+                foreach (var child in row.Children) {
+                    if (child is EquipSlotElement slot && slot.PickDestination) {
+                        if (!slot.Occupied) {
+                            return slot;
+                        }
+                        if (first == null) {
+                            first = slot;
+                        }
+                    }
+                }
+            }
+            return first;
         }
 
         public override bool OnUpdate(object target) {
             var sheet = (CharacterSheetUiBhv)target;
+            // A pick arming while the sheet already stands (Enter on a bag item with this
+            // sheet beneath) moves focus to the destination slot; the landing read is the
+            // announcement. Before the entry announcement the move is silent - the entry
+            // reads the landed path itself.
+            bool armed = Game.SlotSelect.ArmedForSheet;
+            if (armed && !_wasArmed) {
+                var destination = PickDestinationSlot();
+                if (destination != null) {
+                    _navigator.Focus(destination, announce: EntryAnnounced);
+                }
+            }
+            _wasArmed = armed;
             // A tab arriving or leaving late (the cosmetics tab activates a beat after the
             // sheet opens) refreshes the selector's index list; the selector reads it live.
             if (TabsSignature(sheet) != _builtTabsSignature) {
@@ -211,6 +288,8 @@ namespace DD2A11y.Screens {
         private void RebuildItems(CharacterSheetUiBhv sheet) {
             _builtGuid = sheet.ActorGuid;
             _builtTab = ActiveTabIndex(sheet);
+            _trinkets = null;
+            _combatItems = null;
             _items.Clear();
             if (sheet.ActiveTab == CharacterSheetUiBhv.Tab.Skills) {
                 BuildSkillsTab(sheet);
@@ -385,6 +464,7 @@ namespace DD2A11y.Screens {
             }
             if (!combatItems.IsEmptyContainer) {
                 _items.Add(combatItems);
+                _combatItems = combatItems;
             }
         }
 
@@ -400,6 +480,7 @@ namespace DD2A11y.Screens {
             }
             if (!trinkets.IsEmptyContainer) {
                 _items.Add(trinkets);
+                _trinkets = trinkets;
             }
         }
 
@@ -578,6 +659,15 @@ namespace DD2A11y.Screens {
         }
 
         private static void Close() {
+            // An armed pick with the bag standing above the sheet: Escape aborts the pick
+            // (the game's own back does the same) and the unlocked bag takes the surface -
+            // its re-announce is the feedback. When the pick opened the sheet itself (it is
+            // the stack top), the game's hide below cancels the pick as part of closing.
+            if (Game.SlotSelect.ArmedForSheet
+                && StackTop.Object()?.GetComponent<CharacterSheetUiBhv>() == null) {
+                Game.SlotSelect.Cancel();
+                return;
+            }
             SingletonMonoBehaviour<CommonUiBhv>.Instance.HideCharacterSheet();
         }
     }
