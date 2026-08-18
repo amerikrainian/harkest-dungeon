@@ -1,5 +1,11 @@
 # Changelog
 
+## V0.3.3
+
+- Tinkered with keybinds. They should now work as expected and respect your wish to bind them to multiple actions.
+- Hero goals should read slightly cleaner now. We speak their rewards and show them as complete everywhere consistently.
+- Skill changes like lost combo speak. The game had no words for this, just tokens disappearing from the visual token strip.
+
 ## V0.3.2
 
 - Fixed single trinkets not being able to be removed. Your heroes loved them so much they refused to lose them!
