@@ -124,7 +124,6 @@ KeyDeleteBinding = 刪除{0}
 KeyPressNew = 請按新的按鍵
 KeyPressNewPad = 請按新的手把按鈕
 KeyNotSet = 未設定
-KeyAlreadyBound = 已綁定至{0}
 KeyDefault = 預設{0}
 CrossroadsParty = 隊伍
 CrossroadsRoster = 名冊

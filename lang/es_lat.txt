@@ -124,7 +124,6 @@ KeyDeleteBinding = eliminar {0}
 KeyPressNew = presiona la nueva tecla
 KeyPressNewPad = presiona el nuevo botón
 KeyNotSet = sin asignar
-KeyAlreadyBound = ya asignada a {0}
 KeyDefault = predeterminada {0}
 CrossroadsParty = grupo
 CrossroadsRoster = plantilla

@@ -124,7 +124,6 @@ KeyDeleteBinding = {0} löschen
 KeyPressNew = neue Taste drücken
 KeyPressNewPad = neue Controllertaste drücken
 KeyNotSet = nicht belegt
-KeyAlreadyBound = bereits an {0} vergeben
 KeyDefault = Standard {0}
 CrossroadsParty = Gruppe
 CrossroadsRoster = Aufgebot

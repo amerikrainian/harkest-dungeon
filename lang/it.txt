@@ -124,7 +124,6 @@ KeyDeleteBinding = elimina {0}
 KeyPressNew = premi il nuovo tasto
 KeyPressNewPad = premi il nuovo pulsante
 KeyNotSet = non impostato
-KeyAlreadyBound = già assegnato a {0}
 KeyDefault = predefinito {0}
 CrossroadsParty = compagnia
 CrossroadsRoster = formazione

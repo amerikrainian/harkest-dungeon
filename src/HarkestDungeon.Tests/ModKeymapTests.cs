@@ -103,18 +103,6 @@ namespace DD2A11y.Tests {
         }
 
         [Fact]
-        public void Holder_NamesTheOtherActionOnTheChord_AndIgnoresTheAsker() {
-            var (input, _, _, keymap) = Make();
-            var up = input.Register("up", "Up", InputCategory.UI).AddBinding(new FakeBinding("X"));
-            var down = input.Register("down", "Down", InputCategory.UI).AddBinding(new FakeBinding("Y"));
-            keymap.Load();
-
-            Assert.Equal(down, keymap.Holder(new FakeBinding("Y"), except: up));
-            Assert.Null(keymap.Holder(new FakeBinding("X"), except: up)); // its own chord
-            Assert.Null(keymap.Holder(new FakeBinding("Z"), except: up)); // free chord
-        }
-
-        [Fact]
         public void Carries_MatchesByChord() {
             var (input, _, _, keymap) = Make();
             var action = input.Register("a", "A", InputCategory.UI).AddBinding(new FakeBinding("X"));

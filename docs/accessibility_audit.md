@@ -467,9 +467,10 @@ each carrying a LIST of keys ("Activate control, Enter, NumpadEnter").
   at that moment, so chords like Ctrl+PageUp capture naturally. Escape keeps things as they
   are. While listening every mod key pauses (the same suppression as text entry and the
   game's own rebind listen).
-- A captured key another command holds is REFUSED and named ("DownArrow, already bound to
-  Navigate down") - delete it off that command first; no command is ever stripped behind the
-  player's back. A key the command already carries reads the row back unchanged.
+- A captured key another command holds is accepted: commands share chords across screens by
+  design (the same key means different things on different surfaces), and the live-category
+  priority resolves whichever both are live, so there is no conflict refusal. A key the
+  command already carries reads the row back unchanged.
 - Shift+Enter (the discard chord) restores a row's authored defaults, spoken with the
   restored keys. A row with every key deleted reads "not set" and stays that way across
   restarts (the stored "none" sentinel).

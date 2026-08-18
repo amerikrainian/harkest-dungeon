@@ -9,10 +9,9 @@ namespace DD2A11y.Core.Input {
     /// overrides through the settings store: empty = the defaults stand, the
     /// <see cref="Unbound"/> sentinel = every binding was deleted, anything else = serialized
     /// bindings. An action carries a LIST of bindings, grown and shrunk one at a time
-    /// (say-the-spire2's model); a chord held by another action is surfaced via
-    /// <see cref="Holder"/> so the caller refuses the add - one chord never fires two
-    /// commands, and no command is ever stripped behind the player's back. Parsing and
-    /// serialization are delegated so this stays engine-free.
+    /// (say-the-spire2's model); several actions may share a chord, since screens reuse
+    /// chords across categories and the live-category priority picks the command. Parsing
+    /// and serialization are delegated so this stays engine-free.
     /// </summary>
     public sealed class ModKeymap {
         private const string Unbound = "none";
@@ -69,22 +68,6 @@ namespace DD2A11y.Core.Input {
                     action.ReplaceBindings(parsed);
                 }
             }
-        }
-
-        /// <summary>The action holding this chord, excluding <paramref name="except"/>, or null
-        /// when the chord is free. The caller refuses an add whose chord has a holder.</summary>
-        public InputAction? Holder(InputBinding binding, InputAction except) {
-            foreach (var other in _input.Actions) {
-                if (other == except) {
-                    continue;
-                }
-                foreach (var existing in other.Bindings) {
-                    if (existing.Chord == binding.Chord) {
-                        return other;
-                    }
-                }
-            }
-            return null;
         }
 
         /// <summary>Whether the action already carries this chord (an add of it is a no-op).</summary>

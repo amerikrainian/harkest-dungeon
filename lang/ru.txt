@@ -124,7 +124,6 @@ KeyDeleteBinding = удалить {0}
 KeyPressNew = нажмите новую клавишу
 KeyPressNewPad = нажмите новую кнопку
 KeyNotSet = не назначено
-KeyAlreadyBound = уже назначено: {0}
 KeyDefault = по умолчанию {0}
 CrossroadsParty = группа
 CrossroadsRoster = состав

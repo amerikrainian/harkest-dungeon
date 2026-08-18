@@ -124,7 +124,6 @@ KeyDeleteBinding = usuń {0}
 KeyPressNew = naciśnij nowy klawisz
 KeyPressNewPad = naciśnij nowy przycisk
 KeyNotSet = nie ustawiono
-KeyAlreadyBound = już przypisany do {0}
 KeyDefault = domyślnie {0}
 CrossroadsParty = drużyna
 CrossroadsRoster = bohaterowie

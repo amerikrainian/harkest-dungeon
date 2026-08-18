@@ -124,7 +124,6 @@ KeyDeleteBinding = 删除{0}
 KeyPressNew = 按下新按键
 KeyPressNewPad = 按下新手柄按钮
 KeyNotSet = 未设置
-KeyAlreadyBound = 已绑定到{0}
 KeyDefault = 默认{0}
 CrossroadsParty = 队伍
 CrossroadsRoster = 英雄名册

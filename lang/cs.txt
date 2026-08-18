@@ -124,7 +124,6 @@ KeyDeleteBinding = smazat {0}
 KeyPressNew = stiskni novou klávesu
 KeyPressNewPad = stiskni nové tlačítko
 KeyNotSet = nenastaveno
-KeyAlreadyBound = již přiřazeno příkazu {0}
 KeyDefault = výchozí {0}
 CrossroadsParty = družina
 CrossroadsRoster = soupiska

@@ -286,7 +286,6 @@ namespace DD2A11y.Core.Strings {
             D("KeyNotSet", "not set"),
             // A captured key refused because another command holds it (delete it there first);
             // spoken after the key's name. {0} = the holding command's name.
-            D("KeyAlreadyBound", "already bound to {0}"),
             // Buffer line naming the command's authored default key or keys; {0} = the keys.
             D("KeyDefault", "default {0}"),
 
@@ -729,7 +728,6 @@ namespace DD2A11y.Core.Strings {
         public static string KeyDeleteBinding(string keys) => F("KeyDeleteBinding", keys);
         public static string KeyPressNew => T("KeyPressNew");
         public static string KeyNotSet => T("KeyNotSet");
-        public static string KeyAlreadyBound(string label) => F("KeyAlreadyBound", label);
         public static string KeyDefault(string keys) => F("KeyDefault", keys);
         public static string RoleDropdown => T("RoleDropdown");
         public static string RoleTab => T("RoleTab");

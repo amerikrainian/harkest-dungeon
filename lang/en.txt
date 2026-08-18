@@ -126,7 +126,6 @@ KeyDeleteBinding = delete {0}
 KeyPressNew = press the new key
 KeyPressNewPad = press the new button
 KeyNotSet = not set
-KeyAlreadyBound = already bound to {0}
 KeyDefault = default {0}
 CrossroadsParty = party
 CrossroadsRoster = roster

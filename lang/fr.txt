@@ -124,7 +124,6 @@ KeyDeleteBinding = supprimer {0}
 KeyPressNew = appuyez sur la nouvelle touche
 KeyPressNewPad = appuyez sur le nouveau bouton
 KeyNotSet = aucune touche
-KeyAlreadyBound = déjà associée à {0}
 KeyDefault = par défaut {0}
 CrossroadsParty = groupe
 CrossroadsRoster = effectif

@@ -124,7 +124,6 @@ KeyDeleteBinding = {0} 삭제
 KeyPressNew = 새 키를 누르세요
 KeyPressNewPad = 새 버튼을 누르세요
 KeyNotSet = 지정 안 됨
-KeyAlreadyBound = {0}에 이미 지정됨
 KeyDefault = 기본값 {0}
 CrossroadsParty = 원정대
 CrossroadsRoster = 영웅 목록

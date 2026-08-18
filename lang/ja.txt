@@ -124,7 +124,6 @@ KeyDeleteBinding = {0}を削除
 KeyPressNew = 新しいキーを入力
 KeyPressNewPad = 新しいボタンを入力
 KeyNotSet = 未設定
-KeyAlreadyBound = {0}に割り当て済み
 KeyDefault = デフォルト {0}
 CrossroadsParty = パーティ
 CrossroadsRoster = 名簿

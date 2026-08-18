@@ -10,10 +10,10 @@ namespace DD2A11y.Elements {
     /// One mod-keys row: the command's name and its current key or keys. A command carries a
     /// LIST of bindings; Enter opens the row's menu - add a key, or replace or delete one of
     /// the current keys (add and replace listen for the next non-modifier press, chord-aware;
-    /// Escape keeps things as they are). A captured key another command holds is refused by
-    /// name (delete it there first), so no command is ever stripped behind the player's back.
-    /// Shift+Enter (the discard action) restores the command's authored defaults. The buffer
-    /// carries the default.
+    /// Escape keeps things as they are). A captured key another command holds is accepted as
+    /// is: many commands share a chord across screens on purpose, and the per-frame category
+    /// priority resolves whichever both are live. Shift+Enter (the discard action) restores
+    /// the command's authored defaults. The buffer carries the default.
     /// </summary>
     public sealed class KeyRebindElement : UIElement {
         private readonly InputAction _action;
@@ -78,11 +78,6 @@ namespace DD2A11y.Elements {
                     _listening = false;
                     if (_keymap.Carries(_action, captured)) {
                         _speak(GetFocusText(), true); // already here; nothing changed
-                        return;
-                    }
-                    var holder = _keymap.Holder(captured, _action);
-                    if (holder != null) {
-                        _speak(SpokenLine.Join(captured.DisplayName, S.KeyAlreadyBound(holder.Label)), true);
                         return;
                     }
                     if (replacing != null) {
