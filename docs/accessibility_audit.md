@@ -1746,6 +1746,12 @@ line, as does the interceptor named by a guarded pick's preview. Covered:
   count format, honoring its pop-text visibility gates; buffs speak their stat text), token
   consumption and negation ("Sahar spent Speed" / "Sahar lost Weak"), token conversions (a
   replacement speaks as gaining the token that took the slot, the game's own pop treatment),
+  tokens cleared outright by a skill or a used combat item ("Bigby lost Combo" after
+  Solemnity - 2026-08-18, user report; the game pops NO text for a plain removal, only the
+  actor's token strip loses the icon, so `EventTokenRemoved` speaks for the two deliberate
+  sources SKILL/INVENTORY and stays silent like the game for duration expiry, the
+  battle-end sweep, transforms and death; live-verified with the exact container calls the
+  effect makes, silence on DURATION/COMBAT sources included),
   quirk and dot cures (2026-08-13, mirroring the game's pop gates: a mid-battle removal and
   a cleansed curse or disease pop the bare "Cured" - spoken with the hero's name leading; a
   regular quirk removed outside combat pops its name, spoken as "lost X"; a dot cure speaks

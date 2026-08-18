@@ -63,6 +63,7 @@ namespace DD2A11y.Game {
             EventManager.AddListener<EventTokenConsumed>(HandleTokenConsumed);
             EventManager.AddListener<EventTokenNegated>(HandleTokenNegated);
             EventManager.AddListener<EventTokenReplaced>(HandleTokenReplaced);
+            EventManager.AddListener<EventTokenRemoved>(HandleTokenRemoved);
             EventManager.AddListener<EventDotAdded>(HandleDotAdded);
             EventManager.AddListener<EventDotRemoved>(HandleDotRemoved);
             EventManager.AddListener<EventBuffAdded>(HandleBuffAdded);
@@ -226,6 +227,23 @@ namespace DD2A11y.Game {
             }
             string owner = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
             string token = TokenNames.Spoken(evt.m_NegatedTokenId);
+            if (owner != null && !string.IsNullOrEmpty(token)) {
+                _pending.Add(S.CombatLost(owner, token));
+            }
+        }
+
+        // A token cleared outright by a skill or a used combat item ("Bigby lost Combo" after
+        // Solemnity). The game pops no text for a plain removal - only the actor's token
+        // strip loses the icon - so this speaks that visible change for the two deliberate
+        // sources and stays silent, like the game, for the container sweeps (duration
+        // expiry, the battle-end cleanup, a class transform, death).
+        private static void HandleTokenRemoved(EventTokenRemoved evt) {
+            if (!InCombat || (evt.Source != SourceType.SKILL && evt.Source != SourceType.INVENTORY)
+                || !IsSpeakableToken(evt.Token.Id)) {
+                return;
+            }
+            string owner = Actors.SpokenName(evt.Actor);
+            string token = TokenNames.Spoken(evt.Token.Id);
             if (owner != null && !string.IsNullOrEmpty(token)) {
                 _pending.Add(S.CombatLost(owner, token));
             }
