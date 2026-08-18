@@ -92,6 +92,7 @@ StatusOwned = im Besitz
 RequiresUpgrade = {0} benötigt
 StatusBlessed = geweiht
 StatusUnavailable = nicht verfügbar
+StatusComplete = abgeschlossen
 ValuePercent = {0} Prozent
 EditStarted = Eingabemodus, Enter zum Abschließen
 EditSpace = Leerzeichen

@@ -6,6 +6,7 @@ using Assets.Code.Skill;
 using Assets.Code.Token;
 using Assets.Code.Utils;
 using DD2A11y.Core.Text;
+using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Game {
     /// <summary>Centralized reads of the game's actor and skill libraries, so every caller
@@ -94,6 +95,32 @@ namespace DD2A11y.Game {
             string stress = stressFormat == null ? null
                 : string.Format(stressFormat, (int)actor.Stress, (int)actor.StressMax);
             return SpokenLine.Join(hp, stress);
+        }
+
+        /// <summary>The status word for the hero's run goal: "complete" once the hero has met
+        /// it, else null. The game marks completion only visually - the row struck through
+        /// with a checkmark - and the goal text's own progress count is no substitute: a
+        /// per-fight skill-use tally reads back at zero once the battle ends.</summary>
+        public static string GoalStatus(ActorInstance hero) {
+            if (hero == null || hero.RunGoal == null || !hero.GetIsRunGoalComplete(hero.RunGoal)) {
+                return null;
+            }
+            return S.StatusComplete;
+        }
+
+        /// <summary>The hero's run goal as the game's own rows word it: the goal's progress
+        /// flavour text (its description when it has none) and the live progress count
+        /// ("Scout a region with a Watchtower (0/1)"); null without a goal.</summary>
+        public static string GoalText(ActorInstance hero) {
+            if (hero == null || hero.RunGoal == null) {
+                return null;
+            }
+            var goal = hero.RunGoal;
+            string text = RunGoalDescription.GetProgressFlavourString(goal);
+            if (string.IsNullOrEmpty(text)) {
+                text = RunGoalDescription.GetDescription(goal, addCandleBonus: false);
+            }
+            return text + " " + RunGoalDescription.GetProgressString(goal, hero);
         }
 
         public static ActorInstance Get(uint actorGuid) {

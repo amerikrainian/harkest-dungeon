@@ -203,6 +203,9 @@ namespace DD2A11y.Core.Strings {
             D("StatusBlessed", "blessed"),
             // A control present but not usable right now (a grayed-out button). Adjective.
             D("StatusUnavailable", "unavailable"),
+            // A hero goal the hero has already met (the game strikes the row through and checks
+            // it; the text's own progress count can read zero again). Adjective.
+            D("StatusComplete", "complete"),
             // A slider value; {0} = the number.
             D("ValuePercent", "{0} percent"),
 
@@ -742,6 +745,7 @@ namespace DD2A11y.Core.Strings {
         public static string RequiresUpgrade(string names) => F("RequiresUpgrade", names);
         public static string StatusBlessed => T("StatusBlessed");
         public static string StatusUnavailable => T("StatusUnavailable");
+        public static string StatusComplete => T("StatusComplete");
         public static string ValuePercent(int value) => F("ValuePercent", value);
 
         public static string CrossroadsParty => T("CrossroadsParty");

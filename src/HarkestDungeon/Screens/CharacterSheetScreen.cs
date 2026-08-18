@@ -559,9 +559,7 @@ namespace DD2A11y.Screens {
             if (goalContainer != null && goalContainer.activeInHierarchy) {
                 var goals = new Container(ContainerShape.VerticalList, GameLoc.TryGet("hero_objectives_title_label"));
                 var label = GoalLabelField(panel);
-                goals.Add(new ReadoutElement(
-                    () => label == null ? null : label.text,
-                    detail: () => TooltipReader.Lines(label == null ? null : label.gameObject)));
+                goals.Add(new HeroGoalElement(() => Actors.Get(sheet.ActorGuid), label.gameObject, nameHero: false));
                 _items.Add(goals);
             }
             var memories = new Container(ContainerShape.VerticalList, GameLoc.TryGet("character_sheet_memories_label"));

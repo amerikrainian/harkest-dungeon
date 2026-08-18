@@ -94,6 +94,7 @@ StatusOwned = owned
 RequiresUpgrade = needs {0}
 StatusBlessed = blessed
 StatusUnavailable = unavailable
+StatusComplete = complete
 ValuePercent = {0} percent
 EditStarted = editing, enter when done
 EditSpace = space

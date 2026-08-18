@@ -92,6 +92,7 @@ StatusOwned = adquirido
 RequiresUpgrade = requiere {0}
 StatusBlessed = ordenado
 StatusUnavailable = no disponible
+StatusComplete = completado
 ValuePercent = {0} por ciento
 EditStarted = editando, intro para terminar
 EditSpace = espacio

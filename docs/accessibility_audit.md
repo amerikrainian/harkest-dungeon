@@ -936,9 +936,12 @@ unlock hint.
 The Conditions tab (2026-08-12) reads one row per condition - the panel has no selectables,
 so the sweep used to fall to the all-text floor and the whole tab smooshed into one line -
 with the condition's source (the granting inn, the trophy) as its tooltip in the buffer,
-then the hero's run goal under the game's "Hero Goals" title (progress in the game's own
-text, the candle/loot reward tooltip in the buffer) and any memories under its "Memories"
-title. Empty sections vanish rather than reading as stops; a hero with nothing at all reads
+then the hero's run goal under the game's "Hero Goals" title (the same model-composed
+`HeroGoalElement` as the driving goals panel, minus the hero's name: "complete" once met,
+the goal text with its live progress count - a skill-use tally moves mid-fight, where the
+label the game wrote at open would not - and the reward on the line, the reward tooltip
+as its own buffer entries; live-verified 2026-08-18 with injected state) and any memories
+under its "Memories" title. Empty sections vanish rather than reading as stops; a hero with nothing at all reads
 "empty".
 
 The Cosmetics tab (2026-08-12) reads as the game's own three sections - "Hero Palette",
@@ -1119,9 +1122,19 @@ keyboard.
   the first row and the panel reads out (live-verified both ways: the close re-homes to the
   driving area; entering the screen with the panel already open does not jump). Content: the
   biome's mutator and goal sections when the biome has them (unexercised - the Valley has
-  neither), and one row per hero goal - hero name through the game's own row-to-party mapping
-  (the row shows only a portrait), the goal's own text with progress count, the reward tooltip
-  in the buffer ("Reward: candle 2").
+  neither), and one goal slot per hero (`HeroGoalElement`, composed from the model, not the
+  row's TMP text): "complete" leading once met, the hero's name through the game's own
+  row-to-party mapping (the row shows only a portrait), the goal's own text with its LIVE
+  progress count, and the reward the row's tooltip names on the line ("Barristan, Scout a
+  region with a Watchtower (0/1), Reward: candle 2"; a trinket reward's tooltip is a whole
+  item card, so the line takes its first line). The buffer keeps the goal as its head and
+  the reward tooltip as its own entries under it. Completion comes from
+  `GetIsRunGoalComplete`: the game marks it only by strikethrough and a checkmark, and the
+  count is no substitute - the "use X N+ times in a single fight" goals tally
+  `m_SkillUseHistory`, which clears at battle end, so a finished one reads "(0/N)" again
+  (user bug report 2026-08-18; live-verified same day with injected state - a completed
+  goal id and a 1-of-2 kill tally, both undone after: "complete, Barristan, ...",
+  "Dismas, ... (1/2), Reward: candle 2").
 - **Buttons panel**: Map (M), Goals & Conditions (G), Inventory (I), Stagecoach (Z) by their
   own tooltip captions, plus the last-chance trophy button (swept inactive, focus follows its
   live state; unexercised - none active this run).

@@ -92,6 +92,7 @@ StatusOwned = vlastněno
 RequiresUpgrade = vyžaduje {0}
 StatusBlessed = zasvěcený
 StatusUnavailable = nedostupné
+StatusComplete = splněno
 ValuePercent = {0} procent
 EditStarted = editace, potvrď enterem
 EditSpace = mezera

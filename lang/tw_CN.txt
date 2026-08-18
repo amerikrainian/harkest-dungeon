@@ -92,6 +92,7 @@ StatusOwned = 已擁有
 RequiresUpgrade = 需要{0}
 StatusBlessed = 授聖
 StatusUnavailable = 無法使用
+StatusComplete = 已完成
 ValuePercent = 百分之{0}
 EditStarted = 編輯中，完成後按Enter
 EditSpace = 空格

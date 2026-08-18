@@ -92,6 +92,7 @@ StatusOwned = 보유 중
 RequiresUpgrade = {0} 필요
 StatusBlessed = 서품 받음
 StatusUnavailable = 사용 불가
+StatusComplete = 완료
 ValuePercent = {0} 퍼센트
 EditStarted = 편집 중, 엔터로 완료
 EditSpace = 스페이스

@@ -92,6 +92,7 @@ StatusOwned = 入手済み
 RequiresUpgrade = {0}が必要
 StatusBlessed = 叙聖
 StatusUnavailable = 使用不可
+StatusComplete = 完了
 ValuePercent = {0}パーセント
 EditStarted = 入力中、Enterで確定
 EditSpace = スペース

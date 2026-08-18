@@ -51,8 +51,6 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<GameUIBhv, UnityEngine.Playables.PlayableDirector>("m_biomePanelDirector");
         private static readonly AccessTools.FieldRef<GameUIBhv, List<GameObject>> HeroObjectivesField =
             AccessTools.FieldRefAccess<GameUIBhv, List<GameObject>>("m_heroObjectiveObjects");
-        private static readonly AccessTools.FieldRef<BiomePanelHeroGoalBhv, TextMeshProUGUI> GoalTextField =
-            AccessTools.FieldRefAccess<BiomePanelHeroGoalBhv, TextMeshProUGUI>("m_goalText");
         private static readonly AccessTools.FieldRef<GameUIBhv, Assets.Code.UI.StageCoachTorchUiBhv> TorchField =
             AccessTools.FieldRefAccess<GameUIBhv, Assets.Code.UI.StageCoachTorchUiBhv>("m_stageCoachTorch");
         private static readonly AccessTools.FieldRef<Assets.Code.UI.StageCoachTorchUiBhv, Assets.Code.Data.DataContextBhv> TorchPanelField =
@@ -508,22 +506,11 @@ namespace DD2A11y.Screens {
                 return;
             }
             // Hero goal rows identify their hero by portrait only; the name comes through the
-            // same row-to-party mapping the game's own populate writes. Completion shows in
-            // the goal's own progress count; the reward is the row's tooltip.
+            // same row-to-party mapping the game's own populate writes.
             foreach (var row in director.GetComponentsInChildren<BiomePanelHeroGoalBhv>(includeInactive: true)) {
                 if (!_goalRows.TryGetValue(row, out var element)) {
-                    var captured = row;
-                    element = new ReadoutElement(
-                        () => {
-                            if (!captured.gameObject.activeInHierarchy) {
-                                return null;
-                            }
-                            var goalText = GoalTextField(captured);
-                            return Core.Text.SpokenLine.Join(
-                                Actors.Name(HeroForRow(hud, captured.gameObject)),
-                                goalText == null ? null : goalText.text);
-                        },
-                        detail: () => TooltipReader.Lines(captured.gameObject));
+                    var captured = row.gameObject;
+                    element = new HeroGoalElement(() => HeroForRow(hud, captured), captured, nameHero: true);
                     _goalRows[row] = element;
                 }
                 _goals.Add(element);

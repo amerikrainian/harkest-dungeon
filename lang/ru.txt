@@ -92,6 +92,7 @@ StatusOwned = приобретено
 RequiresUpgrade = требуется {0}
 StatusBlessed = благословение
 StatusUnavailable = недоступно
+StatusComplete = выполнено
 ValuePercent = {0}%
 EditStarted = редактирование, Enter для завершения
 EditSpace = пробел

@@ -92,6 +92,7 @@ StatusOwned = придбано
 RequiresUpgrade = потрібно {0}
 StatusBlessed = благословення
 StatusUnavailable = недоступно
+StatusComplete = виконано
 ValuePercent = {0} відсотків
 EditStarted = редагування, Enter для завершення
 EditSpace = пробіл
