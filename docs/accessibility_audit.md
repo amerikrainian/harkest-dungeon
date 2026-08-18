@@ -487,12 +487,19 @@ each carrying a LIST of keys ("Activate control, Enter, NumpadEnter").
   navigation is dead there - the mod's pad defaults are what makes captured screens
   controller-usable: dpad navigates, A activates, B backs out, shoulders cross panels, the
   right stick reviews buffers (say-the-spire2's layout). Rows list pad combos beside keys
-  ("Navigate down, DownArrow, DpadDown"); "add button" appears in the row menu while a pad
-  is connected and captures on RELEASE, so a held trigger becomes the combo's modifier
-  ("LeftTrigger+X"); trigger state must match exactly (bare X never fires a LeftTrigger+X
-  combo). Mixed lists persist typed ("DownArrow;pad:DpadDown;pad:X|LeftTrigger"). Any pad
-  press silences ongoing speech (say-the-spire2's behavior), ahead of the input tick so the
-  press's own announcement is not the thing cut.
+  ("Navigate down, DownArrow, DpadDown"); "add button" is always in the row menu (as are
+  "replace" entries on pad combos) so the feature is discoverable - without a connected
+  gamepad they read "unavailable, add button" and refuse with "unavailable" - and captures
+  on RELEASE, so a held trigger becomes the combo's modifier ("LeftTrigger+X"); trigger
+  state must match exactly (bare X never fires a LeftTrigger+X combo). A command stacks
+  any number of pad inputs the same way it stacks keys (re-verified 2026-08-18 with a
+  synthetic pad: "Navigate up, UpArrow, DpadUp, X, LeftTrigger+Y", bare X then fired the
+  command, both deleted back off through the menu). Mixed lists persist typed
+  ("DownArrow;pad:DpadDown;pad:X|LeftTrigger"). Any pad press silences ongoing speech
+  (say-the-spire2's behavior), ahead of the input tick so the press's own announcement is
+  not the thing cut. Injected pad state needs the game window focused, or the Input
+  System's `backgroundBehavior` set to IgnoreFocus for the test (it disables every device
+  on focus loss and drops their events).
 
 ### 2.1.5 Mod Announcements Tab (`ModAnnouncementsTab`) - WORKS
 

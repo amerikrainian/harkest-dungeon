@@ -10,10 +10,12 @@ namespace DD2A11y.Elements {
     /// One mod-keys row: the command's name and its current key or keys. A command carries a
     /// LIST of bindings; Enter opens the row's menu - add a key, or replace or delete one of
     /// the current keys (add and replace listen for the next non-modifier press, chord-aware;
-    /// Escape keeps things as they are). A captured key another command holds is accepted as
-    /// is: many commands share a chord across screens on purpose, and the per-frame category
-    /// priority resolves whichever both are live. Shift+Enter (the discard action) restores
-    /// the command's authored defaults. The buffer carries the default.
+    /// Escape keeps things as they are). The pad entries ("add button", "replace" on a pad
+    /// combo) are always listed so the feature is discoverable; without a connected gamepad
+    /// they read unavailable and refuse with that word. A captured key another command holds
+    /// is accepted as is: many commands share a chord across screens on purpose, and the
+    /// per-frame category priority resolves whichever both are live. Shift+Enter (the discard
+    /// action) restores the command's authored defaults. The buffer carries the default.
     /// </summary>
     public sealed class KeyRebindElement : UIElement {
         private readonly InputAction _action;
@@ -44,15 +46,15 @@ namespace DD2A11y.Elements {
             var root = new Container(ContainerShape.VerticalList, _action.Label);
             root.Add(new ActionElement(() => S.KeyAddBinding, null,
                 () => StartListen(ListenMode.Keyboard, replacing: null)));
-            if (UnityEngine.InputSystem.Gamepad.current != null) {
-                root.Add(new ActionElement(() => S.KeyAddPadBinding, null,
-                    () => StartListen(ListenMode.Pad, replacing: null)));
-            }
+            root.Add(new ActionElement(() => S.KeyAddPadBinding, null,
+                () => StartListen(ListenMode.Pad, replacing: null),
+                status: PadStatus));
             foreach (var binding in _action.Bindings) {
                 var existing = binding;
                 var mode = existing is PadBinding ? ListenMode.Pad : ListenMode.Keyboard;
                 root.Add(new ActionElement(() => S.KeyReplaceBinding(existing.DisplayName), null,
-                    () => StartListen(mode, existing)));
+                    () => StartListen(mode, existing),
+                    status: mode == ListenMode.Pad ? PadStatus : null));
                 root.Add(new ActionElement(() => S.KeyDeleteBinding(existing.DisplayName), null,
                     () => _keymap.Remove(_action, existing)));
             }
@@ -67,10 +69,19 @@ namespace DD2A11y.Elements {
             yield return S.KeyDefault(Display(_keymap.DefaultsOf(_action)));
         }
 
+        // A pad listen has nothing to capture from without a gamepad; the entries that would
+        // start one carry this status and refuse with it.
+        private static string PadStatus()
+            => UnityEngine.InputSystem.Gamepad.current == null ? S.StatusUnavailable : null;
+
         // Add a captured key or pad input, or swap it in for <paramref name="replacing"/>. A
         // combo the command already carries reads the row back unchanged (capturing the
         // replaced one included).
         private void StartListen(ListenMode mode, Core.Input.InputBinding replacing) {
+            if (mode == ListenMode.Pad && PadStatus() != null) {
+                _speak(S.StatusUnavailable, true);
+                return;
+            }
             _listening = true;
             _prompt = mode == ListenMode.Pad ? S.KeyPressNewPad : S.KeyPressNew;
             _rebind.Start(mode,
