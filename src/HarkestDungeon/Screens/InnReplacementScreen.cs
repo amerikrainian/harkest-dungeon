@@ -11,11 +11,13 @@ using UnityEngine.UI;
 
 namespace DD2A11y.Screens {
     /// <summary>
-    /// The kingdoms Select Replacement Hero screen, opened from an inn rest slot: the
-    /// stationed-effects readout first (what a stationed hero gains, from its tooltip), then
-    /// one row per candidate reading name and class, with the game's own marker for a hero
-    /// already at this inn as the value and the add/station tooltip in the buffer. Enter is
-    /// the row's own submit; Escape closes through the screen's teardown.
+    /// The Select Replacement Hero screen, opened from an inn rest slot (a dead hero's chair,
+    /// or in Kingdoms any slot): the stationed-effects readout first (Kingdoms - what a
+    /// stationed hero gains, from its tooltip; the tooltip is empty on Confessions runs and
+    /// the readout hides with it), then one row per candidate reading name and class, with
+    /// the game's own marker for a hero already at this inn as the value and the add/station
+    /// tooltip in the buffer. Enter is the row's own submit; Escape closes through the
+    /// screen's teardown.
     /// </summary>
     public sealed class InnReplacementScreen : GameScreen {
         private static readonly AccessTools.FieldRef<InnReplacementScreenWidgetBhv, TextTooltipBhv> EffectsTipField =
@@ -38,8 +40,11 @@ namespace DD2A11y.Screens {
 
             var effectsTip = EffectsTipField(widget);
             if (effectsTip != null) {
+                // The tooltip is filled for Kingdoms only; on a Confessions run it stays
+                // empty and only its header label would speak - hide the readout with it.
                 root.Add(new ReadoutElement(
-                    () => UiText.FirstLabel(effectsTip.gameObject),
+                    () => effectsTip != null && effectsTip.HasText()
+                        ? UiText.FirstLabel(effectsTip.gameObject) : null,
                     detail: () => TooltipReader.LinesOf(effectsTip)));
             }
 

@@ -2187,7 +2187,9 @@ pushed by Enter on a rest slot: in Kingdoms any slot, in both modes the empty ch
 dead hero once recruits wait at the inn - see 8.2).
 
 - The Stationed Hero Effects readout first (its tooltip - what a hero stationed here gains -
-  as buffer lines), then one row per candidate (`InnReplacementRowElement`): the hero's
+  as buffer lines; the game fills it for Kingdoms only, and the readout hides while the
+  tooltip is empty so Confessions runs land straight on the first candidate), then one row
+  per candidate (`InnReplacementRowElement`): the hero's
   **name then class** from the row's own bindings ("Paracelsus, Plague Doctor"; the random row
   reads its "Random Hero" label alone), **"at this inn"** as the value exactly where the game
   shows its inn marker on the row (`m_innActorObj`, driven by the current map cell's
