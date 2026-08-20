@@ -1,5 +1,10 @@
 # Changelog
 
+## V0.3.4
+
+- You can now hire heroes should one of them die during a run.
+- Added a default controller scheme as provided by Ninetales16.
+
 ## V0.3.3
 
 - Tinkered with keybinds. They should now work as expected and respect your wish to bind them to multiple actions.
