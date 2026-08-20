@@ -486,7 +486,13 @@ each carrying a LIST of keys ("Activate control, Enter, NumpadEnter").
   but the input gate disables its action maps under a captured screen, so the game's own pad
   navigation is dead there - the mod's pad defaults are what makes captured screens
   controller-usable: dpad navigates, A activates, B backs out, shoulders cross panels, the
-  right stick reviews buffers (say-the-spire2's layout). Rows list pad combos beside keys
+  right stick reviews buffers (say-the-spire2's layout). The triggers are the pad's modifier
+  layers on top of that: LeftTrigger chords carry the combat glances (stick directions per
+  slot - left stick the party, right stick the enemies - dpad/face buttons their effect
+  summaries, stick clicks the actor/turn-order/affinity reads) and the grab, RightTrigger
+  chords the resists, the Home/End jumps (shoulders), the run glances (stick clicks and
+  Select), and the discard; the inspector rides Select and bare left-stick left/right.
+  Rows list pad combos beside keys
   ("Navigate down, DownArrow, DpadDown"); "add button" is always in the row menu (as are
   "replace" entries on pad combos) so the feature is discoverable - without a connected
   gamepad they read "unavailable, add button" and refuse with "unavailable" - and captures
