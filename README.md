@@ -25,7 +25,7 @@ plugin folder - edit one to adjust a translation (missing entries fall back to E
 
 ## Documentation
 
-The docs can be found [here](http://amerikrainian.com/harkest-dungeon/)
+The docs can be found [here](https://amerikrainian.com/harkest-dungeon/)
 
 ## Building from source
 

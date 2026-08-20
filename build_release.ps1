@@ -1,7 +1,8 @@
 # Build the distributable mod zip: the vendored BepInEx game-folder layout plus the
 # Release plugin output under BepInEx\plugins\HarkestDungeon (plugin + Core + NAudio
-# dlls, prism.dll, Mono.CSharp.dll, lang files, audio assets). The zip root IS the game
-# folder, so the installer (and a manual user) extracts it straight into the game dir.
+# dlls, prism.dll, Mono.CSharp.dll, lang files, audio assets) plus the rendered mdbook
+# manual under HarkestDungeonDocs. The zip root IS the game folder, so the installer
+# (and a manual user) extracts it straight into the game dir.
 #
 # Adapted from the Non-Visual Calculus installer by Rashad Naqeeb (MIT),
 # https://github.com/rashadnaqeeb/NonVisualCalculus
@@ -49,6 +50,11 @@ try {
         throw "Release build failed with exit code $LASTEXITCODE"
     }
 
+    mdbook build docs_src
+    if ($LASTEXITCODE -ne 0) {
+        throw "Docs build failed with exit code $LASTEXITCODE"
+    }
+
     $pluginDll = Join-Path $hostOutDir "HarkestDungeon.dll"
     $coreDll = Join-Path $hostOutDir "HarkestDungeon.Core.dll"
     foreach ($required in @($pluginDll, $coreDll)) {
@@ -66,6 +72,10 @@ try {
     Copy-Item -Path (Join-Path $bepinexDir "BepInEx") -Destination $stageDir -Recurse
     Copy-Item -LiteralPath (Join-Path $bepinexDir "winhttp.dll") -Destination $stageDir
     Copy-Item -LiteralPath (Join-Path $bepinexDir "doorstop_config.ini") -Destination $stageDir
+
+    # Packaging pattern adapted from SayTheSpire2:
+    # https://github.com/bradjrenshaw/say-the-spire2
+    Copy-Item -Path (Join-Path $scriptDir "docs_src\book") -Destination (Join-Path $stageDir "HarkestDungeonDocs") -Recurse
 
     # The same file set the Debug post-build target deploys.
     $pluginDir = Join-Path $stageDir "BepInEx\plugins\HarkestDungeon"

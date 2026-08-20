@@ -117,7 +117,8 @@ update/repair/uninstall restore the dir exactly. Installer UI strings live in `i
 - `test-installer.ps1` - the installer unit suite (`cargo test`; tests live in the lib target
   because the exe embeds a requireAdministrator manifest).
 - `build_release.ps1` - the distributable `releases\HarkestDungeon-v<version>.zip` (vendored
-  BepInEx layout + Release plugin output; the zip root is the game folder).
+  BepInEx layout + Release plugin output + the rendered mdbook manual as `HarkestDungeonDocs\`;
+  the zip root is the game folder). Needs `mdbook` on PATH.
 - `create-release.ps1 v<version>` - `gh release create` for a pushed tag with the zip + installer
   exe, notes lifted from that version's `CHANGELOG.md` section.
 - End-to-end without a published release: `HARKEST_DUNGEON_INSTALLER_RELEASES_URL` points the
