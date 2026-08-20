@@ -1,0 +1,16 @@
+# Summary
+
+- [Introduction](intro.md)
+- [Installation](installation.md)
+- [Getting Started](getting-started.md)
+- [Controls](controls.md)
+- [Buffers](buffers.md)
+- [The Crossroads](crossroads.md)
+- [The Road](road.md)
+- [Inns](inn.md)
+- [Combat](combat.md)
+- [Kingdoms](kingdoms.md)
+- [The Altar of Hope](altar.md)
+- [Troubleshooting And Known Issues](known-issues.md)
+- [Change Log](changes.md)
+- [Credits](credits.md)

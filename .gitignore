@@ -1,5 +1,6 @@
 artifacts/
 bin/
+docs_src/book/
 obj/
 .vs/
 *.user

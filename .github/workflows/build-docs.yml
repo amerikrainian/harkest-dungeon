@@ -1,0 +1,40 @@
+name: Setup Docs Site
+run-name: ${{ github.actor }} is generating docs for GitHub Pages.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs_src/**'
+      - 'CHANGELOG.md'
+      - '.github/workflows/build-docs.yml'
+
+jobs:
+  build:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mdBook
+        run: cargo install mdbook --version 0.4.52 --locked
+      - name: Generate docs
+        working-directory: ./docs_src
+        run: mdbook build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs_src/book
+
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
