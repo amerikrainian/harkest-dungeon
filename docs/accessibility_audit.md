@@ -1896,7 +1896,12 @@ Layout, top to bottom:
 - The **hero rest strip** as a horizontal row (`RestHeroElement` over each `RestItemSlotBhv`):
   name with HP and stress from the live actor, the slot's status tooltip as buffer lines,
   Enter through the slot's own submit - which in Kingdoms is the game's own path INTO the
-  Select Replacement Hero screen (8.9).
+  Select Replacement Hero screen (8.9). A heroless slot with the game's roster-addition
+  hover up (a dead hero's chair with recruits waiting - both modes) reads as the game's own
+  "Add hero to party" button and its Enter opens 8.9 the same way; the chair's Selectable
+  sits non-interactable by a game-side ordering quirk, so the element offers Activate and
+  suppresses "unavailable" itself. A heroless slot with no recruits stays hidden, matching
+  the mute chair sighted players see.
 - The **stationed-heroes row** (Kingdoms: the portrait strip by the inn title, from the same
   `InnStationedActorBhv` widgets sighted players see - each reads its class-name tooltip,
   Enter opens that hero's sheet the way the game's right-click does; the pool is empty at
@@ -2173,11 +2178,13 @@ Live-verified 2026-07-26 at Alpenglow. Over `SubScreenInnUpgradeBhv`.
 - Enter purchases through the node's own gated Unlock. Escape closes through the station's
   sub-screen flow. Unexercised: an actual purchase (commits the save).
 
-## 8.9 Select Replacement Hero (`InnReplacementScreen`, Kingdoms) - BUILT
+## 8.9 Select Replacement Hero (`InnReplacementScreen`) - WORKS
 
-Deployed, needs live pass. Previously read by the generic floor: class names only - no hero
-names, no at-this-inn markers. The kingdoms hero swap screen
-(`InnReplacementScreenWidgetBhv`, pushed by Enter on a rest slot).
+Live-verified 2026-08-20 on a Confessions run (dead-hero recruit path; the Kingdoms swap
+path shares the surface). Previously read by the generic floor: class names only - no hero
+names, no at-this-inn markers. The hero recruit/swap screen (`InnReplacementScreenWidgetBhv`,
+pushed by Enter on a rest slot: in Kingdoms any slot, in both modes the empty chair of a
+dead hero once recruits wait at the inn - see 8.2).
 
 - The Stationed Hero Effects readout first (its tooltip - what a hero stationed here gains -
   as buffer lines), then one row per candidate (`InnReplacementRowElement`): the hero's
