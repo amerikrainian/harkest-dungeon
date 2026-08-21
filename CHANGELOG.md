@@ -1,5 +1,10 @@
 # Changelog
 
+## V0.3.5
+
+- We have some semblance of documentation now!
+- At an inn, equipping items directly through hero sheet is now possible. You can now click an empty item slot as opposed to finding the item you want in an inventory first.
+
 ## V0.3.4
 
 - You can now hire heroes should one of them die during a run.

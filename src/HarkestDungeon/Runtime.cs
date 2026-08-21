@@ -45,6 +45,7 @@ namespace DD2A11y {
         private SkillLoadoutScreen _skillLoadouts;
         private InventoryScreen _inventory;
         private InnStorageScreen _innStorage;
+        private CharacterSheetScreen _sheet;
         private KingdomInnPanelScreen _kingdomInnPanel;
         private CombatScreen _combat;
         private AcademicScreen _academic;
@@ -143,7 +144,8 @@ namespace DD2A11y {
                 new Screens.Options.ModKeysTab(Input, Keymap, _rebind, speak),
             }));
             Router.Register(new PauseScreen());
-            Router.Register(new CharacterSheetScreen(Navigator));
+            _sheet = new CharacterSheetScreen(Navigator, speak);
+            Router.Register(_sheet);
             // The sheet's saved-skill-sets screen, pushed above the sheet by its button.
             _skillLoadouts = new SkillLoadoutScreen(speak);
             Router.Register(_skillLoadouts);
@@ -557,6 +559,8 @@ namespace DD2A11y {
                 _inn.ToggleGrab(Navigator.Current, takeOne);
             } else if (Router.Active == _inventory) {
                 _inventory.ToggleGrab(Navigator.Current, takeOne);
+            } else if (Router.Active == _sheet) {
+                _sheet.ToggleGrab(Navigator.Current, takeOne);
             } else if (Router.Active == _innStorage) {
                 _innStorage.ToggleGrab(Navigator.Current, takeOne);
             } else if (Router.Active == _kingdomInnPanel) {

@@ -907,6 +907,17 @@ Reads from the game model:
   submit (live-verified 2026-08-15 on the road: bagless trinket and combat-item unequips, the
   bag-open unequip via the game's auto-transfer, and the empty-slot press still opening the
   trinket-filtered bag).
+- With the bag standing open beneath the sheet (the inn hub keeps it there; the game shows
+  both side by side), the bag reads inline as the sheet's last section - the same shared
+  `InventoryPanel` the hub shows: filter tab, slot count, wallet, sort, the carried items,
+  free capacity, Space grab-and-place, Escape dropping an armed grab first. Enter on an
+  EMPTY equip slot there follows the game's own response - the submit filters the standing
+  bag to the slot's type and moves the game's selection into it without pushing any screen -
+  by landing focus on the bag's first item of that type (else the filter tab, which reads
+  the applied filter's name); the slot's usual re-read is suppressed for that press, the bag
+  landing being the feedback. Enter on a bag item then equips through the game's own flow
+  (auto-transfer for a combat item with a free slot, else the guided pick above). The
+  section empties while a pick locks the bag and returns on disarm.
 - The game's pick-a-slot flow (Enter on a bag trinket) reads as a guided placement
   (live-verified 2026-08-15, both entries): the game locks the whole bag and waits for a
   press on a sheet slot, so while the pick is armed the sheet keeps the surface even under a
@@ -2007,7 +2018,9 @@ from the model (current the same frame the swap lands, where the widget text is 
 and activation speaks the landed state back ("Minor Gilded Mind" on equip, "Equip Trinket" on
 unequip). Bag-to-bag rearrangement has no logical handler in the game at all (mouse-drag
 only), so it is deliberately out of scope; REST items use a select-then-apply-to-hero flow
-instead of slot-select (unexercised live).
+instead of slot-select (unexercised live). The slot-first direction works too: Enter on an
+EMPTY sheet slot lands focus in the inline bag section the sheet now shows, filtered to the
+slot's type by the game itself (4.2.1).
 
 > **Note (embark nag):** the embark button reads once: the game nests a clickable "Select a
 > Route" overlay button inside the disabled Rest/Embark button (a mouse-only nag whose caption

@@ -40,6 +40,23 @@ namespace DD2A11y.Screens {
         public void CancelGrab() => _grab.Cancel();
         public void ToggleGrab(UIElement current, bool takeOne) => _grab.Toggle(current, takeOne);
 
+        /// <summary>The filter tab element - the landing when a sheet slot flips the bag's
+        /// filter and no item of that type is carried (it reads the applied filter's name).</summary>
+        public UIElement FilterTab { get; private set; }
+
+        /// <summary>The first carried item under the active filter, else null.</summary>
+        public UIElement FirstItemElement() {
+            if (_items == null) {
+                return null;
+            }
+            foreach (var child in _items.Children) {
+                if (child is InventoryItemElement item && item.CanFocus) {
+                    return item;
+                }
+            }
+            return null;
+        }
+
         /// <summary>Builds the panel into the surface's root: the frame first (its elements sit
         /// on persistent widgets, stable across re-sorts - focus on Sort survives its own
         /// press), then the pooled item list.</summary>
@@ -55,7 +72,7 @@ namespace DD2A11y.Screens {
                 }
                 return list;
             };
-            root.Add(new TabSelectorElement(
+            FilterTab = new TabSelectorElement(
                 () => tabs().IndexOf(inventoryUi.CurrentFilter),
                 () => tabs().Count,
                 index => {
@@ -67,7 +84,8 @@ namespace DD2A11y.Screens {
                     if (index >= 0 && index < list.Count) {
                         inventoryUi.ApplyFilter(list[index]);
                     }
-                }));
+                });
+            root.Add(FilterTab);
 
             var count = FindChild(inventory.transform, "SlotCountContainer");
             if (count != null) {

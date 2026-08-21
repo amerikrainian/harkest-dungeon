@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using Assets.Code.Actor;
+using Assets.Code.Item;
 using Assets.Code.Quirk;
 using Assets.Code.UI;
 using Assets.Code.UI.Managers;
+using Assets.Code.UI.Screens;
 using Assets.Code.UI.Tooltips;
 using Assets.Code.UI.Widgets;
 using Assets.Code.Utils;
@@ -25,7 +27,11 @@ namespace DD2A11y.Screens {
     /// skills, combat items and trinkets are one horizontal row each (Left/Right within,
     /// Up/Down across). The Relationships tab reads
     /// each partner row with its affinity readout on the focus line; the other tabs read as a
-    /// generic sweep of their panel's labeled selectables. Escape closes through the sheet's own
+    /// generic sweep of their panel's labeled selectables. When the bag stands open beneath the
+    /// sheet (the inn hub keeps it there; the game shows both side by side), it reads inline as
+    /// a final section - the same shared panel the hub shows - and Enter on an empty equip slot
+    /// follows the game's own response into it: the bag filters to the slot's type and focus
+    /// lands on its first item. Escape closes through the sheet's own
     /// teardown. While the game's pick-a-slot holds a bag item for this sheet, the sheet keeps
     /// the surface over the locked bag with focus on the destination slot, Enter places through
     /// the slot's own submit, and Escape aborts the pick instead of closing.
@@ -67,6 +73,8 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<CharacterSheetConditionsUiBhv, GameObject>("m_memoriesContainer");
         private static readonly AccessTools.FieldRef<CharacterSheetUiBhv, Button> SkillLoadoutButtonField =
             AccessTools.FieldRefAccess<CharacterSheetUiBhv, Button>("m_skillLoadoutButton");
+        private static readonly System.Reflection.MethodInfo FindPlayerInventoryMethod =
+            AccessTools.Method(typeof(CommonUiBhv), "FindPlayerInventoryInstance");
 
         private struct ResistanceRow {
             public AccessTools.FieldRef<CharacterSheetStatsUiBhv, TextTooltipBhv> Tip;
@@ -91,12 +99,21 @@ namespace DD2A11y.Screens {
             LocKey = locKey,
         };
 
+        // Frames a pressed slot's bag-browse may wait for the game's filter to land (it is
+        // applied through a post-start callback) before the press falls back to a re-read.
+        private const int PendingBagFrames = 120;
+
         private readonly TraditionalNavigator _navigator;
+        private readonly InventoryPanel _bagPanel;
         private CharacterSheetUiBhv _sheet;
         private Container _root;
         private Container _items;
         private Container _trinkets;
         private Container _combatItems;
+        private Container _bag;
+        private InventoryUiBhv _bagInventory;
+        private ItemType _pendingBagType; // the pressed slot's type while its browse is settling
+        private int _pendingBagHeld;
         private bool _wasArmed;
         private readonly List<int> _tabIndices = new List<int>(); // our tab position -> top-bar index
         private uint _builtGuid;
@@ -104,9 +121,13 @@ namespace DD2A11y.Screens {
         private int _builtCount = -1;
         private int _builtTabsSignature;
 
-        public CharacterSheetScreen(TraditionalNavigator navigator) {
+        public CharacterSheetScreen(TraditionalNavigator navigator, System.Action<string, bool> speak) {
             _navigator = navigator;
+            _bagPanel = new InventoryPanel(speak, navigator);
         }
+
+        /// <summary>The grab key (Space / Shift+Space), routed here while this screen stands.</summary>
+        public void ToggleGrab(UIElement current, bool takeOne) => _bagPanel.ToggleGrab(current, takeOne);
 
         public override string Name => S.ScreenHeroSheet;
 
@@ -142,6 +163,12 @@ namespace DD2A11y.Screens {
             _items = new Container(ContainerShape.VerticalList);
             _root.Add(_items);
             RebuildItems(sheet);
+            // The bag standing open beneath the sheet reads inline as the last section, the
+            // same shared panel the inn hub shows - the game displays both side by side.
+            _bag = new Container(ContainerShape.VerticalList, S.ScreenInventory);
+            _root.Add(_bag);
+            _pendingBagType = null;
+            RebuildBag();
             // Entered under an armed pick: the entry lands on the slot the held item is for,
             // the same first-empty-else-first choice the game's own arming selects.
             _wasArmed = Game.SlotSelect.ArmedForSheet;
@@ -218,13 +245,86 @@ namespace DD2A11y.Screens {
             // the router re-homes and re-announces an orphaned focus). The exception is the hero
             // ARRIVING: some open paths stamp the sheet's guid a frame after our entry (the road's
             // C key), so the announced header was a bare "hero" - re-announce with the hero in it.
+            bool heroArrived = false;
             if (sheet.ActorGuid != _builtGuid || ActiveTabIndex(sheet) != _builtTab || ContentCount(sheet) != _builtCount) {
-                bool heroArrived = _builtGuid == 0 && sheet.ActorGuid != 0;
+                heroArrived = _builtGuid == 0 && sheet.ActorGuid != 0;
                 RebuildTabIndices(sheet);
                 RebuildItems(sheet);
-                return heroArrived;
             }
-            return false;
+            UpdateBag();
+            return heroArrived;
+        }
+
+        // ---- The bag beneath ----
+
+        // The open bag standing UNDER the sheet on the stack. The sheet resolves only as the
+        // stack top, so an open bag is never above it - except during an armed pick, when the
+        // game locks the bag whole and the destination slots take the arrows: the section
+        // empties for that stretch and returns on disarm.
+        private InventoryUiBhv BagBeneath() {
+            if (Game.SlotSelect.ArmedForSheet) {
+                return null;
+            }
+            var common = SingletonMonoBehaviour<CommonUiBhv>.Instance;
+            if (!common.IsInventoryActive) {
+                return null;
+            }
+            var screen = (UiScreenBhv)FindPlayerInventoryMethod.Invoke(common, null);
+            return screen == null ? null : screen.GetWidget<InventoryUiBhv>();
+        }
+
+        private void RebuildBag() {
+            _bag.Clear();
+            _bagInventory = BagBeneath();
+            if (_bagInventory != null) {
+                _bagPanel.BuildInto(_bag, _bagInventory);
+            }
+        }
+
+        // Per frame: the section follows the live stack (bag opening/closing, a pick arming),
+        // the panel tracks its pooled slots, and a pressed slot's pending browse lands focus in
+        // the bag once the game's filter has settled on the slot's type.
+        private void UpdateBag() {
+            if (BagBeneath() != _bagInventory) {
+                RebuildBag();
+            }
+            if (_bagInventory != null) {
+                _bagPanel.Update();
+            }
+            if (_pendingBagType == null) {
+                return;
+            }
+            if (_bagInventory == null) {
+                _pendingBagType = null;
+                Plugin.Log.LogWarning("CharacterSheetScreen: bag left the stack before the slot's browse landed");
+                return;
+            }
+            var filter = _bagInventory.FindNonDefaultFilterWithSubType(_pendingBagType);
+            if (filter == null || _bagInventory.CurrentFilter != filter) {
+                if (++_pendingBagHeld < PendingBagFrames) {
+                    return;
+                }
+                // The filter never landed (the game refused for a reason the press's guards
+                // missed): re-read the slot so the press is not silent, and log the miss.
+                _pendingBagType = null;
+                Plugin.Log.LogWarning("CharacterSheetScreen: bag filter never matched the pressed slot");
+                if (_navigator.Current != null) {
+                    _navigator.Focus(_navigator.Current, announce: true);
+                }
+                return;
+            }
+            _pendingBagType = null;
+            // The landing the game's own flow selects: the first item under the applied
+            // filter, else the filter tab (which reads the applied filter's name).
+            var target = _bagPanel.FirstItemElement() ?? _bagPanel.FilterTab;
+            if (target != null) {
+                _navigator.Focus(target, announce: EntryAnnounced);
+            }
+        }
+
+        private void BeginBagBrowse(ItemType type) {
+            _pendingBagType = type;
+            _pendingBagHeld = 0;
         }
 
         // ---- Tabs ----
@@ -484,7 +584,7 @@ namespace DD2A11y.Screens {
             }
         }
 
-        private static void AddSlotButton(Container container, GameObject slot, GameObject rowScope) {
+        private void AddSlotButton(Container container, GameObject slot, GameObject rowScope) {
             if (slot == null || !slot.activeInHierarchy) {
                 return;
             }
@@ -494,7 +594,7 @@ namespace DD2A11y.Screens {
             }
             var itemSlot = slot.GetComponent<Assets.Code.UI.Items.InventoryItemBhv>();
             container.Add(itemSlot != null
-                ? new EquipSlotElement(itemSlot, button, rowScope)
+                ? new EquipSlotElement(itemSlot, button, rowScope, BeginBagBrowse)
                 : new SelectableElement(button, null, rowScope));
         }
 
@@ -656,7 +756,12 @@ namespace DD2A11y.Screens {
             return null;
         }
 
-        private static void Close() {
+        private void Close() {
+            // An armed grab in the inline bag drops first, matching the other bag surfaces.
+            if (_bagPanel.GrabArmed) {
+                _bagPanel.CancelGrab();
+                return;
+            }
             // An armed pick with the bag standing above the sheet: Escape aborts the pick
             // (the game's own back does the same) and the unlocked bag takes the surface -
             // its re-announce is the feedback. When the pick opened the sheet itself (it is
