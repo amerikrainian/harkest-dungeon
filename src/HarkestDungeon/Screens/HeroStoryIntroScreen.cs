@@ -90,7 +90,8 @@ namespace DD2A11y.Screens {
 
         private string Title() {
             var context = _presentation == null ? null : DataContextField(_presentation);
-            string title = context == null ? null : context.GetStringValue("hero_story_title");
+            string title = GameLoc.DropMissingKeyMarker(
+                context == null ? null : context.GetStringValue("hero_story_title"));
             return string.IsNullOrWhiteSpace(title) ? null : TextFilter.Clean(title);
         }
 
@@ -100,9 +101,13 @@ namespace DD2A11y.Screens {
             return SpokenLine.Join(Title(), hero);
         }
 
+        // The game fills the desc binding with GetString on "hero_story_<class>_chapter_desc_<n>"
+        // keys that exist for no class (the chapter text was cut - only titles shipped), so the
+        // value is the colored missing-key marker and the chapter has no body to read.
         private IEnumerable<string> BodyLines() {
             var context = _presentation == null ? null : DataContextField(_presentation);
-            string body = context == null ? null : context.GetStringValue("hero_story_desc_body");
+            string body = GameLoc.DropMissingKeyMarker(
+                context == null ? null : context.GetStringValue("hero_story_desc_body"));
             return SpokenLine.NonEmptyLines(body);
         }
     }
