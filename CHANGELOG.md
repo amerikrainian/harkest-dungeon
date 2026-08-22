@@ -1,5 +1,11 @@
 # Changelog
 
+## V0.3.6
+
+- Icon words now follow the game language. Currencies (Relics, Mastery, Baubles, Candle of Hope), stat and resist icons (Stun, Move, Disease, Loathing, regen), and the coach's Armor and Wheels used to read as raw English icon ids in every language; they now speak the game's own localized names.
+- The mod hotkeys settings page now translates like the other mod pages; its command names were stuck in English no matter the game language.
+- Stagecoach liveries earned from Kingdoms campaigns now read by those campaigns' own localized titles instead of raw English ids.
+
 ## V0.3.5
 
 - We have some semblance of documentation now!

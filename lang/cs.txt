@@ -219,6 +219,7 @@ SpriteSpeed = rychlost
 SpriteHealth = ZDR
 SpriteDeathblow = smrtící úder
 SpriteBaubles = tretky
+CoachSkinSlime = Sliz
 TextUnknown = neznámé
 BufferControl = prvek
 BufferCombat = boj

@@ -42,7 +42,7 @@ namespace DD2A11y.Tests {
         [Fact]
         public void Load_AppliesAStoredOverride_AndKeepsTheDefaultSnapshot() {
             var (input, store, _, keymap) = Make();
-            var action = input.Register("a", "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
+            var action = input.Register("a", () => "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
             store.Values["a"] = "Y;Z";
 
             keymap.Load();
@@ -54,7 +54,7 @@ namespace DD2A11y.Tests {
         [Fact]
         public void Load_UnboundSentinel_StripsTheKeys() {
             var (input, store, _, keymap) = Make();
-            var action = input.Register("a", "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
+            var action = input.Register("a", () => "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
             store.Values["a"] = "none";
 
             keymap.Load();
@@ -65,7 +65,7 @@ namespace DD2A11y.Tests {
         [Fact]
         public void Load_UnparseableOverride_KeepsDefaultsAndWarns() {
             var (input, store, warnings, keymap) = Make();
-            var action = input.Register("a", "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
+            var action = input.Register("a", () => "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
             store.Values["a"] = "Y;bad1";
 
             keymap.Load();
@@ -77,7 +77,7 @@ namespace DD2A11y.Tests {
         [Fact]
         public void Add_AppendsToTheSet_AndPersists() {
             var (input, store, _, keymap) = Make();
-            var action = input.Register("a", "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
+            var action = input.Register("a", () => "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
             keymap.Load();
 
             keymap.Add(action, new FakeBinding("Y"));
@@ -89,7 +89,7 @@ namespace DD2A11y.Tests {
         [Fact]
         public void Remove_DeletesByChord_AndTheLastDeletePersistsAsUnbound() {
             var (input, store, _, keymap) = Make();
-            var action = input.Register("a", "A", InputCategory.UI)
+            var action = input.Register("a", () => "A", InputCategory.UI)
                 .AddBinding(new FakeBinding("X")).AddBinding(new FakeBinding("Y"));
             keymap.Load();
 
@@ -105,7 +105,7 @@ namespace DD2A11y.Tests {
         [Fact]
         public void Carries_MatchesByChord() {
             var (input, _, _, keymap) = Make();
-            var action = input.Register("a", "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
+            var action = input.Register("a", () => "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
             keymap.Load();
 
             Assert.True(keymap.Carries(action, new FakeBinding("X")));
@@ -115,7 +115,7 @@ namespace DD2A11y.Tests {
         [Fact]
         public void Reset_RestoresTheDefaults_AndClearsTheStoredOverride() {
             var (input, store, _, keymap) = Make();
-            var action = input.Register("a", "A", InputCategory.UI)
+            var action = input.Register("a", () => "A", InputCategory.UI)
                 .AddBinding(new FakeBinding("X")).AddBinding(new FakeBinding("X2"));
             keymap.Load();
             keymap.Add(action, new FakeBinding("Y"));
@@ -129,14 +129,14 @@ namespace DD2A11y.Tests {
         [Fact]
         public void RoundTrip_ADeletedSetStaysDeletedAcrossALoad() {
             var (input, store, _, keymap) = Make();
-            var action = input.Register("a", "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
+            var action = input.Register("a", () => "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
             keymap.Load();
             keymap.Remove(action, new FakeBinding("X"));
 
             // A fresh session over the same store: the emptied action must not resurrect its
             // default behind the player's back.
             var input2 = new InputManager();
-            var action2 = input2.Register("a", "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
+            var action2 = input2.Register("a", () => "A", InputCategory.UI).AddBinding(new FakeBinding("X"));
             new ModKeymap(input2, store, Parse, _ => { }).Load();
 
             Assert.Empty(action2.Bindings);

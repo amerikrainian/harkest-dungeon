@@ -219,6 +219,7 @@ SpriteSpeed = vitesse
 SpriteHealth = PV
 SpriteDeathblow = coup fatal
 SpriteBaubles = babioles
+CoachSkinSlime = Bave
 TextUnknown = inconnu
 BufferControl = contrôle
 BufferCombat = combat

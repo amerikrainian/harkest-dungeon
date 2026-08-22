@@ -219,6 +219,7 @@ SpriteSpeed = швидкість
 SpriteHealth = ОЗ
 SpriteDeathblow = смертельний удар
 SpriteBaubles = абищиці
+CoachSkinSlime = Слиз
 TextUnknown = невідомо
 BufferControl = елемент
 BufferCombat = бій

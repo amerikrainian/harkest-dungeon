@@ -221,6 +221,7 @@ SpriteSpeed = speed
 SpriteHealth = HP
 SpriteDeathblow = deathblow
 SpriteBaubles = baubles
+CoachSkinSlime = Slime
 TextUnknown = unknown
 BufferControl = control
 BufferCombat = combat

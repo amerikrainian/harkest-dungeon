@@ -1,6 +1,7 @@
 using Assets.Code.Game;
 using Assets.Code.Utils;
 using DD2A11y.Game;
+using S = DD2A11y.Core.Strings.Strings;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,12 +37,25 @@ namespace DD2A11y.Elements {
             if (name != null) {
                 return name;
             }
-            // The base and faction liveries have no name string anywhere in the game; the
-            // id's own words stand in, the base one by the game's word for default.
+            // The base and gang liveries have no skin name string of their own; the base one
+            // reads as the game's word for default, a kingdom gang's by the game's title for
+            // that gang's campaign ("Secrets of the Coven" - the skin id pluralizes some gang
+            // ids, so the singular is retried), the slime pet's by an authored word, and only
+            // a livery named nowhere speaks its id's own words.
             const string prefix = "wagon_skin_";
             string bare = id.StartsWith(prefix, System.StringComparison.Ordinal)
                 ? id.Substring(prefix.Length) : id;
-            return bare == "base" ? GameLoc.TryGet("default_label") ?? bare : bare.Replace('_', ' ');
+            if (bare == "base") {
+                return GameLoc.TryGet("default_label") ?? bare;
+            }
+            if (bare == "slime") {
+                return S.CoachSkinSlime;
+            }
+            return GameLoc.TryGet("kingdom_select_gang_disclaimer_title_" + bare)
+                ?? (bare.EndsWith("s", System.StringComparison.Ordinal)
+                    ? GameLoc.TryGet("kingdom_select_gang_disclaimer_title_"
+                        + bare.Substring(0, bare.Length - 1)) : null)
+                ?? bare.Replace('_', ' ');
         }
     }
 }

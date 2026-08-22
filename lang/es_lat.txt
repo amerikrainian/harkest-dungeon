@@ -219,6 +219,7 @@ SpriteSpeed = velocidad
 SpriteHealth = PS
 SpriteDeathblow = golpe mortal
 SpriteBaubles = chucherías
+CoachSkinSlime = Babosa
 TextUnknown = desconocido
 BufferControl = control
 BufferCombat = combate

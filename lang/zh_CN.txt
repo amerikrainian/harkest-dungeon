@@ -219,6 +219,7 @@ SpriteSpeed = 迅捷
 SpriteHealth = HP
 SpriteDeathblow = 致命一击
 SpriteBaubles = 珍宝
+CoachSkinSlime = 黏液
 TextUnknown = 未知
 BufferControl = 控件
 BufferCombat = 战斗

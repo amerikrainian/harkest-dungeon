@@ -219,6 +219,7 @@ SpriteSpeed = prędkość
 SpriteHealth = PŻ
 SpriteDeathblow = śmiertelny cios
 SpriteBaubles = świecidełka
+CoachSkinSlime = Śluz
 TextUnknown = nieznane
 BufferControl = kontrolka
 BufferCombat = walka

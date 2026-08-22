@@ -35,7 +35,7 @@ namespace DD2A11y.Core.Input {
         public double InitialDelay = 0.4;
         public double RepeatInterval = 0.06;
 
-        public InputAction Register(string key, string label, InputCategory category, Action? onPerformed = null) {
+        public InputAction Register(string key, Func<string> label, InputCategory category, Action? onPerformed = null) {
             var action = new InputAction(key, label) { Category = category };
             if (onPerformed != null) {
                 action.Performed += onPerformed;

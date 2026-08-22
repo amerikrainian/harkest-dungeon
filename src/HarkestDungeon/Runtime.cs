@@ -303,7 +303,7 @@ namespace DD2A11y {
                 : KeyboardBinding.TryDeserialize(text);
 
         private void RegisterInputs() {
-            InputAction Reg(string key, string label, Action handler = null,
+            InputAction Reg(string key, Func<string> label, Action handler = null,
                             InputCategory category = InputCategory.UI)
                 => Input.Register(key, label, category, handler);
             KeyboardBinding K(UnityEngine.InputSystem.Key key, bool ctrl = false, bool shift = false)
@@ -317,33 +317,33 @@ namespace DD2A11y {
             // glances. The game's own pad input is dead under a captured screen (the input gate
             // disables its action maps), so these are what makes captured screens
             // controller-usable at all.
-            Reg(UiActions.Up, S.InputNavigateUp).AddBinding(K(Key.UpArrow))
+            Reg(UiActions.Up, () => S.InputNavigateUp).AddBinding(K(Key.UpArrow))
                 .AddBinding(P(PadInput.DpadUp)).Repeating();
-            Reg(UiActions.Down, S.InputNavigateDown).AddBinding(K(Key.DownArrow))
+            Reg(UiActions.Down, () => S.InputNavigateDown).AddBinding(K(Key.DownArrow))
                 .AddBinding(P(PadInput.DpadDown)).Repeating();
-            Reg(UiActions.Left, S.InputNavigateLeft).AddBinding(K(Key.LeftArrow))
+            Reg(UiActions.Left, () => S.InputNavigateLeft).AddBinding(K(Key.LeftArrow))
                 .AddBinding(P(PadInput.DpadLeft)).Repeating();
-            Reg(UiActions.Right, S.InputNavigateRight).AddBinding(K(Key.RightArrow))
+            Reg(UiActions.Right, () => S.InputNavigateRight).AddBinding(K(Key.RightArrow))
                 .AddBinding(P(PadInput.DpadRight)).Repeating();
-            Reg(UiActions.Next, S.InputNextPanel).AddBinding(K(Key.Tab))
+            Reg(UiActions.Next, () => S.InputNextPanel).AddBinding(K(Key.Tab))
                 .AddBinding(P(PadInput.RightShoulder)).Repeating();
-            Reg(UiActions.Prev, S.InputPrevPanel).AddBinding(K(Key.Tab, shift: true))
+            Reg(UiActions.Prev, () => S.InputPrevPanel).AddBinding(K(Key.Tab, shift: true))
                 .AddBinding(P(PadInput.LeftShoulder)).Repeating();
-            Reg(UiActions.Activate, S.InputActivate)
+            Reg(UiActions.Activate, () => S.InputActivate)
                 .AddBinding(K(Key.Enter)).AddBinding(K(Key.NumpadEnter)).AddBinding(P(PadInput.A));
-            Reg(UiActions.Back, S.InputBack).AddBinding(K(Key.Escape)).AddBinding(P(PadInput.B));
-            Reg(UiActions.Home, S.InputJumpFirst).AddBinding(K(Key.Home))
+            Reg(UiActions.Back, () => S.InputBack).AddBinding(K(Key.Escape)).AddBinding(P(PadInput.B));
+            Reg(UiActions.Home, () => S.InputJumpFirst).AddBinding(K(Key.Home))
                 .AddBinding(P(PadInput.LeftShoulder, PadInput.LeftTrigger));
-            Reg(UiActions.End, S.InputJumpLast).AddBinding(K(Key.End))
+            Reg(UiActions.End, () => S.InputJumpLast).AddBinding(K(Key.End))
                 .AddBinding(P(PadInput.RightShoulder, PadInput.RightTrigger));
 
-            Reg("buffer.next", S.InputBufferNext, BufferCtl.NextBuffer)
+            Reg("buffer.next", () => S.InputBufferNext, BufferCtl.NextBuffer)
                 .AddBinding(K(Key.RightArrow, ctrl: true)).AddBinding(P(PadInput.RightStickRight));
-            Reg("buffer.prev", S.InputBufferPrev, BufferCtl.PreviousBuffer)
+            Reg("buffer.prev", () => S.InputBufferPrev, BufferCtl.PreviousBuffer)
                 .AddBinding(K(Key.LeftArrow, ctrl: true)).AddBinding(P(PadInput.RightStickLeft));
-            Reg("buffer.line.next", S.InputBufferLineNext, BufferCtl.NextLine)
+            Reg("buffer.line.next", () => S.InputBufferLineNext, BufferCtl.NextLine)
                 .AddBinding(K(Key.UpArrow, ctrl: true)).AddBinding(P(PadInput.RightStickUp)).Repeating();
-            Reg("buffer.line.prev", S.InputBufferLinePrev, BufferCtl.PreviousLine)
+            Reg("buffer.line.prev", () => S.InputBufferLinePrev, BufferCtl.PreviousLine)
                 .AddBinding(K(Key.DownArrow, ctrl: true)).AddBinding(P(PadInput.RightStickDown)).Repeating();
 
             // The focused element's inspect action (the hero sheet at the crossroads and in
@@ -352,7 +352,7 @@ namespace DD2A11y {
             // the road's item screens the press runs the game's own driving hotkey (the sheet
             // toggle DrivingUiBhv performs, live for sighted players over the open bag and the
             // open sheet alike).
-            Reg("ui.inspect", S.InputInspect, () => {
+            Reg("ui.inspect", () => S.InputInspect, () => {
                 if (Navigator.Current?.InvokeAction("inspect") == true || !Gate.Captured) {
                     return;
                 }
@@ -372,7 +372,7 @@ namespace DD2A11y {
             // game's key exactly (it refuses while the hero sheet is open); the map opens
             // beside the bag with the game's own audio as feedback, and closing the bag lands
             // on the readable map.
-            Reg("ui.hotkey.map", S.InputHotkeyMap, () => {
+            Reg("ui.hotkey.map", () => S.InputHotkeyMap, () => {
                 if (!Gate.Captured) {
                     return;
                 }
@@ -384,7 +384,7 @@ namespace DD2A11y {
             }).AddBinding(K(Key.M));
             // On the road's item screens I runs the toggle the game's own driving key performs
             // (open the bag beside the sheet, or close it again), highlight included.
-            Reg("ui.hotkey.inventory", S.InputHotkeyInventory, () => {
+            Reg("ui.hotkey.inventory", () => S.InputHotkeyInventory, () => {
                 if (!Gate.Captured) {
                     return;
                 }
@@ -400,11 +400,11 @@ namespace DD2A11y {
             }).AddBinding(K(Key.I));
             // The combat inspector (the game's academic view): I toggles it on the focused
             // combatant; while it is up, A/D cycle combatants - the game's own keys for it.
-            Reg("combat.inspector", S.InputInspector, () => _academic.Toggle(Router, Navigator),
+            Reg("combat.inspector", () => S.InputInspector, () => _academic.Toggle(Router, Navigator),
                 InputCategory.Combat).AddBinding(K(Key.I)).AddBinding(P(PadInput.Select));
-            Reg("combat.inspector.prev", S.InputInspectorPrev, () => _academic.Cycle(Router, -1),
+            Reg("combat.inspector.prev", () => S.InputInspectorPrev, () => _academic.Cycle(Router, -1),
                 InputCategory.Combat).AddBinding(K(Key.A)).AddBinding(P(PadInput.LeftStickLeft));
-            Reg("combat.inspector.next", S.InputInspectorNext, () => _academic.Cycle(Router, +1),
+            Reg("combat.inspector.next", () => S.InputInspectorNext, () => _academic.Cycle(Router, +1),
                 InputCategory.Combat).AddBinding(K(Key.D)).AddBinding(P(PadInput.LeftStickRight));
             // Combatant glances, one key per strip slot in rank order: the digit row reads
             // enemies, the QWER row the party. Bare = name and health, Shift = the token/buff
@@ -425,68 +425,68 @@ namespace DD2A11y {
             for (int i = 0; i < enemyKeys.Length; i++) {
                 int slot = i;
                 int number = i + 1;
-                Reg("combat.enemy." + number, S.InputCombatEnemy(number),
+                Reg("combat.enemy." + number, () => S.InputCombatEnemy(number),
                     () => _combat.GlanceStatus(friendly: false, slot), InputCategory.Combat)
                     .AddBinding(K(enemyKeys[slot]))
                     .AddBinding(P(enemyPads[slot], PadInput.LeftTrigger));
-                Reg("combat.enemy.effects." + number, S.InputCombatEnemyEffects(number),
+                Reg("combat.enemy.effects." + number, () => S.InputCombatEnemyEffects(number),
                     () => _combat.GlanceEffects(friendly: false, slot), InputCategory.Combat)
                     .AddBinding(K(enemyKeys[slot], shift: true))
                     .AddBinding(P(enemyFacePads[slot], PadInput.LeftTrigger));
-                Reg("combat.enemy.resists." + number, S.InputCombatEnemyResists(number),
+                Reg("combat.enemy.resists." + number, () => S.InputCombatEnemyResists(number),
                     () => _combat.GlanceResists(friendly: false, slot), InputCategory.Combat)
                     .AddBinding(K(enemyKeys[slot], ctrl: true))
                     .AddBinding(P(enemyFacePads[slot], PadInput.RightTrigger));
-                Reg("combat.hero." + number, S.InputCombatHero(number),
+                Reg("combat.hero." + number, () => S.InputCombatHero(number),
                     () => _combat.GlanceStatus(friendly: true, slot), InputCategory.Combat)
                     .AddBinding(K(heroKeys[slot]))
                     .AddBinding(P(heroPads[slot], PadInput.LeftTrigger));
-                Reg("combat.hero.effects." + number, S.InputCombatHeroEffects(number),
+                Reg("combat.hero.effects." + number, () => S.InputCombatHeroEffects(number),
                     () => _combat.GlanceEffects(friendly: true, slot), InputCategory.Combat)
                     .AddBinding(K(heroKeys[slot], shift: true))
                     .AddBinding(P(heroDpads[slot], PadInput.LeftTrigger));
-                Reg("combat.hero.resists." + number, S.InputCombatHeroResists(number),
+                Reg("combat.hero.resists." + number, () => S.InputCombatHeroResists(number),
                     () => _combat.GlanceResists(friendly: true, slot), InputCategory.Combat)
                     .AddBinding(K(heroKeys[slot], ctrl: true))
                     .AddBinding(P(heroDpads[slot], PadInput.RightTrigger));
             }
             // The acting combatant, the focused skill's valid targets with previews, and the
             // turn order - the reads a skill choice hinges on, one press from anywhere.
-            Reg("combat.actor", S.InputCombatActor, () => _combat.GlanceActor(),
+            Reg("combat.actor", () => S.InputCombatActor, () => _combat.GlanceActor(),
                 InputCategory.Combat).AddBinding(K(Key.S)).AddBinding(P(PadInput.LeftStickClick));
-            Reg("combat.targets", S.InputCombatTargets, () => _combat.GlanceTargets(),
+            Reg("combat.targets", () => S.InputCombatTargets, () => _combat.GlanceTargets(),
                 InputCategory.Combat).AddBinding(K(Key.T));
-            Reg("combat.turnorder", S.InputCombatTurnOrder, () => _combat.GlanceTurnOrder(),
+            Reg("combat.turnorder", () => S.InputCombatTurnOrder, () => _combat.GlanceTurnOrder(),
                 InputCategory.Combat).AddBinding(K(Key.T, shift: true))
                 .AddBinding(P(PadInput.LeftStickClick, PadInput.LeftTrigger));
             // The affinity glance shares A with the inspector's combatant cycling: the cycle
             // acts only while the inspector view is up, the glance only on a focused skill or
             // target, so each press answers exactly one of the two.
-            Reg("combat.affinity", S.InputCombatAffinity, () => _combat.GlanceAffinity(),
+            Reg("combat.affinity", () => S.InputCombatAffinity, () => _combat.GlanceAffinity(),
                 InputCategory.Combat).AddBinding(K(Key.A))
                 .AddBinding(P(PadInput.RightStickClick, PadInput.LeftTrigger));
             // The focused story choice's hero vitals - what the choice line no longer carries.
-            Reg("story.hero", S.InputStoryHero, () => _storyScreen.GlanceSelf(),
+            Reg("story.hero", () => S.InputStoryHero, () => _storyScreen.GlanceSelf(),
                 InputCategory.Story).AddBinding(K(Key.S));
             // Run-status glances, answering from any screen and silent outside a run. Global,
             // so a screen category claiming the same key wins there; the keys are ones the
             // game leaves unbound even on the shared road keyboard.
-            Reg("glance.flame", S.InputFlame, () => GlanceRun(Game.RunStatus.FlameLine()))
+            Reg("glance.flame", () => S.InputFlame, () => GlanceRun(Game.RunStatus.FlameLine()))
                 .AddBinding(K(Key.F)).AddBinding(P(PadInput.RightStickClick, PadInput.RightTrigger));
-            Reg("glance.coach", S.InputCoach, () => GlanceRun(Game.RunStatus.CoachLine()))
+            Reg("glance.coach", () => S.InputCoach, () => GlanceRun(Game.RunStatus.CoachLine()))
                 .AddBinding(K(Key.H)).AddBinding(P(PadInput.LeftStickClick, PadInput.RightTrigger));
-            Reg("glance.wallet", S.InputWallet, () => GlanceRun(Game.RunStatus.WalletLine()))
+            Reg("glance.wallet", () => S.InputWallet, () => GlanceRun(Game.RunStatus.WalletLine()))
                 .AddBinding(K(Key.B)).AddBinding(P(PadInput.Select, PadInput.RightTrigger));
             // Rename the focused hero, and roll them a random name. The game puts both on one
             // key by tap-versus-hold; a hold is poor for a screen-reader user, so they get a
             // key each. Roster-category (live only where hero slots advertise the actions);
             // a non-hero element there answers "unavailable" rather than silence.
-            Reg("ui.rename", S.InputRename, () => {
+            Reg("ui.rename", () => S.InputRename, () => {
                 if (Navigator.Current?.InvokeAction("rename") != true) {
                     Speech.Speak(S.StatusUnavailable, interrupt: true);
                 }
             }, InputCategory.Roster).AddBinding(K(Key.R));
-            Reg("ui.reroll", S.InputReroll, () => {
+            Reg("ui.reroll", () => S.InputReroll, () => {
                 if (Navigator.Current?.InvokeAction("reroll") != true) {
                     Speech.Speak(S.StatusUnavailable, interrupt: true);
                 }
@@ -495,7 +495,7 @@ namespace DD2A11y {
             // action), which the captured gate swallows; the vitrine also sits in the
             // actions strip for arrow reach. The vitrine screen declares the category too,
             // so the key toggles closed like the game's.
-            Reg("ui.vitrine", S.InputVitrine, () => {
+            Reg("ui.vitrine", () => S.InputVitrine, () => {
                 var types = Assets.Code.Utils.Singleton<Assets.Code.Game.GameTypeMgr>.Instance;
                 if (types != null && types.CurrentGameType == Assets.Code.Game.GameType.EXPEDITION) {
                     Assets.Code.Utils.SingletonMonoBehaviour<Assets.Code.UI.Managers.CommonUiBhv>
@@ -505,7 +505,7 @@ namespace DD2A11y {
             // Discard the focused item (the game's shift-click); the element advertises the
             // action only where the game allows the discard, so anything else answers
             // "unavailable" rather than silence.
-            Reg("ui.discard", S.InputDiscard, () => {
+            Reg("ui.discard", () => S.InputDiscard, () => {
                 if (Navigator.Current == null || !Navigator.Current.InvokeAction("discard")) {
                     Speech.Speak(S.StatusUnavailable, interrupt: true);
                 }
@@ -514,9 +514,9 @@ namespace DD2A11y {
             // Grab-and-place: hero moves at the crossroads, inventory stacks at the inn - one
             // key, routed by what stands under focus. Shift+Space never initiates; it places
             // a single item off the held stack, repeatable until the stack runs out.
-            Reg("ui.grab", S.InputGrab, () => ToggleGrab(takeOne: false)).AddBinding(K(Key.Space))
+            Reg("ui.grab", () => S.InputGrab, () => ToggleGrab(takeOne: false)).AddBinding(K(Key.Space))
                 .AddBinding(P(PadInput.A, PadInput.LeftTrigger));
-            Reg("ui.place.one", S.InputPlaceOne, () => ToggleGrab(takeOne: true))
+            Reg("ui.place.one", () => S.InputPlaceOne, () => ToggleGrab(takeOne: true))
                 .AddBinding(K(Key.Space, shift: true));
         }
 

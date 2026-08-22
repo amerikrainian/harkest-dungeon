@@ -10,7 +10,11 @@ namespace DD2A11y.Core.Input {
     /// </summary>
     public sealed class InputAction {
         public string Key { get; }
-        public string Label { get; }
+
+        /// <summary>Resolved at read time so a language switch lands in already-registered
+        /// commands (the mod keys tab reads this live).</summary>
+        public string Label => _label();
+        private readonly Func<string> _label;
 
         /// <summary>The input layer this action lives in (decides when it is polled and how
         /// identical chords across categories resolve - see <see cref="InputCategory"/>).</summary>
@@ -22,9 +26,9 @@ namespace DD2A11y.Core.Input {
         /// <summary>Fired on a live JustPressed that no dispatcher consumed.</summary>
         public event Action? Performed;
 
-        public InputAction(string key, string label) {
+        public InputAction(string key, Func<string> label) {
             Key = key;
-            Label = label;
+            _label = label;
         }
 
         public InputAction AddBinding(InputBinding binding) {

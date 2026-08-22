@@ -500,6 +500,9 @@ namespace DD2A11y.Core.Strings {
             // The faction currency's cost glyph (the Wainwright's repair prices); the game
             // calls the currency Baubles but spells it only in a tooltip.
             D("SpriteBaubles", "baubles"),
+            // The slime stagecoach livery (the slime pet's coach skin), which has no name
+            // string in the game. Noun, following the game's own slime vocabulary.
+            D("CoachSkinSlime", "Slime"),
             // Replaces the game's "???" placeholder glyph (a locked confession, an unexplored
             // node's rewards), which a synthesizer voices as nothing. Adjective.
             D("TextUnknown", "unknown"),
@@ -846,6 +849,7 @@ namespace DD2A11y.Core.Strings {
         public static string SpriteHealth => T("SpriteHealth");
         public static string SpriteDeathblow => T("SpriteDeathblow");
         public static string SpriteBaubles => T("SpriteBaubles");
+        public static string CoachSkinSlime => T("CoachSkinSlime");
         public static string TextUnknown => T("TextUnknown");
 
         public static string BufferControl => T("BufferControl");
