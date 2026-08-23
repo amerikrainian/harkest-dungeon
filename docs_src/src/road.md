@@ -18,7 +18,7 @@ Cue volumes (and a master volume for the lot) live in the **mod sounds** tab, wh
 
 While driving, Tab cycles the mod's HUD panels - the party ribbon, the status readouts, and friends - and the arrows browse within one. The road area itself is pass-through: browsing never touches the wheel. Space grabs a ribbon hero to reorder the marching order. If you have a pet on the coach, it appears in the status panel as a button; pressing it pets them. The mod considers this essential functionality.
 
-The game's road keys stay live throughout: G for the goals panel, R for relationships, C for the hero sheet, I for the bag, M or Tab for the map, and the mod's F, H, and B glances answer for the flame, the coach, and the wallet from anywhere.
+The game's road keys stay live throughout: G for the goals panel, R for relationships, C for the hero sheet, I for the bag, M or Tab for the map, and the mod's F, H, and B glances answer for the flame, the coach, and the wallet from anywhere. On a controller the game covers the same ground by default: D-pad up for the map, D-pad left for goals, D-pad down for the token glossary, D-pad right for the stagecoach sheet, Y for the bag, and Select for the hero sheet (the D-pad ones answer while your focus is on the road itself; in a HUD panel the D-pad browses the panel).
 
 ## Forks
 

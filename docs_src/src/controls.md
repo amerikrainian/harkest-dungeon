@@ -108,3 +108,18 @@ These are the game's own defaults, unchanged by the mod, rebindable in the game'
 | Inspector | Alt (hold) | The game's combatant dossier (the mod's I toggles it instead) |
 
 One exception worth knowing: while the road map is open, the arrow keys browse the map and Ctrl belongs to buffer review, so the game's hold-Ctrl token glossary is unavailable there. WASD keeps driving the coach the whole time.
+
+### On A Controller
+
+A few recommendations if you are playing with a controller: on the road, the game's own pad layout already covers what the letter keys above reach, so none of it needs rebinding.
+
+| Function | Default controller |
+| --- | --- |
+| Map | D-pad up |
+| Goals panel | D-pad left |
+| Token glossary | D-pad down |
+| Stagecoach | D-pad right |
+| Inventory | Y (Triangle on PlayStation pads) |
+| Hero sheet | Select (also the touchpad press on PlayStation pads) |
+
+The D-pad shortcuts answer while your focus is on the driving area; Tab into a HUD panel and the D-pad browses that panel until you Tab back to the road. Y and Select stay live the whole drive.
