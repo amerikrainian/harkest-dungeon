@@ -116,15 +116,15 @@ namespace DD2A11y.Game {
             if (name == null || damage <= 0) {
                 return;
             }
-            if (evt.m_IsCrit) {
-                _pending.Add(S.CombatTookDamageCrit(name, damage));
-            } else {
-                _pending.Add(damage == 1 ? S.CombatTookDamageOne(name) : S.CombatTookDamage(name, damage));
-            }
+            _pending.Add(DamageLine(name, damage, evt.m_IsCrit));
             if (evt.IsEnteringDeathsDoor) {
                 _pending.Add(S.CombatDeathsDoor(name));
             }
         }
+
+        private static string DamageLine(string name, int damage, bool isCrit)
+            => isCrit ? S.CombatTookDamageCrit(name, damage)
+                : damage == 1 ? S.CombatTookDamageOne(name) : S.CombatTookDamage(name, damage);
 
         // The model event fires once per heal regardless of which of the game's two display
         // paths shows it, so no HasDisplayed gate here - every heal speaks exactly once.
@@ -495,22 +495,31 @@ namespace DD2A11y.Game {
             }
         }
 
-        // The finalized skill outcome carries the whiffs: a miss is the attacker's failure, a
-        // dodge the target's save - the same split the game's MISS/DODGE pop text draws. Damage,
-        // heals, and riders speak from their own events.
+        // The finalized skill outcome carries the whiffs - a miss is the attacker's failure, a
+        // dodge the target's save, the same split the game's MISS/DODGE pop text draws - and
+        // the KILLING hits: the game applies a lethal hit by killing the target directly
+        // (SkillCalculation routes only non-lethal hits through ApplyHealthDamage), so no
+        // damage event ever fires for it, while the sighted damage pop draws from these same
+        // results. Finalize fires before the results apply, so the damage line lands ahead of
+        // the death line. Non-lethal damage, heals, and riders speak from their own events.
         private static void HandleSkillResults(EventSkillFinalizeResults evt) {
             if (!InCombat || evt.ActorResults == null) {
                 return;
             }
             foreach (var result in evt.ActorResults) {
-                if (result == null || result.IsHit) {
+                if (result == null) {
                     continue;
                 }
                 string target = Actors.SpokenName(Actors.Get(result.m_TargetActorGuid));
                 if (target == null) {
                     continue;
                 }
-                if (result.IsMiss) {
+                if (result.IsHit) {
+                    int damage = (int)result.HealthDamage;
+                    if (result.IsDamageKill && damage > 0) {
+                        _pending.Add(DamageLine(target, damage, result.IsCrit));
+                    }
+                } else if (result.IsMiss) {
                     string performer = Actors.SpokenName(Actors.Get(evt.PerformerGuid));
                     if (performer != null) {
                         _pending.Add(S.CombatMissed(performer, target));
