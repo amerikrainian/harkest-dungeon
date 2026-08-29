@@ -198,6 +198,41 @@ namespace DD2A11y.Elements {
             foreach (var line in ClassDescription.Lines(ClassId())) {
                 yield return line;
             }
+            // After the class blurb: the panel's aggregate rank-pip rows as exact counts,
+            // ascending - the numbers behind the landing tones (same templates as the path
+            // comparison readout) - then the Rank row's glow, the ranks the hero's
+            // ally-targeting skills can reach, spoken only when the hero has any.
+            if (HasHero) {
+                var actor = Slot.ActorInstance;
+                yield return S.PathLaunchSkills(CountList(RankCoverage.LaunchCounts(actor)));
+                yield return S.PathTargetSkills(CountList(RankCoverage.TargetCounts(actor)));
+                string reach = RankList(RankCoverage.AllyReachRanks(actor));
+                if (reach.Length > 0) {
+                    yield return S.AllySkillReach(reach);
+                }
+            }
+        }
+
+        private static string CountList(int[] counts) {
+            var parts = new string[counts.Length];
+            for (int i = 0; i < counts.Length; i++) {
+                parts[i] = counts[i].ToString();
+            }
+            return SpokenLine.Join(parts);
+        }
+
+        private static string RankList(bool[] active) {
+            var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < active.Length; i++) {
+                if (!active[i]) {
+                    continue;
+                }
+                if (sb.Length > 0) {
+                    sb.Append(' ');
+                }
+                sb.Append(i + 1);
+            }
+            return sb.ToString();
         }
 
         public override IEnumerable<string> GetSideBufferLines(string bufferKey)

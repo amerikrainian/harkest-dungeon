@@ -10,9 +10,10 @@ namespace DD2A11y.Core.Audio {
         bool Available { get; }
 
         /// <summary>Fire a one-shot cue at <paramref name="volume"/> (0..1) and stereo
-        /// <paramref name="pan"/> (-1 hard left .. 1 hard right). Missing device or asset means
-        /// silence (logged by the engine), never a throw.</summary>
-        void PlayCue(AudioCue cue, float volume, float pan);
+        /// <paramref name="pan"/> (-1 hard left .. 1 hard right). <paramref name="pitch"/> is a
+        /// playback-rate multiplier (1 = as authored), for cues whose pitch carries data.
+        /// Missing device or asset means silence (logged by the engine), never a throw.</summary>
+        void PlayCue(AudioCue cue, float volume, float pan, float pitch = 1f);
 
         /// <summary>Start a cue looping and return its live handle: the caller re-aims it with
         /// <see cref="IAudioLoop.Update"/> as the world moves (every frame is fine - the voice

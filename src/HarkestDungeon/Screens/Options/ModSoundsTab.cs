@@ -17,7 +17,7 @@ namespace DD2A11y.Screens.Options {
     /// </summary>
     public sealed class ModSoundsTab : ModTab {
         private static readonly AudioCueGroup[] Groups =
-            { AudioCueGroup.Road, AudioCueGroup.Combat };
+            { AudioCueGroup.Road, AudioCueGroup.Combat, AudioCueGroup.Crossroads };
 
         private readonly SoundVolumes _sounds;
         private readonly SoundPreview _preview;
@@ -49,6 +49,7 @@ namespace DD2A11y.Screens.Options {
         private static string GroupName(int index) {
             switch (Groups[index]) {
                 case AudioCueGroup.Combat: return S.SoundTabCombat;
+                case AudioCueGroup.Crossroads: return S.SoundTabCrossroads;
                 default: return S.SoundTabRoad;
             }
         }

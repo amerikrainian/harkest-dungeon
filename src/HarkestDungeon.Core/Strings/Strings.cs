@@ -248,6 +248,7 @@ namespace DD2A11y.Core.Strings {
             // (the assets/audio folders). Nouns.
             D("SoundTabRoad", "road"),
             D("SoundTabCombat", "combat"),
+            D("SoundTabCrossroads", "crossroads"),
             // State word leading the glossary row whose sound is looping right now.
             D("StatusPlaying", "playing"),
             // Glossary row labels: when the mod plays each sound. Road driving events first.
@@ -263,6 +264,12 @@ namespace DD2A11y.Core.Strings {
             D("SoundCombatTargetInvalid", "target invalid"),
             // Focus landed on a skill that telegraphs an affinity change.
             D("SoundCombatAffinitySkill", "skill changes affinity"),
+            // One tone of the crossroads hero ladder: four tones, rank 1 to 4, each pitched
+            // by how many of the hero's equipped skills act from that rank.
+            D("SoundCrossroadsRankTone", "skills per rank"),
+            // The ladder's harmony voice: pitched by how many of the hero's equipped skills
+            // can hit that enemy rank.
+            D("SoundCrossroadsTargetTone", "skills per enemy rank"),
 
             // The mod's own key-rebinding tab on the game's settings screen: one row per mod
             // command showing its current keys. Enter opens the row's menu (add a key, delete
@@ -310,6 +317,9 @@ namespace DD2A11y.Core.Strings {
             // (the game draws each share as a pip's fill). {0} is the four counts joined.
             D("PathLaunchSkills", "Skills per rank: {0}"),
             D("PathTargetSkills", "Skills per enemy rank: {0}"),
+            // The Rank pip row's glow as text: the ranks the hero's ally-targeting skills can
+            // reach; {0} = the rank numbers, ascending ("1 2"). Spoken only when any exist.
+            D("AllySkillReach", "Ally skills reach: {0}"),
             // The crossroads party-loadout overlay, when the game's own panel title is
             // unavailable. Noun phrase.
             D("ScreenPartyLoadouts", "party loadouts"),
@@ -723,6 +733,7 @@ namespace DD2A11y.Core.Strings {
         public static string TabModSounds => T("TabModSounds");
         public static string SoundTabRoad => T("SoundTabRoad");
         public static string SoundTabCombat => T("SoundTabCombat");
+        public static string SoundTabCrossroads => T("SoundTabCrossroads");
         public static string StatusPlaying => T("StatusPlaying");
 
         /// <summary>The glossary label of one mod sound, keyed "Sound{cue}" by convention; a test
@@ -761,6 +772,7 @@ namespace DD2A11y.Core.Strings {
         public static string VitrineFlames(int completed, int total) => F("VitrineFlames", completed, total);
         public static string PathLaunchSkills(string counts) => F("PathLaunchSkills", counts);
         public static string PathTargetSkills(string counts) => F("PathTargetSkills", counts);
+        public static string AllySkillReach(string ranks) => F("AllySkillReach", ranks);
         public static string ScreenPartyLoadouts => T("ScreenPartyLoadouts");
         public static string ScreenSkillLoadouts => T("ScreenSkillLoadouts");
         public static string LoadoutRename => T("LoadoutRename");

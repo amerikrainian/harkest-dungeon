@@ -63,7 +63,7 @@ namespace DD2A11y.Audio {
             }
         }
 
-        public void PlayCue(AudioCue cue, float volume, float pan) {
+        public void PlayCue(AudioCue cue, float volume, float pan, float pitch = 1f) {
             if (!EnsureStarted()) {
                 return;
             }
@@ -71,7 +71,7 @@ namespace DD2A11y.Audio {
             if (clip.Length == 0) {
                 return; // missing/unreadable asset already logged by LoadMono
             }
-            _mixer.AddMixerInput(new CueVoice(clip, volume, pan));
+            _mixer.AddMixerInput(new CueVoice(clip, volume, pan, pitch));
         }
 
         public IAudioLoop StartLoop(AudioCue cue, float volume, float pan, float pitch = 1f) {
@@ -95,12 +95,15 @@ namespace DD2A11y.Audio {
                 case AudioCue.RoadTurnEnd: return Road("end_turn");
                 case AudioCue.CombatTargetValid: return Combat("target_valid");
                 case AudioCue.CombatAffinitySkill: return Combat("affinity_skill");
+                case AudioCue.CrossroadsRankTone: return Crossroads("rank_tone");
+                case AudioCue.CrossroadsTargetTone: return Crossroads("target_tone");
                 default: return Combat("target_invalid");
             }
         }
 
         private string Road(string name) => Path.Combine(_assetRoot, "road", name + ".wav");
         private string Combat(string name) => Path.Combine(_assetRoot, "combat", name + ".wav");
+        private string Crossroads(string name) => Path.Combine(_assetRoot, "crossroads", name + ".wav");
 
         // Decode a WAV to a mono float[] at the mixer rate, caching only successes.
         private float[] LoadMono(string path) {
@@ -270,15 +273,18 @@ namespace DD2A11y.Audio {
             public void Stop() { }
         }
 
-        // A cached mono clip played once at a fixed pan; returns fewer than count samples when
-        // finished, which makes the shared mixer auto-remove it.
+        // A cached mono clip played once at a fixed pan and rate (its pitch), stepping a
+        // fractional clip position with linear interpolation like LoopVoice; returns fewer
+        // than count samples when finished, which makes the shared mixer auto-remove it.
         private sealed class CueVoice : ISampleProvider {
             private readonly float[] _clip;
             private readonly float _gainL, _gainR;
-            private int _pos;
+            private readonly float _rate;
+            private double _pos;
 
-            public CueVoice(float[] clip, float volume, float pan) {
+            public CueVoice(float[] clip, float volume, float pan, float pitch) {
                 _clip = clip;
+                _rate = pitch > 0f ? pitch : 1f;
                 PanGains(pan, out float l, out float r);
                 _gainL = volume * l;
                 _gainR = volume * r;
@@ -288,13 +294,17 @@ namespace DD2A11y.Audio {
             public WaveFormat WaveFormat { get; }
 
             public int Read(float[] buffer, int offset, int count) {
-                int frames = Math.Min(count / 2, _clip.Length - _pos);
-                for (int f = 0; f < frames; f++) {
-                    float s = _clip[_pos + f];
-                    buffer[offset + f * 2] = s * _gainL;
-                    buffer[offset + f * 2 + 1] = s * _gainR;
+                int frames = 0;
+                int maxFrames = count / 2;
+                while (frames < maxFrames && _pos < _clip.Length - 1) {
+                    int i0 = (int)_pos;
+                    float frac = (float)(_pos - i0);
+                    float s = _clip[i0] + (_clip[i0 + 1] - _clip[i0]) * frac;
+                    buffer[offset + frames * 2] = s * _gainL;
+                    buffer[offset + frames * 2 + 1] = s * _gainR;
+                    _pos += _rate;
+                    frames++;
                 }
-                _pos += frames;
                 return frames * 2;
             }
         }

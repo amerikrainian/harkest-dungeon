@@ -49,14 +49,16 @@ namespace DD2A11y.Screens {
 
         private readonly Action<string, bool> _speak;
         private readonly Core.Text.TypingEcho _echo;
+        private readonly Audio.RankToneLadder _ladder;
         private HeroSelectBhv _heroSelect;
         private Container _root;
         private int _builtSlots;
         private bool _builtEmbarkVisible;
         private HeroSlotElement _grabbed;
 
-        public CrossroadsScreen(Action<string, bool> speak) {
+        public CrossroadsScreen(Action<string, bool> speak, Core.Audio.IAudioEngine audio) {
             _speak = speak;
+            _ladder = new Audio.RankToneLadder(audio);
             // The hero rename runs the game's own edit flow, which sets its IsInputtingText -
             // so the mod's keys already pause; this only echoes what the field takes.
             _echo = new Core.Text.TypingEcho(() => Game.TextEntry.IsTyping, HeroName, speak);
@@ -87,11 +89,36 @@ namespace DD2A11y.Screens {
         public override Container BuildRoot(object target) {
             _root = new RootContainer(ContainerShape.VerticalList);
             _grabbed = null;
+            _ladder.Clear();
             Populate();
             return _root;
         }
 
+        /// <summary>Focus-landing audio: the panel's aggregate rank-pip rows, computed from the
+        /// live model so a committed path change or skill swap sounds through immediately. A
+        /// PARTY hero answers the standing question - their own rank's lone rank tone, then
+        /// their reach as the target phrase; a POOL hero answers the recruiting question - the
+        /// full ladder, rank and target voices chorded per rank (the slot's buffer carries both
+        /// rows as exact counts). Any other landing cancels what is left of a ladder - it
+        /// described a hero no longer focused.</summary>
+        public void OnFocusSettled(UIElement element) {
+            if (!(element is HeroSlotElement hero) || !hero.HasHero) {
+                _ladder.Clear();
+                return;
+            }
+            var actor = hero.Slot.ActorInstance;
+            int limit = RankCoverage.EquipLimit(actor);
+            if (hero.Slot.IsRosterSlot) {
+                _ladder.ScheduleParty(RankCoverage.LaunchCounts(actor)[hero.Slot.RosterIndex],
+                    RankCoverage.TargetCounts(actor), limit);
+            } else {
+                _ladder.ScheduleLadder(RankCoverage.LaunchCounts(actor),
+                    RankCoverage.TargetCounts(actor), limit);
+            }
+        }
+
         public override bool OnUpdate(object target) {
+            _ladder.Tick();
             if (_echo.Tick()) {
                 // The rename ended: read the accepted name (the game restores the previous one
                 // when the field was left empty).
@@ -149,6 +176,9 @@ namespace DD2A11y.Screens {
             OnDropAcceptedMethod.Invoke(target, new object[] { source });
             _grabbed = null;
             _speak(hero.GetFocusText(), true); // the landing slot, read live with its new occupant
+            // The drop put a new hero under the focus without a focus move, so the landing
+            // ladder replays for the arrival - the moment the player judges the new rank.
+            OnFocusSettled(hero);
         }
 
         private void Populate() {

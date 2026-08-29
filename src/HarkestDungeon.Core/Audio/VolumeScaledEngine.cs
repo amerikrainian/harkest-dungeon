@@ -19,8 +19,8 @@ namespace DD2A11y.Core.Audio {
 
         public bool Available => _inner.Available;
 
-        public void PlayCue(AudioCue cue, float volume, float pan)
-            => _inner.PlayCue(cue, volume * _volumes.Gain(cue), pan);
+        public void PlayCue(AudioCue cue, float volume, float pan, float pitch = 1f)
+            => _inner.PlayCue(cue, volume * _volumes.Gain(cue), pan, pitch);
 
         public IAudioLoop StartLoop(AudioCue cue, float volume, float pan, float pitch = 1f)
             => new ScaledLoop(_inner.StartLoop(cue, volume * _volumes.Gain(cue), pan, pitch), _volumes, cue);

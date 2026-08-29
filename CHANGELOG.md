@@ -1,6 +1,6 @@
 # Changelog
 
-## V0.3.6
+## V0.3.7
 
 - Icon words now follow the game language. Currencies (Relics, Mastery, Baubles, Candle of Hope), stat and resist icons (Stun, Move, Disease, Loathing, regen), and the coach's Armor and Wheels used to read as raw English icon ids in every language; they now speak the game's own localized names.
 - Resist announcements name the resisted effect in the game language; stress and move resists used to read as raw English ids.
@@ -9,6 +9,10 @@
 - The rare-quirk star after a quirk's name now reads as a translated "rare" instead of the raw English icon id.
 - Inn bonus lines (trophy deliveries, inn tooltips) no longer read a meaningless "animal part" before each bonus; that was the game's decorative bullet glyph.
 - Combat item tooltips now read their targeting as the same Rank and Target lines skills use, instead of a string of raw pip glyph names.
+- The crossroads now sounds the hero panel's rank circles, which were silent before. A hero in your party plays a tone for the rank they stand in, pitched by how many of their equipped skills work from it (lower for fewer skills), then a four-tone phrase for their reach: how many skills can hit each enemy rank, 1 to 4. A hero in the roster pool, and a path seal. The info for the roster is also available in the buffers.
+
+## V0.3.6
+
 - The mod hotkeys settings page now translates like the other mod pages; its command names were stuck in English no matter the game language.
 - Stagecoach liveries earned from Kingdoms campaigns now read by those campaigns' own localized titles instead of raw English ids.
 

@@ -36,9 +36,18 @@ namespace DD2A11y.Screens {
         private static readonly AccessTools.FieldRef<HeroSelectBhv, uint> SpawnedGuidField =
             AccessTools.FieldRefAccess<HeroSelectBhv, uint>("m_SpawnedActorGuid");
 
+        private readonly Audio.RankToneLadder _ladder;
         private HeroSelectBhv _heroSelect;
         private Container _root;
         private int _builtSignature;
+        // The seal rows by element, for the focus-landing ladder; the seal's path is read
+        // live off its widget (the pool re-purposes seals across heroes).
+        private readonly Dictionary<UIElement, GameObject> _seals =
+            new Dictionary<UIElement, GameObject>();
+
+        public PathSelectScreen(Core.Audio.IAudioEngine audio) {
+            _ladder = new Audio.RankToneLadder(audio);
+        }
 
         public override string Name {
             get {
@@ -64,11 +73,29 @@ namespace DD2A11y.Screens {
             var heroSelect = (HeroSelectBhv)target;
             _root = new RootContainer(ContainerShape.VerticalList,
                 back: () => heroSelect.TogglePathSelectionPanel());
+            _ladder.Clear();
             Populate(heroSelect);
             return _root;
         }
 
+        /// <summary>Focus-landing audio: a seal landing plays the full rank-and-target ladder
+        /// for the hero AS THAT PATH would re-skill them (the comparison panel's what-if pips,
+        /// without needing the seal previewed first - like the seal's card). Any other
+        /// landing cancels a pending ladder.</summary>
+        public void OnFocusSettled(UIElement element) {
+            var sealObject = element != null && _seals.TryGetValue(element, out var held) ? held : null;
+            var select = sealObject == null ? null : sealObject.GetComponent<ActorPathSelectBhv>();
+            var actor = select == null ? null : Actors.Get(SpawnedGuidField(_heroSelect));
+            if (actor == null) {
+                _ladder.Clear();
+                return;
+            }
+            _ladder.ScheduleLadder(RankCoverage.LaunchCounts(actor, select.PathId),
+                RankCoverage.TargetCounts(actor, select.PathId), RankCoverage.EquipLimit(actor));
+        }
+
         public override bool OnUpdate(object target) {
+            _ladder.Tick();
             var heroSelect = (HeroSelectBhv)target;
             // The panel spawns its path rows a beat after opening, and repopulates them from
             // a pool on every hero switch - the same seal objects come back carrying another
@@ -94,6 +121,7 @@ namespace DD2A11y.Screens {
 
         private void Populate(HeroSelectBhv heroSelect) {
             _builtSignature = PathsSignature(heroSelect);
+            _seals.Clear();
             var paths = PathsField(heroSelect);
             if (paths != null) {
                 var row = new Container(ContainerShape.HorizontalList);
@@ -108,10 +136,12 @@ namespace DD2A11y.Screens {
                     // re-purposes seals across heroes) - so any path reads without previewing
                     // it first; the comparison panel shows only the previewed path, and
                     // reading it under an unpreviewed seal spoke the wrong one.
-                    row.Add(new ActionElement(
+                    var seal = new ActionElement(
                         () => UiText.FirstLabel(pathObject), S.RoleButton,
                         () => heroSelect.SelectPath(pathObject),
-                        extraBufferLines: () => SealCard(heroSelect, pathObject)));
+                        extraBufferLines: () => SealCard(heroSelect, pathObject));
+                    _seals[seal] = pathObject;
+                    row.Add(seal);
                 }
                 if (!row.IsEmptyContainer) {
                     _root.Add(row);

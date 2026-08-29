@@ -863,8 +863,15 @@ Live-verified 2026-07-23. The pre-run hub (the HERO_SELECT mode - `HeroSelectBhv
   Sheet (C)" hint); Escape closes it.
 
 **Known gaps:** the Embark element is live-verified up to (not including) the press - pressing
-it starts the run. The party's aggregate Rank/Target pips are not read (each skill's exact
-ranks are in the hero sheet).
+it starts the run. The panel's aggregate Rank/Target pip rows sound on every hero landing,
+pitched by skill count (low none, an octave up at a full loadout): a party hero plays their
+own rank's rank tone then the Target row as a four-tone phrase in the harmony voice; a pool
+hero plays four two-voice chords, rank 1 to 4; on the path overlay a seal plays the pool
+ladder for the hero as that path would re-skill them, computed from the model like the seal
+cards so no preview is needed. Every hero slot's buffer also carries both rows as exact
+counts after the class blurb ("Skills per rank" / "Skills per enemy rank"), plus the Rank
+row's friendly-reach glow as an "Ally skills reach" rank list when the hero has
+ally-targeting skills.
 
 ## 4.2 Hero Sheet (`CharacterSheetScreen`) - WORKS
 

@@ -32,12 +32,13 @@ namespace DD2A11y.Tests {
         }
 
         private sealed class FakeEngine : IAudioEngine {
-            public readonly List<(AudioCue Cue, float Volume, float Pan)> Plays = new();
+            public readonly List<(AudioCue Cue, float Volume, float Pan, float Pitch)> Plays = new();
             public readonly List<FakeLoop> Loops = new();
 
             public bool Available => true;
 
-            public void PlayCue(AudioCue cue, float volume, float pan) => Plays.Add((cue, volume, pan));
+            public void PlayCue(AudioCue cue, float volume, float pan, float pitch = 1f)
+                => Plays.Add((cue, volume, pan, pitch));
 
             public IAudioLoop StartLoop(AudioCue cue, float volume, float pan, float pitch = 1f) {
                 var loop = new FakeLoop { Volume = volume, Pan = pan, Pitch = pitch };
@@ -231,6 +232,25 @@ namespace DD2A11y.Tests {
 
             engine.PlayCue(AudioCue.RoadPickup, 0.8f, 0f);
             Assert.Equal(0.4f, inner.Plays[0].Volume, 3);
+        }
+
+        [Fact]
+        public void ScaledEngine_PassesPitchThrough() {
+            var inner = new FakeEngine();
+            var engine = new VolumeScaledEngine(inner, new SoundVolumes(new MemoryStore()));
+
+            engine.PlayCue(AudioCue.CrossroadsRankTone, 1f, 0f, 1.5f);
+
+            Assert.Equal(1.5f, Assert.Single(inner.Plays).Pitch, 3);
+        }
+
+        [Fact]
+        public void RankTones_PitchSpansAnOctaveByCount() {
+            Assert.Equal(1f, RankTones.Pitch(0, 5), 3);
+            Assert.Equal(2f, RankTones.Pitch(5, 5), 3);
+            Assert.True(RankTones.Pitch(2, 5) < RankTones.Pitch(3, 5));
+            Assert.Equal(2f, RankTones.Pitch(9, 5), 3); // over the limit clamps to the top
+            Assert.Equal(1f, RankTones.Pitch(3, 0), 3); // no equip limit: flat, no divide
         }
 
         [Fact]

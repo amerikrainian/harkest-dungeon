@@ -24,12 +24,22 @@ namespace DD2A11y.Core.Audio {
         /// <summary>Focus landed on a skill that telegraphs an affinity change (the A glance
         /// reads the changes themselves).</summary>
         CombatAffinitySkill,
+
+        // Crossroads (assets/audio/crossroads).
+        /// <summary>One rank of the focused hero's skills-per-rank ladder, pitched by how many
+        /// equipped skills act from that rank (a party hero sounds only their own rank; a pool
+        /// hero or path seal sounds all four, rank 1 to 4).</summary>
+        CrossroadsRankTone,
+        /// <summary>The rank tone's harmony voice in the full ladder: pitched by how many
+        /// equipped skills can hit that enemy rank (the panel's Target pip row).</summary>
+        CrossroadsTargetTone,
     }
 
     /// <summary>The glossary's grouping of cues, mirroring the assets/audio folders.</summary>
     public enum AudioCueGroup {
         Road,
         Combat,
+        Crossroads,
     }
 
     public static class AudioCues {
@@ -39,6 +49,9 @@ namespace DD2A11y.Core.Audio {
             string name = cue.ToString();
             if (name.StartsWith("Combat", System.StringComparison.Ordinal)) {
                 return AudioCueGroup.Combat;
+            }
+            if (name.StartsWith("Crossroads", System.StringComparison.Ordinal)) {
+                return AudioCueGroup.Crossroads;
             }
             return AudioCueGroup.Road;
         }

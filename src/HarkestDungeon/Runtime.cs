@@ -36,6 +36,7 @@ namespace DD2A11y {
         private readonly Game.RoadSense _roadSense;
         private readonly LanguageSync _language;
         private CrossroadsScreen _crossroads;
+        private PathSelectScreen _pathSelect;
         private ProfileSelectScreen _profileSelect;
         private FirstProfileScreen _firstProfile;
         private KeyBindingsScreen _keyBindings;
@@ -130,7 +131,7 @@ namespace DD2A11y {
             Game.CombatEvents.Settings = Settings;
 
             Router = new ScreenRouter(Navigator, Gate, speak);
-            _crossroads = new CrossroadsScreen(speak);
+            _crossroads = new CrossroadsScreen(speak, Audio);
             Router.Register(new ConfirmationScreen());
             Router.Register(new UiModalScreen());
             // The key-bindings panel overlays the settings screen's controls tab, so it must
@@ -228,7 +229,8 @@ namespace DD2A11y {
             Router.Register(new MainMenuScreen());
             // The hero-select canvas overlays are not stack screens; they match off the game's
             // own panel flags and must outrank the crossroads beneath them.
-            Router.Register(new PathSelectScreen());
+            _pathSelect = new PathSelectScreen(Audio);
+            Router.Register(_pathSelect);
             _partyLoadouts = new PartyLoadoutScreen(speak);
             Router.Register(_partyLoadouts);
             Router.Register(_crossroads);
@@ -252,11 +254,15 @@ namespace DD2A11y {
             // area, with the fork popup transient in the same tree.
             _driving = new DrivingScreen(speak, Navigator, Input);
             Router.Register(_driving);
-            // Combat focus-landing audio (validity beeps, the affinity-skill cue) fires on
-            // landings, not per frame.
+            // Focus-landing audio (combat validity beeps, the affinity-skill cue, the
+            // crossroads skills-per-rank ladders) fires on landings, not per frame.
             Navigator.FocusSettled += element => {
                 if (Router.Active == _combat) {
                     _combat.OnFocusSettled(element);
+                } else if (Router.Active == _crossroads) {
+                    _crossroads.OnFocusSettled(element);
+                } else if (Router.Active == _pathSelect) {
+                    _pathSelect.OnFocusSettled(element);
                 }
             };
 
