@@ -3,6 +3,12 @@
 ## V0.3.6
 
 - Icon words now follow the game language. Currencies (Relics, Mastery, Baubles, Candle of Hope), stat and resist icons (Stun, Move, Disease, Loathing, regen), and the coach's Armor and Wheels used to read as raw English icon ids in every language; they now speak the game's own localized names.
+- Resist announcements name the resisted effect in the game language; stress and move resists used to read as raw English ids.
+- Item affinity chances now speak the game's own localized "Affinity +" and "Affinity -" words instead of raw English icon ids.
+- Store prices paid in quest items (the Crusader quest's Rumour of Riches at the Hoarder) now read the item's localized name instead of its raw English id.
+- The rare-quirk star after a quirk's name now reads as a translated "rare" instead of the raw English icon id.
+- Inn bonus lines (trophy deliveries, inn tooltips) no longer read a meaningless "animal part" before each bonus; that was the game's decorative bullet glyph.
+- Combat item tooltips now read their targeting as the same Rank and Target lines skills use, instead of a string of raw pip glyph names.
 - The mod hotkeys settings page now translates like the other mod pages; its command names were stuck in English no matter the game language.
 - Stagecoach liveries earned from Kingdoms campaigns now read by those campaigns' own localized titles instead of raw English ids.
 

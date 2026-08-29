@@ -219,6 +219,7 @@ SpriteSpeed = Geschwindigkeit
 SpriteHealth = LP
 SpriteDeathblow = Todesstoß
 SpriteBaubles = Schmuckstücke
+SpriteRareQuirk = selten
 CoachSkinSlime = Schleim
 TextUnknown = unbekannt
 BufferControl = Steuerelement

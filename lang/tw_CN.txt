@@ -219,6 +219,7 @@ SpriteSpeed = 速度
 SpriteHealth = 生命值
 SpriteDeathblow = 致命一擊
 SpriteBaubles = 珍寶
+SpriteRareQuirk = 稀有
 CoachSkinSlime = 黏液
 TextUnknown = 未知
 BufferControl = 控制項

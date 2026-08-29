@@ -137,6 +137,62 @@ namespace DD2A11y.Game {
             }
         }
 
+        /// <summary>The Rank/Target lines for a tooltip line that is the game's inline rank-pip
+        /// strip, or null when the line is anything else. Combat-item tooltips draw targeting
+        /// as glyphs only (ItemDescription): four launch pips rank 4 down to 1, then four
+        /// target pips rank 1 up to 4, each one of the three skill_rank_position glyphs -
+        /// spoken glyph by glyph that is noise, so the strip is recomposed into the same
+        /// lines skill cards speak.</summary>
+        public static IReadOnlyList<string> RankPipLines(string line) {
+            if (line == null || line.IndexOf("<sprite", System.StringComparison.Ordinal) < 0) {
+                return null;
+            }
+            string launchPip = PipSpriteName("skill_rank_position_launch");
+            string emptyPip = PipSpriteName("skill_rank_position_empty");
+            string targetPip = PipSpriteName("skill_rank_position_target");
+            if (launchPip == null || emptyPip == null || targetPip == null) {
+                return null;
+            }
+            if (!string.IsNullOrWhiteSpace(Core.Text.SpriteText.Strip(line))) {
+                return null;
+            }
+            var pips = Core.Text.SpriteText.Names(line).ToList();
+            if (pips.Count != 8) {
+                return null;
+            }
+            var launch = new bool[4];
+            var target = new bool[4];
+            for (int i = 0; i < 4; i++) {
+                if (pips[i] == launchPip) {
+                    launch[3 - i] = true;
+                } else if (pips[i] != emptyPip) {
+                    return null;
+                }
+                if (pips[4 + i] == targetPip) {
+                    target[i] = true;
+                } else if (pips[4 + i] != emptyPip) {
+                    return null;
+                }
+            }
+            var lines = new List<string>(2);
+            string launchList = RankList(launch, null);
+            if (launchList.Length > 0) {
+                lines.Add(Format("effect_tooltip_position", launchList));
+            }
+            string targetList = RankList(target, null);
+            if (targetList.Length > 0) {
+                lines.Add(Format("effect_tooltip_target", targetList));
+            }
+            return lines;
+        }
+
+        // The pip glyph's sprite name, read off the game's own loc string for it
+        // ("<sprite name=\"icon_target_gold\">").
+        private static string PipSpriteName(string locKey) {
+            string value = GameLoc.TryGet(locKey);
+            return value == null ? null : Core.Text.SpriteText.Names(value).FirstOrDefault();
+        }
+
         private static IEnumerable<string> RankAndTargetLines(ActorDataSkill skill) {
             if (!SkillDescription.TryGetRankInfo(skill, 4, out _, out var launchRanks, out var targetRanks, out var multiHits)) {
                 yield break;

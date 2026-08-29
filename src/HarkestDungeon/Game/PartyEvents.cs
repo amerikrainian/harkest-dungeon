@@ -199,10 +199,7 @@ namespace DD2A11y.Game {
             if (owner == null) {
                 return;
             }
-            string what = GameLoc.TryGet("dot_name_" + evt.m_ResistId)
-                ?? GameLoc.TryGet("token_name_" + evt.m_ResistId)
-                ?? evt.m_ResistId;
-            Deliver(S.CombatResisted(owner, what));
+            Deliver(S.CombatResisted(owner, CombatEvents.ResistName(evt.m_ResistId)));
         }
 
         internal static void HandleWound(EventActorWoundApplied evt) {

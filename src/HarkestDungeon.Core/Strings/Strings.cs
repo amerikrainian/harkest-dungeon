@@ -500,6 +500,9 @@ namespace DD2A11y.Core.Strings {
             // The faction currency's cost glyph (the Wainwright's repair prices); the game
             // calls the currency Baubles but spells it only in a tooltip.
             D("SpriteBaubles", "baubles"),
+            // The rare-quirk star the game appends after a rare quirk's name (twice on an
+            // epic quirk). Adjective, spoken after the name.
+            D("SpriteRareQuirk", "rare"),
             // The slime stagecoach livery (the slime pet's coach skin), which has no name
             // string in the game. Noun, following the game's own slime vocabulary.
             D("CoachSkinSlime", "Slime"),
@@ -849,6 +852,7 @@ namespace DD2A11y.Core.Strings {
         public static string SpriteHealth => T("SpriteHealth");
         public static string SpriteDeathblow => T("SpriteDeathblow");
         public static string SpriteBaubles => T("SpriteBaubles");
+        public static string SpriteRareQuirk => T("SpriteRareQuirk");
         public static string CoachSkinSlime => T("CoachSkinSlime");
         public static string TextUnknown => T("TextUnknown");
 

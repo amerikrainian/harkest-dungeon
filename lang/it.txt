@@ -219,6 +219,7 @@ SpriteSpeed = velocità
 SpriteHealth = PF
 SpriteDeathblow = colpo mortale
 SpriteBaubles = ninnoli
+SpriteRareQuirk = raro
 CoachSkinSlime = Melma
 TextUnknown = sconosciuto
 BufferControl = controllo

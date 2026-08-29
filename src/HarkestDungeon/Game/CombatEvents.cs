@@ -414,11 +414,14 @@ namespace DD2A11y.Game {
             if (owner == null) {
                 return;
             }
-            string what = GameLoc.TryGet("dot_name_" + evt.m_ResistId)
-                ?? GameLoc.TryGet("token_name_" + evt.m_ResistId)
-                ?? evt.m_ResistId;
-            _pending.Add(S.CombatResisted(owner, what));
+            _pending.Add(S.CombatResisted(owner, ResistName(evt.m_ResistId)));
         }
+
+        // The resist id names the icon the game's own resist pop shows ("icon_stress",
+        // "icon_move"), so the icon-word resolver speaks it in the game language (a dot
+        // name, a token name, the story legend's word, an authored word).
+        internal static string ResistName(string resistId)
+            => SpriteWords.Resolve("icon_" + resistId) ?? resistId;
 
         private static void HandleStressDamage(EventStressDamage evt) {
             if (!InCombat) {

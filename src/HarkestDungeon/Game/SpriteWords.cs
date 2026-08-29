@@ -49,8 +49,13 @@ namespace DD2A11y.Game {
                 if (spriteName == "cost_faction") {
                     return GameLoc.TryGet("inventory_tooltip_biome_currency") ?? S.SpriteBaubles;
                 }
+                // A store price paid in an item names its glyph by that item's id
+                // ("cost_quest_rumour_of_riches" in the game's store_item_cost format), so the
+                // item's own title is the glyph's word.
                 string bareCost = TrimRenderSuffix(spriteName.Substring(CostPrefix.Length));
-                return ResidualName(bareCost) ?? Fallback(spriteName, bareCost);
+                return ResidualName(bareCost)
+                    ?? GameLoc.TryGet("item_name_" + bareCost)
+                    ?? Fallback(spriteName, bareCost);
             }
             if (!spriteName.StartsWith(IconPrefix, System.StringComparison.Ordinal)) {
                 return null;
@@ -87,10 +92,15 @@ namespace DD2A11y.Game {
                 // The deathblow-resist glyph; its humanized name ("death") loses the resist
                 // meaning the icon carries ("+4% death" for a deathblow-RES buff).
                 case "death": return S.SpriteDeathblow;
+                // The rare-quirk star appended after a rare quirk's name (twice on an epic
+                // quirk); the game has no word for it anywhere.
+                case "rare_quirk": return S.SpriteRareQuirk;
                 // Decorative: the seal glyph always precedes the path's own name text, the
-                // laurel glyph the "Upgrade" caption's own word.
+                // laurel glyph the "Upgrade" caption's own word, the trophy glyph the inn
+                // bonus title it bullets (InnDescription.GetInnBonusTitle).
                 case "heroseal": return null;
                 case "upgraded_skill": return null;
+                case "animal_part": return null;
             }
             // A stat icon depicting a token ("icon_stun" in "+10% <icon_stun> RES" buff lines)
             // carries the token's own name.
@@ -100,9 +110,12 @@ namespace DD2A11y.Game {
         }
 
         // Icons whose word lives on an unrelated game string: the currency tooltips, the coach
-        // stat sources, the Loathing meter title, the regen dot's "hot" tag.
+        // stat sources, the Loathing meter title, the regen dot's "hot" tag, the road-story
+        // legend's affinity words.
         private static string ResidualName(string word) {
             switch (word) {
+                case "affinity_up": return AffinityWord(positive: true);
+                case "affinity_down": return AffinityWord(positive: false);
                 case "heropoints": return GameLoc.TryGet("inventory_tooltip_heropoints");
                 case "relic": return GameLoc.TryGet("inventory_tooltip_relics");
                 case "factioncurrency": return GameLoc.TryGet("inventory_tooltip_biome_currency");
@@ -116,6 +129,18 @@ namespace DD2A11y.Game {
                     return GameLoc.TryGet("story_icon_description_icon_story_torch_Preview");
                 default: return null;
             }
+        }
+
+        // The road-story legend names the affinity icons ("Affinity +"), but its entries carry
+        // their own sign suffix and the game's zh_CN pair has the signs swapped - so the noun
+        // comes off the positive entry and the icon's own direction is appended.
+        private static string AffinityWord(bool positive) {
+            string legend = GameLoc.TryGet("story_icon_description_icon_story_affinity_pos_Preview");
+            if (legend == null) {
+                return null;
+            }
+            string noun = legend.TrimEnd('+', '-', '–', '−', ' ');
+            return noun + (positive ? " +" : " -");
         }
 
         // "candle_glyph" -> "candle": rendering suffixes off, the identifier itself kept.

@@ -219,6 +219,7 @@ SpriteSpeed = rychlost
 SpriteHealth = ZDR
 SpriteDeathblow = smrtící úder
 SpriteBaubles = tretky
+SpriteRareQuirk = vzácný
 CoachSkinSlime = Sliz
 TextUnknown = neznámé
 BufferControl = prvek

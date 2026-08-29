@@ -219,6 +219,7 @@ SpriteSpeed = скорость
 SpriteHealth = ОЗ
 SpriteDeathblow = смертельный удар
 SpriteBaubles = безделицы
+SpriteRareQuirk = редкая
 CoachSkinSlime = Слизь
 TextUnknown = неизвестно
 BufferControl = элемент

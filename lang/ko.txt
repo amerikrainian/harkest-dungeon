@@ -219,6 +219,7 @@ SpriteSpeed = 속도
 SpriteHealth = 체력
 SpriteDeathblow = 죽음의 일격
 SpriteBaubles = 패물
+SpriteRareQuirk = 희귀
 CoachSkinSlime = 점액
 TextUnknown = 알 수 없음
 BufferControl = 컨트롤

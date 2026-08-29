@@ -221,6 +221,7 @@ SpriteSpeed = speed
 SpriteHealth = HP
 SpriteDeathblow = deathblow
 SpriteBaubles = baubles
+SpriteRareQuirk = rare
 CoachSkinSlime = Slime
 TextUnknown = unknown
 BufferControl = control
