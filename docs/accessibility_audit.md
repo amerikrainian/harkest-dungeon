@@ -371,9 +371,12 @@ rows instead of swept widgets - the announcement separator, a free-text field
 ("sensing range, edit, 80") typed to any value and clamped to 20-200 on commit (garbage
 commits nothing, empty restores the default, spoken "reset to default"), and the
 auto-collect toggle ("auto collect pickups, toggle, off", default off - the road layer's
-hands-free pickup mode, 5.2). The road layer reads the sensing range live for the pickup
-pings (live-verified 2026-08-02: raising it on the road started ten real pickup loops,
-restoring 80 drained them).
+hands-free pickup mode, 5.2), and the crossroads-tones toggle ("crossroads rank sounds,
+toggle, on", default on - the rank-pip tone ladders on crossroads hero and path-seal
+landings; off silences the tones while the buffers keep the same counts as text;
+live-verified 2026-08-30 through the row plus the ladder gate on the live screen). The
+road layer reads the sensing range live for the pickup pings (live-verified 2026-08-02:
+raising it on the road started ten real pickup loops, restoring 80 drained them).
 
 - Enter opens the mod's own typing mode - "editing, enter when done" then the bare-Enter
   outcome spoken as a hint (the suggested value is spoken rather than prefilled, so typing

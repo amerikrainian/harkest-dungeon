@@ -101,6 +101,7 @@ TabModSettings = réglages du mod
 SettingSeparator = séparateur d'annonces
 SettingSensingRange = portée de détection
 SettingAutoCollect = ramassage automatique des objets
+SettingCrossroadsTones = sons des positions à la croisée
 SettingMasterVolume = volume général
 SettingReset = valeur par défaut rétablie
 TabModAnnouncements = annonces du mod

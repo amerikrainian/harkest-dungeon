@@ -101,6 +101,7 @@ TabModSettings = モッド設定
 SettingSeparator = 読み上げの区切り文字
 SettingSensingRange = 感知範囲
 SettingAutoCollect = アイテムの自動回収
+SettingCrossroadsTones = 交差点のランク音
 SettingMasterVolume = マスター音量
 SettingReset = デフォルトに戻した
 TabModAnnouncements = モッド読み上げ

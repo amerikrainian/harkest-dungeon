@@ -101,6 +101,7 @@ TabModSettings = Mod-Einstellungen
 SettingSeparator = Trennzeichen für Ansagen
 SettingSensingRange = Ortungsreichweite
 SettingAutoCollect = Gegenstände automatisch einsammeln
+SettingCrossroadsTones = Positionstöne an der Wegkreuzung
 SettingMasterVolume = Gesamtlautstärke
 SettingReset = auf Standard zurückgesetzt
 TabModAnnouncements = Mod-Ansagen

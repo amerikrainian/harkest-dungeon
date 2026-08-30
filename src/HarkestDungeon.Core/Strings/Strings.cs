@@ -227,6 +227,10 @@ namespace DD2A11y.Core.Strings {
             // Toggle: passed roadside pickups collect themselves, no steering needed; the
             // pickup ping stays quiet while it is on. Noun phrase.
             D("SettingAutoCollect", "auto collect pickups"),
+            // Toggle: the crossroads and path-select rank tones (the hero panel's rank
+            // circles sounded on a hero or seal landing); off silences the tones while the
+            // buffers keep the counts. Noun phrase.
+            D("SettingCrossroadsTones", "crossroads rank sounds"),
             // The baseline volume of every mod sound, the slider heading the sounds glossary
             // tab; the per-sound volumes below ride on it as offsets. Noun phrase.
             D("SettingMasterVolume", "master volume"),
@@ -729,6 +733,7 @@ namespace DD2A11y.Core.Strings {
         public static string SettingSeparator => T("SettingSeparator");
         public static string SettingSensingRange => T("SettingSensingRange");
         public static string SettingAutoCollect => T("SettingAutoCollect");
+        public static string SettingCrossroadsTones => T("SettingCrossroadsTones");
         public static string SettingMasterVolume => T("SettingMasterVolume");
         public static string SettingReset => T("SettingReset");
         public static string TabModAnnouncements => T("TabModAnnouncements");

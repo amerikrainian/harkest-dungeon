@@ -101,6 +101,7 @@ TabModSettings = настройки мода
 SettingSeparator = разделитель частей фразы
 SettingSensingRange = дальность обнаружения
 SettingAutoCollect = автоматический сбор предметов
+SettingCrossroadsTones = звуки позиций на перепутье
 SettingMasterVolume = общая громкость
 SettingReset = восстановлено значение по умолчанию
 TabModAnnouncements = уведомления мода

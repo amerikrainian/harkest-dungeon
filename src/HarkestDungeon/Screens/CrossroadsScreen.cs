@@ -56,9 +56,10 @@ namespace DD2A11y.Screens {
         private bool _builtEmbarkVisible;
         private HeroSlotElement _grabbed;
 
-        public CrossroadsScreen(Action<string, bool> speak, Core.Audio.IAudioEngine audio) {
+        public CrossroadsScreen(Action<string, bool> speak, Core.Audio.IAudioEngine audio,
+                                Core.Settings.BoolSetting tones) {
             _speak = speak;
-            _ladder = new Audio.RankToneLadder(audio);
+            _ladder = new Audio.RankToneLadder(audio, tones);
             // The hero rename runs the game's own edit flow, which sets its IsInputtingText -
             // so the mod's keys already pause; this only echoes what the field takes.
             _echo = new Core.Text.TypingEcho(() => Game.TextEntry.IsTyping, HeroName, speak);

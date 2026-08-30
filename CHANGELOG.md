@@ -6,6 +6,7 @@
 - The Strangle debuff inflicted by the Tangle's lair boss now reads by the game's own localized name in every language instead of the raw English "strangle".
 - The daze icon in resist lines like "Gain On Stun/Daze/Move Resist" was misread as "Aggressive Stance Immunity", a Duelist token that shares the same icon. It now reads as the game's Daze.
 - The Crusader's harvested wheat glyph now reads as a translated "Wheat"; the game only ever draws it.
+- New mod setting "crossroads rank sounds" to turn the crossroads and path-seal rank tones off. The buffers keep carrying the same counts as text either way.
 
 ## V0.3.7
 

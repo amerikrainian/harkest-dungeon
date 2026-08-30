@@ -101,6 +101,7 @@ TabModSettings = ustawienia moda
 SettingSeparator = separator komunikatów
 SettingSensingRange = zasięg wykrywania
 SettingAutoCollect = automatyczne zbieranie przedmiotów
+SettingCrossroadsTones = dźwięki pozycji na rozdrożu
 SettingMasterVolume = głośność główna
 SettingReset = przywrócono domyślne
 TabModAnnouncements = komunikaty moda

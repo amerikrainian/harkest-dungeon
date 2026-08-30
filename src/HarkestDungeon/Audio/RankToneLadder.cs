@@ -10,7 +10,8 @@ namespace DD2A11y.Audio {
     /// the four target tones - their fit where they stand, followed by their reach. Scheduled
     /// on a focus landing, sounded step by step from the owning screen's per-frame update, so
     /// the sound dies with the screen. A new schedule replaces whatever is still pending - it
-    /// describes the focused hero, and focus has moved on.
+    /// describes the focused hero, and focus has moved on. The crossroads-tones setting
+    /// silences scheduling entirely; the buffers carry the same counts as text.
     /// </summary>
     public sealed class RankToneLadder {
         private struct Step {
@@ -22,10 +23,12 @@ namespace DD2A11y.Audio {
         }
 
         private readonly IAudioEngine _audio;
+        private readonly Core.Settings.BoolSetting _enabled;
         private readonly List<Step> _pending = new List<Step>();
 
-        public RankToneLadder(IAudioEngine audio) {
+        public RankToneLadder(IAudioEngine audio, Core.Settings.BoolSetting enabled) {
             _audio = audio;
+            _enabled = enabled;
         }
 
         /// <summary>Queue the party-hero reading: one rank tone for the rank the hero stands
@@ -33,6 +36,9 @@ namespace DD2A11y.Audio {
         /// row as a four-tone phrase.</summary>
         public void ScheduleParty(int rankCount, int[] targetCounts, int limit) {
             _pending.Clear();
+            if (!_enabled.Value) {
+                return;
+            }
             float now = UnityEngine.Time.unscaledTime;
             _pending.Add(new Step {
                 Due = now,
@@ -56,7 +62,7 @@ namespace DD2A11y.Audio {
         /// just clears.</summary>
         public void ScheduleLadder(int[] launchCounts, int[] targetCounts, int limit) {
             _pending.Clear();
-            if (launchCounts == null) {
+            if (!_enabled.Value || launchCounts == null) {
                 return;
             }
             float now = UnityEngine.Time.unscaledTime;

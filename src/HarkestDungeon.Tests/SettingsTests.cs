@@ -121,7 +121,8 @@ namespace DD2A11y.Tests {
         [Fact]
         public void ModSettings_GroupsCarryTheirTabsRows() {
             var settings = new ModSettings(new MemoryStore());
-            Assert.Equal(new ModSetting[] { settings.Separator, settings.SensingRange, settings.AutoCollect },
+            Assert.Equal(new ModSetting[] { settings.Separator, settings.SensingRange,
+                    settings.AutoCollect, settings.CrossroadsTones },
                 settings.General);
             Assert.Equal(new ModSetting[] { settings.CorpseDeaths }, settings.Announcements);
         }

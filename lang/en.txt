@@ -103,6 +103,7 @@ TabModSettings = mod settings
 SettingSeparator = announcement separator
 SettingSensingRange = sensing range
 SettingAutoCollect = auto collect pickups
+SettingCrossroadsTones = crossroads rank sounds
 SettingMasterVolume = master volume
 SettingReset = reset to default
 TabModAnnouncements = mod announcements

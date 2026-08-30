@@ -131,7 +131,7 @@ namespace DD2A11y {
             Game.CombatEvents.Settings = Settings;
 
             Router = new ScreenRouter(Navigator, Gate, speak);
-            _crossroads = new CrossroadsScreen(speak, Audio);
+            _crossroads = new CrossroadsScreen(speak, Audio, Settings.CrossroadsTones);
             Router.Register(new ConfirmationScreen());
             Router.Register(new UiModalScreen());
             // The key-bindings panel overlays the settings screen's controls tab, so it must
@@ -229,7 +229,7 @@ namespace DD2A11y {
             Router.Register(new MainMenuScreen());
             // The hero-select canvas overlays are not stack screens; they match off the game's
             // own panel flags and must outrank the crossroads beneath them.
-            _pathSelect = new PathSelectScreen(Audio);
+            _pathSelect = new PathSelectScreen(Audio, Settings.CrossroadsTones);
             Router.Register(_pathSelect);
             _partyLoadouts = new PartyLoadoutScreen(speak);
             Router.Register(_partyLoadouts);

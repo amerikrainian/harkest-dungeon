@@ -20,6 +20,10 @@ namespace DD2A11y.Core.Settings {
         /// the pickup ping stays quiet while this is on. Read live per frame.</summary>
         public BoolSetting AutoCollect { get; }
 
+        /// <summary>Whether the crossroads and path-select rank tones sound on a hero or seal
+        /// landing; the buffers carry the same counts either way. Read live per landing.</summary>
+        public BoolSetting CrossroadsTones { get; }
+
         /// <summary>Whether a corpse's own destruction speaks a died line in battle (a corpse
         /// smashed by a skill or crumbling on its round timer).</summary>
         public BoolSetting CorpseDeaths { get; }
@@ -35,9 +39,11 @@ namespace DD2A11y.Core.Settings {
                 80, 20, 200, store);
             AutoCollect = new BoolSetting("auto_collect", () => Strings.Strings.SettingAutoCollect,
                 false, store);
+            CrossroadsTones = new BoolSetting("crossroads_tones",
+                () => Strings.Strings.SettingCrossroadsTones, true, store);
             CorpseDeaths = new BoolSetting("corpse_deaths", () => Strings.Strings.SettingCorpseDeaths,
                 true, store);
-            General = new ModSetting[] { Separator, SensingRange, AutoCollect };
+            General = new ModSetting[] { Separator, SensingRange, AutoCollect, CrossroadsTones };
             Announcements = new ModSetting[] { CorpseDeaths };
         }
     }

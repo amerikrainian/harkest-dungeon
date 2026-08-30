@@ -45,8 +45,8 @@ namespace DD2A11y.Screens {
         private readonly Dictionary<UIElement, GameObject> _seals =
             new Dictionary<UIElement, GameObject>();
 
-        public PathSelectScreen(Core.Audio.IAudioEngine audio) {
-            _ladder = new Audio.RankToneLadder(audio);
+        public PathSelectScreen(Core.Audio.IAudioEngine audio, Core.Settings.BoolSetting tones) {
+            _ladder = new Audio.RankToneLadder(audio, tones);
         }
 
         public override string Name {

@@ -101,6 +101,7 @@ TabModSettings = 모드 설정
 SettingSeparator = 알림 구분자
 SettingSensingRange = 감지 범위
 SettingAutoCollect = 습득물 자동 수집
+SettingCrossroadsTones = 교차로 위치 소리
 SettingMasterVolume = 마스터 볼륨
 SettingReset = 기본값으로 재설정
 TabModAnnouncements = 모드 알림
