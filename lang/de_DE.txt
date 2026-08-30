@@ -224,6 +224,7 @@ SpriteHealth = LP
 SpriteDeathblow = Todesstoß
 SpriteBaubles = Schmuckstücke
 SpriteRareQuirk = selten
+SpriteWheat = Weizen
 CoachSkinSlime = Schleim
 TextUnknown = unbekannt
 BufferControl = Steuerelement

@@ -224,6 +224,7 @@ SpriteHealth = PŻ
 SpriteDeathblow = śmiertelny cios
 SpriteBaubles = świecidełka
 SpriteRareQuirk = rzadki
+SpriteWheat = Pszenica
 CoachSkinSlime = Śluz
 TextUnknown = nieznane
 BufferControl = kontrolka

@@ -224,6 +224,7 @@ SpriteHealth = PV
 SpriteDeathblow = coup fatal
 SpriteBaubles = babioles
 SpriteRareQuirk = rare
+SpriteWheat = Blé
 CoachSkinSlime = Bave
 TextUnknown = inconnu
 BufferControl = contrôle

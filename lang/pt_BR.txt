@@ -224,6 +224,7 @@ SpriteHealth = vida
 SpriteDeathblow = golpe mortal
 SpriteBaubles = bugigangas
 SpriteRareQuirk = raro
+SpriteWheat = Trigo
 CoachSkinSlime = Gosma
 TextUnknown = desconhecido
 BufferControl = controle

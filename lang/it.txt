@@ -224,6 +224,7 @@ SpriteHealth = PF
 SpriteDeathblow = colpo mortale
 SpriteBaubles = ninnoli
 SpriteRareQuirk = raro
+SpriteWheat = Grano
 CoachSkinSlime = Melma
 TextUnknown = sconosciuto
 BufferControl = controllo

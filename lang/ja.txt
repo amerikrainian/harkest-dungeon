@@ -224,6 +224,7 @@ SpriteHealth = HP
 SpriteDeathblow = 死の一撃
 SpriteBaubles = 安物の宝石
 SpriteRareQuirk = レア
+SpriteWheat = 小麦
 CoachSkinSlime = スライム
 TextUnknown = 不明
 BufferControl = コントロール

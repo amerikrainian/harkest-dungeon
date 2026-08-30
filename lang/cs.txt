@@ -224,6 +224,7 @@ SpriteHealth = ZDR
 SpriteDeathblow = smrtící úder
 SpriteBaubles = tretky
 SpriteRareQuirk = vzácný
+SpriteWheat = Pšenice
 CoachSkinSlime = Sliz
 TextUnknown = neznámé
 BufferControl = prvek

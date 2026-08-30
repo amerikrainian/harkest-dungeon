@@ -224,6 +224,7 @@ SpriteHealth = HP
 SpriteDeathblow = 致命一击
 SpriteBaubles = 珍宝
 SpriteRareQuirk = 稀有
+SpriteWheat = 小麦
 CoachSkinSlime = 黏液
 TextUnknown = 未知
 BufferControl = 控件

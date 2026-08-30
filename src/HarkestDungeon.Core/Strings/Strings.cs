@@ -513,6 +513,10 @@ namespace DD2A11y.Core.Strings {
             // The rare-quirk star the game appends after a rare quirk's name (twice on an
             // epic quirk). Adjective, spoken after the name.
             D("SpriteRareQuirk", "rare"),
+            // The Crusader's harvested wheat token (his reap-and-bundle crop mechanic),
+            // which the game shows only as a glyph with a "meager harvest" description -
+            // no name string anywhere. Noun.
+            D("SpriteWheat", "Wheat"),
             // The slime stagecoach livery (the slime pet's coach skin), which has no name
             // string in the game. Noun, following the game's own slime vocabulary.
             D("CoachSkinSlime", "Slime"),
@@ -865,6 +869,7 @@ namespace DD2A11y.Core.Strings {
         public static string SpriteDeathblow => T("SpriteDeathblow");
         public static string SpriteBaubles => T("SpriteBaubles");
         public static string SpriteRareQuirk => T("SpriteRareQuirk");
+        public static string SpriteWheat => T("SpriteWheat");
         public static string CoachSkinSlime => T("CoachSkinSlime");
         public static string TextUnknown => T("TextUnknown");
 

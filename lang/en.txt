@@ -226,6 +226,7 @@ SpriteHealth = HP
 SpriteDeathblow = deathblow
 SpriteBaubles = baubles
 SpriteRareQuirk = rare
+SpriteWheat = Wheat
 CoachSkinSlime = Slime
 TextUnknown = unknown
 BufferControl = control

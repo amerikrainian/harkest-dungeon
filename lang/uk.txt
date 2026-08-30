@@ -224,6 +224,7 @@ SpriteHealth = ОЗ
 SpriteDeathblow = смертельний удар
 SpriteBaubles = абищиці
 SpriteRareQuirk = рідкісна
+SpriteWheat = Пшениця
 CoachSkinSlime = Слиз
 TextUnknown = невідомо
 BufferControl = елемент

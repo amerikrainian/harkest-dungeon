@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using Assets.Code.Dot;
+using Assets.Code.Library;
+using Assets.Code.Utils;
 using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Game {
@@ -29,6 +32,17 @@ namespace DD2A11y.Game {
                 if (name != null) {
                     return name;
                 }
+                // A recolored glyph keeps its base token's word ("token_daze_gold" is the
+                // gold daze rendering in the game's resist tags and trinket resist lines);
+                // the trimmed name outranks the icon-to-token scan because the same sprite
+                // also fronts an unrelated immunity token.
+                string trimmedToken = TrimRenderSuffix(bareToken);
+                if (trimmedToken != bareToken) {
+                    name = GameLoc.TryGet("token_name_" + trimmedToken);
+                    if (name != null) {
+                        return name;
+                    }
+                }
                 string tokenId = TokenGlossary.TokenIdOf(spriteName);
                 if (tokenId != null) {
                     name = GameLoc.TryGet("token_name_" + tokenId);
@@ -39,9 +53,10 @@ namespace DD2A11y.Game {
                 // Not every token glyph has a token behind it: "token_horror" is the horror
                 // dot's glyph, and the stress-over-time glyph is "token_stress", named by the
                 // authored stress word.
-                string trimmedToken = TrimRenderSuffix(bareToken);
                 return GameLoc.TryGet("dot_name_" + trimmedToken)
-                    ?? (trimmedToken == "stress" ? S.SpriteStress : Fallback(spriteName, trimmedToken));
+                    ?? DotNameByGlyph(spriteName)
+                    ?? AuthoredTokenWord(trimmedToken)
+                    ?? Fallback(spriteName, trimmedToken);
             }
             if (spriteName.StartsWith(CostPrefix, System.StringComparison.Ordinal)) {
                 // Currency glyphs in cost text ("<cost_faction> 8"); the faction currency's
@@ -109,6 +124,34 @@ namespace DD2A11y.Game {
                 ?? Fallback(spriteName, word);
         }
 
+        // A dot's glyph can diverge from its type ("token_strangle" is the taproot_strangle
+        // dot's glyph): the game pairs sprite and type in the glyphed "dot_<type>" entry, so
+        // an unmatched sprite resolves through the dot library to that type's plain name.
+        private static string DotNameByGlyph(string spriteName) {
+            var library = SingletonMonoBehaviour<Library<string, DotDefinition>>.Instance;
+            if (library == null) {
+                return null;
+            }
+            string marker = "\"" + spriteName + "\"";
+            foreach (var definition in library.GetLibraryElements()) {
+                string glyph = GameLoc.TryGet("dot_" + definition.m_Type);
+                if (glyph != null && glyph.Contains(marker)) {
+                    return GameLoc.TryGet("dot_name_" + definition.m_Type);
+                }
+            }
+            return null;
+        }
+
+        // Token glyphs the game names nowhere in plain text: the stress-over-time glyph, and
+        // the Crusader's harvested wheat (a glyph plus a "meager harvest" description only).
+        private static string AuthoredTokenWord(string word) {
+            switch (word) {
+                case "stress": return S.SpriteStress;
+                case "cru_wheat": return S.SpriteWheat;
+                default: return null;
+            }
+        }
+
         // Icons whose word lives on an unrelated game string: the currency tooltips, the coach
         // stat sources, the Loathing meter title, the regen dot's "hot" tag, the road-story
         // legend's affinity words.
@@ -145,7 +188,7 @@ namespace DD2A11y.Game {
 
         // "candle_glyph" -> "candle": rendering suffixes off, the identifier itself kept.
         private static string TrimRenderSuffix(string bare) {
-            foreach (var suffix in new[] { "_glyph", "_outline", "_white", "_v2" }) {
+            foreach (var suffix in new[] { "_glyph", "_outline", "_white", "_v2", "_gold" }) {
                 if (bare.EndsWith(suffix, System.StringComparison.Ordinal)) {
                     return bare.Substring(0, bare.Length - suffix.Length);
                 }
