@@ -717,7 +717,8 @@ Over `AltarOptionsSubscreenBhv`, live-verified 2026-07-28.
 
 ## 3.4 The Living City - Hero Tracks (`AltarClassScreen`) - WORKS
 
-Over `AltarClassSubScreenBhv`, live-verified 2026-07-28; purchases unexercised.
+Over `AltarClassSubScreenBhv`, live-verified 2026-07-28; icon spends live-verified 2026-08-30
+(including a milestone crossing); diamond buys unexercised.
 
 - The candle balance, then one horizontal row per roster hero: the hero's icon button first
   (name + the track's spent/total binding), then the track's milestone diamonds left to right,
@@ -734,24 +735,29 @@ Over `AltarClassSubScreenBhv`, live-verified 2026-07-28; purchases unexercised.
   submit handler - the game sells only through a pointer/Submit-action HOLD gated on the
   diamond being the EventSystem selection.
 - Enter on the hero icon is the game's own `OnIconClick` - one candle banked into the track
-  (or the store dialog on an unowned-DLC row), reading back the moved total. A quest-locked
-  hero (disabled icon button, no diamonds spawned, tooltips suppressed) reads "unavailable"
-  with the game's lock caption in the buffer.
+  (or the store dialog on an unowned-DLC row), reading back the moved total plus the next
+  unlock's title and now-cheaper candle cost ("Candle of Hope 1/53, Resolution, 1 candle"),
+  the tail advancing past a milestone the spend completes and dropping once the track is
+  full. A quest-locked hero (disabled icon button, no diamonds spawned, tooltips suppressed)
+  reads "unavailable" with the game's lock caption in the buffer.
 - The panel spawns rows one per frame on open, so the tree follows an instance-id signature,
   reusing built rows to keep focus. Escape closes through `CloseSubscreen` (the same
-  region-marker trap as 3.2). Purchase paths are code-verified only.
+  region-marker trap as 3.2). Diamond buy-up purchases are code-verified only.
 
 ## 3.5 The Intrepid Coast - Upgrade Tracks (`AltarGeneralScreen`) - WORKS
 
-Over `AltarGeneralSubScreenBhv`, live-verified 2026-07-28; spends unexercised.
+Over `AltarGeneralSubScreenBhv`, live-verified 2026-07-28; icon spend live-verified
+2026-08-30.
 
 - The candle balance, then one horizontal row per stat track (Journey, Resourcefulness,
   Companionship, Renown, The Infernal Flame): the track's icon button first (name +
   spent/total; the game binds the loc KEY `altar_upgrade_<id>` as the raw context value, so
   the mod localizes it), then the milestone diamonds with reward names, costs, and buffer
   descriptions, all through the shared `AltarTrackElement`/`AltarMilestoneElement`.
-- Enter on the icon banks one candle (`OnTrackSpendAttempt`), Enter on a diamond buys up to
-  it. Escape closes through `CloseSubscreen` (region markers re-enable, verified).
+- Enter on the icon banks one candle (`OnTrackSpendAttempt`) with the same
+  total-plus-next-unlock read-back as 3.4 ("Candle of Hope 1/94, Packing, 2 candles"),
+  Enter on a diamond buys up to it. Escape closes through `CloseSubscreen` (region markers
+  re-enable, verified).
 
 ## 3.6 The Timeless Wood - Memories (`AltarMemoryScreen`) - WORKS
 

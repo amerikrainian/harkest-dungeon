@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.3.8
+
+- When investing candles one-at-a-time into a hero track, you will now be told progress to unlocking the next item on that track.
+
 ## V0.3.7
 
 - Icon words now follow the game language. Currencies (Relics, Mastery, Baubles, Candle of Hope), stat and resist icons (Stun, Move, Disease, Loathing, regen), and the coach's Armor and Wheels used to read as raw English icon ids in every language; they now speak the game's own localized names.

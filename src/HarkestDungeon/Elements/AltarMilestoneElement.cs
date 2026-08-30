@@ -23,6 +23,8 @@ namespace DD2A11y.Elements {
             AccessTools.FieldRefAccess<ProgressTrackMilestoneBhv, float>("m_spentAmount");
         private static readonly AccessTools.FieldRef<ProgressTrackMilestoneBhv, float> GoalField =
             AccessTools.FieldRefAccess<ProgressTrackMilestoneBhv, float>("m_goalAmount");
+        private static readonly AccessTools.FieldRef<ProgressTrackMilestoneBhv, Assets.Code.Unlock.UnlockDefinition> UnlockField =
+            AccessTools.FieldRefAccess<ProgressTrackMilestoneBhv, Assets.Code.Unlock.UnlockDefinition>("m_unlock");
 
         private readonly ProgressTrackMilestoneBhv _milestone;
 
@@ -31,7 +33,16 @@ namespace DD2A11y.Elements {
             _milestone = milestone;
         }
 
-        private int Remaining => (int)(GoalField(_milestone) - SpentField(_milestone));
+        /// <summary>Candles still needed to reach the milestone; zero or less once bought.</summary>
+        internal static int RemainingCandles(ProgressTrackMilestoneBhv milestone)
+            => (int)(GoalField(milestone) - SpentField(milestone));
+
+        /// <summary>The milestone's reward title, from the loc key the game's own tooltip
+        /// heads itself with.</summary>
+        internal static string UnlockTitle(ProgressTrackMilestoneBhv milestone)
+            => Game.GameLoc.TryGet("upgrade_track_" + UnlockField(milestone).m_Id + "_title");
+
+        private int Remaining => RemainingCandles(_milestone);
 
         public override string Value => Remaining <= 0 ? S.AltarUnlocked : S.AltarCandleCost(Remaining);
 
