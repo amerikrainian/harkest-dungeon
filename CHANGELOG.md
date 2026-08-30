@@ -5,7 +5,7 @@
 - When investing candles one-at-a-time into a hero track, you will now be told progress to unlocking the next item on that track.
 - The Strangle debuff inflicted by the Tangle's lair boss now reads by the game's own localized name in every language instead of the raw English "strangle".
 - The daze icon in resist lines like "Gain On Stun/Daze/Move Resist" was misread as "Aggressive Stance Immunity", a Duelist token that shares the same icon. It now reads as the game's Daze.
-- The Crusader's harvested wheat glyph now reads as a translated "Wheat"; the game only ever draws it, so we supplied the word.
+- The Crusader's harvested wheat glyph now reads as a translated "Wheat"; the game only ever draws it.
 
 ## V0.3.7
 
