@@ -7,6 +7,7 @@
 - Rank movement in combat is now announced.
 - Scrolling over a combatant now speaks its visible tokens after its HP.
 - By popular demand, empty stagecoach slots now say what they are and that they are empty.
+- Pressing Enter on a stagecoach item and then Escape on the Wainwright no longer strands the item reading unavailable.
 
 ## V0.3.8
 

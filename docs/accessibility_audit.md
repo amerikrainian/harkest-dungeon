@@ -2175,6 +2175,13 @@ covers the read-only road sheet on Z (5.6).
   base one as the game's "Default". The game greys the button below two unlocked liveries,
   read as unavailable.
 
+- Escape first cancels an armed equip pick (2026-09-01, user report: Enter on a coach item
+  in the inn bag opens this sheet with the game's slot-select armed; the game's own Escape
+  ends the pick before anything closes - CommonUiBhv.GoBack - but the sheet's close path
+  never does, so our plain close stranded the picked item locked and reading unavailable).
+  One press cancels and closes, the inn re-announce as feedback; live-verified with the
+  full Enter-then-Escape loop, the item reading plain again after.
+
 Live-verified: full walk. Unexercised: a repair press (stats were full), equip/unequip on this
 sheet.
 

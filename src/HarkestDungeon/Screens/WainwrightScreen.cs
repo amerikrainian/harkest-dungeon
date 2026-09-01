@@ -24,7 +24,8 @@ namespace DD2A11y.Screens {
     /// livery cycler, then the upgrade slots (equip/unequip through the shared slot flow;
     /// altar-locked slots carry their lock text in the buffer). The road variant carries no
     /// wallet, repairs, or livery cycler, and its slots refuse edits through the widget's own
-    /// editable gate. Escape closes the sheet.
+    /// editable gate. Escape closes the sheet, first cancelling the armed equip pick when a
+    /// coach item's press opened it.
     /// </summary>
     public sealed class WainwrightScreen : GameScreen {
         private static readonly AccessTools.FieldRef<StageCoachConfigUiBhv, DataContextBhv> ContextField =
@@ -58,9 +59,21 @@ namespace DD2A11y.Screens {
 
         public override Container BuildRoot(object target) {
             var sheet = (StageCoachConfigUiBhv)target;
-            _root = new RootContainer(ContainerShape.VerticalList, back: sheet.CloseSubscreen);
+            _root = new RootContainer(ContainerShape.VerticalList, back: () => Close(sheet));
             Populate(sheet);
             return _root;
+        }
+
+        // Enter on a coach item in the bag opens this sheet with the game's equip pick armed.
+        // The game's own Escape ends that pick before anything closes (CommonUiBhv.GoBack),
+        // and the sheet's close path never does - a plain close would strand the picked item
+        // locked and reading unavailable in the bag. Cancel the pick, then close: one press
+        // backs out of the whole flow, and the inn re-announce is the feedback.
+        private static void Close(StageCoachConfigUiBhv sheet) {
+            if (SingletonMonoBehaviour<Assets.Code.UI.Managers.CommonUiBhv>.Instance.IsSelectingItemSlot) {
+                SlotSelect.Cancel();
+            }
+            sheet.CloseSubscreen();
         }
 
         public override bool OnUpdate(object target) {
