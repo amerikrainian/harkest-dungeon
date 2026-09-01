@@ -112,11 +112,7 @@ namespace DD2A11y.Elements {
                         yield return GameLoc.TryGet("inn_biome_goal_reward_label");
                     }
                     string format = GameLoc.TryGet("loot_rewards_hero_points_label");
-                    // The label's heropoints glyph sits beside the word "Mastery" it stands
-                    // for; spoken it would double up.
-                    yield return format == null
-                        ? loot.m_qty.ToString()
-                        : Core.Text.SpriteText.Strip(string.Format(format, loot.m_qty));
+                    yield return format == null ? loot.m_qty.ToString() : string.Format(format, loot.m_qty);
                     foreach (var line in Place(TextRewardField(_choice).GetComponent<TextTooltipBhv>(), placed)) {
                         yield return line;
                     }

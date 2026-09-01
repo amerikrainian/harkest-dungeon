@@ -36,11 +36,52 @@ namespace DD2A11y.Tests {
                 name => name == "token_combo" ? "Combo" : null,
                 "<sprite name=\"token_combo\" color=#FFFFFFFF>"));
 
+        private static string? Mastery(string name) => name == "icon_heropoints" ? "Mastery" : null;
+
         [Fact]
-        public void StripRemovesTheGlyphAWordAlreadyStandsBesideOf()
-            => Assert.Equal("+2 Mastery", WithResolver(
-                name => name == "icon_heropoints" ? "heropoints" : null,
-                SpriteText.Strip("+2<font=\"NDDunkelD-Bold SDF\"><sprite name=\"icon_heropoints\"></font> Mastery")));
+        public void GlyphCaptionedByTheWordAfterItIsDroppedThroughMarkup()
+            => Assert.Equal("+2 Mastery", WithResolver(Mastery,
+                "+2<font=\"NDDunkelD-Bold SDF\"><sprite name=\"icon_heropoints\"></font> Mastery"));
+
+        [Fact]
+        public void GlyphCaptionedByTheWordBeforeItIsDroppedCaseInsensitively()
+            => Assert.Equal("costs one mastery. Baubles are used", WithResolver(
+                name => name == "icon_heropoints" ? "Mastery" : name == "icon_factioncurrency" ? "Baubles" : null,
+                "costs one mastery <sprite name=\"icon_heropoints\">.\nBaubles <sprite name=\"icon_factioncurrency\"> are used"));
+
+        [Fact]
+        public void GlyphCaptionedByAColoredWordBeforeAPunctuationMarkIsDropped()
+            => Assert.Equal("for relics, baubles.", WithResolver(
+                name => name == "icon_relic" ? "Relics" : null,
+                "for <color=#FFF>relics</color> <sprite name=\"icon_relic\">, baubles."));
+
+        [Fact]
+        public void GlyphCaptionedByATwoWordCompoundBeforeItIsDropped()
+            => Assert.Equal("Mastery points are earned", WithResolver(Mastery,
+                "Mastery points <sprite name=\"icon_heropoints\"> are earned"));
+
+        [Fact]
+        public void GlyphCaptionedInParenthesesIsDropped()
+            => Assert.Equal("repair (armor) and (wheels)", WithResolver(
+                name => name == "icon_currency_armor" ? "Armor" : name == "icon_currency_wheel" ? "Wheels" : null,
+                "repair <sprite name=\"icon_currency_armor\"> (armor) and <sprite name=\"icon_currency_wheel\"> (wheels)"));
+
+        [Fact]
+        public void GlyphWhoseWordOnlyRecursTwoWordsAheadIsSpoken()
+            => Assert.Equal("Quirks with rare are rare.", WithResolver(
+                name => name == "icon_rare_quirk" ? "rare" : null,
+                "Quirks with <sprite name=\"icon_rare_quirk\"> are rare."));
+
+        [Fact]
+        public void GlyphBesideALongerWordIsSpoken()
+            => Assert.Equal("Masterful Mastery", WithResolver(Mastery,
+                "Masterful <sprite name=\"icon_heropoints\">"));
+
+        [Fact]
+        public void RepeatedGlyphsAreEachSpoken()
+            => Assert.Equal("stress stress", WithResolver(
+                name => name == "token_stress" ? "stress" : null,
+                "<sprite name=\"token_stress\"><sprite name=\"token_stress\">"));
 
         [Fact]
         public void ResolvedWordInsideColorMarkupReadsInline()

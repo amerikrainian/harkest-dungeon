@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.3.9
+
+- An icon standing right beside its own word no longer doubles that word.
+
 ## V0.3.8
 
 - When investing candles one-at-a-time into a hero track, you will now be told progress to unlocking the next item on that track.
