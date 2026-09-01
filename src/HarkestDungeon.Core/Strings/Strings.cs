@@ -340,8 +340,8 @@ namespace DD2A11y.Core.Strings {
             // The icon-only button restoring the shown hero's cosmetics and memories to their
             // defaults (the game asks for confirmation). Verb phrase.
             D("HeroReset", "reset hero"),
-            // A hero slot with no hero in it.
-            D("CrossroadsEmptySlot", "empty slot"),
+            // A slot with nothing in it: a crossroads hero slot, a stagecoach equipment slot.
+            D("EmptySlot", "empty slot"),
             // A party slot's battle position, spoken before the occupant ("rank 1, Highwayman");
             // rank 1 is the front line, as in combat. {0} = the number.
             D("CrossroadsRank", "rank {0}"),
@@ -793,7 +793,7 @@ namespace DD2A11y.Core.Strings {
         public static string LoadoutDelete => T("LoadoutDelete");
         public static string HeroNameField => T("HeroNameField");
         public static string HeroReset => T("HeroReset");
-        public static string CrossroadsEmptySlot => T("CrossroadsEmptySlot");
+        public static string EmptySlot => T("EmptySlot");
         public static string CrossroadsRank(int rank) => F("CrossroadsRank", rank);
         public static string CrossroadsInParty => T("CrossroadsInParty");
         public static string Grabbed(string what) => F("Grabbed", what);

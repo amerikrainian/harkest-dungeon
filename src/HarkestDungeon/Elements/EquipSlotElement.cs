@@ -1,19 +1,25 @@
 using System.Collections.Generic;
 using Assets.Code.Audio;
+using Assets.Code.Data;
 using Assets.Code.Game;
 using Assets.Code.Item;
 using Assets.Code.UI.Items;
 using Assets.Code.UI.Managers;
 using Assets.Code.Utils;
 using DD2A11y.Core.Nav;
+using DD2A11y.Core.Text;
+using DD2A11y.Game;
 using UnityEngine;
 using UnityEngine.UI;
+using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// An equipment slot on a sheet (trinket, combat item): the label is the equipped item's
-    /// own title read from the model - current the same frame a swap lands, where the widget's
-    /// text is a frame late - or the slot's caption while empty ("Equip Trinket"). Enter runs
+    /// An equipment slot on a sheet (trinket, combat item, coach equipment): the label is the
+    /// equipped item's own title read from the model - current the same frame a swap lands,
+    /// where the widget's text is a frame late - or the slot's caption while empty ("Equip
+    /// Trinket"; an empty coach slot is named from its accepted type instead, "Trophy, empty
+    /// slot"). Enter runs
     /// the slot's own submit (equip through the game's slot-select, unequip through its
     /// auto-transfer) and the landed state is spoken back - except an occupied slot on the road
     /// with the bag closed, where the game's submit only opens the bag (the first click of its
@@ -40,8 +46,29 @@ namespace DD2A11y.Elements {
         public override string Label {
             get {
                 var item = _slot != null ? _slot.Item : null;
-                return ItemUtils.IsValid(item) ? ItemDescription.GetTitle(item.GetItemDefinition()) : base.Label;
+                if (ItemUtils.IsValid(item)) {
+                    return ItemDescription.GetTitle(item.GetItemDefinition());
+                }
+                return CoachEmptyLabel() ?? base.Label;
             }
+        }
+
+        // An empty coach slot's visible text never says it is empty: the general slots show
+        // the bare item-type caption ("Stagecoach Item") and the trophy slot draws only its
+        // hint tooltip, which the widget-text fallback would read as the label. Name the slot
+        // from its container's accepted type and say it is empty; the hint text stays a buffer
+        // line. The game's own empty_item flag excludes locked slots, whose "New Slot" caption
+        // stands.
+        private string CoachEmptyLabel() {
+            if (!(_slot is InventoryItemStageCoachUpgradeBhv)
+                || !_slot.GetComponent<DataContextBhv>().GetBoolValue("empty_item")) {
+                return null;
+            }
+            var container = (InventoryItemContainerStageCoachUpgradeBhv)_slot.ItemContainer;
+            string word = container.SlotType == ItemSlotType.GENERAL
+                ? GameLoc.TryGet("item_type_sc_upgrade")
+                : GameLoc.TryGet("stat_source_type_" + container.SlotType.m_SourceType);
+            return SpokenLine.Join(word, S.EmptySlot);
         }
 
         // A press that handed play to the bag must not re-read the slot: the bag landing that

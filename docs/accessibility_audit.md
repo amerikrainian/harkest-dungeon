@@ -2157,6 +2157,16 @@ covers the read-only road sheet on Z (5.6).
   baubles 8" button per stat (the game's own transaction; `cost_` currency glyphs speak - the
   faction glyph as the authored "baubles", no game string spells it), the livery cycler, and
   the upgrade slots as equip slots (altar-locked ones carry their lock text).
+- An empty, unlocked slot names its accepted type and says it is empty ("Stagecoach Item,
+  empty slot"; "Trophy, empty slot"; "Equipped Flame, empty slot" - 2026-09-01, user report:
+  the game's general-slot caption is the bare type word and the trophy slot draws only its
+  hint tooltip, which the widget-text fallback spoke as the label). The type word is the
+  game's own `stat_source_type_<slot source>` string (`item_type_sc_upgrade` for general
+  slots), keyed off the container's `SlotType`; the game's `empty_item` DataContext flag
+  gates it, so locked slots keep their "New Slot"/"Pet Slot" captions. The trophy hint now
+  reads as buffer lines, both of them - its second sentence ("They are found by defeating
+  Lair bosses.") was never spoken before. Live-verified 2026-09-01, full walk at The Torch
+  & Crown.
 - The livery cycler (2026-08-12) reads as the game's "Stagecoach Livery" title with the
   applied skin's name as its value ("Stagecoach Livery, Ironclad, button"; it read as a bare
   unlabeled button before), and Enter's cycle re-reads the landing so the new skin is spoken.

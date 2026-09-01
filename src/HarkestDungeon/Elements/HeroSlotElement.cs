@@ -88,7 +88,7 @@ namespace DD2A11y.Elements {
                     return LockedClassName();
                 }
                 if (!Slot.IsOccupied) {
-                    return S.CrossroadsEmptySlot;
+                    return S.EmptySlot;
                 }
                 return UiText.FirstLabel(Slot.gameObject);
             }

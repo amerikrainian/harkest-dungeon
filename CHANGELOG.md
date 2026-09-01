@@ -6,6 +6,7 @@
 - In the tutorial archive, N jumps to the first entry still marked New.
 - Rank movement in combat is now announced.
 - Scrolling over a combatant now speaks its visible tokens after its HP.
+- By popular demand, empty stagecoach slots now say what they are and that they are empty.
 
 ## V0.3.8
 
