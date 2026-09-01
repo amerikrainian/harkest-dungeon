@@ -184,6 +184,7 @@ CombatTookDamageOne = {0} took damage
 CombatDied = {0} died
 CombatDeathsDoor = {0} at death's door
 CombatUsedSkill = {0} used {1} on {2}
+CombatMoved = {0} {1}
 CombatGained = {0} gained {1}
 CombatResisted = {0} resisted {1}
 CombatTurnOrder = turn order, {0}

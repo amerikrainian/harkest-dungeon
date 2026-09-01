@@ -182,6 +182,7 @@ CombatTookDamageOne = {0} dostává poškození
 CombatDied = {0} umírá
 CombatDeathsDoor = {0} na prahu smrti
 CombatUsedSkill = {0} používá {1} na {2}
+CombatMoved = {0} {1}
 CombatGained = {0} získává {1}
 CombatResisted = {0} odolává {1}
 CombatTurnOrder = pořadí tahů, {0}

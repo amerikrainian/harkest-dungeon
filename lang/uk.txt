@@ -182,6 +182,7 @@ CombatTookDamageOne = {0} отримує шкоду
 CombatDied = {0} гине
 CombatDeathsDoor = {0} на порозі смерті
 CombatUsedSkill = {0} застосовує {1}, ціль {2}
+CombatMoved = {0} {1}
 CombatGained = {0} отримує {1}
 CombatResisted = {0} витримує {1}
 CombatTurnOrder = порядок ходів, {0}

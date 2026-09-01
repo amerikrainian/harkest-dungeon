@@ -182,6 +182,7 @@ CombatTookDamageOne = {0} 피해 받음
 CombatDied = {0} 사망
 CombatDeathsDoor = {0} 죽음의 문턱
 CombatUsedSkill = {0}, {2}에게 {1} 사용
+CombatMoved = {0} {1}
 CombatGained = {0}, {1} 획득
 CombatResisted = {0}, {1} 저항
 CombatTurnOrder = 턴 순서, {0}

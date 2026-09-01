@@ -182,6 +182,7 @@ CombatTookDamageOne = {0}受到傷害
 CombatDied = {0}死亡
 CombatDeathsDoor = {0}進入鬼門關
 CombatUsedSkill = {0}對{2}使用{1}
+CombatMoved = {0} {1}
 CombatGained = {0}獲得{1}
 CombatResisted = {0}抵抗了{1}
 CombatTurnOrder = 行動順序，{0}

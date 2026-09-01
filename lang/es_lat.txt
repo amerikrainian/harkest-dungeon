@@ -182,6 +182,7 @@ CombatTookDamageOne = {0} recibió daño
 CombatDied = {0} murió
 CombatDeathsDoor = {0} en el umbral de la muerte
 CombatUsedSkill = {0} usó {1} en {2}
+CombatMoved = {0} {1}
 CombatGained = {0} ganó {1}
 CombatResisted = {0} resistió {1}
 CombatTurnOrder = orden de los turnos, {0}

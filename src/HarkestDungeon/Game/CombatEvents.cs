@@ -34,8 +34,9 @@ namespace DD2A11y.Game {
     /// announcing each line and appending it to the combat log. Covered: damage (with crits),
     /// heals, stress, meltdowns, misses and dodges, death's door falls and survivals, deaths,
     /// retreat outcomes, wave starts, the final round, wounds, token/dot/buff/quirk gains and
-    /// losses (token conversions included), quirk and dot cures, affinity changes, barks,
-    /// objective completions, and what enemies do - never the player's own skill picks.
+    /// losses (token conversions included), quirk and dot cures, rank movement, affinity
+    /// changes, barks, objective completions, and what enemies do - never the player's own
+    /// skill picks.
     /// Display gates mirror the game's own pop-text handlers, so what a sighted player sees
     /// pop is what gets spoken.
     /// </summary>
@@ -59,6 +60,7 @@ namespace DD2A11y.Game {
             EventManager.AddListener<EventActorHealthHeal>(HandleHeal);
             EventManager.AddListener<EventActorDeath>(HandleDeath);
             EventManager.AddListener<EventSelectActor>(HandleActorPick);
+            EventManager.AddListener<EventTeamPositionChange>(HandleTeamPositionChange);
             EventManager.AddListener<EventTokenAdded>(HandleTokenAdded);
             EventManager.AddListener<EventTokenConsumed>(HandleTokenConsumed);
             EventManager.AddListener<EventTokenNegated>(HandleTokenNegated);
@@ -613,6 +615,35 @@ namespace DD2A11y.Game {
             if (skillName != null && target != null) {
                 _pending.Add(S.CombatUsedSkill(Actors.SpokenName(performer), skillName, target));
             }
+        }
+
+        // A combatant changed rank ("Sacrificial Forward 1"). The battlefield conveys movement
+        // only by sliding the model, so the movement word is the game's own skill-tooltip
+        // vocabulary: Forward/Back for a move the actor's own side made, Pull/Knockback for one
+        // forced by the other team. The move's source is stamped only on the actor the effect
+        // targeted, so teammates displaced by the slide (and round-start sorting, whose events
+        // carry no source) stay silent - the same gate the game's own move barks use.
+        private static void HandleTeamPositionChange(EventTeamPositionChange evt) {
+            if (!InCombat || !evt.m_IsMoveEffectsValid || evt.m_SourceType == null) {
+                return;
+            }
+            var moved = Actors.Get(evt.m_ActorGuid);
+            string name = Actors.SpokenName(moved);
+            int delta = evt.m_NewTeamPosition - evt.m_PreviousTeamPosition;
+            if (name == null || delta == 0) {
+                return;
+            }
+            var source = Actors.Get(evt.m_SourceActorGuid);
+            bool forced = source != null && source.TeamIndex != moved.TeamIndex;
+            string key = delta < 0
+                ? (forced ? "effect_tooltip_target_forward" : "effect_tooltip_move_forward")
+                : (forced ? "effect_tooltip_target_backward" : "effect_tooltip_move_backward");
+            string text = GameLoc.TryGet(key);
+            if (text == null) {
+                Plugin.Log.LogWarning($"CombatEvents: movement key \"{key}\" has no localized text");
+                return;
+            }
+            _pending.Add(S.CombatMoved(name, string.Format(text, System.Math.Abs(delta))));
         }
     }
 }

@@ -182,6 +182,7 @@ CombatTookDamageOne = {0} erlitt Schaden
 CombatDied = {0} gestorben
 CombatDeathsDoor = {0} an der Schwelle des Todes
 CombatUsedSkill = {0} wandte {1} auf {2} an
+CombatMoved = {0} {1}
 CombatGained = {0} erhielt {1}
 CombatResisted = {0} widerstand {1}
 CombatTurnOrder = Zugreihenfolge, {0}

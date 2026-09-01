@@ -1802,6 +1802,14 @@ line, as does the interceptor named by a guarded pick's preview. Covered:
   reads "Last Played" everywhere, the song part staying in the combatant buffer's tooltip
   line, exactly the sighted hover); the target preview's removes/steals/converts names take
   the same fallback.
+- Rank movement (2026-09-01, user report: The Flame Spreads - a pure self-move skill - played
+  only the slide sound): every resolved move speaks as the mover's name plus the game's own
+  skill-tooltip movement vocabulary, "Sacrificial Forward 1" / "Audrey Knockback 2" -
+  Forward/Back when the moved actor's own side made the move, Pull/Knockback when the other
+  team forced it (`EventTeamPositionChange`, the event the game's slide animation and move
+  barks consume). The move's source is stamped only on the actor the effect targeted, so
+  teammates displaced by the slide, round-start sorting, and death compaction stay silent -
+  the same gate the game's move barks use. Shuffle victims speak their resulting direction.
 - Retreat outcomes, wave starts, and the final round (all three via the game's own pop-text
   strings), wounds, affinity changes ("Dismas and Paracelsus, affinity +1"), barks ("Dismas: I
   line 'em up..."), hero objective completions, and tutorial/message toasts shown over combat

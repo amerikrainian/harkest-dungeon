@@ -182,6 +182,7 @@ CombatTookDamageOne = {0}受到伤害
 CombatDied = {0}死亡
 CombatDeathsDoor = {0}命悬一线
 CombatUsedSkill = {0}对{2}使用{1}
+CombatMoved = {0} {1}
 CombatGained = {0}获得{1}
 CombatResisted = {0}抵抗了{1}
 CombatTurnOrder = 行动顺序，{0}

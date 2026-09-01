@@ -182,6 +182,7 @@ CombatTookDamageOne = {0}にダメージ
 CombatDied = {0}が死亡
 CombatDeathsDoor = {0}は瀕死
 CombatUsedSkill = {0}が{2}に{1}を使用
+CombatMoved = {0} {1}
 CombatGained = {0}に{1}が付与
 CombatResisted = {0}が{1}に抵抗
 CombatTurnOrder = ターン順、{0}

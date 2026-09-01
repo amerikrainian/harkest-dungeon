@@ -4,6 +4,7 @@
 
 - An icon standing right beside its own word no longer doubles that word.
 - In the tutorial archive, N jumps to the first entry still marked New.
+- Rank movement in combat is now announced.
 
 ## V0.3.8
 

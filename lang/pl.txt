@@ -182,6 +182,7 @@ CombatTookDamageOne = {0} otrzymuje obrażenia
 CombatDied = {0} ginie
 CombatDeathsDoor = {0} u wrót śmierci
 CombatUsedSkill = {0} używa {1} na {2}
+CombatMoved = {0} {1}
 CombatGained = {0} otrzymuje {1}
 CombatResisted = {0} odpiera {1}
 CombatTurnOrder = kolejność tur, {0}
