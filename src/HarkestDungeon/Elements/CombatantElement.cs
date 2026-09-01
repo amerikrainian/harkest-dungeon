@@ -19,8 +19,9 @@ using S = DD2A11y.Core.Strings.Strings;
 namespace DD2A11y.Elements {
     /// <summary>
     /// One combatant on the battlefield: name (the turn-order form - a name several living
-    /// teammates share carries its rank, "Lost Soul 2"), with rank and HP - an ordained (blessed) one
-    /// leads with the word, the game's portrait icon ahead of the name. While a skill is
+    /// teammates share carries its rank, "Lost Soul 2"), with rank, HP, and its visible token
+    /// stacks ("Combo", "Block x2" - the pips a sighted player sees beside the model) - an
+    /// ordained (blessed) one leads with the word, the game's portrait icon ahead of the name. While a skill is
     /// waiting for its target, validity rides as audio (the screen's beeps): an invalid
     /// target's line leads with the reason it cannot be hit, a valid one ends with the game's
     /// own hit/crit/heal preview. Enter sends the game's own actor-pick event (the mouse
@@ -69,7 +70,7 @@ namespace DD2A11y.Elements {
                 }
                 string preview = PickPending(out var performer, out _) && Targeting.IsValidTarget(performer, _guid)
                     ? Targeting.PreviewText(performer, _guid) : null;
-                return SpokenLine.Join(RankText(actor), HpText(actor), preview);
+                return SpokenLine.Join(RankText(actor), HpText(actor), TokensText(actor), preview);
             }
         }
 
@@ -132,9 +133,8 @@ namespace DD2A11y.Elements {
 
         // ---- Glance hotkeys (spoken in place, focus stays put) ----
 
-        /// <summary>The bare-hotkey glance: the scroll-over read without the rank word (the
-        /// keys map to the battlefield row's slots left to right), plus a hero's
-        /// stress.</summary>
+        /// <summary>The bare-hotkey glance: name, HP, and a hero's stress (the keys map to the
+        /// battlefield row's slots left to right); effects belong to the Shift glance.</summary>
         public string GlanceLine() {
             var actor = Actor;
             if (actor == null) {
@@ -156,18 +156,7 @@ namespace DD2A11y.Elements {
             }
             var positives = new List<string>();
             var negatives = new List<string>();
-            foreach (var stack in TokenIconBhv.ConvertInstancesToStacks(Actors.VisibleTokens(actor))) {
-                var definition = stack.Key.Definition;
-                string name = TokenDescription.GetUnglyphedNameString(definition);
-                if (stack.Value > 1) {
-                    name = S.CombatTokenCount(name, stack.Value);
-                }
-                int duration = stack.Key.GetDurationAmount();
-                if (definition.m_ShowCombatDuration && duration > 1) {
-                    name += " (" + DurationDescription.GetDurationText(definition.DurationType, duration) + ")";
-                }
-                (definition.IsNegative ? negatives : positives).Add(name);
-            }
+            AppendTokenStacks(actor, positives, negatives);
             var dots = actor.DotContainer?.GetInstances();
             if (dots != null && dots.Count > 0) {
                 // The game's condensed dot text serves one type at a time (each portrait
@@ -202,6 +191,34 @@ namespace DD2A11y.Elements {
             }
             positives.AddRange(negatives);
             return SpokenLine.Join(positives.ToArray());
+        }
+
+        // Each visible token stack as a terse entry - the token name with its stack count
+        // ("Block x2") and its shown duration when either says more than 1 - sorted into the
+        // caller's positive and negative lists.
+        private static void AppendTokenStacks(ActorInstance actor, List<string> positives, List<string> negatives) {
+            foreach (var stack in TokenIconBhv.ConvertInstancesToStacks(Actors.VisibleTokens(actor))) {
+                var definition = stack.Key.Definition;
+                string name = TokenDescription.GetUnglyphedNameString(definition);
+                if (stack.Value > 1) {
+                    name = S.CombatTokenCount(name, stack.Value);
+                }
+                int duration = stack.Key.GetDurationAmount();
+                if (definition.m_ShowCombatDuration && duration > 1) {
+                    name += " (" + DurationDescription.GetDurationText(definition.DurationType, duration) + ")";
+                }
+                (definition.IsNegative ? negatives : positives).Add(name);
+            }
+        }
+
+        // The scroll-over form of the token pips: every visible stack, positives first, as one
+        // joined run; null when the combatant carries none.
+        private static string TokensText(ActorInstance actor) {
+            var positives = new List<string>();
+            var negatives = new List<string>();
+            AppendTokenStacks(actor, positives, negatives);
+            positives.AddRange(negatives);
+            return positives.Count == 0 ? null : SpokenLine.Join(positives.ToArray());
         }
 
         // The actor's dots split into one list per dot type, container order both across

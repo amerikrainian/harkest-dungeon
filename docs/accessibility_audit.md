@@ -1629,8 +1629,10 @@ Top to bottom:
   front line enter the party strip at its remembered-else-first child - a jump to rank 4
   whenever a turn rebuild had cleared the strip's memory). The per-team readers (team
   buffers, glances, the target snap) filter the row by each element's side - the
-  position IS the side (labels are name + Rank + HP read
-  live; a name shared by several living enemies carries a stable ordinal - "Lost Soul 2" -
+  position IS the side (labels are name + Rank + HP + visible token stacks read live
+  ("Lost Soul 2, Rank: 2, HP 9/13, Combo"; tokens 2026-09-01, user report - the pips a
+  sighted player sees beside the model, positives first, in the Shift glance's terse
+  format; dots and buffs stay one Shift away); a name shared by several living enemies carries a stable ordinal - "Lost Soul 2" -
   on focus, in the team buffers, and in the glances alike. Ordinals count 1..N in
   first-sight position order, not by rank (changed 2026-08-12: two Widows at ranks 3 and 4
   read Widow 1 and Widow 2): a position shuffle never renames anyone, a death compacts the
