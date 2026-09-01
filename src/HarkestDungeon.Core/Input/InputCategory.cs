@@ -26,5 +26,9 @@ namespace DD2A11y.Core.Input {
         /// <summary>Road-story keys (the focused choice's hero vitals), declared by the story
         /// screen.</summary>
         Story,
+
+        /// <summary>Tutorial-archive keys (the jump to the first unviewed entry), declared by
+        /// the archive screen.</summary>
+        Archive,
     }
 }

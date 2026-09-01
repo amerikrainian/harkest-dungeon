@@ -348,6 +348,7 @@ namespace DD2A11y.Dev {
                 case "inspector-next": return _runtime.Input.FireAction("combat.inspector.next") ? "ok" : "unhandled";
                 case "grab": return _runtime.Input.FireAction("ui.grab") ? "ok" : "unhandled";
                 case "place-one": return _runtime.Input.FireAction("ui.place.one") ? "ok" : "unhandled";
+                case "archive-new": return _runtime.Input.FireAction("archive.new") ? "ok" : "unhandled";
                 default: return "unknown verb " + verb;
             }
         }

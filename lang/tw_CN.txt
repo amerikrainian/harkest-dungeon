@@ -261,6 +261,7 @@ InputDiscard = 丟棄物品
 InputRename = 重新命名英雄
 InputReroll = 擲出新的英雄名字
 InputVitrine = 切換地獄火焰陳列櫃
+InputArchiveNew = 跳至第一個新教學
 InputCombatEnemy = 敵人{0}狀態
 InputCombatEnemyEffects = 敵人{0}增益與減益效果
 InputCombatEnemyResists = 敵人{0}抗性

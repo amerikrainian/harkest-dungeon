@@ -51,6 +51,7 @@ namespace DD2A11y {
         private CombatScreen _combat;
         private AcademicScreen _academic;
         private StoryScreen _storyScreen;
+        private TutorialArchiveScreen _archive;
         private DrivingScreen _driving;
         private string _lastTickError;
         private float _lastTickErrorTime;
@@ -156,7 +157,8 @@ namespace DD2A11y {
             Router.Register(new BossSelectScreen());
             Router.Register(new DoomResetScreen());
             Router.Register(new TokenGlossaryScreen());
-            Router.Register(new TutorialArchiveScreen());
+            _archive = new TutorialArchiveScreen();
+            Router.Register(_archive);
             Router.Register(new PatchNotesScreen(Navigator));
             Router.Register(new InnResultsScreen());
             // The kingdom map's cell panels are stack screens over the map; the map itself
@@ -508,6 +510,10 @@ namespace DD2A11y {
                         .Instance.ToggleTorchCompletionScreen();
                 }
             }, InputCategory.Roster).AddBinding(K(Key.Z));
+            // The tutorial archive's jump to its first unviewed entry; silent once every
+            // entry has been viewed.
+            Reg("archive.new", () => S.InputArchiveNew, () => _archive.FocusFirstNew(Navigator),
+                InputCategory.Archive).AddBinding(K(Key.N));
             // Discard the focused item (the game's shift-click); the element advertises the
             // action only where the game allows the discard, so anything else answers
             // "unavailable" rather than silence.

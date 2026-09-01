@@ -16,12 +16,18 @@ namespace DD2A11y.Screens {
     /// reading its title, prefixed "New" while the game shows its unviewed notification icon.
     /// Enter is the game's own click: the entry's text opens in the side panel and is spoken
     /// in full, then stays reviewable line by line in the buffer; the game marks the entry
-    /// viewed and saves. Escape closes through the screen's own teardown.
+    /// viewed and saves. N lands on the first entry still marked New. Escape closes through
+    /// the screen's own teardown.
     /// </summary>
     public sealed class TutorialArchiveScreen : GameScreen {
+        private static readonly Core.Input.InputCategory[] Categories =
+            { Core.Input.InputCategory.Archive, Core.Input.InputCategory.UI };
+
         private TutorialArchiveWidgetBhv _widget;
         private Container _root;
         private int _builtSignature;
+
+        public override Core.Input.InputCategory[] InputCategories => Categories;
 
         public override string Name => GameLoc.TryGet("tutorial_menu_title") ?? S.ScreenGeneric;
 
@@ -50,6 +56,17 @@ namespace DD2A11y.Screens {
                 return true;
             }
             return false;
+        }
+
+        /// <summary>Focuses and speaks the first entry the game still marks unviewed; with
+        /// none left the key is silent.</summary>
+        public void FocusFirstNew(TraditionalNavigator navigator) {
+            foreach (var element in _root.Children) {
+                if (element is TutorialOptionElement option && option.IsNew) {
+                    navigator.Focus(option, announce: true);
+                    return;
+                }
+            }
         }
 
         private void Populate(TutorialArchiveWidgetBhv widget) {

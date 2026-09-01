@@ -3,6 +3,7 @@
 ## V0.3.9
 
 - An icon standing right beside its own word no longer doubles that word.
+- In the tutorial archive, N jumps to the first entry still marked New.
 
 ## V0.3.8
 

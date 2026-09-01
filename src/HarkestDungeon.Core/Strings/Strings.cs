@@ -578,6 +578,8 @@ namespace DD2A11y.Core.Strings {
             D("InputReroll", "Roll a new hero name"),
             // The crossroads vitrine key, mirroring the game's own StageCoach hotkey.
             D("InputVitrine", "Toggle Infernal Flame Vitrine"),
+            // The tutorial archive's jump to its first unviewed entry.
+            D("InputArchiveNew", "Jump to first new tutorial"),
             // The combat glance hotkeys, one action per battlefield slot in rank order;
             // {0} = the slot number. Bare key = name and health, Shift = buffs and debuffs,
             // Ctrl = resistances.
@@ -912,6 +914,7 @@ namespace DD2A11y.Core.Strings {
         public static string InputRename => T("InputRename");
         public static string InputReroll => T("InputReroll");
         public static string InputVitrine => T("InputVitrine");
+        public static string InputArchiveNew => T("InputArchiveNew");
         public static string InputCombatEnemy(int slot) => F("InputCombatEnemy", slot);
         public static string InputCombatEnemyEffects(int slot) => F("InputCombatEnemyEffects", slot);
         public static string InputCombatEnemyResists(int slot) => F("InputCombatEnemyResists", slot);

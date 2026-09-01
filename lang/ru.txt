@@ -261,6 +261,7 @@ InputDiscard = Выбросить предмет
 InputRename = Переименовать героя
 InputReroll = Выбрать случайное имя героя
 InputVitrine = Переключить витрину адского пламени
+InputArchiveNew = Перейти к первому новому разделу обучения
 InputCombatEnemy = Состояние врага {0}
 InputCombatEnemyEffects = Усиления и ослабления врага {0}
 InputCombatEnemyResists = Сопротивления врага {0}

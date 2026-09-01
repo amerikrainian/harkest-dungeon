@@ -41,11 +41,13 @@ namespace DD2A11y.Elements {
             _context = option.GetComponent<DataContextBhv>();
         }
 
+        /// <summary>Whether the game still shows the entry's unviewed notification icon.</summary>
+        public bool IsNew => _context.GetBoolValue("notification_icon");
+
         public override string Label {
             get {
                 string title = Title() ?? base.Label;
-                return _context.GetBoolValue("notification_icon")
-                    ? SpokenLine.Join(S.TutorialNew, title) : title;
+                return IsNew ? SpokenLine.Join(S.TutorialNew, title) : title;
             }
         }
 

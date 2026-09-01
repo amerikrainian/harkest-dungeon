@@ -261,6 +261,7 @@ InputDiscard = 아이템 버리기
 InputRename = 영웅 이름 변경
 InputReroll = 영웅 이름 새로고침
 InputVitrine = 지옥불 진열장 전환
+InputArchiveNew = 첫 번째 신규 튜토리얼로 이동
 InputCombatEnemy = 적 {0} 상태
 InputCombatEnemyEffects = 적 {0} 강화 및 약화
 InputCombatEnemyResists = 적 {0} 저항

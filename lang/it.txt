@@ -261,6 +261,7 @@ InputDiscard = Scarta oggetto
 InputRename = Rinomina eroe
 InputReroll = Sorteggia un nuovo nome per l'eroe
 InputVitrine = Mostra/nascondi la Vetrina della Fiamma Infernale
+InputArchiveNew = Vai al primo nuovo tutorial
 InputCombatEnemy = Stato del nemico {0}
 InputCombatEnemyEffects = Buff e debuff del nemico {0}
 InputCombatEnemyResists = Resistenze del nemico {0}

@@ -261,6 +261,7 @@ InputDiscard = 丢弃物品
 InputRename = 重命名英雄
 InputReroll = 重骰英雄名字
 InputVitrine = 切换渊狱之炬总览
+InputArchiveNew = 跳至第一个新教程
 InputCombatEnemy = 敌人{0}状态
 InputCombatEnemyEffects = 敌人{0}增益与减益
 InputCombatEnemyResists = 敌人{0}抗性

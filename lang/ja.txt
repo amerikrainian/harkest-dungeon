@@ -261,6 +261,7 @@ InputDiscard = アイテムを捨てる
 InputRename = 英雄の名前を変更
 InputReroll = 英雄の名前を振り直す
 InputVitrine = 煉獄の炎の陳列棚を切り替え
+InputArchiveNew = 最初の新着チュートリアルへ移動
 InputCombatEnemy = 敵{0}の状態
 InputCombatEnemyEffects = 敵{0}のバフとデバフ
 InputCombatEnemyResists = 敵{0}の耐性

@@ -46,6 +46,7 @@ Every mod key can be rebound from the game's Settings screen, **Mod keys** tab, 
 | Rename | R | Unbound | Rename the focused hero (type, Enter to accept) |
 | Reroll name | Shift+R | Unbound | Roll the focused hero a random name |
 | Vitrine | Z | Unbound | Toggle the Infernal Flame Vitrine at the crossroads |
+| First new tutorial | N | Unbound | Jump to the first entry still marked New in the tutorial archive |
 
 ## Combat
 

@@ -261,6 +261,7 @@ InputDiscard = Викинути предмет
 InputRename = Перейменувати героя
 InputReroll = Згенерувати нове ім'я героя
 InputVitrine = Перемкнути вітрину пекельного полум'я
+InputArchiveNew = Перейти до першого нового розділу навчання
 InputCombatEnemy = Стан ворога {0}
 InputCombatEnemyEffects = Посилення та ослаблення ворога {0}
 InputCombatEnemyResists = Опори ворога {0}

@@ -261,6 +261,7 @@ InputDiscard = Descartar item
 InputRename = Renomear herói
 InputReroll = Sortear um novo nome de herói
 InputVitrine = Alternar a Vitrine da Chama Infernal
+InputArchiveNew = Ir para o primeiro tutorial novo
 InputCombatEnemy = Estado do inimigo {0}
 InputCombatEnemyEffects = Benefícios e penalidades do inimigo {0}
 InputCombatEnemyResists = Resistências do inimigo {0}

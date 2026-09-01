@@ -261,6 +261,7 @@ InputDiscard = Gegenstand wegwerfen
 InputRename = Held umbenennen
 InputReroll = Neuen Heldennamen auswürfeln
 InputVitrine = Vitrine der Höllenflamme umschalten
+InputArchiveNew = Zum ersten neuen Tutorial springen
 InputCombatEnemy = Status von Feind {0}
 InputCombatEnemyEffects = Stärkungen und Schwächungen von Feind {0}
 InputCombatEnemyResists = Resistenzen von Feind {0}

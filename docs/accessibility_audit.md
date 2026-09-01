@@ -589,6 +589,9 @@ own "Archive" title (`tutorial_menu_title`).
   description back (composed from the same `tutorial_t{eventId}_*` loc keys, not the
   frame-late panel TMPs), and the focused entry's buffer carries the description line by line
   while it is the one on display. Escape closes through the screen's own teardown.
+- **N jumps to the first entry still marked New** (`archive.new`, the Archive input category,
+  rebindable like every mod key): focus lands there and the entry is spoken; with nothing
+  unviewed the key is silent.
 
 > **Note:** These options **activate on uGUI selection** (`OnSelect` drives
 > `ViewTutorialType` - the game's controller path), so browsing must never mirror our focus
