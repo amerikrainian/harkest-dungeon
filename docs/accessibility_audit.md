@@ -833,9 +833,14 @@ Live-verified 2026-07-23. The pre-run hub (the HERO_SELECT mode - `HeroSelectBhv
   own title, and the opened screen has its own reader, 4.3.3), **Embark** (appears once
   all four ranks are filled - drives the game's own `ConfirmRosterSelection`, including its
   unequipped-skills confirmation dialog), and **Random Party**.
-- Each party slot LEADS WITH ITS RANK ("rank 1, Highwayman" / "rank 1, empty slot";
+- Each party slot LEADS WITH ITS RANK ("rank 1, Dismas, Highwayman" / "rank 1, empty slot";
   live-verified 2026-08-02) - rank 1 is the front line, the same numbering combat uses, and
-  it is what tells the four otherwise identical empty slots apart. The slots run rank 4 to
+  it is what tells the four otherwise identical empty slots apart. A hero's identity is
+  name then class (2026-09-01, user report: combat led with the name, the crossroads read
+  class only; the shown-hero panel the landing drives displays that name - the rename
+  field's text - so it is on screen for the focused hero; live-verified: pool "Bigby,
+  Abomination", locked classes and empty slots unchanged, no doubled class line in the
+  buffer, "grabbed Bigby, Abomination"). The slots run rank 4 to
   1 left to right (reordered 2026-08-08), the same direction the combat battlefield row
   walks the party. Pool heroes keep their bare name, and a grab announces the hero, not
   the rank.

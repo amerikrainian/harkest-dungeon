@@ -17,8 +17,10 @@ using UnityEngine.UI;
 namespace DD2A11y.Elements {
     /// <summary>
     /// A hero slot at the crossroads: a party rank (the game calls these roster slots) or a hero
-    /// in the selectable pool. The label is the hero's class name from the game's own loc key;
-    /// the slot's tooltip detail (a locked hero's flavor and traits) lives in the buffer. Enter
+    /// in the selectable pool. The label is the hero's name then class ("Dismas, Highwayman" -
+    /// the class from the game's own loc key, the name from the shown-hero panel the landing
+    /// drives); the slot's tooltip detail (a locked hero's flavor and traits) lives in the
+    /// buffer. Enter
     /// runs the game's own quick-transfer (into the party / back out); the hero sheet opens via
     /// the inspect action, and precise moves go through the screen's grab-and-place, which
     /// drives the game's drop logic.
@@ -73,15 +75,20 @@ namespace DD2A11y.Elements {
         /// draggability rule: a real, unlocked hero).</summary>
         public bool CanGrab => Slot.IsOccupied && !Slot.IsLocked();
 
-        /// <summary>The occupant's name alone (or the empty/locked stand-in), without the rank
-        /// prefix - what a grab announces and what the buffer dedupes tooltip lines against.</summary>
+        /// <summary>The occupant's identity (or the empty/locked stand-in), without the rank
+        /// prefix - what a grab announces and what the buffer dedupes tooltip lines against.
+        /// A hero reads name then class ("Dismas, Highwayman"), the name combat leads with;
+        /// landing shows the hero, so the display panel holds that name (the rename field's
+        /// text) for a sighted player.</summary>
         public string HeroName {
             get {
                 if (Slot.IsOccupied) {
                     var instance = Slot.ActorInstance;
-                    string name = instance == null ? null : GameLoc.TryGet(instance.ActorDataId);
-                    if (!string.IsNullOrEmpty(name)) {
-                        return name;
+                    string className = instance == null ? null : GameLoc.TryGet(instance.ActorDataId);
+                    if (!string.IsNullOrEmpty(className)) {
+                        string name = instance.ActorName;
+                        return string.IsNullOrEmpty(name) || name == className
+                            ? className : SpokenLine.Join(name, className);
                     }
                 }
                 if (Slot.IsLocked()) {
@@ -94,9 +101,9 @@ namespace DD2A11y.Elements {
             }
         }
 
-        // A party slot leads with its battle position ("rank 1, Highwayman"): rank 1 is the
-        // front line, the same numbering combat uses, and it is what tells the four otherwise
-        // identical empty slots apart. Pool heroes have no rank.
+        // A party slot leads with its battle position ("rank 1, Dismas, Highwayman"): rank 1
+        // is the front line, the same numbering combat uses, and it is what tells the four
+        // otherwise identical empty slots apart. Pool heroes have no rank.
         public override string Label
             => Slot.IsRosterSlot
                 ? SpokenLine.Join(S.CrossroadsRank(Slot.RosterIndex + 1), HeroName)
@@ -178,6 +185,9 @@ namespace DD2A11y.Elements {
 
         protected override IEnumerable<string> GetDetailLines() {
             string label = TextFilter.Clean(HeroName);
+            // The card tooltip's own first line is the bare class name, already inside the
+            // head's name-then-class identity.
+            string className = TextFilter.Clean(GameLoc.TryGet(ClassId()) ?? string.Empty);
             string hoverHint = GameLoc.TryGet("hero_select_actor_hover_label");
             foreach (var tooltip in new[] { TooltipField(Slot), LockedTooltipField(Slot) }) {
                 string text = tooltip == null ? null : TooltipReader.TextOf(tooltip);
@@ -186,8 +196,8 @@ namespace DD2A11y.Elements {
                 }
                 foreach (var line in text.Split('\n')) {
                     string clean = TextFilter.Clean(line);
-                    if (clean.Length == 0 || clean == label) {
-                        continue; // the name line already leads the focus text
+                    if (clean.Length == 0 || clean == label || (className.Length > 0 && clean == className)) {
+                        continue; // the identity line already leads the focus text
                     }
                     if (hoverHint != null && clean == TextFilter.Clean(hoverHint)) {
                         continue; // "click to select" mouse instructions are noise here
