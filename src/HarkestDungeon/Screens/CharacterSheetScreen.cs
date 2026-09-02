@@ -34,7 +34,9 @@ namespace DD2A11y.Screens {
     /// lands on its first item. Escape closes through the sheet's own
     /// teardown. While the game's pick-a-slot holds a bag item for this sheet, the sheet keeps
     /// the surface over the locked bag with focus on the destination slot, Enter places through
-    /// the slot's own submit, and Escape aborts the pick instead of closing.
+    /// the slot's own submit, Escape aborts the pick instead of closing, and a transient first
+    /// line reads "Equipping" with the held item's name - the spoken form of the item riding
+    /// the cursor.
     /// </summary>
     public sealed class CharacterSheetScreen : GameScreen {
         private static readonly AccessTools.FieldRef<CharacterSheetUiBhv, CharacterSheetTopBarUiBhv> TopBarField =
@@ -146,6 +148,11 @@ namespace DD2A11y.Screens {
         public override Container BuildRoot(object target) {
             var sheet = (CharacterSheetUiBhv)target;
             _root = new RootContainer(ContainerShape.VerticalList, back: Close);
+            // The armed pick's held item ("Equipping Sun Cracked Pendant") - the item riding
+            // the cursor for sighted players. The line is null while no pick is armed, so the
+            // element skips itself; while armed it stands first, one Home away from the
+            // destination slot the entry lands on.
+            _root.Add(new ReadoutElement(Game.SlotSelect.EquippingLine));
             _root.Add(new HeroHeaderElement(sheet));
 
             RebuildTabIndices(sheet);

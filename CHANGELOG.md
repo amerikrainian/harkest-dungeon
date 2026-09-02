@@ -6,7 +6,8 @@
 - In the tutorial archive, N jumps to the first entry still marked New.
 - Rank movement in combat is now announced.
 - Scrolling over a combatant now speaks its visible tokens after its HP.
-- By popular demand, empty stagecoach slots now say what they are and that they are empty.
+- By popular demand, empty stagecoach slots now say what they are and that they are empty as opposed to just reading item slot.
+- Also by popular demand, the game's equipped sheets for e.g., the coach or heroes, now include an explicit element telling you what you're about to equip at the top of the respective screens.
 - Pressing Enter on a stagecoach item and then Escape on the Wainwright no longer strands the item reading unavailable.
 
 ## V0.3.8

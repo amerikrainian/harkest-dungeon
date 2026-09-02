@@ -150,6 +150,7 @@ CrossroadsInParty = dans le groupe
 Grabbed = {0} saisi
 GrabCancelled = saisie annulée
 CannotPlace = placement impossible ici
+Equipping = Équiper : {0}
 SheetSpeed = vitesse {0}
 SheetCombatItems = objets de combat
 PanelEmpty = vide

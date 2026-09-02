@@ -150,6 +150,7 @@ CrossroadsInParty = 已在隊伍中
 Grabbed = 已抓取{0}
 GrabCancelled = 已取消抓取
 CannotPlace = 無法放置於此
+Equipping = 裝備{0}
 SheetSpeed = 速度{0}
 SheetCombatItems = 戰鬥物品
 PanelEmpty = 空

@@ -150,6 +150,7 @@ CrossroadsInParty = у групі
 Grabbed = взято {0}
 GrabCancelled = перенесення скасовано
 CannotPlace = тут не можна розмістити
+Equipping = Додавання: {0}
 SheetSpeed = швидкість {0}
 SheetCombatItems = предмети бою
 PanelEmpty = порожньо

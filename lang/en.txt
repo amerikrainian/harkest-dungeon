@@ -152,6 +152,7 @@ CrossroadsInParty = in party
 Grabbed = grabbed {0}
 GrabCancelled = grab cancelled
 CannotPlace = cannot place here
+Equipping = Equipping {0}
 SheetSpeed = speed {0}
 SheetCombatItems = combat items
 PanelEmpty = empty

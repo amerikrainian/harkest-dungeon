@@ -150,6 +150,7 @@ CrossroadsInParty = パーティ内
 Grabbed = {0}を掴んだ
 GrabCancelled = 掴みをキャンセル
 CannotPlace = ここには置けない
+Equipping = {0}を装備
 SheetSpeed = 素早さ{0}
 SheetCombatItems = 戦闘アイテム
 PanelEmpty = 空っぽ

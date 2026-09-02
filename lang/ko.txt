@@ -150,6 +150,7 @@ CrossroadsInParty = 원정대 소속
 Grabbed = {0} 집음
 GrabCancelled = 집기 취소
 CannotPlace = 여기에 놓을 수 없음
+Equipping = {0} 장비
 SheetSpeed = 속도 {0}
 SheetCombatItems = 전투 아이템
 PanelEmpty = 비어 있음

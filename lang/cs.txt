@@ -150,6 +150,7 @@ CrossroadsInParty = v družině
 Grabbed = uchopeno: {0}
 GrabCancelled = uchopení zrušeno
 CannotPlace = sem nelze umístit
+Equipping = Dát do výbavy: {0}
 SheetSpeed = rychlost {0}
 SheetCombatItems = předměty do boje
 PanelEmpty = prázdno

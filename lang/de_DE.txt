@@ -150,6 +150,7 @@ CrossroadsInParty = in der Gruppe
 Grabbed = {0} gegriffen
 GrabCancelled = Greifen abgebrochen
 CannotPlace = hier nicht ablegbar
+Equipping = Ausrüsten: {0}
 SheetSpeed = Geschwindigkeit {0}
 SheetCombatItems = Kampfgegenstände
 PanelEmpty = leer

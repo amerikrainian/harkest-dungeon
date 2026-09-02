@@ -2181,6 +2181,17 @@ covers the read-only road sheet on Z (5.6).
   never does, so our plain close stranded the picked item locked and reading unavailable).
   One press cancels and closes, the inn re-announce as feedback; live-verified with the
   full Enter-then-Escape loop, the item reading plain again after.
+- While that pick is armed, a transient first line reads "Equipping" plus the held item's
+  name (2026-09-01; `SlotSelect.EquippingLine`, the item read live from the drag canvas it
+  rides for sighted players - the game has no text for this state anywhere). Entry lands on
+  the line, so the open reads "The Wainwright, Equipping Battered Helm"; an `EntrySettled`
+  hold until the sheet's Open state covers the pick arming a beat after the push. The
+  hero sheet carries the same line for its trinket and combat item picks (standing first,
+  skipped while unarmed via a null label; entry keeps landing on the destination slot,
+  Home reaches the line). Both live-verified. Known gap: the coach destination slot reads
+  unavailable while armed and refuses Enter (the game's own submit-during-pick path swaps
+  regardless of interactable; our activation gate stops at the greyed Selectable) - the
+  working equip path remains Enter on the empty slot's filtered-bag flow.
 
 Live-verified: full walk. Unexercised: a repair press (stats were full), equip/unequip on this
 sheet.

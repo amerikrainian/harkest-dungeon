@@ -1,6 +1,7 @@
 using Assets.Code.Data;
 using Assets.Code.Game;
 using Assets.Code.UI;
+using Assets.Code.UI.Managers;
 using Assets.Code.UI.Screens;
 using Assets.Code.Utils;
 using DD2A11y.Core.Nav;
@@ -24,8 +25,10 @@ namespace DD2A11y.Screens {
     /// livery cycler, then the upgrade slots (equip/unequip through the shared slot flow;
     /// altar-locked slots carry their lock text in the buffer). The road variant carries no
     /// wallet, repairs, or livery cycler, and its slots refuse edits through the widget's own
-    /// editable gate. Escape closes the sheet, first cancelling the armed equip pick when a
-    /// coach item's press opened it.
+    /// editable gate. While the game's equip pick is armed (a coach item's press opened the
+    /// sheet holding it), a transient first line reads "Equipping" with the held item's name -
+    /// the spoken form of the item riding the cursor - and entry lands on it. Escape closes
+    /// the sheet, first cancelling that pick.
     /// </summary>
     public sealed class WainwrightScreen : GameScreen {
         private static readonly AccessTools.FieldRef<StageCoachConfigUiBhv, DataContextBhv> ContextField =
@@ -57,6 +60,11 @@ namespace DD2A11y.Screens {
             return _sheet;
         }
 
+        // The equip pick that opened the sheet arms in the push step, a beat after the object
+        // tops the stack; announcing before then would build without the equipping line and
+        // read the coach name as the landing.
+        public override bool EntrySettled => _sheet == null || _sheet.ScreenState == UiScreenState.Open;
+
         public override Container BuildRoot(object target) {
             var sheet = (StageCoachConfigUiBhv)target;
             _root = new RootContainer(ContainerShape.VerticalList, back: () => Close(sheet));
@@ -70,7 +78,7 @@ namespace DD2A11y.Screens {
         // locked and reading unavailable in the bag. Cancel the pick, then close: one press
         // backs out of the whole flow, and the inn re-announce is the feedback.
         private static void Close(StageCoachConfigUiBhv sheet) {
-            if (SingletonMonoBehaviour<Assets.Code.UI.Managers.CommonUiBhv>.Instance.IsSelectingItemSlot) {
+            if (SingletonMonoBehaviour<CommonUiBhv>.Instance.IsSelectingItemSlot) {
                 SlotSelect.Cancel();
             }
             sheet.CloseSubscreen();
@@ -86,6 +94,14 @@ namespace DD2A11y.Screens {
         }
 
         private void Populate(StageCoachConfigUiBhv sheet) {
+            // The armed equip pick (Enter on a coach item in the bag opened this sheet holding
+            // it): sighted players see the picked item ride the cursor and the accepting slots
+            // glow, with no text anywhere. A standing first line carries the same state - entry
+            // lands on it, so the opening reads "The Wainwright, Equipping Battered Helm" - and
+            // the signature drops it the moment the pick ends.
+            if (SingletonMonoBehaviour<CommonUiBhv>.Instance.IsSelectingItemSlot) {
+                _root.Add(new ReadoutElement(SlotSelect.EquippingLine));
+            }
             _root.Add(new ReadoutElement(
                 () => Singleton<GameTypeMgr>.Instance.StageCoach.GetStageCoachName()));
 
@@ -144,9 +160,10 @@ namespace DD2A11y.Screens {
             }
         }
 
-        // Repair buttons and slot widgets appear and vanish with the coach's state.
+        // Repair buttons and slot widgets appear and vanish with the coach's state, and the
+        // equipping line with the armed pick.
         private static int Signature(StageCoachConfigUiBhv sheet) {
-            int signature = 17;
+            int signature = SingletonMonoBehaviour<CommonUiBhv>.Instance.IsSelectingItemSlot ? 19 : 17;
             foreach (var repair in sheet.GetComponentsInChildren<RunValueTransactionButtonBhv>(includeInactive: false)) {
                 signature = signature * 31 + repair.GetInstanceID();
             }

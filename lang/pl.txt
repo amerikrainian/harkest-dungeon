@@ -150,6 +150,7 @@ CrossroadsInParty = w drużynie
 Grabbed = podniesiono {0}
 GrabCancelled = podnoszenie anulowane
 CannotPlace = nie można tu umieścić
+Equipping = Dodawanie do ekwipunku: {0}
 SheetSpeed = prędkość {0}
 SheetCombatItems = przedmioty bitewne
 PanelEmpty = pusto

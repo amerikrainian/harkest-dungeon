@@ -1,8 +1,11 @@
+using Assets.Code.Item;
 using Assets.Code.Item.Events;
 using Assets.Code.UI.Canvases;
+using Assets.Code.UI.Items;
 using Assets.Code.UI.Managers;
 using Assets.Code.UI.Widgets;
 using Assets.Code.Utils;
+using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Game {
     /// <summary>
@@ -35,6 +38,21 @@ namespace DD2A11y.Game {
         public static void Cancel() {
             EventEndInventoryItemSlotSelect.Trigger();
             SingletonMonoBehaviour<DragCanvasUiBhv>.Instance.EndSlotSelect();
+        }
+
+        /// <summary>The armed pick's spoken line ("Equipping Battered Helm") - the held item
+        /// rides the drag canvas for sighted players until a slot is pressed, and this is its
+        /// spoken form. Read live; null while no pick is armed, so an element carrying it
+        /// vanishes from the walk on its own.</summary>
+        public static string EquippingLine() {
+            if (!SingletonMonoBehaviour<CommonUiBhv>.HasInstance()
+                || !SingletonMonoBehaviour<CommonUiBhv>.Instance.IsSelectingItemSlot) {
+                return null;
+            }
+            var held = SingletonMonoBehaviour<DragCanvasUiBhv>.Instance.DragElement as InventoryItemBhv;
+            var item = held == null ? null : held.Item;
+            return ItemUtils.IsValid(item)
+                ? S.Equipping(ItemDescription.GetTitle(item.GetItemDefinition())) : null;
         }
     }
 }

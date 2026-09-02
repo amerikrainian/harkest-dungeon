@@ -356,6 +356,10 @@ namespace DD2A11y.Core.Strings {
             D("GrabCancelled", "grab cancelled"),
             // Spoken when the grabbed hero or item cannot be placed on the focused target.
             D("CannotPlace", "cannot place here"),
+            // The standing line while the game's equip pick is armed on a sheet (the picked
+            // item rides the cursor for sighted players until a slot is pressed); {0} = the
+            // held item's name.
+            D("Equipping", "Equipping {0}"),
 
             // Hero sheet. The speed stat readout; {0} = the number. The game shows this stat as a
             // bare icon with no name string to reuse.
@@ -799,6 +803,7 @@ namespace DD2A11y.Core.Strings {
         public static string Grabbed(string what) => F("Grabbed", what);
         public static string GrabCancelled => T("GrabCancelled");
         public static string CannotPlace => T("CannotPlace");
+        public static string Equipping(string what) => F("Equipping", what);
 
         public static string SheetSpeed(int value) => F("SheetSpeed", value);
         public static string SheetCombatItems => T("SheetCombatItems");

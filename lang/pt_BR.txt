@@ -150,6 +150,7 @@ CrossroadsInParty = no grupo
 Grabbed = pegou {0}
 GrabCancelled = movimento cancelado
 CannotPlace = impossível colocar aqui
+Equipping = Equipar: {0}
 SheetSpeed = velocidade {0}
 SheetCombatItems = itens de combate
 PanelEmpty = vazio
