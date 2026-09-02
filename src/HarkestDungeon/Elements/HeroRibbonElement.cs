@@ -9,11 +9,12 @@ using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Elements {
     /// <summary>
-    /// One hero on a ribbon strip (the road's party bar, the lair advance dialog): name with HP
-    /// and stress from the live actor, every ribbon tooltip (the status bar's effects, diseases)
-    /// as buffer lines. Enter is the ribbon's own right-click inspect - the hero's character
-    /// sheet; on the road, Space grabs the hero for a marching-order move, which the driving
-    /// screen routes.
+    /// One hero on a ribbon strip (the road's party bar, the lair advance dialog): name with
+    /// rank (the marching order the strip draws, combat's own caption), HP, and stress from
+    /// the live actor, every ribbon tooltip (the status bar's effects, diseases) as buffer
+    /// lines. Enter is the ribbon's own right-click inspect - the hero's character sheet; on
+    /// the road, Space grabs the hero for a marching-order move, which the driving screen
+    /// routes.
     /// </summary>
     public sealed class HeroRibbonElement : UIElement {
         private readonly HeroRibbonBhv _ribbon;
@@ -37,7 +38,7 @@ namespace DD2A11y.Elements {
         public override string Value {
             get {
                 var actor = Actor;
-                return SpokenLine.Join(Actors.StatusLine(actor),
+                return SpokenLine.Join(Actors.RankText(actor), Actors.StatusLine(actor),
                     actor != null && !actor.ViewedCharacterSheetNotifications ? S.TutorialNew : null);
             }
         }

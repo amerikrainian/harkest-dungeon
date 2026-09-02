@@ -70,7 +70,7 @@ namespace DD2A11y.Elements {
                 }
                 string preview = PickPending(out var performer, out _) && Targeting.IsValidTarget(performer, _guid)
                     ? Targeting.PreviewText(performer, _guid) : null;
-                return SpokenLine.Join(RankText(actor), HpText(actor), TokensText(actor), preview);
+                return SpokenLine.Join(Actors.RankText(actor), HpText(actor), TokensText(actor), preview);
             }
         }
 
@@ -89,13 +89,6 @@ namespace DD2A11y.Elements {
                 && Targeting.TryGetPick(out performer, out skill);
         }
 
-        // The game's rank, not the team-list index - a size-2 monster spans two ranks, so the
-        // combatant behind it stands at rank 3, not slot 2.
-        private static string RankText(ActorInstance actor) {
-            string format = GameLoc.TryGet("effect_tooltip_position");
-            int rank = actor.GetFrontRank() + 1;
-            return format == null ? rank.ToString() : string.Format(format, rank);
-        }
 
         private static string HpText(ActorInstance actor) {
             string format = GameLoc.TryGet("status_bar_health");
@@ -123,7 +116,7 @@ namespace DD2A11y.Elements {
             }
             string preview = PickPending(out var performer, out _) && Targeting.IsValidTarget(performer, _guid)
                 ? Targeting.PreviewText(performer, _guid) : null;
-            return SpokenLine.Join(OrdainedWord(actor), Label, RankText(actor), HpText(actor),
+            return SpokenLine.Join(OrdainedWord(actor), Label, Actors.RankText(actor), HpText(actor),
                 StressText(actor), preview, GlanceEffectsLine());
         }
 

@@ -11,6 +11,7 @@
 - Pressing Enter on a stagecoach item and then Escape on the Wainwright no longer strands the item reading unavailable.
 - Equipping a stagecoach item now parks you on the slot it belongs in, the way hero trinkets and combat items already did.
 - Crossroads heroes now read their name ahead of their class, as in combat.
+- While driving, heroes now include the rank they're in.
 
 ## V0.3.8
 

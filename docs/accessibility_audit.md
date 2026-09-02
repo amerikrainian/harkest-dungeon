@@ -1156,7 +1156,10 @@ keyboard.
 - **Party panel**: one element per ribbon hero, left to right as the game draws the strip -
   rank 4 leftmost, the front line rightmost (measured live 2026-08-08: slot 0 sits at the
   highest x), the same direction the combat battlefield row and the crossroads slots walk
-  the party - name, HP, stress (the
+  the party - name, rank, HP, stress ("Paracelsus, Rank: 4, HP 30/30, Stress 0/10" - the
+  rank added 2026-09-01, user report, combat's own position caption via the shared
+  `Actors.RankText`, valid on the road because the game keeps marching-order team positions
+  synced to the roster; the
   game's status-bar strings from the live actor), the shared "New" marker while the ribbon
   shows its notification dot (unviewed sheet notifications, live-verified), every ribbon
   tooltip in the buffer (status effects, "Tense", diseases). Enter is the ribbon's own
@@ -1560,7 +1563,7 @@ share it, retitling through its own `battle_advance_*_confirmation` loc keys. Na
 dialog's own title text (set directly, not databound, so the entry read never races a bind).
 
 - Reads as a modal: the description, one row per party ribbon (the shared `HeroRibbonElement`:
-  name + HP + stress, ribbon tooltips in the buffer, Enter = the ribbon's own right-click
+  name + rank + HP + stress, ribbon tooltips in the buffer, Enter = the ribbon's own right-click
   inspect, which the game allows here on mouse+keyboard), the reward icons grouped under the
   authored "looted" (secured by the cleared battles) and "next battle" (the next fight's
   offer) section labels - each icon's name and stack from the widget model like the kingdom

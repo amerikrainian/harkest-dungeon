@@ -82,6 +82,20 @@ namespace DD2A11y.Game {
             return visible;
         }
 
+        /// <summary>The actor's rank the way the game's own position tooltip captions it
+        /// ("Rank: 2", 1 = the front line) - the game's rank, not the team-list index, so a
+        /// size-2 monster's neighbor reads the rank behind both of its. Null while the actor
+        /// holds no position yet. Valid outside combat too: the party keeps its marching-order
+        /// positions synced to the roster.</summary>
+        public static string RankText(ActorInstance actor) {
+            if (actor == null || !actor.GetIsTeamPositionSet()) {
+                return null;
+            }
+            string format = GameLoc.TryGet("effect_tooltip_position");
+            int rank = actor.GetFrontRank() + 1;
+            return format == null ? rank.ToString() : string.Format(format, rank);
+        }
+
         /// <summary>HP and stress the way the game's status bars caption them
         /// ("HP 30/30, Stress 2/10"); monsters have no stress bar and read HP only.</summary>
         public static string StatusLine(ActorInstance actor) {
