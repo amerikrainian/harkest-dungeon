@@ -84,11 +84,32 @@ namespace DD2A11y.Elements {
 
         public bool Occupied => _slot != null && ItemUtils.IsValid(_slot.Item);
 
+        /// <summary>The coach sheet's altar-locked slots, stamped by the game into the slot's
+        /// DataContext; other sheets' slots carry no context and read unlocked.</summary>
+        public bool Locked {
+            get {
+                var context = _slot == null ? null : _slot.GetComponent<DataContextBhv>();
+                return context != null && context.GetBoolValue("locked_item");
+            }
+        }
+
+        // A slot the armed pick can land on: the game greys the coach slots' Selectable for
+        // the pick's duration while showing them glowing as destinations, and its own submit
+        // completes the placement in that state regardless of the interactable flag.
+        private bool ArmedDestination => PickDestination && !Locked;
+
+        public override string Status => ArmedDestination ? null : base.Status;
+
         public override IEnumerable<ElementAction> GetActions() {
+            bool any = false;
             foreach (var action in base.GetActions()) {
+                any = true;
                 yield return action.Id == ActionIds.Activate
                     ? new ElementAction(ActionIds.Activate, Activate)
                     : action;
+            }
+            if (!any && ArmedDestination) {
+                yield return new ElementAction(ActionIds.Activate, Activate);
             }
         }
 

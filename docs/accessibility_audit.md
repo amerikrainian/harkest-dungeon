@@ -2188,10 +2188,19 @@ covers the read-only road sheet on Z (5.6).
   hold until the sheet's Open state covers the pick arming a beat after the push. The
   hero sheet carries the same line for its trinket and combat item picks (standing first,
   skipped while unarmed via a null label; entry keeps landing on the destination slot,
-  Home reaches the line). Both live-verified. Known gap: the coach destination slot reads
-  unavailable while armed and refuses Enter (the game's own submit-during-pick path swaps
-  regardless of interactable; our activation gate stops at the greyed Selectable) - the
-  working equip path remains Enter on the empty slot's filtered-bag flow.
+  Home reaches the line). All three item flavors live-verified (a combat item via an
+  injected Bandages).
+- The armed pick parks focus on the slot the held item is for (2026-09-01, user report:
+  the hero sheet snapped, the coach did not), the sheet's first-empty-else-first choice
+  over the accepting container's slots, altar-locked ones skipped; the equipping line
+  stays one Home above. The game greys every coach slot's Selectable for the pick's
+  duration while glowing the destinations, and its own submit places regardless - so an
+  accepting, unlocked slot drops the unavailable word and offers Enter while armed
+  (`EquipSlotElement.ArmedDestination`); non-accepting slots keep reading unavailable,
+  matching their greyed look. Live-verified: trophy-item pick lands "The Wainwright,
+  Trophy, empty slot", Enter drives the game's own placement (reaching its Unremoveable
+  confirmation for a trophy, declined; a decline disarms the pick through the game's own
+  dialog teardown, bag intact).
 
 Live-verified: full walk. Unexercised: a repair press (stats were full), equip/unequip on this
 sheet.

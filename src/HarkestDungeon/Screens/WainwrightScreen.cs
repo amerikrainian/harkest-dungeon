@@ -26,9 +26,10 @@ namespace DD2A11y.Screens {
     /// altar-locked slots carry their lock text in the buffer). The road variant carries no
     /// wallet, repairs, or livery cycler, and its slots refuse edits through the widget's own
     /// editable gate. While the game's equip pick is armed (a coach item's press opened the
-    /// sheet holding it), a transient first line reads "Equipping" with the held item's name -
-    /// the spoken form of the item riding the cursor - and entry lands on it. Escape closes
-    /// the sheet, first cancelling that pick.
+    /// sheet holding it), entry lands on the slot the held item is for - the hero sheet's
+    /// guided-pick landing - with a transient first line reading "Equipping" plus the item's
+    /// name one Home above, the spoken form of the item riding the cursor. Escape closes the
+    /// sheet, first cancelling that pick.
     /// </summary>
     public sealed class WainwrightScreen : GameScreen {
         private static readonly AccessTools.FieldRef<StageCoachConfigUiBhv, DataContextBhv> ContextField =
@@ -137,8 +138,40 @@ namespace DD2A11y.Screens {
             }
             if (!slots.IsEmptyContainer) {
                 _root.Add(slots);
+                // The armed pick lands on the slot the held item is for, the same
+                // first-empty-else-first choice the hero sheet's picks make; the equipping
+                // line stays one Home above.
+                if (SingletonMonoBehaviour<CommonUiBhv>.Instance.IsSelectingItemSlot) {
+                    SeedFocus(slots, PickDestinationSlot(slots));
+                }
             }
             _builtSignature = Signature(sheet);
+        }
+
+        private void SeedFocus(Container slots, UIElement element) {
+            if (element == null) {
+                return;
+            }
+            _root.SetFocusedChild(slots);
+            slots.SetFocusedChild(element);
+        }
+
+        // The slot the armed pick is for: the game hands the held item to the accepting
+        // container as its SelectedItem; altar-locked slots share that container and are
+        // skipped.
+        private static UIElement PickDestinationSlot(Container slots) {
+            UIElement first = null;
+            foreach (var child in slots.Children) {
+                if (child is EquipSlotElement slot && slot.PickDestination && !slot.Locked) {
+                    if (!slot.Occupied) {
+                        return slot;
+                    }
+                    if (first == null) {
+                        first = slot;
+                    }
+                }
+            }
+            return first;
         }
 
         private void AddStat(StageCoachConfigUiBhv sheet, string bindingKey, string containerName) {

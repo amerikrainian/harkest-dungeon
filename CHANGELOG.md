@@ -9,6 +9,7 @@
 - By popular demand, empty stagecoach slots now say what they are and that they are empty as opposed to just reading item slot.
 - Also by popular demand, the game's equipped sheets for e.g., the coach or heroes, now include an explicit element telling you what you're about to equip at the top of the respective screens.
 - Pressing Enter on a stagecoach item and then Escape on the Wainwright no longer strands the item reading unavailable.
+- Equipping a stagecoach item now parks you on the slot it belongs in, the way hero trinkets and combat items already did, and Enter there places it; destination slots no longer read unavailable while the game holds your item.
 
 ## V0.3.8
 
