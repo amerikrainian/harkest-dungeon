@@ -24,9 +24,10 @@ namespace DD2A11y.Screens {
     /// it). First element: the grid cursor - arrows step cell by cell, Home returns to the
     /// stagecoach, Enter activates through the game's own cell activation (inn/biome panels,
     /// boss travel), and every landing mirrors into the game's own selection so the camera
-    /// follows. A cell reads only what its own view displays: name, stagecoach/travel state,
-    /// stationed heroes, siege with its banded strength, treasure, boss - a hidden boss ring
-    /// reads as empty ground because its view objects are inactive. Then the day readout with
+    /// follows; a press past the grid's edge is consumed silently. A cell reads only what its
+    /// own view displays: name, then row and column, stagecoach/travel state, stationed heroes,
+    /// siege with its banded strength, treasure, boss - a hidden boss ring reads as empty
+    /// ground because its view objects are inactive. Then the day readout with
     /// the pass-day button and current event, the escalation readout, the timeline's marked
     /// days, the sidebar (one element per active siege - Enter jumps the cursor there - and the
     /// cursed-regions counter), the hero row, and the footer's sheet and inventory buttons.
@@ -224,7 +225,7 @@ namespace DD2A11y.Screens {
             var map = Manager().KingdomMap;
             var next = new Vector2Int(_cursor.x + dx, _cursor.y + dy);
             if (!map.IsValidCoordinate(next)) {
-                _speak(CursorLine(), true);
+                // The grid's edge: the press is consumed and nothing repeats.
                 return true;
             }
             return JumpTo(next);
@@ -275,6 +276,7 @@ namespace DD2A11y.Screens {
                 name = SpokenLine.Join(S.KingdomBoss, name);
             }
             parts.Add(string.IsNullOrEmpty(name) ? S.PanelEmpty : name);
+            parts.Add(PositionWords());
             uint moving = mgr.GetSelectedTransferActorGuid();
             if (moving != 0 && mgr.AreCoordinatesValidForActorTransfer(moving, _cursor)) {
                 // The game calls out every inn the moving hero may reach and draws the route
@@ -400,7 +402,6 @@ namespace DD2A11y.Screens {
             foreach (var line in HeroDetail(cell)) {
                 yield return line;
             }
-            yield return PositionWords();
         }
 
         private IEnumerable<string> HeroDetail(KingdomMapCellBase cell) {

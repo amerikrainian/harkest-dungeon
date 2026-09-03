@@ -2348,19 +2348,20 @@ and reads instead), registered above `InnScreen`. Escape = `KingdomPresentationB
 which the game itself refuses during day-turn cinematics (spoken "unavailable").
 
 - **Grid cursor** (first Tab stop, Panel root - Tab crosses cursor / header / sidebar /
-  heroes / footer, wrapping both directions): arrows step the 9x9 cell grid, Home returns to the stagecoach,
-  landings mirror into the game's own selection (camera pan, highlight, travel-arrow preview -
-  all presentational) when the cell is selectable.
+  heroes / footer, wrapping both directions): arrows step the 9x9 cell grid (a press past
+  the edge is a silent no-op), Home returns to the stagecoach, landings mirror into the
+  game's own selection (camera pan, highlight, travel-arrow preview - all presentational)
+  when the cell is selectable.
 - **A cell reads view-first, so hidden content cannot leak by construction**: the pre-reveal
   boss cell and its 8-neighbour ring deactivate their view objects and read as "empty";
   treasure reads from the cell's own bindings (the game hides it on the occupied cell); siege
   strength speaks only the 3-band bucket the icon shows; a boss-subtype biome is nameless on
   screen and stays so.
-- Cell line: name, stagecoach here / travel scheduled / reachable (user-input states only),
-  stationed hero names, siege (band + days), treasure (+ duration), biome markers
-  (cursed/quest, kill contract title, reward offered, upgraded). Buffer: the cell's own
-  tooltips ("The Stagecoach is here", hero classes), fast-travel state, hero name+class lines,
-  grid position.
+- Cell line: name, row and column, stagecoach here / travel scheduled / reachable
+  (user-input states only), stationed hero names, siege (band + days), treasure (+ duration),
+  biome markers (cursed/quest, kill contract title, reward offered, upgraded). Buffer: the
+  cell's own tooltips ("The Stagecoach is here", hero classes), fast-travel state, hero
+  name+class lines.
 - Enter = the game's `EventKingdomActivateMapCell` (gated on `IsInUserInputState`): inn/camp
   opens the inn panel, biome the biome panel, boss travels or shows the game's blocked dialog.
 - **Header** readouts: day, PASS DAY button, current-event button (opens the event panel),
