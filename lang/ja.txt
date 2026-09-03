@@ -65,6 +65,7 @@ ScreenFork = 分岐路
 ScreenInn = 宿
 InnStationedHeroes = 駐留中の英雄
 InnAtThisInn = この宿にいる
+InnHunterPoster = {0}を雇用可能
 ScreenAltar = 祭壇
 ScreenEmbark = 出発
 RelationshipUnrevealed = 未公開の関係

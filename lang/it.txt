@@ -65,6 +65,7 @@ ScreenFork = bivio
 ScreenInn = locanda
 InnStationedHeroes = eroi stazionati
 InnAtThisInn = in questa locanda
+InnHunterPoster = {0} da assoldare
 ScreenAltar = tabernacolo
 ScreenEmbark = partenza
 RelationshipUnrevealed = rapporto non rivelato

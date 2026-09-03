@@ -197,6 +197,7 @@ namespace DD2A11y {
             Router.Register(new RelationshipMatrixScreen());
             Router.Register(new InnUpgradesScreen());
             Router.Register(new InnReplacementScreen());
+            Router.Register(new HunterHireScreen());
             Router.Register(new RouteSelectScreen());
             // The road's node-arrival prompt, then the surfaces it opens: the Field Hospital
             // (also the inn physician; its Pharmacy tab hands off to the store screen above).

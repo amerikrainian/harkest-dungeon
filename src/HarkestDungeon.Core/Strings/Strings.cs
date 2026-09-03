@@ -143,6 +143,9 @@ namespace DD2A11y.Core.Strings {
             // A replacement candidate already at the current inn, where the game shows a bare
             // inn icon on the row. Spoken as the row's state.
             D("InnAtThisInn", "at this inn"),
+            // The inn's wanted poster (Confessions), which carries no text of its own; {0} =
+            // the hire dialog's title ("Bounty Hunter").
+            D("InnHunterPoster", "{0} for hire"),
             // The Altar of Hope hub, when the game's own title is unavailable. Noun.
             D("ScreenAltar", "altar"),
             // The embark staging scene between the crossroads (or an inn) and the drive, where
@@ -738,6 +741,7 @@ namespace DD2A11y.Core.Strings {
         public static string ScreenInn => T("ScreenInn");
         public static string InnStationedHeroes => T("InnStationedHeroes");
         public static string InnAtThisInn => T("InnAtThisInn");
+        public static string InnHunterPoster(string hero) => F("InnHunterPoster", hero);
         public static string ScreenAltar => T("ScreenAltar");
         public static string ScreenEmbark => T("ScreenEmbark");
         public static string RelationshipUnrevealed => T("RelationshipUnrevealed");

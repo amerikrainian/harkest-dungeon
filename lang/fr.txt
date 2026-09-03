@@ -65,6 +65,7 @@ ScreenFork = embranchement
 ScreenInn = auberge
 InnStationedHeroes = héros stationnés
 InnAtThisInn = à cette auberge
+InnHunterPoster = {0} à engager
 ScreenAltar = autel
 ScreenEmbark = départ
 RelationshipUnrevealed = relation non révélée

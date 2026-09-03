@@ -67,6 +67,7 @@ ScreenFork = fork
 ScreenInn = inn
 InnStationedHeroes = stationed heroes
 InnAtThisInn = at this inn
+InnHunterPoster = {0} for hire
 ScreenAltar = altar
 ScreenEmbark = departure
 RelationshipUnrevealed = unrevealed relationship

@@ -65,6 +65,7 @@ ScreenFork = křižovatka
 ScreenInn = hostinec
 InnStationedHeroes = umístění hrdinové
 InnAtThisInn = v tomto hostinci
+InnHunterPoster = {0} k najmutí
 ScreenAltar = oltář
 ScreenEmbark = odjezd
 RelationshipUnrevealed = neodhalený vztah

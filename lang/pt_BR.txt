@@ -65,6 +65,7 @@ ScreenFork = bifurcação
 ScreenInn = pousada
 InnStationedHeroes = heróis posicionados
 InnAtThisInn = nesta pousada
+InnHunterPoster = {0} disponível para contratar
 ScreenAltar = altar
 ScreenEmbark = embarque
 RelationshipUnrevealed = relacionamento não revelado

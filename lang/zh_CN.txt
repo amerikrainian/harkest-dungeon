@@ -65,6 +65,7 @@ ScreenFork = 岔路
 ScreenInn = 旅馆
 InnStationedHeroes = 驻扎英雄
 InnAtThisInn = 在本旅馆
+InnHunterPoster = 可雇用{0}
 ScreenAltar = 祭坛
 ScreenEmbark = 启程
 RelationshipUnrevealed = 未揭晓的关系

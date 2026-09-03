@@ -65,6 +65,7 @@ ScreenFork = розвилка
 ScreenInn = трактир
 InnStationedHeroes = розміщені герої
 InnAtThisInn = у цьому трактирі
+InnHunterPoster = {0}: можна найняти
 ScreenAltar = вівтар
 ScreenEmbark = відправлення
 RelationshipUnrevealed = нерозкриті стосунки

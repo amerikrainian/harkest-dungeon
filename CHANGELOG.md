@@ -13,6 +13,7 @@
 - Kingdom map cells now say their row and column right after their name, and an arrow pressed at the map's edge is silent instead of repeating the cell.
 - Closing the kingdom map no longer announces the inn twice, and opening it no longer re-reads the inn first.
 - Kingdom map cells now say how many days of stagecoach travel away they are for the current hero.
+- The inn's wanted poster (Confessions) now reads as "Bounty Hunter for hire" among the station buttons, and the hire dialog it opens reads the offer with its candle fee, the hero to replace with a selected marker, and the Hire and Decline buttons.
 
 ## V0.3.9
 

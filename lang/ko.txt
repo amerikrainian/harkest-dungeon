@@ -65,6 +65,7 @@ ScreenFork = 갈림길
 ScreenInn = 여관
 InnStationedHeroes = 주둔한 영웅
 InnAtThisInn = 이 여관에 있음
+InnHunterPoster = {0} 고용 가능
 ScreenAltar = 제단
 ScreenEmbark = 출정
 RelationshipUnrevealed = 미공개 관계

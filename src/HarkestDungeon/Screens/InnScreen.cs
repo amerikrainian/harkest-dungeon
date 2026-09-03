@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Assets.Code.Game;
 using Assets.Code.Inn;
+using Assets.Code.Inn.Presentation;
 using Assets.Code.Kingdom;
 using Assets.Code.UI;
 using Assets.Code.UI.Inn;
@@ -221,6 +222,12 @@ namespace DD2A11y.Screens {
                     _buttons.Add(new SelectableElement(selectable));
                 }
             }
+            // The wanted poster (Confessions: the Bounty Hunter's hire offer) hangs in the inn
+            // scene off the station bar, active only while an offer stands.
+            var poster = UnityEngine.Object.FindObjectOfType<HunterPosterBhv>();
+            if (poster != null) {
+                _buttons.Add(new HunterPosterElement(poster));
+            }
             _builtButtonsSignature = ButtonsSignature();
         }
 
@@ -236,6 +243,10 @@ namespace DD2A11y.Screens {
                 if (InventoryPanel.Include(selectable)) {
                     signature = signature * 31 + selectable.GetInstanceID();
                 }
+            }
+            var poster = UnityEngine.Object.FindObjectOfType<HunterPosterBhv>();
+            if (poster != null) {
+                signature = signature * 31 + poster.GetInstanceID();
             }
             return signature;
         }

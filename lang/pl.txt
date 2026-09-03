@@ -65,6 +65,7 @@ ScreenFork = rozwidlenie
 ScreenInn = gospoda
 InnStationedHeroes = stacjonujący bohaterowie
 InnAtThisInn = w tej gospodzie
+InnHunterPoster = {0} do wynajęcia
 ScreenAltar = ołtarz
 ScreenEmbark = odjazd
 RelationshipUnrevealed = nieujawnione emocje

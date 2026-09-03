@@ -1967,7 +1967,14 @@ Layout, top to bottom:
   way the game's right-click does; the pool is empty at expedition inns so the row vanishes
   from the walk).
 - The station buttons (captions from their tooltips; the prologue inn genuinely offers only
-  Travelogue and End Expedition - the bar rebuilds per inn and later inns add the shops).
+  Travelogue and End Expedition - the bar rebuilds per inn and later inns add the shops),
+  then the **wanted poster** when the inn holds a hire offer (Confessions only - the HIRE
+  roster status exists for the expedition game type alone, seeded on the Bounty Hunter at
+  the altar and rolled per inn by `InnSystem.RollHireActors`): `HunterPosterBhv` is a
+  screen-space selectable following a world target, off the station bar, with no text of its
+  own, so `HunterPosterElement` reads it by the hire dialog's title ("Bounty Hunter for
+  hire") and Enter is the poster's own submit; it is in the buttons' identity signature, so
+  it joins and leaves the walk with the offer (8.11).
 - The inventory panel: the filter, "slots 5 / 20", and wallet rows ("Relics, 40") as readouts,
   the sort button, one element per carried item (`InventoryItemElement`, shared with the loot
   screen: the item's own title and stack - "Candle of Hope, 3" - full tooltip in the buffer),
@@ -2304,6 +2311,32 @@ The inn's End Expedition button leads to the results surfaces; see 9.1 (live-ver
 ---
 
 # Phase 9: Run End and Results (RESULTS mode)
+
+## 8.11 Bounty Hunter Hire (`HunterHireScreen`, Confessions) - WORKS
+
+Live-verified 2026-09-02 at The Torch & Crown with an injected offer (a reserve hero's guid
+reflected into `InnSystem.m_HireActorGuids`, the poster re-run through its own
+`OnGameModeEnterStart`; the run has no Bounty Hunter entry, so no real offer can roll on
+it). The dialog (`HunterHireScreenWidgetBhv` on an Actor-layer `UiScreenBhv`) previously fell
+to the generic floor, which read only the title and "Decline, button".
+
+- Named by the game's `hunter_hire_dialog_title_label`. Layout: the offer as one readout
+  (the widget's own `hire_desc` binding - the description with the candle fee, whose glyph
+  reads as the currency's name), then with a full party the game's "select a hero to
+  replace" line and one row per party hero (`ChoiceElement`: name and class from the party
+  guid at the icon's index, the index the widget's own `SelectHero` resolves; "selected"
+  status once picked; vitals in the hero buffer; Enter is the icon's own click and the row
+  re-reads), then Decline and Hire (`HireElement`: the widget's `OnHirePressed`, which with a
+  full party and nothing picked is a silent no-op - spoken as unavailable).
+- Escape declines through the screen's own close; the game plays its decline sting and
+  re-enables the poster. A committed hire closes the dialog, rebuilds the inn party, and
+  hides the poster; the inn re-reads itself.
+- On a controller the game's own `SelectHero` hires at once on the pick; the mod's key path
+  is the keyboard one, where picking and hiring stay separate presses.
+
+**Known gaps:** none observed. A real offer (the Bounty Hunter unlocked on the profile and
+the inn's hire roll succeeding) is unexercised; the dev preference `INN_TEST_HIRE` forces the
+roll for a future check.
 
 ## 9.1 Results Surfaces (on the generic floor) - WORKS
 

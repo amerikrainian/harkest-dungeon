@@ -65,6 +65,7 @@ ScreenFork = Gabelung
 ScreenInn = Gasthof
 InnStationedHeroes = stationierte Helden
 InnAtThisInn = in diesem Gasthof
+InnHunterPoster = {0} anheuerbar
 ScreenAltar = Altar
 ScreenEmbark = Aufbruch
 RelationshipUnrevealed = nicht aufgedeckte Beziehung

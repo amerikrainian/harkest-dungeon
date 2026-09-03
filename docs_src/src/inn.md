@@ -16,6 +16,10 @@ If someone died on the road - it happens; the sequel is not gentler than the ori
 
 The station buttons are icon-only in the game; the mod reads their captions from their tooltips. Which stations an inn offers varies - shops, the Mastery trainer, the wainwright, the field hospital, the pit fighter - plus the Travelogue and End Expedition. Each opens its own screen, read by its own reader.
 
+## Hiring The Bounty Hunter
+
+In Confessions an inn sometimes hangs a wanted poster: the Bounty Hunter offering his services for the next region, at a candle fee. The poster has no text of its own in the game, so it reads as "Bounty Hunter for hire" at the end of the station buttons. Enter opens his dialog: the offer with the fee, then - if your party is full - one row per hero he could replace (Enter picks, and the row re-reads as selected; his vitals sit in the hero buffer), then Hire and Decline. Hire with nobody picked says unavailable rather than doing nothing. The hero you replace waits for you at the next inn.
+
 ## The Inventory
 
 The inventory panel lists the filter tabs (Left/Right switch them), the slot count and wallet readouts, the sort button, one element per carried item with the full tooltip in the buffer, and the free capacity collapsed to one line.
