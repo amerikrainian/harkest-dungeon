@@ -137,6 +137,7 @@ namespace DD2A11y {
             _crossroads = new CrossroadsScreen(speak, Audio, Settings.CrossroadsTones);
             Router.Register(new ConfirmationScreen());
             Router.Register(new UiModalScreen());
+            Router.Register(new NameInputScreen(speak));
             // The key-bindings panel overlays the settings screen's controls tab, so it must
             // outrank the settings reader.
             _keyBindings = new KeyBindingsScreen(Navigator, speak);
@@ -193,7 +194,7 @@ namespace DD2A11y {
             Router.Register(new StoreScreen(Navigator));
             Router.Register(new MasteryPathScreen());
             Router.Register(new MasteryScreen());
-            Router.Register(new WainwrightScreen());
+            Router.Register(new WainwrightScreen(speak));
             Router.Register(new RelationshipMatrixScreen());
             Router.Register(new InnUpgradesScreen());
             Router.Register(new InnReplacementScreen());

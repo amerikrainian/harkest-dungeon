@@ -34,13 +34,15 @@ namespace DD2A11y.Elements {
     public sealed class EquipSlotElement : SelectableElement {
         private readonly InventoryItemBhv _slot;
         private readonly System.Action<ItemType> _onBagBrowse;
+        private readonly System.Action _rename;
         private bool _openedBag;
 
         public EquipSlotElement(InventoryItemBhv slot, Selectable selectable, GameObject rowScope,
-                System.Action<ItemType> onBagBrowse = null)
+                System.Action<ItemType> onBagBrowse = null, System.Action rename = null)
             : base(selectable, null, rowScope) {
             _slot = slot;
             _onBagBrowse = onBagBrowse;
+            _rename = rename;
         }
 
         public override string Label {
@@ -110,6 +112,11 @@ namespace DD2A11y.Elements {
             }
             if (!any && ArmedDestination) {
                 yield return new ElementAction(ActionIds.Activate, Activate);
+            }
+            // A slot whose occupant the host lets the player rename (the coach's pet at a
+            // Kingdoms inn) answers the rename key; an empty slot has nothing to name.
+            if (_rename != null && _slot != null && ItemUtils.IsValid(_slot.Item)) {
+                yield return new ElementAction("rename", _rename);
             }
         }
 

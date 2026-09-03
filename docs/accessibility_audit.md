@@ -658,6 +658,26 @@ Live-verified 2026-07-23, originally on the hero sheet before its dedicated scre
 Visited between confessions to spend Candles of Hope. Previously dead air - the altar is a
 mode surface with no stack entry.
 
+## 2.10 Name Input Dialog (`NameInputScreen`) - WORKS
+
+The game's generic name-input modal (`NameInputDialogBhv` on `m_stringInputDialogPrefab`;
+the pet rename at a Kingdoms inn is its shipped caller). Live-verified 2026-09-02 with the
+dialog opened through `CommonUiBhv.ShowNameInputDialog` under logging callbacks. The game
+opens it typing - its field is active and `IsInputtingText` holds, so the mod's keys stand
+down and the field takes the keyboard.
+
+- Entry reads the dialog's title (its `confirmation_title` binding), then the field as an
+  edit element ("Rename Pet, edit, Rover"), then the game's own "editing" line from the
+  typing echo. Keystrokes echo the way the crossroads rename does (a wholesale change reads
+  the new text); Return ends the edit and the accepted text reads back as "{title}, {text}".
+  Enter on the field restarts the game's edit.
+- Then Confirm and, where the caller offers one, Cancel as buttons - Confirm is the dialog's
+  own accept, handing the text to the caller (verified: the callback received "Rex");
+  Escape declines through the dialog's own decline.
+- Synthetic key events cannot feed the field: TMP reads characters from the OS event queue,
+  not from InputSystem text events, so the typed path was exercised by setting the field
+  and firing its own end-edit callback; the real keyboard path is the game's own.
+
 ## 3.1 Altar Hub (`AltarScreen`) - WORKS
 
 Live-verified 2026-07-24 on the first-visit intro altar, including player-driven candle
@@ -905,6 +925,13 @@ Reads from the game model:
 - HP/stress/speed, each with its tooltip breakdown as buffer lines.
 - The nine resistances (displayed value; base/modifier breakdown in the buffer).
 - Quirks (name; description in the buffer, re-read live so rerolls never go stale).
+- The quirk-reroll button after the quirks, where the game shows it (a fresh hero at the
+  Confessions crossroads, base altar progress complete, the profile able to pay; hidden
+  once unaffordable; forced by the dev pref HERO_TEST_REROLL_QUIRKS): its own caption with
+  the candle cost ("Reroll Candle of Hope 6"), its candle-balance tooltip in the buffer;
+  Enter is the button's own click, which spends the candles and rerolls - the quirk rows
+  read live. Synthetic-verified 2026-09-02 at an inn by activating the hidden button; the
+  press is unexercised (it spends profile candles).
 - Each combat skill as a toggle - Enter equips/unequips through the game's own button - with
   the full skill card as buffer lines (Rank/Target lines with multi-hit "+" joins,
   DMG/CRIT/cooldown, per-target effects, melee/ranged). An unmastered skill's mastery
@@ -2173,7 +2200,14 @@ binds a frame late (`InnStations.Title`); the fold-back from the path panel read
 Live-verified 2026-07-24 at the first Denial inn. Over `StageCoachConfigUiBhv`; the same class
 covers the read-only road sheet on Z (5.6).
 
-- The coach's name from the model (renaming is unmodeled), wallet, the game's own composed
+- The coach's name from the model as an edit element: Enter or the rename key (R - the
+  screen declares the Roster category, so R is live here) runs the sheet's own inline edit
+  (`OnEditNameButtonPressed`: the field clears and takes typing, `IsInputtingText` pauses
+  the mod's keys), a typing echo speaks each keystroke, and Return reads the name the coach
+  now carries (the game restores the previous one on an empty field; live-verified
+  2026-09-02 by renaming to "Oxcart" and back). At a Kingdoms inn the pet slot answers R
+  with the game's own rename dialog (`OnEditNamePressed`, the same gate as its edit-name
+  button; read by 2.10); elsewhere R on a slot answers "unavailable". Then the wallet, the game's own composed
   stat lines ("Cargo Slots: 20", "Armor: 2/2", damage explanations in the buffer), a "repair,
   baubles 8" button per stat (the game's own transaction; `cost_` currency glyphs speak - the
   faction glyph as the authored "baubles", no game string spells it), the livery cycler, and
