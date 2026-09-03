@@ -57,6 +57,7 @@ KingdomCell = {0}, {1}
 KingdomMovingHero = {0} wird verlegt, Zielgasthof aktivieren
 KingdomDestination = Ziel
 KingdomRegionsAway = {0} Region entfernt|{0} Regionen entfernt
+KingdomHeroArrived = {0} in {1} angekommen
 ScreenKingdomEvent = Königreichsereignis
 ScreenFork = Gabelung
 ScreenInn = Gasthof

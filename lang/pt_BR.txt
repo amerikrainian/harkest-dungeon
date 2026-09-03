@@ -57,6 +57,7 @@ KingdomCell = {0}, {1}
 KingdomMovingHero = movendo {0}, ative uma pousada de destino
 KingdomDestination = destino
 KingdomRegionsAway = a {0} região|a {0} regiões
+KingdomHeroArrived = {0} chegou a {1}
 ScreenKingdomEvent = evento do reino
 ScreenFork = bifurcação
 ScreenInn = pousada

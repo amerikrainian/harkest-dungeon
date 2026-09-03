@@ -57,6 +57,7 @@ KingdomCell = {0}, {1}
 KingdomMovingHero = přesouvá se {0}, aktivuj cílový hostinec
 KingdomDestination = cíl
 KingdomRegionsAway = {0} oblast daleko|{0} oblasti daleko|{0} oblastí daleko
+KingdomHeroArrived = {0} dorazil do {1}
 ScreenKingdomEvent = událost království
 ScreenFork = křižovatka
 ScreenInn = hostinec

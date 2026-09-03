@@ -57,6 +57,7 @@ KingdomCell = {0}, {1}
 KingdomMovingHero = {0} en déplacement, activez une auberge de destination
 KingdomDestination = destination
 KingdomRegionsAway = à {0} région|à {0} régions
+KingdomHeroArrived = {0} est arrivé à {1}
 ScreenKingdomEvent = événement du royaume
 ScreenFork = embranchement
 ScreenInn = auberge

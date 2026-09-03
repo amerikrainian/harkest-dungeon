@@ -123,6 +123,7 @@ namespace DD2A11y {
             Game.BarkEvents.RoadSink = _roadSense.Post;
             Game.BarkEvents.Attach();
             Game.InnEvents.Attach();
+            Game.KingdomEvents.Attach();
             Game.AffinityEvents.RoadSink = _roadSense.Post;
             Game.AffinityEvents.Attach();
             Game.PartyEvents.RoadSink = _roadSense.Post;

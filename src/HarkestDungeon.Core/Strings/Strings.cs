@@ -126,6 +126,8 @@ namespace DD2A11y.Core.Strings {
             // game's own risk rule: one region is safe, two fatigue the hero).
             D("KingdomDestination", "destination"),
             D("KingdomRegionsAway", "{0} region away|{0} regions away"),
+            // A sent hero reaching their inn at the next day's start; {0} = hero, {1} = inn.
+            D("KingdomHeroArrived", "{0} arrived at {1}"),
             D("ScreenKingdomEvent", "kingdom event"),
             // The road-fork route menu, shown while the coach waits at a junction.
             D("ScreenFork", "fork"),
@@ -715,6 +717,7 @@ namespace DD2A11y.Core.Strings {
         public static string KingdomMovingHero(string hero) => F("KingdomMovingHero", hero);
         public static string KingdomDestination => T("KingdomDestination");
         public static string KingdomRegionsAway(int regions) => P("KingdomRegionsAway", regions);
+        public static string KingdomHeroArrived(string hero, string inn) => F("KingdomHeroArrived", hero, inn);
         public static string ScreenKingdomEvent => T("ScreenKingdomEvent");
         public static string ScreenFork => T("ScreenFork");
         public static string ScreenInn => T("ScreenInn");

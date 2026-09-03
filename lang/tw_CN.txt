@@ -57,6 +57,7 @@ KingdomCell = {0}，{1}
 KingdomMovingHero = 正在移動{0}，啟用目的地客棧
 KingdomDestination = 目的地
 KingdomRegionsAway = 相距{0}個地區
+KingdomHeroArrived = {0}抵達{1}
 ScreenKingdomEvent = 王國事件
 ScreenFork = 岔路
 ScreenInn = 客棧

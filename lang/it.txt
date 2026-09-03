@@ -57,6 +57,7 @@ KingdomCell = {0}, {1}
 KingdomMovingHero = spostamento di {0}, attiva una locanda di destinazione
 KingdomDestination = destinazione
 KingdomRegionsAway = a {0} regione|a {0} regioni
+KingdomHeroArrived = {0} è arrivato a {1}
 ScreenKingdomEvent = evento del regno
 ScreenFork = bivio
 ScreenInn = locanda

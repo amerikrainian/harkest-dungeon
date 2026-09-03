@@ -59,6 +59,7 @@ KingdomCell = {0}, {1}
 KingdomMovingHero = moving {0}, activate a destination inn
 KingdomDestination = destination
 KingdomRegionsAway = {0} region away|{0} regions away
+KingdomHeroArrived = {0} arrived at {1}
 ScreenKingdomEvent = kingdom event
 ScreenFork = fork
 ScreenInn = inn

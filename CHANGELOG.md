@@ -6,6 +6,8 @@
 - Pressing Enter on a stationed hero on the kingdom map now announces the game's hero-travel mode and moves the cursor to that hero's inn; inns in range read as destinations with the route's length in regions.
 - The kingdom map's sieges and treasures now say "days" instead of "sun" for their countdown icon.
 - The kingdom map's Hero Sheet and Inventory buttons and the cursed-regions counter are now in the map's reading order.
+- Closing a hero sheet opened from a kingdom map hero row now lands back on that row instead of the grid cursor.
+- A hero sent to another inn now announces their arrival when the day passes.
 
 ## V0.3.9
 

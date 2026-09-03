@@ -57,6 +57,7 @@ KingdomCell = {0}, {1}
 KingdomMovingHero = przenoszenie {0}, aktywuj gospodę docelową
 KingdomDestination = cel
 KingdomRegionsAway = {0} region dalej|{0} regiony dalej|{0} regionów dalej
+KingdomHeroArrived = {0} dotarł do {1}
 ScreenKingdomEvent = wydarzenie królestwa
 ScreenFork = rozwidlenie
 ScreenInn = gospoda

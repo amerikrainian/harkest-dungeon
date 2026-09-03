@@ -52,6 +52,7 @@ namespace DD2A11y.Screens {
         private UIElement _cursorElement;
         private Container _root;
         private Container _heroes;
+        private uint _returnHero;
         private int _builtSignature;
 
         public KingdomMapScreen(TraditionalNavigator navigator, Action<string, bool> speak, Action cursorMoved) {
@@ -90,6 +91,7 @@ namespace DD2A11y.Screens {
             // to the stagecoach on a fresh open.
             if (!_sessionLive || !Manager().KingdomMap.IsValidCoordinate(_cursor)) {
                 _cursor = Manager().CurrentStageCoachCoordinates;
+                _returnHero = 0;
             }
             _sessionLive = true;
             // A Panel root so Tab crosses cursor / header / sidebar / heroes / footer - the
@@ -103,11 +105,29 @@ namespace DD2A11y.Screens {
             });
             _root.WrapTabStops = true;
             Populate();
+            // A hero row left for that hero's sheet is the row re-entry lands on (the
+            // containers' remembered children seed the initial focus).
+            var returning = HeroElementOf(_returnHero);
+            _returnHero = 0;
+            if (returning != null) {
+                _root.SetFocusedChild(_heroes);
+                _heroes.SetFocusedChild(returning);
+            }
             MirrorSelection();
             return _root;
         }
 
         public override bool OnUpdate(object target) {
+            // Hero arrivals the game applied at the day's start, queued so a batch stacks in
+            // order and held until the entry announcement is out.
+            if (EntryAnnounced) {
+                var arrivals = KingdomEvents.Drain();
+                if (arrivals != null) {
+                    foreach (var line in arrivals) {
+                        _speak(line, false);
+                    }
+                }
+            }
             if (Signature() != _builtSignature) {
                 _root.Clear();
                 Populate();
@@ -116,6 +136,7 @@ namespace DD2A11y.Screens {
         }
 
         public override void OnLeave() {
+            _returnHero = _navigator.Current is HeroElement hero ? hero.Guid : 0;
             if (!SingletonMonoBehaviour<KingdomBhv>.HasInstance() || !KingdomBhv.IsMapOpen()) {
                 _sessionLive = false;
             }
@@ -654,11 +675,7 @@ namespace DD2A11y.Screens {
             }
         }
 
-        private string InnNameAt(Vector2Int coords) {
-            var view = Manager().KingdomMapRoot[coords] as KingdomMapCellBhv;
-            var context = view == null ? null : view.GetComponentInChildren<DataContextBhv>(includeInactive: false);
-            return context == null ? null : context.GetStringValue("cell_name");
-        }
+        private static string InnNameAt(Vector2Int coords) => KingdomEvents.CellName(coords);
 
         private int Signature() {
             int signature = 17;

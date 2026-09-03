@@ -2392,7 +2392,14 @@ which the game itself refuses during day-turn cinematics (spoken "unavailable").
   hero's row, which now reads the trip; Escape cancels the mode (the first stage of the game's
   `TryGoBackButton`) and lands on the row too. Enter on a travelling hero cancels the trip and
   re-enters the mode, as the game's own press does. Trips apply on the next day's START
-  state regardless of distance, so no arrival countdown exists to read.
+  state regardless of distance, so no arrival countdown exists to read; the arrival itself
+  (`EventKingdomActorTransferApplied`, applied silently by the game - the portrait just
+  moves cells) is queued by `KingdomEvents` as "{hero} arrived at {inn}" and drained by the
+  map screen's pump once its entry is announced (synthetic-verified 2026-09-02 by feeding the
+  handler a constructed event; a real day pass is unexercised).
+- **Sheet round-trip**: leaving a hero row for that hero's sheet (C) records the row, and the
+  map's re-entry seeds the containers' remembered children with it, so the entry
+  announcement reads "kingdom map, {hero row}" instead of the grid cursor (live-verified).
 - **Footer**: Hero Sheet (C) and Inventory (I) buttons, so the captioned keys resolve on the
   captured keyboard (C on a non-hero element opens the default sheet).
 
@@ -2402,9 +2409,9 @@ which the game itself refuses during day-turn cinematics (spoken "unavailable").
 > AnnounceCurrentIfChanged), so only a genuinely different line (the inn panel's garrison
 > arriving) speaks twice.
 
-**Known gaps:** closing a sheet opened from a hero row re-enters on the grid cursor, not the
-row; a hero's arrival after a day pass is not announced (the row and the inn cell read the new
-station).
+**Known gaps:** the arrival line is unexercised on a real day pass (its queue drains only
+while the map screen stands, so a line raised under the day/event panel speaks once that
+panel closes).
 
 ## 10.2 Inn/Camp Cell Panel (`KingdomInnPanelScreen`) - WORKS
 
