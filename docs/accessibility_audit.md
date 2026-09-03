@@ -2385,8 +2385,7 @@ which the game itself refuses during day-turn cinematics (spoken "unavailable").
 - **Hero travel** (live-verified 2026-09-02 with a commit to the camp and its cancel): Enter
   on a stationed hero runs the button's own submit (`Handle_HERO_TRAVEL_MODE`, gated to
   WAIT_ON_PLAYER, refused for immobile heroes - spoken "unavailable"). Entry speaks "moving
-  {hero}, activate a destination inn" and parks the cursor on the hero's inn, where the game
-  parks its own selection. While a hero is selected every inn/camp in range reads
+  {hero}" and parks the cursor on the hero's inn, where the game parks its own selection. While a hero is selected every inn/camp in range reads
   "destination, N region(s) away" (the route the game draws, two grid steps per region -
   the risk rule its travel tooltip states), "reachable" is suppressed, and Enter on any other
   cell answers "unavailable" (the game ignores those activations outright, panels included).

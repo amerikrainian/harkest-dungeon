@@ -121,7 +121,8 @@ namespace DD2A11y.Core.Strings {
             D("KingdomQuest", "quest"),
             // Grid coordinates, bare numbers; {0} = row, {1} = column.
             D("KingdomCell", "{0}, {1}"),
-            D("KingdomMovingHero", "moving {0}, activate a destination inn"),
+            // Entering the map's hero-travel mode; the cursor's destination reads say the rest.
+            D("KingdomMovingHero", "moving {0}"),
             // A cell the moving hero may travel to, and the route's length in regions (the
             // game's own risk rule: one region is safe, two fatigue the hero).
             D("KingdomDestination", "destination"),
