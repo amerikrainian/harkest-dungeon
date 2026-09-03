@@ -11,6 +11,7 @@
 - The inn's stationed-hero portraits now read name then class, like every other hero row.
 - Kingdom map points of interest, borrowed from say-the-spire2: comma and period jump the cursor through a category of cells (inns, camps, sieges, stationed heroes, treasure, regions, cursed and quest regions, the boss, underground access), the brackets switch category and say its count, and backslash narrows every category to what is reachable, from the stagecoach or from the hero you are sending.
 - Kingdom map cells now say their row and column right after their name, and an arrow pressed at the map's edge is silent instead of repeating the cell.
+- Closing the kingdom map no longer announces the inn twice, and opening it no longer re-reads the inn first.
 
 ## V0.3.9
 

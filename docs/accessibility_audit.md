@@ -1942,7 +1942,11 @@ travelogue (from the hub) is unexercised live.
 
 Live-verified 2026-07-24 at the prologue inn: name, hero row, stations, full inventory walk,
 item tooltip buffers. Named by the inn's own title (`InnBhv.GetInnInstance().Name` already
-holds the localized title; authored "inn" fallback).
+holds the localized title; authored "inn" fallback). A Kingdoms inn resolves only through its
+inventory stack entry: the entry leaves the stack for the map's open wipe and returns after
+its close wipe (the map runs its own wipe outside the screen fader), and reading the bare
+subscreen collection in between announced the hub once per wipe (live-verified 2026-09-02:
+open goes straight to "kingdom map", close announces the inn once).
 
 Layout, top to bottom:
 

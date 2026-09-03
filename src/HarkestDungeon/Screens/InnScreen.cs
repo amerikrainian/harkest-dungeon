@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Assets.Code.Game;
 using Assets.Code.Inn;
+using Assets.Code.Kingdom;
 using Assets.Code.UI;
 using Assets.Code.UI.Inn;
 using Assets.Code.UI.Items;
@@ -84,6 +85,12 @@ namespace DD2A11y.Screens {
             var top = StackTop.Object();
             _inventory = top == null ? null : top.GetComponent<InventoryUiBhv>();
             if (top != null && _inventory == null) {
+                return null;
+            }
+            // A Kingdoms inn reads only through its inventory entry: the entry leaves the
+            // stack for the map's open wipe and returns after its close wipe, and reading
+            // the bare collection in between would announce the hub once per wipe.
+            if (_inventory == null && SingletonMonoBehaviour<KingdomBhv>.HasInstance()) {
                 return null;
             }
             if (_collection == null) {
