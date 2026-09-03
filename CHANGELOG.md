@@ -15,7 +15,7 @@
 - Kingdom map cells now say how many days of stagecoach travel away they are for the current hero.
 - The inn's wanted poster (Confessions) now reads as "Bounty Hunter for hire" among the station buttons, and the hire dialog it opens reads the offer with its candle fee, the hero to replace with a selected marker, and the Hire and Decline buttons.
 - The hero sheet now includes the quirk-reroll button the game offers on a fresh hero at the Confessions crossroads, with its candle cost on the line and the balance in the buffer.
-- The stagecoach can be renamed from its sheet: Enter or R on the coach's name starts the game's own edit, keystrokes are echoed, and the accepted name is read back. At a Kingdoms inn, R on the pet slot opens the game's rename dialog, which now reads its title, the current name, each keystroke, and the confirm and cancel buttons.
+- The stagecoach can now be renamed from its sheet.
 
 ## V0.3.9
 
