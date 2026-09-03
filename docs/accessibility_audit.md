@@ -1957,9 +1957,11 @@ Layout, top to bottom:
   suppresses "unavailable" itself. A heroless slot with no recruits stays hidden, matching
   the mute chair sighted players see.
 - The **stationed-heroes row** (Kingdoms: the portrait strip by the inn title, from the same
-  `InnStationedActorBhv` widgets sighted players see - each reads its class-name tooltip,
-  Enter opens that hero's sheet the way the game's right-click does; the pool is empty at
-  expedition inns so the row vanishes from the walk).
+  `InnStationedActorBhv` widgets sighted players see - each reads name then class from the
+  hero behind it (the widget's own tooltip names only the class; the portrait is what tells a
+  sighted player who), with the hero buffer for vitals; Enter or C opens that hero's sheet the
+  way the game's right-click does; the pool is empty at expedition inns so the row vanishes
+  from the walk).
 - The station buttons (captions from their tooltips; the prologue inn genuinely offers only
   Travelogue and End Expedition - the bar rebuilds per inn and later inns add the shops).
 - The inventory panel: the filter, "slots 5 / 20", and wallet rows ("Relics, 40") as readouts,

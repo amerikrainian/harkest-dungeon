@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Assets.Code.Game;
 using Assets.Code.Inn;
 using Assets.Code.UI;
@@ -168,18 +169,12 @@ namespace DD2A11y.Screens {
         }
 
         // The stationed-hero portraits by the inn title (Kingdoms; the pool is empty
-        // elsewhere): click-only widgets the selectable sweep misses, each captioned only by
-        // its class tooltip. Enter opens that hero's sheet through the same game method the
-        // widget's own right-click drives. The game recycles the pool on day changes, so an
-        // identity signature guards the rebuild.
+        // elsewhere): click-only widgets the selectable sweep misses. The game recycles the
+        // pool on day changes, so an identity signature guards the rebuild.
         private void PopulateStationed() {
             _stationed.Clear();
             foreach (var widget in StationedActors()) {
-                var stationed = widget;
-                _stationed.Add(new ActionElement(
-                    () => UiText.FirstLabel(stationed.gameObject),
-                    S.RoleButton,
-                    () => OpenStationedSheet(stationed)));
+                _stationed.Add(new StationedHeroElement(widget));
             }
             _builtStationedSignature = StationedSignature();
         }
@@ -239,5 +234,43 @@ namespace DD2A11y.Screens {
         }
 
         private static Transform FindChild(Transform root, string name) => InventoryPanel.FindChild(root, name);
+
+        /// <summary>
+        /// A stationed hero's portrait: name and class from the hero behind it (the widget's
+        /// own tooltip names only the class - the portrait is what tells a sighted player who),
+        /// the hero buffer for their vitals, and Enter or the sheet key opening their sheet
+        /// through the same game method the widget's own right-click drives.
+        /// </summary>
+        private sealed class StationedHeroElement : UIElement {
+            private readonly InnStationedActorBhv _widget;
+
+            public StationedHeroElement(InnStationedActorBhv widget) {
+                _widget = widget;
+            }
+
+            private uint Guid => StationedGuidField(_widget);
+
+            public override bool CanFocus => _widget != null && _widget.gameObject.activeInHierarchy;
+
+            public override string Label {
+                get {
+                    var actor = Guid == 0 ? null : Actors.Get(Guid);
+                    return actor == null
+                        ? UiText.FirstLabel(_widget.gameObject)
+                        : SpokenLine.Join(Actors.Name(actor), GameLoc.TryGet(actor.ActorDataClass.Id));
+                }
+            }
+
+            public override string Role => S.RoleButton;
+
+            public override IEnumerable<ElementAction> GetActions() {
+                yield return new ElementAction(ActionIds.Activate, () => OpenStationedSheet(_widget));
+                yield return new ElementAction("inspect", () => OpenStationedSheet(_widget));
+            }
+
+            public override IEnumerable<string> GetSideBufferLines(string bufferKey)
+                => bufferKey == Core.Buffers.BufferKeys.Hero && Guid != 0
+                    ? HeroStatus.Lines(Guid) : base.GetSideBufferLines(bufferKey);
+        }
     }
 }

@@ -8,6 +8,7 @@
 - The kingdom map's Hero Sheet and Inventory buttons and the cursed-regions counter are now in the map's reading order.
 - Closing a hero sheet opened from a kingdom map hero row now lands back on that row instead of the grid cursor.
 - A hero sent to another inn now announces their arrival when the day passes.
+- The inn's stationed-hero portraits now read name then class, like every other hero row.
 
 ## V0.3.9
 
