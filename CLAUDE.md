@@ -142,7 +142,7 @@ Endpoints (drive with `curl`):
   mod spoke as a consequence (waits for a quiet window; `?speech=0` skips).
 - `POST /input` - body is a verb driving our own navigator via its logical handlers (never OS
   synthetic keys): `up|down|left|right|confirm|back|tab|prev|home|end` and the buffer verbs
-  `buffer-next|buffer-prev|buffer-item-next|buffer-item-prev`. This is the real player path - use
+  `buffer-next|buffer-prev|buffer-item-next|buffer-item-prev`, plus `action:<key>` for any registered mod action (`action:kingdom.poi.next`). This is the real player path - use
   it rather than `/eval`-calling internals when testing screens.
 - `POST /wait?timeout=MS` - body is a C# bool expression evaluated every frame on the main thread;
   returns when true or on timeout (default 10s). Use instead of curl sleep-loops.

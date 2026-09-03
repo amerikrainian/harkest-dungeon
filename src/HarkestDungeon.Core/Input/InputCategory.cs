@@ -30,5 +30,9 @@ namespace DD2A11y.Core.Input {
         /// <summary>Tutorial-archive keys (the jump to the first unviewed entry), declared by
         /// the archive screen.</summary>
         Archive,
+
+        /// <summary>Kingdom-map keys (the points-of-interest cycling), declared by the map
+        /// screen.</summary>
+        Kingdom,
     }
 }

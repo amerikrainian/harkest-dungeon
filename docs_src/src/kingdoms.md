@@ -10,6 +10,10 @@ The Kingdoms menu and its creation wizard read like any other screen - options, 
 
 The overworld is a map of inns and the roads between them, and the mod gives it a grid cursor: arrows walk the map cell by cell, each landing reading what is there - an inn and its state, a threat, your coach. The cell's panels (the inn's details, the timeline, an approaching siege) read through the usual panel navigation, and passing the day is a button like any other.
 
+Points of interest save you the walk: comma and period jump the cursor through one category of cells at a time (inns, camps, sieges, stationed heroes, treasure, regions, cursed and quest regions, the boss, underground access), the brackets switch category and say how many it holds, and backslash narrows every category to what you can reach from the stagecoach right now.
+
+The hero row lists your party and every stationed hero with where they are. Enter on a stationed hero starts the game's hero-travel mode: the cursor lands on their inn, every inn in their range reads as a destination with the route's length in regions (one is safe, two tire the hero), and with the reachable filter on, the points-of-interest keys walk just those. Enter on a destination books the trip, which completes when the day passes; Escape cancels the mode. Either way you land back on the hero's row.
+
 Travel itself is still the road; see [The Road](road.md). Everything said there about steering applies, including the part where the interesting decisions happen in menus.
 
 ## Kingdom Inns

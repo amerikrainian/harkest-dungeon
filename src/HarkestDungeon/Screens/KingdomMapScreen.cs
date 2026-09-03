@@ -43,9 +43,13 @@ namespace DD2A11y.Screens {
         private static readonly AccessTools.FieldRef<KingdomMapCellInnInfoBhv, int> HighSiegeThresholdField =
             AccessTools.FieldRefAccess<KingdomMapCellInnInfoBhv, int>("m_highStrengthSiegeThreshold");
 
+        private static readonly Core.Input.InputCategory[] Categories =
+            { Core.Input.InputCategory.Kingdom, Core.Input.InputCategory.UI };
+
         private readonly TraditionalNavigator _navigator;
         private readonly Action<string, bool> _speak;
         private readonly Action _cursorMoved;
+        private readonly KingdomPointsOfInterest _poi = new KingdomPointsOfInterest();
 
         private Vector2Int _cursor;
         private bool _sessionLive;
@@ -62,6 +66,54 @@ namespace DD2A11y.Screens {
         }
 
         public override string Name => S.ScreenKingdomMap;
+
+        public override Core.Input.InputCategory[] InputCategories => Categories;
+
+        // ---- Points of interest ----
+
+        /// <summary>The next (+1) or previous (-1) point of the current category from the
+        /// cursor: the cursor jumps there and reads the cell. The list's end is silent, like
+        /// the buffers' ends.</summary>
+        public void PoiStep(int direction) {
+            if (!Standing()) {
+                return;
+            }
+            var target = _poi.Step(_cursor, direction);
+            if (target == null) {
+                return;
+            }
+            JumpTo(target.Value);
+            _navigator.Focus(_cursorElement, announce: false);
+        }
+
+        /// <summary>The next (+1) or previous (-1) category with any cell under the current
+        /// filter; reads its name and how many cells it holds. The cursor stays.</summary>
+        public void PoiCategory(int direction) {
+            if (!Standing()) {
+                return;
+            }
+            _poi.StepCategory(direction);
+            _speak(PoiCategoryLine(), true);
+        }
+
+        /// <summary>Flip the reachable filter (from the stagecoach, or from the hero a
+        /// destination is being chosen for) and read the mode with the category's count.</summary>
+        public void PoiToggleReachable() {
+            if (!Standing()) {
+                return;
+            }
+            _poi.ToggleReachable();
+            _speak(SpokenLine.Join(_poi.ModeLabel, PoiCategoryLine()), true);
+        }
+
+        private string PoiCategoryLine() {
+            int count = _poi.Cells().Count;
+            return SpokenLine.Join(_poi.CategoryLabel, count == 0 ? S.PanelEmpty : count.ToString());
+        }
+
+        // The keys are live only while the map stands, but a press racing the map's close
+        // must not read a map that is gone.
+        private bool Standing() => _root != null && _sessionLive && ResolveTarget() != null;
 
         public override object ResolveTarget() {
             if (!SingletonMonoBehaviour<KingdomBhv>.HasInstance()) {

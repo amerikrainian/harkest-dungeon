@@ -48,6 +48,20 @@ Every mod key can be rebound from the game's Settings screen, **Mod keys** tab, 
 | Vitrine | Z | Unbound | Toggle the Infernal Flame Vitrine at the crossroads |
 | First new tutorial | N | Unbound | Jump to the first entry still marked New in the tutorial archive |
 
+## Kingdom Map
+
+Points of interest work like say-the-spire2's map reviewer: a category of cells in reading order, and a filter for the ones you can actually reach. The cursor jumps; the category and filter keys only speak.
+
+| Action | Default keyboard | Default controller | Function |
+| --- | --- | --- | --- |
+| Previous point of interest | , | Unbound | Jump the cursor to the previous cell of the current category |
+| Next point of interest | . | Unbound | Jump the cursor to the next cell of the current category |
+| Previous category | [ | Unbound | Switch to the previous category with any cells and hear its count |
+| Next category | ] | Unbound | Switch to the next category with any cells and hear its count |
+| Reachable filter | \ | Unbound | Toggle between all cells and reachable ones: from the stagecoach, or from the hero you are choosing a destination for |
+
+Categories, in order: inns, camps, sieges, stationed heroes, treasure, regions, cursed regions, quest regions, the boss, and underground access.
+
 ## Combat
 
 Glances speak in place; your focus does not move. Enemy slots count from the front line, 1 through 4, and so do yours.

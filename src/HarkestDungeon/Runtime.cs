@@ -52,6 +52,7 @@ namespace DD2A11y {
         private AcademicScreen _academic;
         private StoryScreen _storyScreen;
         private TutorialArchiveScreen _archive;
+        private KingdomMapScreen _kingdomMap;
         private DrivingScreen _driving;
         private string _lastTickError;
         private float _lastTickErrorTime;
@@ -170,7 +171,8 @@ namespace DD2A11y {
             Router.Register(new KingdomBiomePanelScreen());
             _innStorage = new InnStorageScreen(speak, Navigator);
             Router.Register(_innStorage);
-            Router.Register(new KingdomMapScreen(Navigator, speak, () => RehomeBuffers(Navigator.Current)));
+            _kingdomMap = new KingdomMapScreen(Navigator, speak, () => RehomeBuffers(Navigator.Current));
+            Router.Register(_kingdomMap);
             // The inn hub reads THROUGH its own inventory stack entry, so it must outrank the
             // generic floor that would otherwise take that entry.
             _inn = new InnScreen(speak, Navigator);
@@ -515,6 +517,19 @@ namespace DD2A11y {
             // entry has been viewed.
             Reg("archive.new", () => S.InputArchiveNew, () => _archive.FocusFirstNew(Navigator),
                 InputCategory.Archive).AddBinding(K(Key.N));
+            // The kingdom map's points of interest, say-the-spire2's layout: comma and period
+            // step through the current category, the brackets switch categories, backslash
+            // toggles the reachable filter.
+            Reg("kingdom.poi.prev", () => S.InputKingdomPoiPrev, () => _kingdomMap.PoiStep(-1),
+                InputCategory.Kingdom).AddBinding(K(Key.Comma));
+            Reg("kingdom.poi.next", () => S.InputKingdomPoiNext, () => _kingdomMap.PoiStep(+1),
+                InputCategory.Kingdom).AddBinding(K(Key.Period));
+            Reg("kingdom.poi.category.prev", () => S.InputKingdomPoiCategoryPrev, () => _kingdomMap.PoiCategory(-1),
+                InputCategory.Kingdom).AddBinding(K(Key.LeftBracket));
+            Reg("kingdom.poi.category.next", () => S.InputKingdomPoiCategoryNext, () => _kingdomMap.PoiCategory(+1),
+                InputCategory.Kingdom).AddBinding(K(Key.RightBracket));
+            Reg("kingdom.poi.reachable", () => S.InputKingdomPoiReachable, () => _kingdomMap.PoiToggleReachable(),
+                InputCategory.Kingdom).AddBinding(K(Key.Backslash));
             // Discard the focused item (the game's shift-click); the element advertises the
             // action only where the game allows the discard, so anything else answers
             // "unavailable" rather than silence.

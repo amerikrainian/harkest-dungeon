@@ -2404,6 +2404,21 @@ which the game itself refuses during day-turn cinematics (spoken "unavailable").
   announcement reads "kingdom map, {hero row}" instead of the grid cursor (live-verified).
 - **Footer**: Hero Sheet (C) and Inventory (I) buttons, so the captioned keys resolve on the
   captured keyboard (C on a non-hero element opens the default sheet).
+- **Points of interest** (`KingdomPointsOfInterest`, the `Kingdom` input category;
+  live-verified 2026-09-02 through injected key events): comma/period jump the cursor to the
+  previous/next cell of the current category in reading order (row, then column) from the
+  cursor's cell, silent at the list's end; the brackets switch to the previous/next category
+  with any cells (wrapping, empties skipped) and speak "{category}, {count}"; backslash
+  toggles the reachable filter and speaks "reachable"/"all" plus the category line.
+  Categories in order - inns, camps, sieges, stationed heroes, treasure, regions, cursed
+  regions (infection modifier), quest regions (other modifier or kill contract), the boss,
+  underground access - are read live from the map model, view-gated (a hidden view is never
+  listed), labelled by the game's console-layout captions and siege label where they exist.
+  Reachable means the stagecoach's next move (neighbouring region or unlocked underground
+  inn, player's turn only) - or, while a hero is selected for travel, that hero's own range
+  (`AreCoordinatesValidForActorTransfer`), so "reachable, Camps, 3" then period walks the
+  camps the hero may be sent to, each with its region distance. The filter and category
+  persist across map round-trips; a filter that empties the category hops to the next one.
 
 > **Note:** Panel entry announces read the cell's name from the game's viewed-cell query (set
 > before the push), so they are correct from frame one; the populate re-land a beat later

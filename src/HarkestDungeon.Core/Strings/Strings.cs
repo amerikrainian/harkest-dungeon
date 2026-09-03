@@ -128,6 +128,8 @@ namespace DD2A11y.Core.Strings {
             D("KingdomRegionsAway", "{0} region away|{0} regions away"),
             // A sent hero reaching their inn at the next day's start; {0} = hero, {1} = inn.
             D("KingdomHeroArrived", "{0} arrived at {1}"),
+            // The points-of-interest filter when it is off (its on state reuses "reachable").
+            D("KingdomPoiAll", "all"),
             D("ScreenKingdomEvent", "kingdom event"),
             // The road-fork route menu, shown while the coach waits at a junction.
             D("ScreenFork", "fork"),
@@ -593,6 +595,12 @@ namespace DD2A11y.Core.Strings {
             D("InputVitrine", "Toggle Infernal Flame Vitrine"),
             // The tutorial archive's jump to its first unviewed entry.
             D("InputArchiveNew", "Jump to first new tutorial"),
+            // The kingdom map's points-of-interest keys (mod-keys settings captions).
+            D("InputKingdomPoiPrev", "Previous point of interest"),
+            D("InputKingdomPoiNext", "Next point of interest"),
+            D("InputKingdomPoiCategoryPrev", "Previous point of interest category"),
+            D("InputKingdomPoiCategoryNext", "Next point of interest category"),
+            D("InputKingdomPoiReachable", "Toggle reachable points of interest"),
             // The combat glance hotkeys, one action per battlefield slot in rank order;
             // {0} = the slot number. Bare key = name and health, Shift = buffs and debuffs,
             // Ctrl = resistances.
@@ -718,6 +726,7 @@ namespace DD2A11y.Core.Strings {
         public static string KingdomDestination => T("KingdomDestination");
         public static string KingdomRegionsAway(int regions) => P("KingdomRegionsAway", regions);
         public static string KingdomHeroArrived(string hero, string inn) => F("KingdomHeroArrived", hero, inn);
+        public static string KingdomPoiAll => T("KingdomPoiAll");
         public static string ScreenKingdomEvent => T("ScreenKingdomEvent");
         public static string ScreenFork => T("ScreenFork");
         public static string ScreenInn => T("ScreenInn");
@@ -933,6 +942,11 @@ namespace DD2A11y.Core.Strings {
         public static string InputReroll => T("InputReroll");
         public static string InputVitrine => T("InputVitrine");
         public static string InputArchiveNew => T("InputArchiveNew");
+        public static string InputKingdomPoiPrev => T("InputKingdomPoiPrev");
+        public static string InputKingdomPoiNext => T("InputKingdomPoiNext");
+        public static string InputKingdomPoiCategoryPrev => T("InputKingdomPoiCategoryPrev");
+        public static string InputKingdomPoiCategoryNext => T("InputKingdomPoiCategoryNext");
+        public static string InputKingdomPoiReachable => T("InputKingdomPoiReachable");
         public static string InputCombatEnemy(int slot) => F("InputCombatEnemy", slot);
         public static string InputCombatEnemyEffects(int slot) => F("InputCombatEnemyEffects", slot);
         public static string InputCombatEnemyResists(int slot) => F("InputCombatEnemyResists", slot);
