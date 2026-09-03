@@ -107,6 +107,9 @@ namespace DD2A11y.Game {
                 // The deathblow-resist glyph; its humanized name ("death") loses the resist
                 // meaning the icon carries ("+4% death" for a deathblow-RES buff).
                 case "death": return S.SpriteDeathblow;
+                // The kingdom map's day glyph ("4<icon_sun>" on a siege's countdown and a
+                // treasure's duration): the unit word its difficulty settings spell out.
+                case "sun": return GameLoc.TryGet("kingdom_difficulty_days_label") ?? Fallback(spriteName, word);
                 // The rare-quirk star appended after a rare quirk's name (twice on an epic
                 // quirk); the game has no word for it anywhere.
                 case "rare_quirk": return S.SpriteRareQuirk;

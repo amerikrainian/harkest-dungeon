@@ -1,5 +1,12 @@
 # Changelog
 
+## V0.4.0
+
+- On the kingdom map, hero rows now say where each hero is (in the party or the inn they are stationed at), any curse they carry, and where a scheduled trip is taking them.
+- Pressing Enter on a stationed hero on the kingdom map now announces the game's hero-travel mode and moves the cursor to that hero's inn; inns in range read as destinations with the route's length in regions.
+- The kingdom map's sieges and treasures now say "days" instead of "sun" for their countdown icon.
+- The kingdom map's Hero Sheet (C) and Inventory (I) buttons and the cursed-regions counter are now in the map's reading order, and C on a hero row opens that hero's sheet.
+
 ## V0.3.9
 
 - An icon standing right beside its own word no longer doubles that word.

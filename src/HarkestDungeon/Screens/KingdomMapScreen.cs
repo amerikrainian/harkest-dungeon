@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Assets.Code.Actor;
 using Assets.Code.Data;
 using Assets.Code.Kingdom;
 using Assets.Code.Kingdom.Events;
 using Assets.Code.Kingdom.Presentation;
+using Assets.Code.Quirk;
 using Assets.Code.UI.Kingdom;
 using Assets.Code.UI.Screens;
 using Assets.Code.Utils;
@@ -26,9 +28,14 @@ namespace DD2A11y.Screens {
     /// stationed heroes, siege with its banded strength, treasure, boss - a hidden boss ring
     /// reads as empty ground because its view objects are inactive. Then the day readout with
     /// the pass-day button and current event, the escalation readout, the timeline's marked
-    /// days, one element per active siege (Enter jumps the cursor there), and the party and
-    /// reserve hero rows (Enter on a reserve hero starts the game's hero-travel mode).
-    /// Escape closes through CloseMap, which the game refuses mid day-turn.
+    /// days, the sidebar (one element per active siege - Enter jumps the cursor there - and the
+    /// cursed-regions counter), the hero row, and the footer's sheet and inventory buttons.
+    /// A hero row reads name, class, where the hero is (the party or their inn), a curse, and
+    /// a scheduled trip's destination. Enter on a party hero jumps the cursor to the party;
+    /// on a stationed hero it enters the game's own hero-travel mode: the cursor lands on the
+    /// hero's inn, every inn in range reads as a destination with the route's length, Enter on
+    /// one commits the trip and Escape cancels the mode, both landing back on the hero's row.
+    /// Escape otherwise closes through CloseMap, which the game refuses mid day-turn.
     /// </summary>
     public sealed class KingdomMapScreen : GameScreen {
         private static readonly AccessTools.FieldRef<KingdomMapCellInnInfoBhv, int> MedSiegeThresholdField =
@@ -44,6 +51,7 @@ namespace DD2A11y.Screens {
         private bool _sessionLive;
         private UIElement _cursorElement;
         private Container _root;
+        private Container _heroes;
         private int _builtSignature;
 
         public KingdomMapScreen(TraditionalNavigator navigator, Action<string, bool> speak, Action cursorMoved) {
@@ -84,9 +92,9 @@ namespace DD2A11y.Screens {
                 _cursor = Manager().CurrentStageCoachCoordinates;
             }
             _sessionLive = true;
-            // A Panel root so Tab crosses cursor / header / sieges / heroes - the cursor
-            // element owns the arrows while focused, so Tab is the only way off it - and Tab
-            // wraps, so the cursor is always one or two presses away.
+            // A Panel root so Tab crosses cursor / header / sidebar / heroes / footer - the
+            // cursor element owns the arrows while focused, so Tab is the only way off it - and
+            // Tab wraps, so the cursor is always a few presses away.
             _root = new RootContainer(ContainerShape.Panel, back: () => {
                 var presentation = (KingdomPresentationBhv)target;
                 if (!presentation.CloseMap()) {
@@ -114,6 +122,10 @@ namespace DD2A11y.Screens {
         }
 
         public override bool HandleAction(string actionKey) {
+            // The first stage of the game's own back press: leave hero-travel mode.
+            if (actionKey == UiActions.Back && CancelHeroMove()) {
+                return true;
+            }
             if (_navigator.Current != _cursorElement) {
                 return false;
             }
@@ -131,6 +143,9 @@ namespace DD2A11y.Screens {
 
         private static KingdomMapManager Manager() =>
             SingletonMonoBehaviour<KingdomBhv>.Instance.KingdomMapManager;
+
+        private static Assets.Code.Roster.RosterManager Roster() =>
+            Singleton<Assets.Code.Game.GameTypeMgr>.Instance.RosterManager;
 
         private bool Step(int dx, int dy) {
             var map = Manager().KingdomMap;
@@ -187,11 +202,21 @@ namespace DD2A11y.Screens {
                 name = SpokenLine.Join(S.KingdomBoss, name);
             }
             parts.Add(string.IsNullOrEmpty(name) ? S.PanelEmpty : name);
+            uint moving = mgr.GetSelectedTransferActorGuid();
+            if (moving != 0 && mgr.AreCoordinatesValidForActorTransfer(moving, _cursor)) {
+                // The game calls out every inn the moving hero may reach and draws the route
+                // onto the selected one; its length in regions decides the trip's risk.
+                parts.Add(S.KingdomDestination);
+                int regions = RegionsBetween(mgr, moving, _cursor);
+                if (regions > 0) {
+                    parts.Add(S.KingdomRegionsAway(regions));
+                }
+            }
             if (_cursor == mgr.CurrentStageCoachCoordinates) {
                 parts.Add(S.KingdomStagecoach);
             } else if (mgr.HasNextStageCoachCoordinates && _cursor == mgr.NextStageCoachCoordinates) {
                 parts.Add(S.KingdomTravelScheduled);
-            } else if (Reachable(mgr)) {
+            } else if (moving == 0 && Reachable(mgr)) {
                 parts.Add(S.KingdomReachable);
             }
             foreach (uint guid in cell.ActorGuids) {
@@ -230,6 +255,20 @@ namespace DD2A11y.Screens {
             }
             return mgr.AreCoordinatesValidForStagecoachTravel(_cursor)
                 || mgr.AreCoordinatesValidForStagecoachFastTravel(_cursor);
+        }
+
+        // Inns sit two grid steps apart with a region between, the unit the game's travel
+        // rule counts ("1 region: risk free, 2 regions: fatigue").
+        private static int RegionsBetween(KingdomMapManager mgr, uint guid, Vector2Int destination) {
+            var origin = mgr.KingdomMap.TryGetCell(guid);
+            if (origin == null) {
+                return 0;
+            }
+            var path = new List<Vector2Int>();
+            if (!KingdomMapPathfinding.FindPath(mgr.KingdomMap, origin.Coordinates, destination, path)) {
+                return 0;
+            }
+            return (path.Count - 1) / 2;
         }
 
         // The cell icon buckets siege strength into three visual bands; the exact number is
@@ -319,7 +358,161 @@ namespace DD2A11y.Screens {
                 _speak(S.StatusUnavailable, true);
                 return;
             }
+            uint moving = kingdom.KingdomMapManager.GetSelectedTransferActorGuid();
+            if (moving != 0) {
+                // In hero-travel mode the game answers only an inn in range (every other cell
+                // is ignored, panels included); the commit hands focus back to the hero's row,
+                // which now reads the trip.
+                if (!kingdom.KingdomMapManager.AreCoordinatesValidForActorTransfer(moving, _cursor)) {
+                    _speak(S.StatusUnavailable, true);
+                    return;
+                }
+                EventKingdomActivateMapCell.Trigger(_cursor, wasSelectedByPointer: false);
+                LandOnHero(moving);
+                return;
+            }
             EventKingdomActivateMapCell.Trigger(_cursor, wasSelectedByPointer: false);
+        }
+
+        // ---- Hero travel ----
+
+        private void ActivateHero(HeroElement element) {
+            var mgr = Manager();
+            uint guid = element.Guid;
+            if (Roster().GetIsActorInParty(guid)) {
+                // A party hero travels with the coach; the game's click pans the camera to
+                // the party, and the cursor is the mod's camera.
+                JumpTo(mgr.CurrentStageCoachCoordinates);
+                _navigator.Focus(_cursorElement, announce: false);
+                return;
+            }
+            bool wasMoving = mgr.GetSelectedTransferActorGuid() == guid;
+            element.PressGame();
+            if (mgr.GetSelectedTransferActorGuid() == guid) {
+                // The game parks its selection on the hero's own inn; the cursor follows.
+                var cell = mgr.KingdomMap.TryGetCell(guid);
+                if (cell != null) {
+                    _cursor = cell.Coordinates;
+                    MirrorSelection();
+                }
+                _navigator.Focus(_cursorElement, announce: false);
+                _speak(S.KingdomMovingHero(Actors.Name(Actors.Get(guid))), true);
+                _speak(CursorLine(), false);
+                _cursorMoved();
+            } else if (wasMoving) {
+                // The same press again leaves the mode; the row reads plain again.
+                _speak(element.GetFocusText(), true);
+            } else {
+                // An immobile hero, or a day turn in progress: the game's own press refuses
+                // silently.
+                _speak(S.StatusUnavailable, true);
+            }
+        }
+
+        private bool CancelHeroMove() {
+            var mgr = Manager();
+            uint guid = mgr.GetSelectedTransferActorGuid();
+            if (guid == 0) {
+                return false;
+            }
+            mgr.ClearSelectedTransferActor(isCancel: true);
+            LandOnHero(guid);
+            return true;
+        }
+
+        // Focus returns to the hero's own row, whose read shows the move's outcome.
+        private void LandOnHero(uint guid) {
+            var element = HeroElementOf(guid);
+            if (element != null) {
+                _navigator.Focus(element, announce: true);
+            } else {
+                _speak(CursorLine(), true);
+            }
+        }
+
+        private HeroElement HeroElementOf(uint guid) {
+            if (_heroes == null) {
+                return null;
+            }
+            foreach (var child in _heroes.Children) {
+                if (child is HeroElement hero && hero.Guid == guid) {
+                    return hero;
+                }
+            }
+            return null;
+        }
+
+        private string HeroHeaderLine(KingdomMapActorHeaderButtonBhv button) {
+            var actor = Actors.Get(button.ActorGuid);
+            if (actor == null) {
+                return UiText.FirstLabel(button.gameObject);
+            }
+            string where;
+            if (Roster().GetIsActorInParty(button.ActorGuid)) {
+                where = S.CrossroadsInParty;
+            } else {
+                var cell = Manager().KingdomMap.TryGetCell(button.ActorGuid);
+                where = cell == null ? null : InnNameAt(cell.Coordinates);
+            }
+            return SpokenLine.Join(Actors.Name(actor), GameLoc.TryGet(actor.ActorDataClass.Id),
+                where, CurseName(actor), TravelLine(button.ActorGuid));
+        }
+
+        // The header's travelling icon, named by the inn panel's own caption for the trip.
+        private string TravelLine(uint guid) {
+            if (!Manager().TryGetTransferCoordsForActor(guid, out var destination)) {
+                return null;
+            }
+            string inn = InnNameAt(destination);
+            string template = GameLoc.TryGet("kingdom_inn_panel_travel_tooltip_label");
+            return template == null ? SpokenLine.Join(S.KingdomTravelScheduled, inn) : string.Format(template, inn);
+        }
+
+        // The header's curse badge (the quirk the game tags as a curse - the Crimson Curse a
+        // boss visit may demand), by the quirk's own name.
+        private static string CurseName(ActorInstance actor) {
+            if (!actor.QuirkContainer.IsEnabled) {
+                return null;
+            }
+            foreach (var instance in actor.QuirkContainer.GetInstances()) {
+                if (instance.Definition.Tags.Contains("quirk_curse")) {
+                    return QuirkDescription.GetNameString(instance.Definition, actor, appendRareIcon: false);
+                }
+            }
+            return null;
+        }
+
+        // The header button's own tooltip (the vitals bar) and the tooltip of the hero's
+        // portrait on its inn (the travel rule, immobility, cancelling a trip).
+        private IEnumerable<string> HeroDetailLines(KingdomMapActorHeaderButtonBhv button) {
+            foreach (var line in TooltipReader.Lines(button.gameObject)) {
+                yield return line;
+            }
+            var mapButton = MapActorButton(button.ActorGuid);
+            if (mapButton != null) {
+                foreach (var line in TooltipReader.Lines(mapButton.gameObject)) {
+                    yield return line;
+                }
+            }
+        }
+
+        // The hero's portrait button on its map cell; the party has none.
+        private static KingdomActorButtonBhv MapActorButton(uint guid) {
+            var mgr = Manager();
+            var cell = mgr.KingdomMap.TryGetCell(guid);
+            if (cell == null) {
+                return null;
+            }
+            var view = mgr.KingdomMapRoot[cell.Coordinates];
+            if (view == null) {
+                return null;
+            }
+            foreach (var button in view.gameObject.GetComponentsInChildren<KingdomActorButtonBhv>()) {
+                if (button.ActorGuid == guid) {
+                    return button;
+                }
+            }
+            return null;
         }
 
         // ---- Tree ----
@@ -351,10 +544,10 @@ namespace DD2A11y.Screens {
             }
             _root.Add(header);
 
-            var sieges = new Container(ContainerShape.VerticalList);
+            var sidebar = new Container(ContainerShape.VerticalList);
             foreach (var siege in SingletonMonoBehaviour<KingdomBhv>.Instance.KingdomSiegeManager.KingdomSiegeInstances) {
                 var captured = siege;
-                sieges.Add(new ActionElement(
+                sidebar.Add(new ActionElement(
                     () => SpokenLine.Join(S.KingdomSiege, InnNameAt(captured.m_Coordinates),
                         string.Format(GameLoc.TryGet("kingdom_map_days_remaining") ?? "{0}", captured.Delay)),
                     S.RoleButton,
@@ -365,22 +558,39 @@ namespace DD2A11y.Screens {
                         _navigator.Focus(_cursorElement, announce: false);
                     }));
             }
-            if (!sieges.IsEmptyContainer) {
-                _root.Add(sieges);
+            // The sidebar's cursed-regions counter, which the game shows once a region is
+            // infected; its tooltip's own text.
+            if (Manager().GetBiomeModifierTagCount("infection") > 0) {
+                sidebar.Add(new ReadoutElement(() => CursedRegionsLine()));
+            }
+            if (!sidebar.IsEmptyContainer) {
+                _root.Add(sidebar);
             }
 
+            _heroes = null;
             var headerBhv = UnityEngine.Object.FindObjectOfType<KingdomMapActorHeaderBhv>();
             if (headerBhv != null) {
                 var heroes = new Container(ContainerShape.HorizontalList);
                 foreach (var button in headerBhv.GetComponentsInChildren<KingdomMapActorHeaderButtonBhv>(includeInactive: false)) {
-                    var captured = button;
                     var selectable = button.GetComponent<Selectable>();
                     if (selectable != null) {
-                        heroes.Add(new SelectableElement(selectable, () => HeroHeaderLine(captured)));
+                        heroes.Add(new HeroElement(this, button, selectable));
                     }
                 }
                 if (!heroes.IsEmptyContainer) {
                     _root.Add(heroes);
+                    _heroes = heroes;
+                }
+            }
+
+            // The footer's sheet and inventory buttons, captioned with the keys the game
+            // advertises for them (C, I), which the captured keyboard routes to the buttons.
+            if (ui != null) {
+                var footer = new Container(ContainerShape.HorizontalList);
+                AddNamedButton(footer, ui, "CharacterSheetBtn");
+                AddNamedButton(footer, ui, "InventoryBtn");
+                if (!footer.IsEmptyContainer) {
+                    _root.Add(footer);
                 }
             }
             _builtSignature = Signature();
@@ -412,6 +622,12 @@ namespace DD2A11y.Screens {
             return string.Format(GameLoc.TryGet("kingdom_map_escalation_tooltip_title") ?? "escalation {0}", level);
         }
 
+        private static string CursedRegionsLine() {
+            var mgr = Manager();
+            return string.Format(GameLoc.TryGet("kingdom_map_cursed_regions_tooltip") ?? "{0} / {1}",
+                mgr.GetBiomeModifierTagCount("infection"), mgr.GetBiomeCount());
+        }
+
         private static string TimelineLine(KingdomMapTimelineBhv timeline) {
             foreach (var tip in timeline.GetComponentsInChildren<Assets.Code.UI.Tooltips.TextTooltipBhv>(includeInactive: false)) {
                 if (tip.gameObject.name.StartsWith("LastDayNotch", StringComparison.Ordinal)) {
@@ -438,16 +654,6 @@ namespace DD2A11y.Screens {
             }
         }
 
-        private string HeroHeaderLine(KingdomMapActorHeaderButtonBhv button) {
-            var actor = Actors.Get(button.ActorGuid);
-            if (actor == null) {
-                return UiText.FirstLabel(button.gameObject);
-            }
-            string travelling = Manager().DoesActorHaveTransfer(button.ActorGuid)
-                ? S.KingdomTravelScheduled : null;
-            return SpokenLine.Join(Actors.Name(actor), GameLoc.TryGet(actor.ActorDataClass.Id), travelling);
-        }
-
         private string InnNameAt(Vector2Int coords) {
             var view = Manager().KingdomMapRoot[coords] as KingdomMapCellBhv;
             var context = view == null ? null : view.GetComponentInChildren<DataContextBhv>(includeInactive: false);
@@ -461,6 +667,7 @@ namespace DD2A11y.Screens {
                 signature = signature * 31 + siege.m_Coordinates.x;
                 signature = signature * 31 + siege.m_Coordinates.y;
             }
+            signature = signature * 31 + (kingdom.KingdomMapManager.GetBiomeModifierTagCount("infection") > 0 ? 1 : 0);
             var headerBhv = UnityEngine.Object.FindObjectOfType<KingdomMapActorHeaderBhv>();
             if (headerBhv != null) {
                 foreach (var button in headerBhv.GetComponentsInChildren<KingdomMapActorHeaderButtonBhv>(includeInactive: false)) {
@@ -468,6 +675,41 @@ namespace DD2A11y.Screens {
                 }
             }
             return signature;
+        }
+
+        /// <summary>
+        /// A hero in the map's header row. Enter goes to the screen's hero handling (the party
+        /// jump or the game's hero-travel mode); the sheet key opens the hero's sheet the way
+        /// the game's right-click does. The hero buffer carries the hero's vitals.
+        /// </summary>
+        private sealed class HeroElement : SelectableElement {
+            private readonly KingdomMapScreen _screen;
+            private readonly KingdomMapActorHeaderButtonBhv _button;
+
+            public HeroElement(KingdomMapScreen screen, KingdomMapActorHeaderButtonBhv button, Selectable selectable)
+                : base(selectable) {
+                _screen = screen;
+                _button = button;
+            }
+
+            public uint Guid => _button.ActorGuid;
+
+            public override string Label => _screen.HeroHeaderLine(_button);
+
+            public override IEnumerable<ElementAction> GetActions() {
+                yield return new ElementAction(ActionIds.Activate, () => _screen.ActivateHero(this));
+                yield return new ElementAction("inspect", _button.OpenCharacterSheet);
+            }
+
+            // The game's own submit press on the button: hero-travel mode for a stationed
+            // hero, refused for the party, an immobile hero, or outside the player's turn.
+            public void PressGame() => Submit();
+
+            protected override IEnumerable<string> GetDetailLines() => _screen.HeroDetailLines(_button);
+
+            public override IEnumerable<string> GetSideBufferLines(string bufferKey)
+                => bufferKey == Core.Buffers.BufferKeys.Hero
+                    ? HeroStatus.Lines(Guid) : base.GetSideBufferLines(bufferKey);
         }
     }
 }

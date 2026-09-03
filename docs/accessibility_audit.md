@@ -2345,8 +2345,8 @@ with no SCREEN stack top (any pushed screen - cell panel, hero sheet, storage - 
 and reads instead), registered above `InnScreen`. Escape = `KingdomPresentationBhv.CloseMap()`,
 which the game itself refuses during day-turn cinematics (spoken "unavailable").
 
-- **Grid cursor** (first Tab stop, Panel root - Tab crosses cursor / header / sieges / heroes,
-  wrapping both directions): arrows step the 9x9 cell grid, Home returns to the stagecoach,
+- **Grid cursor** (first Tab stop, Panel root - Tab crosses cursor / header / sidebar /
+  heroes / footer, wrapping both directions): arrows step the 9x9 cell grid, Home returns to the stagecoach,
   landings mirror into the game's own selection (camera pan, highlight, travel-arrow preview -
   all presentational) when the cell is selectable.
 - **A cell reads view-first, so hidden content cannot leak by construction**: the pre-reveal
@@ -2369,10 +2369,32 @@ which the game itself refuses during day-turn cinematics (spoken "unavailable").
   the game's own `OnPassDay` behind the hold's gates (`CanPassDay`, alt view,
   `WAIT_ON_PLAYER`) with the hold's confirm sound; a refused press answers "unavailable"
   (day advance player-verified live 2026-08-01).
-- **Sieges**: one element per active siege - inn name + days; Enter jumps the cursor to the
-  cell, handing focus straight back to the grid cursor at the jumped-to cell.
-- **Heroes**: party + reserve rows (name, class, travel-scheduled state; Enter on a reserve
-  hero enters the game's own hero-travel mode, gated to WAIT_ON_PLAYER).
+- **Sidebar**: one element per active siege - inn name + days; Enter jumps the cursor to the
+  cell, handing focus straight back to the grid cursor at the jumped-to cell. The
+  cursed-regions counter follows once a region is infected (the game's own "{0} of {1}
+  regions infected" tooltip text, model-composed).
+- **Heroes** (one row, party first): name, class, where they are ("in party", else the inn
+  they are stationed at, from the cell's own `cell_name`), a curse badge by the quirk's own
+  name, and a scheduled trip as the inn panel's own "Travelling to {inn}" caption. Buffer: the
+  header's vitals tooltip plus the hero's map-portrait tooltip (the travel rule, immobility,
+  "Hold to Cancel Travel"); hero buffer = vitals. The sheet key (C) opens that hero's sheet
+  (the game's right-click). Enter on a party hero jumps the cursor to the party's cell (the
+  game's click pans the camera there).
+- **Hero travel** (live-verified 2026-09-02 with a commit to the camp and its cancel): Enter
+  on a stationed hero runs the button's own submit (`Handle_HERO_TRAVEL_MODE`, gated to
+  WAIT_ON_PLAYER, refused for immobile heroes - spoken "unavailable"). Entry speaks "moving
+  {hero}, activate a destination inn" and parks the cursor on the hero's inn, where the game
+  parks its own selection. While a hero is selected every inn/camp in range reads
+  "destination, N region(s) away" (the route the game draws, two grid steps per region -
+  the risk rule its travel tooltip states), "reachable" is suppressed, and Enter on any other
+  cell answers "unavailable" (the game ignores those activations outright, panels included).
+  Enter on a destination commits through `EventKingdomActivateMapCell` and lands back on the
+  hero's row, which now reads the trip; Escape cancels the mode (the first stage of the game's
+  `TryGoBackButton`) and lands on the row too. Enter on a travelling hero cancels the trip and
+  re-enters the mode, as the game's own press does. Trips apply on the next day's START
+  state regardless of distance, so no arrival countdown exists to read.
+- **Footer**: Hero Sheet (C) and Inventory (I) buttons, so the captioned keys resolve on the
+  captured keyboard (C on a non-hero element opens the default sheet).
 
 > **Note:** Panel entry announces read the cell's name from the game's viewed-cell query (set
 > before the push), so they are correct from frame one; the populate re-land a beat later
@@ -2380,8 +2402,9 @@ which the game itself refuses during day-turn cinematics (spoken "unavailable").
 > AnnounceCurrentIfChanged), so only a genuinely different line (the inn panel's garrison
 > arriving) speaks twice.
 
-**Known gaps:** sidebar cursed-regions counter unread; travel-path preview for hero transfers
-is visual only.
+**Known gaps:** closing a sheet opened from a hero row re-enters on the grid cursor, not the
+row; a hero's arrival after a day pass is not announced (the row and the inn cell read the new
+station).
 
 ## 10.2 Inn/Camp Cell Panel (`KingdomInnPanelScreen`) - WORKS
 

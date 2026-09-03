@@ -122,6 +122,10 @@ namespace DD2A11y.Core.Strings {
             // Grid coordinates, bare numbers; {0} = row, {1} = column.
             D("KingdomCell", "{0}, {1}"),
             D("KingdomMovingHero", "moving {0}, activate a destination inn"),
+            // A cell the moving hero may travel to, and the route's length in regions (the
+            // game's own risk rule: one region is safe, two fatigue the hero).
+            D("KingdomDestination", "destination"),
+            D("KingdomRegionsAway", "{0} region away|{0} regions away"),
             D("ScreenKingdomEvent", "kingdom event"),
             // The road-fork route menu, shown while the coach waits at a junction.
             D("ScreenFork", "fork"),
@@ -709,6 +713,8 @@ namespace DD2A11y.Core.Strings {
         public static string KingdomQuest => T("KingdomQuest");
         public static string KingdomCell(int row, int col) => F("KingdomCell", row, col);
         public static string KingdomMovingHero(string hero) => F("KingdomMovingHero", hero);
+        public static string KingdomDestination => T("KingdomDestination");
+        public static string KingdomRegionsAway(int regions) => P("KingdomRegionsAway", regions);
         public static string ScreenKingdomEvent => T("ScreenKingdomEvent");
         public static string ScreenFork => T("ScreenFork");
         public static string ScreenInn => T("ScreenInn");
