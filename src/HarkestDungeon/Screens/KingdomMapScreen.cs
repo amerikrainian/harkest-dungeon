@@ -87,14 +87,42 @@ namespace DD2A11y.Screens {
             _navigator.Focus(_cursorElement, announce: false);
         }
 
+        /// <summary>The last (+1) or first (-1) point of the current category: the cursor
+        /// jumps there and reads the cell; already there, the press is silent.</summary>
+        public void PoiEdge(int direction) {
+            if (!Standing()) {
+                return;
+            }
+            var cells = _poi.Cells();
+            if (cells.Count == 0) {
+                return;
+            }
+            var target = direction > 0 ? cells[cells.Count - 1] : cells[0];
+            if (target == _cursor) {
+                return;
+            }
+            JumpTo(target);
+            _navigator.Focus(_cursorElement, announce: false);
+        }
+
         /// <summary>The next (+1) or previous (-1) category with any cell under the current
-        /// filter; reads its name and how many cells it holds. The cursor stays.</summary>
+        /// filter: reads its name and how many cells it holds, then lands the cursor on its
+        /// first cell and reads that.</summary>
         public void PoiCategory(int direction) {
             if (!Standing()) {
                 return;
             }
             _poi.StepCategory(direction);
             _speak(PoiCategoryLine(), true);
+            var cells = _poi.Cells();
+            if (cells.Count == 0) {
+                return;
+            }
+            _cursor = cells[0];
+            MirrorSelection();
+            _navigator.Focus(_cursorElement, announce: false);
+            _speak(CursorLine(), false);
+            _cursorMoved();
         }
 
         /// <summary>Flip the reachable filter (from the stagecoach, or from the hero a

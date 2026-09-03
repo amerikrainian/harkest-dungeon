@@ -56,8 +56,10 @@ Points of interest work like say-the-spire2's map reviewer: a category of cells 
 | --- | --- | --- | --- |
 | Previous point of interest | , | Unbound | Jump the cursor to the previous cell of the current category |
 | Next point of interest | . | Unbound | Jump the cursor to the next cell of the current category |
-| Previous category | [ | Unbound | Switch to the previous category with any cells and hear its count |
-| Next category | ] | Unbound | Switch to the next category with any cells and hear its count |
+| First point of interest | Shift+, | Unbound | Jump the cursor to the category's first cell; silent when already there |
+| Last point of interest | Shift+. | Unbound | Jump the cursor to the category's last cell; silent when already there |
+| Previous category | [ | Unbound | Switch to the previous category with any cells, hear its count, and land on its first cell |
+| Next category | ] | Unbound | Switch to the next category with any cells, hear its count, and land on its first cell |
 | Reachable filter | \ | Unbound | Toggle between all cells and reachable ones: from the stagecoach, or from the hero you are choosing a destination for |
 
 Categories, in order: inns, camps, sieges, stationed heroes, treasure, regions, cursed regions, quest regions, the boss, and underground access.

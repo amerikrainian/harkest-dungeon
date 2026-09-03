@@ -604,6 +604,8 @@ namespace DD2A11y.Core.Strings {
             D("InputKingdomPoiCategoryPrev", "Previous point of interest category"),
             D("InputKingdomPoiCategoryNext", "Next point of interest category"),
             D("InputKingdomPoiReachable", "Toggle reachable points of interest"),
+            D("InputKingdomPoiFirst", "First point of interest"),
+            D("InputKingdomPoiLast", "Last point of interest"),
             // The combat glance hotkeys, one action per battlefield slot in rank order;
             // {0} = the slot number. Bare key = name and health, Shift = buffs and debuffs,
             // Ctrl = resistances.
@@ -951,6 +953,8 @@ namespace DD2A11y.Core.Strings {
         public static string InputKingdomPoiCategoryPrev => T("InputKingdomPoiCategoryPrev");
         public static string InputKingdomPoiCategoryNext => T("InputKingdomPoiCategoryNext");
         public static string InputKingdomPoiReachable => T("InputKingdomPoiReachable");
+        public static string InputKingdomPoiFirst => T("InputKingdomPoiFirst");
+        public static string InputKingdomPoiLast => T("InputKingdomPoiLast");
         public static string InputCombatEnemy(int slot) => F("InputCombatEnemy", slot);
         public static string InputCombatEnemyEffects(int slot) => F("InputCombatEnemyEffects", slot);
         public static string InputCombatEnemyResists(int slot) => F("InputCombatEnemyResists", slot);

@@ -2427,9 +2427,11 @@ which the game itself refuses during day-turn cinematics (spoken "unavailable").
 - **Points of interest** (`KingdomPointsOfInterest`, the `Kingdom` input category;
   live-verified 2026-09-02 through injected key events): comma/period jump the cursor to the
   previous/next cell of the current category in reading order (row, then column) from the
-  cursor's cell, silent at the list's end; the brackets switch to the previous/next category
-  with any cells (wrapping, empties skipped) and speak "{category}, {count}"; backslash
-  toggles the reachable filter and speaks "reachable"/"all" plus the category line.
+  cursor's cell, silent at the list's end; Shift+comma/period jump to the category's first
+  and last cell, silent when already there; the brackets switch to the previous/next
+  category with any cells (wrapping, empties skipped), speak "{category}, {count}", and land
+  the cursor on the category's first cell, reading it; backslash toggles the reachable
+  filter and speaks "reachable"/"all" plus the category line (the cursor stays).
   Categories in order - inns, camps, sieges, stationed heroes, treasure, regions, cursed
   regions (infection modifier), quest regions (other modifier or kill contract), the boss,
   underground access - are read live from the map model, view-gated (a hidden view is never

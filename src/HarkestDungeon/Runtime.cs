@@ -530,6 +530,10 @@ namespace DD2A11y {
                 InputCategory.Kingdom).AddBinding(K(Key.RightBracket));
             Reg("kingdom.poi.reachable", () => S.InputKingdomPoiReachable, () => _kingdomMap.PoiToggleReachable(),
                 InputCategory.Kingdom).AddBinding(K(Key.Backslash));
+            Reg("kingdom.poi.first", () => S.InputKingdomPoiFirst, () => _kingdomMap.PoiEdge(-1),
+                InputCategory.Kingdom).AddBinding(K(Key.Comma, shift: true));
+            Reg("kingdom.poi.last", () => S.InputKingdomPoiLast, () => _kingdomMap.PoiEdge(+1),
+                InputCategory.Kingdom).AddBinding(K(Key.Period, shift: true));
             // Discard the focused item (the game's shift-click); the element advertises the
             // action only where the game allows the discard, so anything else answers
             // "unavailable" rather than silence.
