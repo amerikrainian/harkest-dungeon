@@ -57,6 +57,7 @@ KingdomCell = {0}，{1}
 KingdomMovingHero = 正在移动{0}
 KingdomDestination = 目的地
 KingdomRegionsAway = 相距{0}个地区
+KingdomDaysAway = 相距{0}天
 KingdomHeroArrived = {0}到达{1}
 KingdomPoiAll = 全部
 ScreenKingdomEvent = 王国事件

@@ -140,6 +140,11 @@ namespace DD2A11y.Screens {
         }
 
         public override Container BuildRoot(object target) {
+            // Each fresh open proves the route graph's hop rule against the game's own
+            // answers before any days-away line is read.
+            if (!_sessionLive) {
+                KingdomRoutes.VerifyAgainstGame();
+            }
             // The cursor survives a panel round-trip (the map stayed open behind it) and homes
             // to the stagecoach on a fresh open.
             if (!_sessionLive || !Manager().KingdomMap.IsValidCoordinate(_cursor)) {
@@ -278,6 +283,15 @@ namespace DD2A11y.Screens {
             parts.Add(string.IsNullOrEmpty(name) ? S.PanelEmpty : name);
             parts.Add(PositionWords());
             uint moving = mgr.GetSelectedTransferActorGuid();
+            if (moving == 0) {
+                // The coach's travel time, hop by hop on today's map; its own cell and a
+                // booked destination read their state instead. While a hero is being sent
+                // the map is that hero's range, never the coach's, so no coach count then.
+                int? days = KingdomRoutes.DaysTo(_cursor);
+                if (days > 0) {
+                    parts.Add(S.KingdomDaysAway(days.Value));
+                }
+            }
             if (moving != 0 && mgr.AreCoordinatesValidForActorTransfer(moving, _cursor)) {
                 // The game calls out every inn the moving hero may reach and draws the route
                 // onto the selected one; its length in regions decides the trip's risk.

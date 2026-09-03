@@ -59,6 +59,7 @@ KingdomCell = {0}, {1}
 KingdomMovingHero = moving {0}
 KingdomDestination = destination
 KingdomRegionsAway = {0} region away|{0} regions away
+KingdomDaysAway = {0} day away|{0} days away
 KingdomHeroArrived = {0} arrived at {1}
 KingdomPoiAll = all
 ScreenKingdomEvent = kingdom event

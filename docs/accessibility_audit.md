@@ -2361,11 +2361,27 @@ which the game itself refuses during day-turn cinematics (spoken "unavailable").
   treasure reads from the cell's own bindings (the game hides it on the occupied cell); siege
   strength speaks only the 3-band bucket the icon shows; a boss-subtype biome is nameless on
   screen and stays so.
-- Cell line: name, row and column, stagecoach here / travel scheduled / reachable
-  (user-input states only), stationed hero names, siege (band + days), treasure (+ duration),
-  biome markers (cursed/quest, kill contract title, reward offered, upgraded). Buffer: the
-  cell's own tooltips ("The Stagecoach is here", hero classes), fast-travel state, hero
-  name+class lines.
+- Cell line: name, row and column, the coach's travel time ("3 days away"), stagecoach
+  here / travel scheduled / reachable (user-input states only), stationed hero names, siege
+  (band + days), treasure (+ duration), biome markers (cursed/quest, kill contract title,
+  reward offered, upgraded). Buffer: the cell's own tooltips ("The Stagecoach is here", hero
+  classes), fast-travel state, hero name+class lines.
+- **Days away** (`KingdomRoutes`, live-verified 2026-09-02): a breadth-first walk over stop
+  cells with the game's own hop rules as edges - a straight two-cell road hop to an inn,
+  camp, or conditions-met boss across an active region (`AreCoordinatesValidForStagecoachTravel`
+  generalized to any origin), and an underground hop from a network inn to any other
+  visited network inn (`AreCoordinatesValidForStagecoachFastTravel`) - one day each, since
+  the day counter moves once per travel. The origin is the booked destination while a trip
+  is scheduled, as the game's own Manhattan-halved helper counts. A region reads the day of
+  the cheapest hop crossing it; an unreachable cell (the unrevealed boss and its ring, where
+  the game's helper would still say "1") reads no count; the coach's cell and a booked
+  destination read their state instead. Every fresh open compares the graph's one-hop set
+  from the coach against the game's two validity functions over every cell and logs a
+  warning on any mismatch, so a changed travel rule surfaces in the log rather than in a
+  wrong number. On the Drakia save every reachable stop agreed with the helper, the hidden
+  boss cells did not. Not foreseen: sieges converting inns, the boss reveal, network unlocks
+  - the same limit a sighted hop count has. Suppressed while a hero is selected for travel:
+  the map is then that hero's range, never the coach's.
 - Enter = the game's `EventKingdomActivateMapCell` (gated on `IsInUserInputState`): inn/camp
   opens the inn panel, biome the biome panel, boss travels or shows the game's blocked dialog.
 - **Header** readouts: day, PASS DAY button, current-event button (opens the event panel),

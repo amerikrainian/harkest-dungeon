@@ -57,6 +57,7 @@ KingdomCell = {0}, {1}
 KingdomMovingHero = moviendo a {0}
 KingdomDestination = destino
 KingdomRegionsAway = a {0} región|a {0} regiones
+KingdomDaysAway = a {0} día|a {0} días
 KingdomHeroArrived = {0} llegó a {1}
 KingdomPoiAll = todo
 ScreenKingdomEvent = evento del reino

@@ -57,6 +57,7 @@ KingdomCell = {0}, {1}
 KingdomMovingHero = {0} 이동 중
 KingdomDestination = 목적지
 KingdomRegionsAway = {0}개 지역 거리
+KingdomDaysAway = {0}일 거리
 KingdomHeroArrived = {0} {1} 도착
 KingdomPoiAll = 전체
 ScreenKingdomEvent = 왕국 이벤트

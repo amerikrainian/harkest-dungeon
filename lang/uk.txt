@@ -57,6 +57,7 @@ KingdomCell = {0}, {1}
 KingdomMovingHero = переміщення {0}
 KingdomDestination = пункт призначення
 KingdomRegionsAway = через {0} регіон|через {0} регіони|через {0} регіонів
+KingdomDaysAway = {0} день шляху|{0} дні шляху|{0} днів шляху
 KingdomHeroArrived = {0} прибув до {1}
 KingdomPoiAll = усі
 ScreenKingdomEvent = подія королівства
