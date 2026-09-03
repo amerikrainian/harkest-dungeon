@@ -47,6 +47,8 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<CharacterSheetStatsUiBhv, TextTooltipBhv>("m_healthTooltip");
         private static readonly AccessTools.FieldRef<CharacterSheetStatsUiBhv, TextTooltipBhv> StressTipField =
             AccessTools.FieldRefAccess<CharacterSheetStatsUiBhv, TextTooltipBhv>("m_stressTooltip");
+        private static readonly AccessTools.FieldRef<CharacterSheetStatsUiBhv, GameObject> RerollButtonField =
+            AccessTools.FieldRefAccess<CharacterSheetStatsUiBhv, GameObject>("m_rerollQuirkButton");
         private static readonly AccessTools.FieldRef<CharacterSheetStatsUiBhv, TextTooltipBhv> SpeedTipField =
             AccessTools.FieldRefAccess<CharacterSheetStatsUiBhv, TextTooltipBhv>("m_speedTooltip");
         private static readonly AccessTools.FieldRef<CharacterSheetStatsUiBhv, List<GameObject>> CombatItemsField =
@@ -469,12 +471,12 @@ namespace DD2A11y.Screens {
             }
             _items.Add(resistances);
 
-            BuildQuirks(sheet);
+            BuildQuirks(sheet, stats);
             BuildSkills(sheet, stats);
             BuildTrinkets(stats);
         }
 
-        private void BuildQuirks(CharacterSheetUiBhv sheet) {
+        private void BuildQuirks(CharacterSheetUiBhv sheet, CharacterSheetStatsUiBhv stats) {
             var actor = Actors.Get(sheet.ActorGuid);
             if (actor?.QuirkContainer == null) {
                 return;
@@ -498,6 +500,18 @@ namespace DD2A11y.Screens {
             }
             if (!quirks.IsEmptyContainer) {
                 _items.Add(quirks);
+            }
+            // The quirk-reroll button the game shows beside the quirks on a fresh hero's sheet
+            // at the Confessions crossroads (altar-unlocked, candle-priced, hidden once
+            // unaffordable): its own caption carries the cost, its tooltip the candle balance.
+            // Enter is the button's own click, which spends the candles and rerolls; the
+            // quirk rows read live, so they speak the new set.
+            var reroll = RerollButtonField(stats);
+            if (reroll != null && reroll.activeInHierarchy) {
+                var button = reroll.GetComponent<Button>();
+                if (button != null) {
+                    _items.Add(new SelectableElement(button));
+                }
             }
         }
 
