@@ -92,6 +92,10 @@ Conventions every supported screen follows. Individual sections below note only 
 
 ## 1.1 Boot and Loading - N/A
 
+The LOADING mode's splash (`RedHookSplashSceneBhv`) shows informational front-end cards
+before the title menu - non-interactive and identical every boot; their text is not
+spoken (open, low).
+
 Steam launch to MAIN_MENU takes ~20 s; the LOADING mode surface is non-interactive. Nothing to
 read.
 
@@ -550,7 +554,9 @@ Live-verified 2026-07-23 with the exit-game dialog (`ConfirmationDialogBhv`).
 
 ## 2.4 Generic Modal (`UiModalScreen`) - BUILT
 
-`UiModalBhv` (`title_text`/`body_text`). No UiModal appeared during live testing yet.
+`UiModalBhv` (`title_text`/`body_text`). No UiModal appeared during live testing yet, and
+the decompiled game has no code that pushes one and no subclass of it - likely dead in the
+shipped game. The screen costs nothing but counts as no coverage.
 
 ## 2.5 Token Glossary (`TokenGlossaryScreen`) - BUILT
 
@@ -2381,6 +2387,11 @@ covers the read-only road sheet on Z (5.6).
 Live-verified: full walk. Unexercised: a repair press (stats were full), equip/unequip on this
 sheet.
 
+- **The coach sheet's vitrine button** (`StageCoachConfigUiBhv.ToggleTorchCompletionScreen`)
+  is not an element; the screen declares the Roster category, so the mod's Z key (the game's
+  own vitrine hotkey, 4.3) opens the Infernal Flame Vitrine from here as it does at the
+  crossroads (noted 2026-09-05).
+
 ## 8.6 Select Route (`RouteSelectScreen`) - WORKS
 
 Over `SubScreenBiomeChoiceBhv`.
@@ -2537,10 +2548,27 @@ Live-verified 2026-07-24 on the inn's End Expedition screen ("Every League, a Le
 has text - the game-over screen announced itself as "Continue" (its first readable label at
 that instant) rather than its title.
 
-## 9.2 The Mountain and Final Confession - NOT STARTED
+## 9.2 The Mountain and Final Confession - PARTIAL
 
-The end-of-run mountain flow rides covered surfaces (driving, combat, results, cinematics) but
-has had no dedicated audit pass; boss-specific presentation is unaudited.
+The end-of-run flow - last inn (route select with the trophy prompt), boss select (5.5),
+mountain biomes, boss combat, game over, flame unlock - mostly rides covered surfaces, with
+these holes (audit 2026-08-13, re-verified 2026-09-05):
+
+- **Infernal-flame unlock toast** (`GameOverScreenWidgetBhv`, the only message toast the
+  game ships): its text speaks since the toast patches route every mode (5.2), but its click
+  action (opening the vitrine) has no keyboard path on the game-over floor - the vitrine
+  Z key is a Roster-category action (crossroads, coach sheet, the vitrine itself). The
+  vitrine is reachable from the next crossroads. Open, low.
+- **Last-chance trophy presentation** (`GameUIBhv.ShowLastChanceTrophyBiomeAnim`): a
+  timeline that pauses the road on `OnTrophyShownPause` and waits for any key - an invisible
+  modal pause. The driving screen sweeps the trophy button; the presentation itself is
+  unmodeled. Open, medium; unexercised (needs a save in the last biome).
+- **Boss set-pieces** (`OnBossDisableUISignal` hiding the combat UI, `EventPlayBossEndUI`,
+  the `final_boss` arena): unaudited.
+- **Route-select mountain slot**: the equip-trophy prompt is composed (5.5/8.6) but never
+  exercised.
+- **All-flames celebration** (`m_allTorchCompletionPresentationPrefab`, shown instead of the
+  toast once every boss flame is complete): unmodeled, rare.
 
 ---
 
@@ -2784,13 +2812,41 @@ affinity-skill landing cue (7.1.1).
 
 ## 12.5 Uncovered Surfaces (consolidated)
 
-- Mods manager panel details (1.8: Enable/Disable All toggles, mod rows, Browse Mods target)
-- Key rebinding flow (2.1.2)
+Regenerated 2026-09-05 from the code (the coverage audit of 2026-08-13 and its follow-up).
+
+Whole surfaces with no reader:
 - Credits (2.8)
-- Combat intros, REALTIME_CINEMATIC (7.4)
-- The Mountain's boss-specific presentation (9.2)
-- Kingdoms siege gang-escalation tooltip (7.1.5 gap)
+- Combat intros, REALTIME_CINEMATIC mode: no screen, keyboard released, dead air apart from
+  subtitles (7.4)
+- The LOADING splash cards (1.1)
+- Import Save Data on the mods side of the title menu (`ModImportSaveWidgetBhv`, 1.7)
+- Kingdoms end-of-campaign results (`KingdomResultsScreenBhv`; the floor's score rows should
+  read, never seen live)
+- The kingdom map's Alt View overlay (timeline and siege scrubbing; only the pass-day refusal
+  knows it, 10.2)
+
+Gaps inside covered surfaces:
+- The Mountain's holes (9.2): the flame-unlock toast's click path, the last-chance trophy
+  pause, boss set-pieces, the all-flames celebration
+- Driving HUD: the autosave throbber (deliberately unspoken)
+- Combat: the hospital's own "Cured" pop (`EventHospitalQuirkTreated`; the hospital screen's
+  re-read covers the outcome)
+- Loot toasts outside the road: a hero-goal reward off the road speaks through the objective
+  toast, but the trashed-loot toast is silent off the road and reads as a plain pickup on it
+- Barks outside the road and inn (the combat skill-hover flavor bark; the invalid reason is
+  spoken instead)
+- Hero rename on the hero sheet (the crossroads row carries rename)
+- The generic floor reads labeled selectables only and does not filter nested selectables:
+  a labeled parent and its child can both read, and the wrong one can be the live control
+  (the siege results panel's root button, 8.10, before its reader) - the inn sweep keeps the
+  outer one, the embark nag wants the inner one, so no blanket rule fits
 - DEBUG-tab filter field; sliders' display values (2.1 gaps)
+- Kingdoms siege gang-escalation tooltip (7.1.5 gap)
+
+Deliberate parity skips (visual-only cues with no channel): the hero ribbon's
+route-preference icon while approaching a junction (the fork popup speaks preferences once it
+stands), portrait attitude colouring, item "new" glows, minimap scout pulses, "newly
+available" sheens, the Kingdoms siege-imminent pulse, inn visual damage states.
 
 ---
 
