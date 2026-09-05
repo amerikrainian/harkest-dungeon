@@ -2823,7 +2823,7 @@ Whole surfaces with no reader:
 - Kingdoms end-of-campaign results (`KingdomResultsScreenBhv`; the floor's score rows should
   read, never seen live)
 - The kingdom map's Alt View overlay (timeline and siege scrubbing; only the pass-day refusal
-  knows it, 10.2)
+  knows it, 10.1)
 
 Gaps inside covered surfaces:
 - The Mountain's holes (9.2): the flame-unlock toast's click path, the last-chance trophy
