@@ -150,6 +150,7 @@ namespace DD2A11y {
             }));
             Router.Register(new PauseScreen());
             Router.Register(new ProfileSummaryScreen());
+            Router.Register(new LanguageWarningScreen());
             _sheet = new CharacterSheetScreen(Navigator, speak);
             Router.Register(_sheet);
             // The sheet's saved-skill-sets screen, pushed above the sheet by its button.

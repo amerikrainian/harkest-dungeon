@@ -28,6 +28,7 @@
 - The loot screen now reads its reward captions (mastery, flame, coach gains) and any skill a hero-story fight unlocked, with the skill card in the buffer.
 - Travelogue quirk entries no longer give away a hidden quirk: they read as the game's click-to-reveal button, Enter reveals, and a revealed entry carries the quirk's effects in the buffer.
 - The crossroads now reads the selected confession, and each hero's buffer carries the goal they bring to the run with its reward.
+- The early-access language warning now reads its title and text, not just its Continue button.
 
 ## V0.3.9
 

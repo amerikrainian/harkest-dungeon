@@ -642,6 +642,17 @@ rebuilt in by instance-id signature.
 the description field may be multiline (Enter might insert a newline rather than end the
 edit - Escape always ends it).
 
+## 2.7b Language Warning (`LanguageWarningScreen`) - WORKS
+
+The disclaimer the game shows on switching to a language it marks as early-access (cs,
+de_DE, es_lat, fr, it, pl, pt_BR ship one): a plain `UiScreenBhv` the settings dropdown
+pushes, known to the mod by its bound "language_warning_title". Reads as a dialog: the title
+and the body as the first element (the game's own text in the new language, one element,
+reviewable line by line in the buffer), then its Continue button; Escape closes through the
+screen's own teardown and the surface beneath re-announces. Live-verified 2026-09-05 with
+the French warning shown through the game's own `AttemptToShowLanguageWarning` from the
+title menu. Before this the floor read only the Continue button.
+
 ## 2.8 Credits (`CreditsScreenWidgetBhv`) - NOT STARTED
 
 Unaudited; no dedicated reader.
