@@ -2170,6 +2170,13 @@ The "new item" glow is unspoken (its model flag is consumed on first render - `R
 `SetViewed` - so the live signal would be the background director's loop; deliberately skipped
 as cosmetic).
 
+**Transient lines under a station screen** (2026-09-04): the inn's queued lines (rest-item
+barks and refusals, affinity and party changes, toasts at the inn) drain from the hub
+screen's update, which never runs while a station screen (store, trainer, sheet, the
+replacement picker) stands over the hub - so the pump drains them for every other
+announced surface at the inn, queued like the hub does. Verified with a line queued while
+the replacement picker was open: it spoke at once.
+
 ## 8.3 The Provisioner (`StoreScreen`) - WORKS
 
 Live-verified 2026-07-24 at the first Denial inn. Over `InnStoreUiBhv`; the same screen serves

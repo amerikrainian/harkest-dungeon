@@ -638,6 +638,19 @@ namespace DD2A11y {
                         Speech.Speak(line);
                     }
                 }
+                // The inn's transient lines queue for the hub screen's update, which never
+                // runs while a station screen (store, trainer, a hero sheet) stands over the
+                // hub - so every other announced surface at the inn drains them here, queued
+                // like the hub does.
+                if (Assets.Code.Game.GameModeMgr.CurrentMode == Assets.Code.Game.GameModeType.INN
+                    && Router.Active != null && Router.Active.EntryAnnounced && !(Router.Active is InnScreen)) {
+                    var innLines = Game.InnEvents.Drain();
+                    if (innLines != null) {
+                        foreach (var line in innLines) {
+                            Speech.Speak(line);
+                        }
+                    }
+                }
                 Gate.Reassert();
                 _textEdit.Tick();
                 _rebind.Tick();
