@@ -2862,30 +2862,34 @@ affinity-skill landing cue (7.1.1).
 
 ## 12.5 Uncovered Surfaces (consolidated)
 
-Regenerated 2026-09-05 from the code (the coverage audit of 2026-08-13 and its follow-up).
+Regenerated 2026-09-05 after a coverage pass. "Deployed" below means a reader was written and
+the build carries it, but a live pass on the real surface is still owed (the game state was
+not reachable this session, or only the game's own show method was exercised).
 
-Whole surfaces with no reader:
-- Credits (2.8)
+Now covered, live-verified: credits (2.8), the all-flames celebration (2.8b).
+
+Now covered, deployed and awaiting a live pass: Import Save Data (2.8c, opened live, its
+copy/rename/delete not yet exercised), Kingdoms end-of-campaign results (9.3), the field
+hospital's Cured pop, loot toasts off the road and the trashed-loot toast (5.2, and the road
+path itself wants re-verification since it moved off `EventLootToastPresented`), hero rename
+on the sheet (4.2), the coach sheet's vitrine button (8.5), and the flame-unlock toast's
+click path (9.2, the vitrine Z key now answers on the game-over floor).
+
+Still with no reader:
 - Combat intros, REALTIME_CINEMATIC mode: no screen, keyboard released, dead air apart from
   subtitles (7.4)
 - The LOADING splash cards (1.1)
-- Import Save Data on the mods side of the title menu (`ModImportSaveWidgetBhv`, 1.7)
-- Kingdoms end-of-campaign results (`KingdomResultsScreenBhv`; the floor's score rows should
-  read, never seen live)
+
+Still open inside covered surfaces:
+- The Mountain (9.2): the last-chance trophy pause (needs a last-biome save) and the boss
+  set-pieces (needs a lair)
 - The kingdom map's Alt View overlay (timeline and siege scrubbing; only the pass-day refusal
   knows it, 10.1)
-
-Gaps inside covered surfaces:
-- The Mountain's holes (9.2): the flame-unlock toast's click path, the last-chance trophy
-  pause, boss set-pieces, the all-flames celebration
+- The kingdom contagion banners are verified only synthetically; a real courtier day pass is
+  unexercised (10.1)
 - Driving HUD: the autosave throbber (deliberately unspoken)
-- Combat: the hospital's own "Cured" pop (`EventHospitalQuirkTreated`; the hospital screen's
-  re-read covers the outcome)
-- Loot toasts outside the road: a hero-goal reward off the road speaks through the objective
-  toast, but the trashed-loot toast is silent off the road and reads as a plain pickup on it
 - Barks outside the road and inn (the combat skill-hover flavor bark; the invalid reason is
   spoken instead)
-- Hero rename on the hero sheet (the crossroads row carries rename)
 - The generic floor reads labeled selectables only and does not filter nested selectables:
   a labeled parent and its child can both read, and the wrong one can be the live control
   (the siege results panel's root button, 8.10, before its reader) - the inn sweep keeps the

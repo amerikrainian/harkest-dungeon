@@ -32,7 +32,12 @@
 - The credits now read: each heading and every name paired with its title, line by line.
 - The all-flames celebration shown once every confession boss is beaten with each Infernal Flame now reads its title and text.
 - Import Save Data on the mods side of the menu now reads its save and mod profile lists and its buttons.
-- A kingdom's end-of-campaign results now read the outcome, the map and difficulty and each score row as it appears.
+- A kingdom's end-of-campaign results now read the outcome, the map and difficulty and the score rows.
+- A hero can now be renamed from their sheet, the way the stagecoach already could.
+- The stagecoach sheet's Infernal Flame Vitrine button now reads among its controls.
+- The field hospital's treatment now speaks the game's "Cured" over the hero.
+- Road pickups still announce their name, loot the game trashes for want of room now says so, and both read off the road too.
+- On the game-over screen, the vitrine key now opens the Infernal Flame Vitrine the flame-unlock toast points to.
 
 ## V0.3.9
 
