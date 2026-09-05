@@ -15,24 +15,23 @@
 - Kingdom map cells now say how many days of stagecoach travel away they are for the current hero.
 - The Kingdoms Mastery Trainer's Hero Upgrades tab now reads each upgrade's effects and state.
 - On the kingdom map, the day's contagion banners are now spoken with the regions they concern.
+- The loot for kingdoms screen now reads its reward captions (mastery, flame, coach gains) and any skill a hero-story fight unlocked, with the skill card in the buffer.
+- A kingdom's end-of-campaign results now read the outcome, the map and difficulty and the score rows.
 - The inn's wanted poster (Confessions) now reads as "Bounty Hunter for hire" among the station buttons, and the hire dialog it opens reads the offer with its candle fee, the hero to replace with a selected marker, and the Hire and Decline buttons.
 - The hero sheet now includes the quirk-reroll button the game offers on a fresh hero at the Confessions crossroads, with its candle cost on the line and the balance in the buffer.
 - The stagecoach can now be renamed from its sheet.
 - Crossing into a new region on the road now announces the region's name as the game's title card plays.
-- Combat damage lines now say when a Block token cut the hit ("took 2 damage, blocked from 4"), carry the game's Combo tag when the hit spent one, and name the trinket when an item dealt the damage on its own.
-- Bleed, blight, burn and regeneration ticks now name the effect ("took 3 Bleed damage", "healed 2, Heal Per Turn") instead of reading as plain damage.
+- Combat damage lines now say when a Block token cut the hit, carry the game's Combo tag when the hit spent one, and name the trinket when an item dealt the damage on its own.
+- Bleed, blight, burn and regeneration ticks now name the effect instead of reading as plain damage.
 - The pause menu's profile badge now reads as a button, and the Profile Summary it opens reads its tallies and every achievement with its progress.
 - Inn reactions and refusals no longer wait until you return to the hub when a station screen is open.
 - A tutorial the game opens in the archive now starts the reading on that tutorial.
 - The Kingdoms siege results panel now reads its outcome, a defeat's hero effects, the rewards and its buttons, and Escape closes it.
-- The loot screen now reads its reward captions (mastery, flame, coach gains) and any skill a hero-story fight unlocked, with the skill card in the buffer. This mostly mattered for kingdoms.
 - Travelogue quirk entries no longer give away a hidden quirk: they read as the game's click-to-reveal button, Enter reveals, and a revealed entry carries the quirk's effects in the buffer.
 - The crossroads now reads the selected confession, and each hero's buffer carries the goal they bring to the run with its reward.
-- The early-access language warning now reads its title and text, not just its Continue button.
 - The credits now read: each heading and every name paired with its title, line by line.
 - The all-flames celebration shown once every confession boss is beaten with each Infernal Flame now reads its title and text.
 - Import Save Data on the mods side of the menu now reads its save and mod profile lists and its buttons.
-- A kingdom's end-of-campaign results now read the outcome, the map and difficulty and the score rows.
 - A hero can now be renamed from their sheet, the way the stagecoach already could.
 - The stagecoach sheet's Infernal Flame Vitrine button now reads among its controls.
 - The field hospital's treatment now speaks the game's "Cured" over the hero.
