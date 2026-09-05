@@ -252,8 +252,9 @@ named by the game's own "Select Profile" title. Two phases:
   (an invalid-click sound, no text - parity).
 
 **Known gaps:** the level diamond (`ProfileLevelBtn`, absent on a fresh profile) is swept
-generically but unverified; the save-import flow (`ProfileSummaryWidgetBhv`, console-only
-surfaces) is unmodeled.
+generically but unverified; the mods side's Import Save Data flow (`ModImportSaveWidgetBhv`)
+is unmodeled. The profile summary (`ProfileSummaryWidgetBhv`) is reachable on PC from the
+pause menu's badge and the title menu's profile handler and has its own reader (2.11).
 
 ## 1.7b First-Boot Profile Window (`FirstProfileScreen`) - WORKS
 
@@ -533,8 +534,11 @@ Live-verified 2026-07-23. A widget on a generic `UiScreenBhv` prefab
 (`PauseMenuUiControllerBhv`), opened by `CommonUiBhv.TogglePauseMenu`.
 
 - Buttons from the game's own navigation order: Return, Glossary, Options, Tutorials, Patch
-  Notes, Feedback, Exit. Decorative selectables with no text source (the profile badge)
-  skipped.
+  Notes, Feedback, Exit, then the **profile badge** as "Profile Summary, button" - it looks
+  decorative (its only content is the profile's level art, no text source, so the sweep
+  drops it) but it is a live Button wired to `OnProfileButtonPress`, which opens the
+  profile summary (2.11). Found by that wiring, not by name; a reshape logs once.
+  Live-verified 2026-09-04 from combat.
 - Escape = the menu's own Return. Options-from-pause round trip verified.
 
 ## 2.3 Confirmation Dialogs (`ConfirmationScreen`) - WORKS
@@ -677,6 +681,28 @@ down and the field takes the keyboard.
 - Synthetic key events cannot feed the field: TMP reads characters from the OS event queue,
   not from InputSystem text events, so the typed path was exercised by setting the field
   and firing its own end-edit callback; the real keyboard path is the game's own.
+
+## 2.11 Profile Summary (`ProfileSummaryScreen`) - WORKS
+
+The profile's tallies and achievements (`ProfileSummaryWidgetBhv`, a modal stack screen the
+pause menu's profile badge opens - 2.2 - and the title menu's profile handler can). Named
+by the game's own "Profile Summary" title; live-verified 2026-09-04 from the pause menu in
+combat.
+
+- The tallies first, one readout per row in the panel's own order, label then value:
+  Expeditions, Victories, Candles Collected, Altar Progress (Base / DLC), Items
+  Recollected, Hero Story Progress, Cosmetics - the game's own captions and data-bound
+  values ("Altar Progress (Base / DLC), 0% / 0%").
+- Then the game's "Achievements:" header and one readout per achievement: its title, with
+  the description and the progress count as the value ("Don't Make Me Turn This Coach
+  Around, Have a hero meltdown"; a counted one adds "0/5"); a hidden one reads the game's
+  own "Hidden Achievement" placeholder. The widget's group sub-headers read as text rows
+  where it inserts them.
+- The Return button last; Escape is that button's own click, and the pause menu
+  re-announces beneath.
+- The rows spawn in the widget's open-completed step, after the push the router matches,
+  so the entry waits for the screen's Open state and the list is rebuilt on an instance-id
+  signature.
 
 ## 3.1 Altar Hub (`AltarScreen`) - WORKS
 

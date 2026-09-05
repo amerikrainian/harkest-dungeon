@@ -19,6 +19,7 @@
 - Crossing into a new region on the road now announces the region's name as the game's title card plays.
 - Combat damage lines now say when a Block token cut the hit ("took 2 damage, blocked from 4"), carry the game's Combo tag when the hit spent one, and name the trinket when an item dealt the damage on its own.
 - Bleed, blight, burn and regeneration ticks now name the effect ("took 3 Bleed damage", "healed 2, Heal Per Turn") instead of reading as plain damage.
+- The pause menu's profile badge now reads as a button, and the Profile Summary it opens reads its tallies and every achievement with its progress.
 
 ## V0.3.9
 

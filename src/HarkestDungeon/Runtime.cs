@@ -149,6 +149,7 @@ namespace DD2A11y {
                 new Screens.Options.ModKeysTab(Input, Keymap, _rebind, speak),
             }));
             Router.Register(new PauseScreen());
+            Router.Register(new ProfileSummaryScreen());
             _sheet = new CharacterSheetScreen(Navigator, speak);
             Router.Register(_sheet);
             // The sheet's saved-skill-sets screen, pushed above the sheet by its button.
