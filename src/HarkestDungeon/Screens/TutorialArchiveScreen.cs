@@ -70,11 +70,21 @@ namespace DD2A11y.Screens {
         }
 
         private void Populate(TutorialArchiveWidgetBhv widget) {
+            var selected = FirstSelectedField(widget);
             foreach (var option in Options(widget)) {
-                _root.Add(new TutorialOptionElement(widget, option, option.GetComponent<Selectable>()));
+                var element = new TutorialOptionElement(widget, option, option.GetComponent<Selectable>());
+                _root.Add(element);
+                // The entry the game itself opened on (a tutorial pushed as a pop-up, viewed
+                // in the side panel) is where the reading starts, not the list top.
+                if (selected != null && option.gameObject == selected) {
+                    _root.SetFocusedChild(element);
+                }
             }
             _builtSignature = Signature(widget);
         }
+
+        private static readonly HarmonyLib.AccessTools.FieldRef<TutorialArchiveWidgetBhv, UnityEngine.GameObject> FirstSelectedField =
+            HarmonyLib.AccessTools.FieldRefAccess<TutorialArchiveWidgetBhv, UnityEngine.GameObject>("m_firstSelectedObject");
 
         // The inactive template row never appears in the sweep, but the frame between the
         // push and the game's populate can still surface it - the type check keeps any
