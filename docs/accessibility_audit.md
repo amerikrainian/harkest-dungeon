@@ -604,6 +604,12 @@ own "Archive" title (`tutorial_menu_title`).
 
 Not modeled: the tutorial's image/video (visual-only), the close button (Escape covers it).
 
+- **Opened by the game on an entry** (2026-09-04): when the game pushes the archive as a
+  tutorial pop-up on a specific tutorial (the entry it views in the side panel and selects,
+  its `m_firstSelectedObject`), the reading starts on that entry, not the list top - verified
+  with the archive pushed on Baubles through the game's own `ShowTutorialArchive`: the entry
+  announcement read "Archive" then "Baubles, button".
+
 ## 2.7 Feedback (`FeedbackScreen`) - WORKS
 
 Live-verified 2026-08-02 on the road (pause menu > Feedback). The game's user-report form
@@ -2243,6 +2249,20 @@ Live-verified 2026-07-24 at the first Denial inn. Over `InnUpgradeSkillsBhv`.
   ascending (the panel draws launch pips rank 4 down to 1). A pip's fill is the rank's
   skill count over the equip limit, so the count decodes exactly.
 
+- **Kingdoms: the Hero Upgrades tab** (2026-09-04, live-verified at the Drakia Bearer's
+  Bugle trainer). A Kingdoms trainer adds a Skills / Hero Upgrades tab pair (swept as buttons
+  from their tooltips; a tab press rebuilds the tree and lands back on the pressed tab), and
+  the upgrade tab shows the hero's permanent-upgrade track: five `InnActorUpgradeUnlockBhv`
+  rows that are icons with a tooltip and a hold gesture. Each reads as a
+  `MasteryUnlockElement`: the upgrade's effect lines as the label ("+10% deathblow RES, +20%
+  Stun RES, -10% Fatigue Limit"; "+4 Max HP"), "owned" once unlocked, "unavailable" for a
+  step the inn's own upgrades have not opened (the widget's "Upgrade Mastery Trainer to
+  unlock" sentence stays in the buffer with the full tooltip) or that is not the track's
+  next; Enter is the hold's own gate and the trainer's `PurchaseActorUnlock` (verified with
+  the first step made eligible: the purchase respawned the rows and focus re-landed on the
+  same row reading "owned"). Before this the floor-style sweep read all five as identical
+  "Upgrade Mastery Trainer to unlock, button" rows whose Enter did nothing.
+
 Live-verified: walk, hero paging wiring, queue ("selected", points drop), Reset (queue
 cleared, points restored), the path panel (open/close announcements, seal cards, preview
 select, pip lines, purchase-button arming). Unexercised: Apply/commit (the batch confirm),
@@ -2514,6 +2534,15 @@ which the game itself refuses during day-turn cinematics (spoken "unavailable").
   the game's own `OnPassDay` behind the hold's gates (`CanPassDay`, alt view,
   `WAIT_ON_PLAYER`) with the hold's confirm sound; a refused press answers "unavailable"
   (day advance player-verified live 2026-08-01).
+- **The day's curse activity** (2026-09-04): the game presents a courtier gang's contagion as
+  map banners with the camera panning to each region - "Contagion Released", "Contagion
+  Spreads", "Contagion Cleansed" - and the mod speaks one line per banner from the model
+  event behind them (`EventKingdomBiomeModifiersUpdated`, `KingdomEvents`): the banner's own
+  text, then the regions concerned ("Contagion Released, The Foetor"; "Contagion Spreads,
+  from The Foetor to The Sprawl"; "Contagion Cleansed, The Tundra"), a region whose view
+  carries no name yet reading by its grid position. Queued into the map's transient queue
+  like hero arrivals. Verified by raising the event with real map cells on the Drakia
+  (Beastmen) save, whose gang never curses - a real courtier day pass is unexercised.
 - **Sidebar**: one element per active siege - inn name + days; Enter jumps the cursor to the
   cell, handing focus straight back to the grid cursor at the jumped-to cell. The
   cursed-regions counter follows once a region is infected (the game's own "{0} of {1}

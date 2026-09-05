@@ -1,6 +1,7 @@
 using Assets.Code.Game;
 using Assets.Code.Run;
 using Assets.Code.UI;
+using Assets.Code.UI.Inn;
 using Assets.Code.UI.Screens;
 using Assets.Code.Utils;
 using DD2A11y.Core.Nav;
@@ -18,7 +19,10 @@ namespace DD2A11y.Screens {
     /// "mastered"/"selected"/"unavailable" state, the full skill card in the buffer; Enter
     /// queues the skill through the trainer's own selection), then the trainer's remaining
     /// buttons (Change Path, Apply, Reset) swept with their own labels. The Change Path
-    /// panel reads as its own screen (<see cref="MasteryPathScreen"/>).
+    /// panel reads as its own screen (<see cref="MasteryPathScreen"/>). A Kingdoms trainer
+    /// adds the Skills / Hero Upgrades tabs; the upgrade tab's track rows read as
+    /// <see cref="MasteryUnlockElement"/>s, and a purchase (which respawns them) lands back
+    /// on the same row.
     /// </summary>
     public sealed class MasteryScreen : GameScreen {
         private static readonly HarmonyLib.AccessTools.FieldRef<InnUpgradeSkillsBhv, GameObject> ResetButtonField =
@@ -52,10 +56,60 @@ namespace DD2A11y.Screens {
         public override bool OnUpdate(object target) {
             var panel = (InnUpgradeSkillsBhv)target;
             if (Signature(panel) != _builtSignature) {
+                var focused = _root.FocusedChild;
+                int unlockIndex = UnlockIndex(focused);
+                var control = (focused as SelectableElement)?.Selectable;
                 _root.Clear();
                 Populate(panel);
+                if (unlockIndex >= 0) {
+                    SeedUnlock(unlockIndex);
+                } else if (control != null) {
+                    SeedControl(control);
+                }
             }
             return false;
+        }
+
+        // A rebuild lands back where the player was: a persistent control (a tab, the seal)
+        // by identity, so pressing Hero Upgrades leaves the focus on that tab.
+        private void SeedControl(Selectable control) {
+            foreach (var child in _root.Children) {
+                if (child is SelectableElement element && element.Selectable == control) {
+                    _root.SetFocusedChild(child);
+                    return;
+                }
+            }
+        }
+
+        // The upgrade track's rows are recycled and respawned on every purchase; the row at
+        // the same position is the one the player pressed.
+        private int UnlockIndex(UIElement element) {
+            int index = 0;
+            foreach (var child in _root.Children) {
+                if (child is MasteryUnlockElement) {
+                    if (child == element) {
+                        return index;
+                    }
+                    index++;
+                }
+            }
+            return -1;
+        }
+
+        private void SeedUnlock(int index) {
+            if (index < 0) {
+                return;
+            }
+            int seen = 0;
+            foreach (var child in _root.Children) {
+                if (child is MasteryUnlockElement) {
+                    if (seen == index) {
+                        _root.SetFocusedChild(child);
+                        return;
+                    }
+                    seen++;
+                }
+            }
         }
 
         private void Populate(InnUpgradeSkillsBhv panel) {
@@ -98,6 +152,11 @@ namespace DD2A11y.Screens {
             // The trainer's remaining labeled controls (Change Path with its cost, Apply,
             // Reset), excluding what already has an element.
             foreach (var selectable in panel.GetComponentsInChildren<Selectable>(includeInactive: false)) {
+                var unlock = selectable.GetComponentInParent<InnActorUpgradeUnlockBhv>();
+                if (unlock != null) {
+                    _root.Add(new MasteryUnlockElement(unlock, panel, selectable));
+                    continue;
+                }
                 if (selectable.GetComponent<UpgradeSkillButton>() != null
                     || selectable.gameObject.name == "left_button" || selectable.gameObject.name == "right_button"
                     || selectable is Scrollbar

@@ -21,6 +21,9 @@
 - Bleed, blight, burn and regeneration ticks now name the effect ("took 3 Bleed damage", "healed 2, Heal Per Turn") instead of reading as plain damage.
 - The pause menu's profile badge now reads as a button, and the Profile Summary it opens reads its tallies and every achievement with its progress.
 - Inn reactions and refusals no longer wait until you return to the hub when a station screen is open.
+- The Kingdoms Mastery Trainer's Hero Upgrades tab now reads each upgrade's effects and state.
+- On the kingdom map, the day's contagion banners are now spoken with the regions they concern.
+- A tutorial the game opens in the archive now starts the reading on that tutorial.
 
 ## V0.3.9
 

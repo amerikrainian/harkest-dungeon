@@ -17,7 +17,7 @@ namespace DD2A11y.Elements {
     /// as an option popup. Tooltips in the row scope become buffer lines.
     /// </summary>
     public class SelectableElement : UIElement {
-        protected readonly Selectable Selectable;
+        protected internal readonly Selectable Selectable;
         private readonly Func<string> _label;
         private readonly GameObject _rowScope;
         private readonly Func<string> _value;
