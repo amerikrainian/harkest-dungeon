@@ -156,6 +156,7 @@ namespace DD2A11y {
             _skillLoadouts = new SkillLoadoutScreen(speak);
             Router.Register(_skillLoadouts);
             Router.Register(new LootScreen());
+            Router.Register(new SiegeResultsScreen());
             _storyScreen = new StoryScreen(speak, Navigator);
             Router.Register(_storyScreen);
             Router.Register(new BossSelectScreen());

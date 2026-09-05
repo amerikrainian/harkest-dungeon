@@ -24,6 +24,7 @@
 - The Kingdoms Mastery Trainer's Hero Upgrades tab now reads each upgrade's effects and state.
 - On the kingdom map, the day's contagion banners are now spoken with the regions they concern.
 - A tutorial the game opens in the archive now starts the reading on that tutorial.
+- The Kingdoms siege results panel now reads its outcome, a defeat's hero effects, the rewards and its buttons, and Escape closes it.
 
 ## V0.3.9
 

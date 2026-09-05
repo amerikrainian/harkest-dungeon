@@ -2447,6 +2447,27 @@ to the generic floor, which read only the title and "Decline, button".
 the inn's hire roll succeeding) is unexercised; the dev preference `INN_TEST_HIRE` forces the
 roll for a future check.
 
+## 8.10 Siege Results (`SiegeResultsScreen`, Kingdoms) - WORKS
+
+The panel after a kingdom siege battle (`SiegeResultsWidgetBhv` on the Loot layer, victory
+or defeat), named by the game's own outcome label ("Siege Repelled!" / "Inn Destroyed!").
+Found live 2026-09-04 after a real siege victory at the Bearer's Bugle: the floor read a
+single "Close, button" whose press was the panel's root button (`UiScreenBhv.TryCloseScreen`,
+which the widget refuses), so the screen could not be left by keyboard.
+
+- The outcome's description first ("Inn suffers no damage." / "Inn is destroyed!"), then a
+  defeat's hero effects as one line with each effect in the buffer ("+2 stress, Fatigue
+  -10%, Remove Positive Quirk (25%)"), then the reward captions the panel shows beside the
+  items (the "+1 Mastery" line with its tooltip in the buffer, the flame and coach gains
+  when present), then each reward item as on the loot screen, then Take All (when items
+  remain) and Close. The captions and effects read live: the widget writes them in its
+  open step, after the push the router matches, and the entry waits for the Open state.
+- Escape is the widget's own `ButtonClose` (its leave-items confirmation included); on a
+  defeat that close applies the siege-loss hero effects, which the party lines speak.
+- Live-verified: the real victory panel's values; the defeat variant through the game's own
+  `ShowSiegeDefeat` (read, walked, buffer stepped, closed both by Escape - the wound and
+  stress lines followed - and by force-close).
+
 ## 9.1 Results Surfaces (on the generic floor) - WORKS
 
 Live-verified 2026-07-24 on the inn's End Expedition screen ("Every League, a Lesson.").
