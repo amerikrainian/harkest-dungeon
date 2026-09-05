@@ -24,6 +24,7 @@ using Assets.Code.Token.Events;
 using Assets.Code.UI;
 using Assets.Code.Utils;
 using DD2A11y.Core.Text;
+using HarmonyLib;
 using S = DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Game {
@@ -43,6 +44,11 @@ namespace DD2A11y.Game {
     public static class CombatEvents {
         private static readonly List<string> _pending = new List<string>();
         private static bool _attached;
+
+        // The pop-text manager's dot resource database: each dot's own pop settings, the
+        // same gate the game's tick pop reads.
+        private static readonly AccessTools.FieldRef<PopTextManager, ResourceDatabaseDots> DotResources =
+            AccessTools.FieldRefAccess<PopTextManager, ResourceDatabaseDots>("m_DotResourceDatabase");
 
         /// <summary>Wired by the runtime at startup; the announcement toggles are read live
         /// per event, so a change in the settings tab applies to the next line.</summary>
@@ -67,6 +73,7 @@ namespace DD2A11y.Game {
             EventManager.AddListener<EventTokenReplaced>(HandleTokenReplaced);
             EventManager.AddListener<EventTokenRemoved>(HandleTokenRemoved);
             EventManager.AddListener<EventDotAdded>(HandleDotAdded);
+            EventManager.AddListener<EventDotApplied>(HandleDotApplied);
             EventManager.AddListener<EventDotRemoved>(HandleDotRemoved);
             EventManager.AddListener<EventBuffAdded>(HandleBuffAdded);
             EventManager.AddListener<EventQuirkAdded>(HandleQuirkAdded);
@@ -108,9 +115,17 @@ namespace DD2A11y.Game {
 
         private static bool InCombat => GameModeMgr.CurrentMode == GameModeType.COMBAT;
 
+        // The game's damage pop skips what a skill's own results already displayed (those
+        // speak from the finalized results, block and combo included), dot ticks (their own
+        // event), and the debug and overstress sources; what is left is incidental damage - a
+        // trinket's own effect, named for its item the way the pop names it.
         private static void HandleDamage(EventActorHealthDamage evt) {
             if (!InCombat) {
                 PartyEvents.HandleDamage(evt);
+                return;
+            }
+            if (evt.m_HasDisplayed || evt.m_SourceType == SourceType.DEBUG
+                || evt.m_SourceType == SourceType.DOT || evt.m_SourceType == SourceType.OVERSTRESS) {
                 return;
             }
             string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
@@ -118,7 +133,14 @@ namespace DD2A11y.Game {
             if (name == null || damage <= 0) {
                 return;
             }
-            _pending.Add(DamageLine(name, damage, evt.m_IsCrit));
+            string source = evt.m_SourceType == SourceType.TRINKET && evt.m_SourceIds.Count > 0
+                ? GameLoc.TryGet("item_name_" + evt.m_SourceIds[0]) : null;
+            if (source == null) {
+                _pending.Add(DamageLine(name, damage, evt.m_IsCrit));
+            } else {
+                _pending.Add(evt.m_IsCrit ? S.CombatTookDamageFromCrit(name, damage, source)
+                    : S.CombatTookDamageFrom(name, damage, source));
+            }
             if (evt.IsEnteringDeathsDoor) {
                 _pending.Add(S.CombatDeathsDoor(name));
             }
@@ -129,13 +151,14 @@ namespace DD2A11y.Game {
                 : damage == 1 ? S.CombatTookDamageOne(name) : S.CombatTookDamage(name, damage);
 
         // The model event fires once per heal regardless of which of the game's two display
-        // paths shows it, so no HasDisplayed gate here - every heal speaks exactly once.
+        // paths shows it, so no HasDisplayed gate here - every heal speaks exactly once. A
+        // regeneration tick is a dot tick, spoken from the dot's own event with its name.
         private static void HandleHeal(EventActorHealthHeal evt) {
             if (!InCombat) {
                 PartyEvents.HandleHeal(evt);
                 return;
             }
-            if (evt.m_SourceType == SourceType.DEBUG) {
+            if (evt.m_SourceType == SourceType.DEBUG || evt.m_SourceType == SourceType.DOT) {
                 return;
             }
             string name = Actors.SpokenName(Actors.Get(evt.m_ActorGuid));
@@ -276,6 +299,43 @@ namespace DD2A11y.Game {
             if (owner != null && !string.IsNullOrEmpty(dot)) {
                 _pending.Add(S.CombatGained(owner, dot));
             }
+        }
+
+        // A dot ticked: the game pops the amount under the dot's icon (its common listener,
+        // every mode), so the tick speaks with the dot's name and never as a plain hit. A
+        // stress-only tick (horror) keeps the stress line the stress event already speaks.
+        private static void HandleDotApplied(EventDotApplied evt) {
+            if (!InCombat) {
+                PartyEvents.HandleDotApplied(evt);
+                return;
+            }
+            string line = DotTickLine(evt);
+            if (line != null) {
+                _pending.Add(line);
+            }
+        }
+
+        /// <summary>The spoken line for a dot tick, behind the dot's own pop-text gate; null
+        /// for a hidden dot or a tick that changed no health.</summary>
+        internal static string DotTickLine(EventDotApplied evt) {
+            if (!SingletonMonoBehaviour<PopTextManager>.HasInstance()) {
+                return null;
+            }
+            var resource = DotResources(SingletonMonoBehaviour<PopTextManager>.Instance).GetResource(evt.m_dotType);
+            if (resource == null || !resource.m_ShowAppliedPopText) {
+                return null;
+            }
+            int amount = (int)System.Math.Round(System.Math.Abs(evt.m_effectApplyCombinedResult.HealthChange));
+            if (amount == 0) {
+                return null;
+            }
+            string owner = Actors.SpokenName(Actors.Get(evt.m_actorGuid));
+            string dot = DotDescription.GetName(evt.m_dotType);
+            if (owner == null || string.IsNullOrEmpty(dot)) {
+                return null;
+            }
+            return evt.m_effectApplyCombinedResult.IsHeal
+                ? S.CombatDotHealed(owner, amount, dot) : S.CombatDotDamage(owner, amount, dot);
         }
 
         private static void HandleDotRemoved(EventDotRemoved evt) {
@@ -497,13 +557,16 @@ namespace DD2A11y.Game {
             }
         }
 
-        // The finalized skill outcome carries the whiffs - a miss is the attacker's failure, a
-        // dodge the target's save, the same split the game's MISS/DODGE pop text draws - and
-        // the KILLING hits: the game applies a lethal hit by killing the target directly
-        // (SkillCalculation routes only non-lethal hits through ApplyHealthDamage), so no
-        // damage event ever fires for it, while the sighted damage pop draws from these same
-        // results. Finalize fires before the results apply, so the damage line lands ahead of
-        // the death line. Non-lethal damage, heals, and riders speak from their own events.
+        // The finalized skill outcome is where the sighted damage pop draws from, and the only
+        // place a hit's block and combo show: the damage dealt against the amount before the
+        // Block token cut it (struck through in the pop), and the game's own "Combo!" tag
+        // when the hit spent one. It also carries the whiffs - a miss is the attacker's
+        // failure, a dodge the target's save, the same split the MISS/DODGE pops draw - and
+        // the KILLING hits, which the game applies by killing the target directly
+        // (SkillCalculation routes only non-lethal hits through ApplyHealthDamage) so no
+        // damage event ever fires for them. Finalize fires before the results apply, so the
+        // damage line lands ahead of the death line. Heals and riders speak from their own
+        // events.
         private static void HandleSkillResults(EventSkillFinalizeResults evt) {
             if (!InCombat || evt.ActorResults == null) {
                 return;
@@ -517,9 +580,16 @@ namespace DD2A11y.Game {
                     continue;
                 }
                 if (result.IsHit) {
-                    int damage = (int)result.HealthDamage;
-                    if (result.IsDamageKill && damage > 0) {
-                        _pending.Add(DamageLine(target, damage, result.IsCrit));
+                    // The game's own gate for a damage pop over a hit.
+                    if (result.IsBlocked || result.IsDamaging || result.PopTextBaseHealthDamage > 0f
+                        || result.IsCrit || result.IsCombo) {
+                        string line = HitLine(target, result);
+                        if (line != null) {
+                            _pending.Add(line);
+                        }
+                        if (result.IsEnteringDeathsDoor) {
+                            _pending.Add(S.CombatDeathsDoor(target));
+                        }
                     }
                 } else if (result.IsMiss) {
                     string performer = Actors.SpokenName(Actors.Get(evt.PerformerGuid));
@@ -530,6 +600,25 @@ namespace DD2A11y.Game {
                     _pending.Add(S.CombatDodged(target));
                 }
             }
+        }
+
+        // A hit's damage line: the block format when the pop's base amount exceeds the dealt
+        // one (the game's own test), the plain or crit line otherwise, the combo tag joined
+        // on. Null for a hit that dealt nothing and was not blocked (a crit on a buff).
+        private static string HitLine(string target, SkillCalculation.ActorResult result) {
+            float dealt = result.HealthDamage;
+            float before = result.PopTextBaseHealthDamage;
+            int damage = (int)dealt;
+            string line;
+            if (before > dealt) {
+                line = result.IsCrit ? S.CombatTookDamageCritBlocked(target, damage, (int)before)
+                    : S.CombatTookDamageBlocked(target, damage, (int)before);
+            } else if (damage > 0) {
+                line = DamageLine(target, damage, result.IsCrit);
+            } else {
+                return null;
+            }
+            return result.IsCombo ? SpokenLine.Join(line, GameLoc.TryGet("combo_append_pop_text_label")) : line;
         }
 
         private static void HandleRetreat(EventBattleRetreat evt) {

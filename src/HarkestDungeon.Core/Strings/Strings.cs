@@ -466,6 +466,21 @@ namespace DD2A11y.Core.Strings {
             D("CombatHealed", "{0} healed {1}"),
             // A critical heal; {0} = who, {1} = the amount.
             D("CombatHealedCrit", "{0} healed {1}, crit"),
+            // Damage cut down by a Block token; {0} = who, {1} = the amount dealt, {2} = the
+            // amount before the block (the game strikes it through beside the dealt number).
+            D("CombatTookDamageBlocked", "{0} took {1} damage, blocked from {2}"),
+            // The blocked line for a critical hit.
+            D("CombatTookDamageCritBlocked", "{0} took {1} damage, crit, blocked from {2}"),
+            // Damage an item deals on its own, outside a skill (a trinket's effect); {0} = who,
+            // {1} = the amount, {2} = the item's name, the way the game's pop names it.
+            D("CombatTookDamageFrom", "{0} took {1} damage from {2}"),
+            // The item-sourced line for a critical hit.
+            D("CombatTookDamageFromCrit", "{0} took {1} damage from {2}, crit"),
+            // A damage-over-time tick; {0} = who, {1} = the amount, {2} = the dot's name (the
+            // game shows the amount under the dot's icon).
+            D("CombatDotDamage", "{0} took {1} {2} damage"),
+            // A healing-over-time tick; {0} = who, {1} = the amount, {2} = the dot's name.
+            D("CombatDotHealed", "{0} healed {1}, {2}"),
             // An attack missed; {0} = the attacker, {1} = the intended target.
             D("CombatMissed", "{0} missed {1}"),
             // The target evaded an attack that would have hit; {0} = the target.
@@ -875,6 +890,12 @@ namespace DD2A11y.Core.Strings {
         public static string CombatTookDamageCrit(string name, int damage) => F("CombatTookDamageCrit", name, damage);
         public static string CombatHealed(string name, int amount) => F("CombatHealed", name, amount);
         public static string CombatHealedCrit(string name, int amount) => F("CombatHealedCrit", name, amount);
+        public static string CombatTookDamageBlocked(string name, int damage, int before) => F("CombatTookDamageBlocked", name, damage, before);
+        public static string CombatTookDamageCritBlocked(string name, int damage, int before) => F("CombatTookDamageCritBlocked", name, damage, before);
+        public static string CombatTookDamageFrom(string name, int damage, string source) => F("CombatTookDamageFrom", name, damage, source);
+        public static string CombatTookDamageFromCrit(string name, int damage, string source) => F("CombatTookDamageFromCrit", name, damage, source);
+        public static string CombatDotDamage(string name, int amount, string dot) => F("CombatDotDamage", name, amount, dot);
+        public static string CombatDotHealed(string name, int amount, string dot) => F("CombatDotHealed", name, amount, dot);
         public static string CombatMissed(string attacker, string target) => F("CombatMissed", attacker, target);
         public static string CombatDodged(string name) => F("CombatDodged", name);
         public static string CombatStressed(string name, int amount) => F("CombatStressed", name, amount);

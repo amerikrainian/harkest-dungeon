@@ -1863,6 +1863,23 @@ damage, miss, stress damage and relief, token spend and loss, death-blow resist,
 tick, barks, tutorial toast, always-spoken turn lines, wave count suppressed in a
 single-battle fight.
 
+Damage phrasing (live-verified 2026-09-04 on the Lost Souls fight): skill hits speak from
+the finalized results, the surface the sighted damage pop draws from, so the line carries
+what only the results know - a Block-cut hit reads "took 2 damage, blocked from 4" (the
+game's own base-versus-dealt test over its pop-text base multipliers), a hit that spent a
+Combo token joins the game's "Combo!" tag, and a killing hit needs no special case (the
+game applies lethal hits by killing directly, so it never raised the damage event). The
+health-damage event now speaks only what the game's own pop does: the incidental damage a
+skill did not display, named for its item when a trinket dealt it ("took 2 damage from
+Bandages"). Dot ticks speak from the dot's own tick event with the dot named ("took 3
+Bleed damage", "healed 2, Heal Per Turn", behind each dot resource's pop gate) instead of
+as bare damage; stress-only ticks (horror) keep the stress line. Verified with the game's
+own container calls (a bleed and a regeneration added and ticked through
+`DotContainer.UpdateDuration`, tokens through `TokenContainer.Add`, trinket damage through
+`ApplyHealthDamage`) and real skill uses: Flashing Daggers and Pistol Shot into Block,
+Incision into Combo, Backlash for the kill, an enemy Chomp for the plain line, a
+turn-start regeneration tick.
+
 Hover parity (2026-08-03, deployed, awaiting live pass): the target preview line grew the
 panel's other two calculations - the effective damage range with every live modifier folded
 in (flat crit damage on a guaranteed crit, the game's own switch) and the tested resistances

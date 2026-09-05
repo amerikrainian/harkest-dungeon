@@ -167,6 +167,10 @@ namespace DD2A11y.Game {
             Deliver(CombatEvents.DotCuredLine(evt));
         }
 
+        internal static void HandleDotApplied(EventDotApplied evt) {
+            Deliver(CombatEvents.DotTickLine(evt));
+        }
+
         // Outside combat the game names a removed regular quirk and pops the bare "Cured"
         // for a curse or disease; the named removal speaks as a loss so it cannot read as a
         // gain.
