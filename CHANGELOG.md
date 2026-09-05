@@ -16,6 +16,7 @@
 - The inn's wanted poster (Confessions) now reads as "Bounty Hunter for hire" among the station buttons, and the hire dialog it opens reads the offer with its candle fee, the hero to replace with a selected marker, and the Hire and Decline buttons.
 - The hero sheet now includes the quirk-reroll button the game offers on a fresh hero at the Confessions crossroads, with its candle cost on the line and the balance in the buffer.
 - The stagecoach can now be renamed from its sheet.
+- Crossing into a new region on the road now announces the region's name as the game's title card plays.
 
 ## V0.3.9
 

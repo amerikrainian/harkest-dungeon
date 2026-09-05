@@ -8,6 +8,7 @@ using Assets.Code.Game.StageCoach;
 using Assets.Code.Item;
 using Assets.Code.Item.Events;
 using Assets.Code.Map;
+using Assets.Code.Map.Events;
 using Assets.Code.Map.RoadEvents;
 using Assets.Code.Map.Triggers;
 using Assets.Code.Run;
@@ -134,6 +135,7 @@ namespace DD2A11y.Game {
             EventManager.AddListener<EventLootToastPresented>(HandleLootToast);
             EventManager.AddListener<EventActorHealthDamage>(HandleDamage);
             EventManager.AddListener<EventRunResist>(HandleRunResist);
+            EventManager.AddListener<EventBiomeTitleStateChanged>(HandleBiomeTitle);
         }
 
         private bool OnRoad => GameModeMgr.CurrentMode == GameModeType.DRIVING
@@ -169,6 +171,19 @@ namespace DD2A11y.Game {
             }
             _pending.Add(new KeyValuePair<AudioCue?, string>(
                 null, damage == 1 ? S.CombatTookDamageOne(name) : S.CombatTookDamage(name, damage)));
+        }
+
+        // The region title card that plays on crossing a gate hides the HUD but keeps the
+        // driving mode, so the driving screen stays attached and nothing re-announces: the
+        // card's own biome name (the string the gate stamps on its label) speaks the crossing.
+        private void HandleBiomeTitle(EventBiomeTitleStateChanged evt) {
+            if (!OnRoad || !evt.m_isDisplaying) {
+                return;
+            }
+            string name = GameLoc.TryGet("biome_name_" + GameTypeMgr.ActiveBiome);
+            if (name != null) {
+                _pending.Add(new KeyValuePair<AudioCue?, string>(null, name));
+            }
         }
 
         // A Loathing advance resisted: the same pop text the coach shows, the game's own

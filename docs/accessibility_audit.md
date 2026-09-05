@@ -1300,6 +1300,11 @@ collection is the game's own sfx plus speech, and everything else on the road is
 - Speech-only road lines: road damage speaks the combat damage wording (the coach's
   stop/start is left to the game's own driving audio); a junction's banners coming up speak
   "fork ahead" (once per junction).
+- **Region crossings** speak the new region's name when the game's title card plays at a
+  gate (`EventBiomeTitleStateChanged`, RoadSense): the card hides the HUD but keeps the
+  driving mode, so the screen stays attached and nothing else re-announces. Verified
+  2026-09-04 by executing the loaded `gate_transition` object's own Execute on The Sprawl -
+  one "The Sprawl" line, no duplicate.
 - **Road transients** (toasts live-verified 2026-07-31; barks rewired 2026-08-08): tutorial,
   message, and objective toasts route by mode through the toast postfixes - combat queue in
   battle, the road pending queue on the road, the inn queue at an inn, and straight to queued
