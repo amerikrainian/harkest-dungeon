@@ -659,9 +659,34 @@ screen's own teardown and the surface beneath re-announces. Live-verified 2026-0
 the French warning shown through the game's own `AttemptToShowLanguageWarning` from the
 title menu. Before this the floor read only the Continue button.
 
-## 2.8 Credits (`CreditsScreenWidgetBhv`) - NOT STARTED
+## 2.8 Credits (`CreditsScreenWidgetBhv`) - WORKS
 
-Unaudited; no dedicated reader.
+Live-verified 2026-09-05 (shown through the game's own `ShowCredits`). A scrolling column of
+headings and name/title pairs with nothing selectable, so the floor read none of it. The
+reader walks the game's own Layout: each heading a text row, each names column paired with
+its titles column line by line ("Poppy Bonar, Office Administrator"; "Wayne June,
+Narrator"), a column that does not line up read whole. Escape closes through the screen's
+own teardown (the sighted gesture is a held Escape). `CreditsScreen`.
+
+## 2.8b All-Flames Celebration (`AllFlamesScreen`) - WORKS
+
+The presentation shown on the game-over screen once every confession boss is beaten with
+each Infernal Flame (`m_allTorchCompletionPresentationPrefab`, a Modal-layer prefab that is
+one click-anywhere button under a title and a description, no widget class of its own).
+Reads as a dialog: the title and body as the one element, Enter and Escape the button's own
+dismiss. Live-verified 2026-09-05 through `ShowTorchTotalCompletionPresentation` ("Obliviated
+Livery Unlocked! ...").
+
+## 2.8c Import Save Data (`ImportSaveScreen`) - WORKS
+
+The mods-side screen that copies save profiles into mod profiles (`ModImportSaveWidgetBhv`).
+Reads the game's own headers with their lists beneath: each save profile a toggle named for
+the profile (Enter marks it for the copy), each mod profile its name with icon-only rename
+and delete controls (rename runs the row's own inline edit with keystroke echo; delete the
+widget's own removal, which refuses the last profile), then Copy and the icon-only Close.
+Both lists are pooled, so a copy or delete rebuilds on an instance-id signature. Deployed and
+opened live 2026-09-05 (entry read "Import Save Data" then the rows); the copy/rename/delete
+actions are not yet exercised end to end.
 
 ## 2.9 Generic Floor (`GenericScreen`) - WORKS
 
@@ -2577,6 +2602,19 @@ these holes (audit 2026-08-13, re-verified 2026-09-05):
 Kingdoms entry, save select, and the creation wizard are in 1.5. Kingdoms inns add the
 stationed-heroes row (8.2), Select Replacement Hero (8.9), the Relationships matrix (8.7), and
 Inn Upgrades (8.8). The gang escalation tooltip in siege combat is an open gap (7.1.5).
+
+## 9.3 Kingdom Results (`KingdomResultsScreen`) - BUILT
+
+A kingdom's end-of-campaign results (the RESULTS mode's surface for a Kingdoms run:
+`KingdomResultsScreenBhv`, a scene canvas with no stack entry, so the floor never saw it).
+Reads the outcome's explanation, the kingdom's name with its difficulty, then the score rows
+in the floor's own score-row form (days elapsed, inns destroyed, heroes perished, sieges
+defeated, militia sacrificed, mastery collected, upgrades purchased, contracts completed,
+treasure collected), then Continue, which returns to the title menu. Following the same
+warning the game-over screen taught (9.1): the presentation reveals the rows one at a time,
+so the entry waits for the last to activate and a row's arrival only appends its element -
+the stream never re-lands or re-announces. Deployed, unverified live (no kingdom run reached
+its end this pass). `KingdomResultsScreen`.
 
 ## 10.1 Kingdom Overworld Map (`KingdomMapScreen`) - WORKS
 

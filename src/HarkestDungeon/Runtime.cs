@@ -151,6 +151,9 @@ namespace DD2A11y {
             Router.Register(new PauseScreen());
             Router.Register(new ProfileSummaryScreen());
             Router.Register(new LanguageWarningScreen());
+            Router.Register(new AllFlamesScreen());
+            Router.Register(new CreditsScreen());
+            Router.Register(new ImportSaveScreen(speak));
             _sheet = new CharacterSheetScreen(Navigator, speak);
             Router.Register(_sheet);
             // The sheet's saved-skill-sets screen, pushed above the sheet by its button.
@@ -237,6 +240,7 @@ namespace DD2A11y {
             _firstProfile = new FirstProfileScreen(speak);
             Router.Register(_firstProfile);
             Router.Register(new MainMenuScreen());
+            Router.Register(new KingdomResultsScreen());
             // The hero-select canvas overlays are not stack screens; they match off the game's
             // own panel flags and must outrank the crossroads beneath them.
             _pathSelect = new PathSelectScreen(Audio, Settings.CrossroadsTones);

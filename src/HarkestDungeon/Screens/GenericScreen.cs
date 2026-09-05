@@ -120,7 +120,7 @@ namespace DD2A11y.Screens {
         // A score row composes like the sighted row: the game's reason label, then its number
         // ("Candles Found: 3"); the rows that did not score hold 0, the cross mark's meaning.
         // The row's explanation tooltip is the buffer.
-        private static UIElement ScoreRow(GameOverScoreLabelBhv row) {
+        internal static UIElement ScoreRow(GameOverScoreLabelBhv row) {
             return new ReadoutElement(
                 () => {
                     var context = row == null ? null : row.GetComponent<DataContextBhv>();
