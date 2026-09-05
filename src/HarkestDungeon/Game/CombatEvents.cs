@@ -13,6 +13,7 @@ using Assets.Code.Dot;
 using Assets.Code.Dot.Events;
 using Assets.Code.Events;
 using Assets.Code.Game;
+using Assets.Code.Game.Events;
 using Assets.Code.Library;
 using Assets.Code.Quirk;
 using Assets.Code.Quirk.Events;
@@ -84,6 +85,7 @@ namespace DD2A11y.Game {
             EventManager.AddListener<EventActorOverstress>(HandleOverstress);
             EventManager.AddListener<EventActorSurviveDeathsDoor>(HandleSurviveDeathsDoor);
             EventManager.AddListener<EventActorWoundApplied>(HandleWound);
+            EventManager.AddListener<EventHospitalQuirkTreated>(HandleHospitalTreated);
             EventManager.AddListener<EventSkillFinalizeResults>(HandleSkillResults);
             EventManager.AddListener<EventBattleRetreat>(HandleRetreat);
             EventManager.AddListener<EventBattleRetreatFailed>(HandleRetreatFailed);
@@ -619,6 +621,14 @@ namespace DD2A11y.Game {
                 return null;
             }
             return result.IsCombo ? SpokenLine.Join(line, GameLoc.TryGet("combo_append_pop_text_label")) : line;
+        }
+
+        // The hospital's treatment pops the bare "Cured" over the hero (its removal event
+        // carries the HOSPITAL source the quirk lines skip); a lock pops nothing.
+        private static void HandleHospitalTreated(EventHospitalQuirkTreated evt) {
+            if (!evt.m_IsLock) {
+                PartyEvents.HandleHospitalTreated(evt);
+            }
         }
 
         private static void HandleRetreat(EventBattleRetreat evt) {

@@ -1655,6 +1655,10 @@ title ("Field Hospital: Triage" / Wellness / Pharmacy - it retitles per tab).
   ("+8 HP", "+MAX") with the price composed from the model exactly as the store composes it
   (CostDescription, strikethrough off - the game's own bound text carries a crossed-out
   original price that would read as two numbers).
+- **Treatment outcome**: a cure pops the game's bare "Cured" over the hero
+  (`EventHospitalQuirkTreated`), now spoken with the hero's name leading, the way the mid-
+  battle and inn cures read (2026-09-05, deployed, unverified live). The screen's own re-read
+  still covers the treated row.
 - **Wellness**: treatable quirks by their own names ("selected" on the one the commands would
   treat; Enter is the row's own click, spoken back), then the lock/remove commands captioned
   by their tooltips with the cost following ("Remove, relic 16") - the visible row is icon

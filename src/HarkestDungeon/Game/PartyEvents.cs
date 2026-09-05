@@ -171,6 +171,14 @@ namespace DD2A11y.Game {
             Deliver(CombatEvents.DotTickLine(evt));
         }
 
+        internal static void HandleHospitalTreated(Assets.Code.Game.Events.EventHospitalQuirkTreated evt) {
+            string name = NameOf(evt.m_ActorGuid);
+            string cured = GameLoc.TryGet("pop_text_cured");
+            if (name != null && cured != null) {
+                Deliver(SpokenLine.Join(name, cured));
+            }
+        }
+
         // Outside combat the game names a removed regular quirk and pops the bare "Cured"
         // for a curse or disease; the named removal speaks as a loss so it cannot read as a
         // gain.
