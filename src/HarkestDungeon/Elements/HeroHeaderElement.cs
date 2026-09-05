@@ -20,9 +20,13 @@ namespace DD2A11y.Elements {
             AccessTools.FieldRefAccess<CharacterSheetUiBhv, TextTooltipBhv>("m_heroSealTooltip");
 
         private readonly CharacterSheetUiBhv _sheet;
+        private readonly System.Action _rename;
 
-        public HeroHeaderElement(CharacterSheetUiBhv sheet) {
+        /// <param name="rename">Starts the sheet's own inline rename (null on a sheet without
+        /// the title widget); Enter and the rename key run it.</param>
+        public HeroHeaderElement(CharacterSheetUiBhv sheet, System.Action rename = null) {
             _sheet = sheet;
+            _rename = rename;
         }
 
         private ActorInstance Actor => Actors.Get(_sheet.ActorGuid);
@@ -47,6 +51,10 @@ namespace DD2A11y.Elements {
         public override IEnumerable<ElementAction> GetActions() {
             yield return new ElementAction(ActionIds.Increase, _sheet.HandleNextActorButton);
             yield return new ElementAction(ActionIds.Decrease, _sheet.HandlePreviousActorButton);
+            if (_rename != null) {
+                yield return new ElementAction(ActionIds.Activate, _rename);
+                yield return new ElementAction("rename", _rename);
+            }
         }
 
         // A hero switch reads the landed hero in full; with a single hero the switch lands on the

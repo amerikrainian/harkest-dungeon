@@ -127,8 +127,14 @@ namespace DD2A11y.Screens {
 
         public CharacterSheetScreen(TraditionalNavigator navigator, System.Action<string, bool> speak) {
             _navigator = navigator;
+            _speak = speak;
             _bagPanel = new InventoryPanel(speak, navigator);
         }
+
+        private readonly System.Action<string, bool> _speak;
+        private Core.Text.TypingEcho _echo;
+        private static readonly HarmonyLib.AccessTools.FieldRef<Assets.Code.UI.CharacterSheetActorTitleUiBhv, TMPro.TMP_InputField> TitleFieldRef =
+            HarmonyLib.AccessTools.FieldRefAccess<Assets.Code.UI.CharacterSheetActorTitleUiBhv, TMPro.TMP_InputField>("m_nameInputField");
 
         /// <summary>The grab key (Space / Shift+Space), routed here while this screen stands.</summary>
         public void ToggleGrab(UIElement current, bool takeOne) => _bagPanel.ToggleGrab(current, takeOne);
@@ -155,7 +161,14 @@ namespace DD2A11y.Screens {
             // element skips itself; while armed it stands first, one Home away from the
             // destination slot the entry lands on.
             _root.Add(new ReadoutElement(Game.SlotSelect.EquippingLine));
-            _root.Add(new HeroHeaderElement(sheet));
+            // The hero's name is the sheet's own inline edit: its title widget clears the
+            // field and takes typing until Return, the way the coach sheet's rename does.
+            var title = sheet.GetComponentInChildren<Assets.Code.UI.CharacterSheetActorTitleUiBhv>(includeInactive: true);
+            _echo = title == null ? null : new Core.Text.TypingEcho(() => title != null && title.IsInputtingText, () => {
+                var field = title == null ? null : TitleFieldRef(title);
+                return field == null ? "" : field.text;
+            }, _speak);
+            _root.Add(new HeroHeaderElement(sheet, title == null ? null : (System.Action)title.OnEditNameButtonPressed));
 
             RebuildTabIndices(sheet);
             if (_tabIndices.Count > 0) {
@@ -232,6 +245,14 @@ namespace DD2A11y.Screens {
 
         public override bool OnUpdate(object target) {
             var sheet = (CharacterSheetUiBhv)target;
+            if (_echo != null && _echo.Tick()) {
+                // The rename ended: read the name the hero now carries (the game restores
+                // the previous one when the field was left empty or the edit cancelled).
+                var renamed = Actors.Get(sheet.ActorGuid);
+                if (renamed != null) {
+                    _speak(renamed.ActorName, true);
+                }
+            }
             // A pick arming while the sheet already stands (Enter on a bag item with this
             // sheet beneath) moves focus to the destination slot; the landing read is the
             // announcement. Before the entry announcement the move is silent - the entry

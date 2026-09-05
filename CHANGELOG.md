@@ -32,7 +32,7 @@
 - The credits now read: each heading and every name paired with its title, line by line.
 - The all-flames celebration shown once every confession boss is beaten with each Infernal Flame now reads its title and text.
 - Import Save Data on the mods side of the menu now reads its save and mod profile lists and its buttons.
-- A kingdom's end-of-campaign results now read the outcome, the map and difficulty, and each score row as it appears.
+- A kingdom's end-of-campaign results now read the outcome, the map and difficulty and each score row as it appears.
 
 ## V0.3.9
 
