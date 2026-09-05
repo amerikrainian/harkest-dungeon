@@ -59,6 +59,7 @@ KingdomDestination = пункт назначения
 KingdomRegionsAway = через {0} регион|через {0} региона|через {0} регионов
 KingdomDaysAway = {0} день пути|{0} дня пути|{0} дней пути
 KingdomHeroArrived = {0} прибыл в {1}
+KingdomSpreadFromTo = из {0} в {1}
 KingdomPoiAll = все
 ScreenKingdomEvent = событие королевства
 ScreenFork = развилка

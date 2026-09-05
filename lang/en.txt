@@ -61,6 +61,7 @@ KingdomDestination = destination
 KingdomRegionsAway = {0} region away|{0} regions away
 KingdomDaysAway = {0} day away|{0} days away
 KingdomHeroArrived = {0} arrived at {1}
+KingdomSpreadFromTo = from {0} to {1}
 KingdomPoiAll = all
 ScreenKingdomEvent = kingdom event
 ScreenFork = fork

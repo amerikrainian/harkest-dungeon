@@ -59,6 +59,7 @@ KingdomDestination = cíl
 KingdomRegionsAway = {0} oblast daleko|{0} oblasti daleko|{0} oblastí daleko
 KingdomDaysAway = {0} den cesty|{0} dny cesty|{0} dní cesty
 KingdomHeroArrived = {0} dorazil do {1}
+KingdomSpreadFromTo = z {0} do {1}
 KingdomPoiAll = vše
 ScreenKingdomEvent = událost království
 ScreenFork = křižovatka

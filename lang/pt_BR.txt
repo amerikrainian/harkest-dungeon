@@ -59,6 +59,7 @@ KingdomDestination = destino
 KingdomRegionsAway = a {0} região|a {0} regiões
 KingdomDaysAway = a {0} dia|a {0} dias
 KingdomHeroArrived = {0} chegou a {1}
+KingdomSpreadFromTo = de {0} para {1}
 KingdomPoiAll = tudo
 ScreenKingdomEvent = evento do reino
 ScreenFork = bifurcação

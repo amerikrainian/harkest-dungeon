@@ -131,6 +131,9 @@ namespace DD2A11y.Core.Strings {
             D("KingdomDaysAway", "{0} day away|{0} days away"),
             // A sent hero reaching their inn at the next day's start; {0} = hero, {1} = inn.
             D("KingdomHeroArrived", "{0} arrived at {1}"),
+            // A kingdom curse spreading across the map, under the game's own "Contagion Spreads"
+            // banner; {0} = the region it spread from, {1} = the region it reached.
+            D("KingdomSpreadFromTo", "from {0} to {1}"),
             // The points-of-interest filter when it is off (its on state reuses "reachable").
             D("KingdomPoiAll", "all"),
             D("ScreenKingdomEvent", "kingdom event"),
@@ -750,6 +753,7 @@ namespace DD2A11y.Core.Strings {
         public static string KingdomRegionsAway(int regions) => P("KingdomRegionsAway", regions);
         public static string KingdomDaysAway(int days) => P("KingdomDaysAway", days);
         public static string KingdomHeroArrived(string hero, string inn) => F("KingdomHeroArrived", hero, inn);
+        public static string KingdomSpreadFromTo(string origin, string destination) => F("KingdomSpreadFromTo", origin, destination);
         public static string KingdomPoiAll => T("KingdomPoiAll");
         public static string ScreenKingdomEvent => T("ScreenKingdomEvent");
         public static string ScreenFork => T("ScreenFork");

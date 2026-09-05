@@ -59,6 +59,7 @@ KingdomDestination = 目的地
 KingdomRegionsAway = 相距{0}个地区
 KingdomDaysAway = 相距{0}天
 KingdomHeroArrived = {0}到达{1}
+KingdomSpreadFromTo = 从{0}到{1}
 KingdomPoiAll = 全部
 ScreenKingdomEvent = 王国事件
 ScreenFork = 岔路

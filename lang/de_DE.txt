@@ -59,6 +59,7 @@ KingdomDestination = Ziel
 KingdomRegionsAway = {0} Region entfernt|{0} Regionen entfernt
 KingdomDaysAway = {0} Tag entfernt|{0} Tage entfernt
 KingdomHeroArrived = {0} in {1} angekommen
+KingdomSpreadFromTo = von {0} nach {1}
 KingdomPoiAll = alle
 ScreenKingdomEvent = Königreichsereignis
 ScreenFork = Gabelung
