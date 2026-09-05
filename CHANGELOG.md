@@ -17,6 +17,7 @@
 - On the kingdom map, the day's contagion banners are now spoken with the regions they concern.
 - The loot for kingdoms screen now reads its reward captions (mastery, flame, coach gains) and any skill a hero-story fight unlocked, with the skill card in the buffer.
 - A kingdom's end-of-campaign results now read the outcome, the map and difficulty and the score rows.
+- The Kingdoms siege results panel now reads its outcome, a defeat's hero effects, the rewards and its buttons, and Escape closes it.
 - The inn's wanted poster (Confessions) now reads as "Bounty Hunter for hire" among the station buttons, and the hire dialog it opens reads the offer with its candle fee, the hero to replace with a selected marker, and the Hire and Decline buttons.
 - The hero sheet now includes the quirk-reroll button the game offers on a fresh hero at the Confessions crossroads, with its candle cost on the line and the balance in the buffer.
 - The stagecoach can now be renamed from its sheet.
@@ -26,7 +27,6 @@
 - The pause menu's profile badge now reads as a button, and the Profile Summary it opens reads its tallies and every achievement with its progress.
 - Inn reactions and refusals no longer wait until you return to the hub when a station screen is open.
 - A tutorial the game opens in the archive now starts the reading on that tutorial.
-- The Kingdoms siege results panel now reads its outcome, a defeat's hero effects, the rewards and its buttons, and Escape closes it.
 - Travelogue quirk entries no longer give away a hidden quirk: they read as the game's click-to-reveal button, Enter reveals, and a revealed entry carries the quirk's effects in the buffer.
 - The crossroads now reads the selected confession, and each hero's buffer carries the goal they bring to the run with its reward.
 - The credits now read: each heading and every name paired with its title, line by line.
