@@ -67,13 +67,20 @@ namespace DD2A11y.Screens {
             return false;
         }
 
-        // One focusable text row per run-log entry, reading the game's own rendered line.
+        // One focusable text row per run-log entry, reading the game's own rendered line with
+        // the row's tooltips (an item's card, a quirk's effects) in the buffer; a quirk entry
+        // keeps the game's click-to-reveal behind its own element.
         private void PopulateEntries(SubScreenBiomeResultsBhv results) {
             _entries.Clear();
             var rows = results.GetComponentsInChildren<LogEntryBhv>(includeInactive: false);
             foreach (var row in rows) {
                 var captured = row;
-                _entries.Add(new ReadoutElement(() => captured == null ? null : UiText.AllText(captured.gameObject)));
+                if (row is QuirkLogEntryBhv quirk) {
+                    _entries.Add(new QuirkLogEntryElement(quirk));
+                    continue;
+                }
+                _entries.Add(new ReadoutElement(() => captured == null ? null : UiText.AllText(captured.gameObject),
+                    detail: () => captured == null ? System.Linq.Enumerable.Empty<string>() : TooltipReader.Lines(captured.gameObject)));
             }
             _builtEntries = rows.Length;
         }
