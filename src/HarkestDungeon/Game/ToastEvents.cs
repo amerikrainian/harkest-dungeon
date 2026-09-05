@@ -20,7 +20,7 @@ namespace DD2A11y.Game {
     /// the toast is the one surface both goal-completion paths (the bare event and the
     /// loot-manager reward path) funnel through. The coach's low-flame ambush pop rides the
     /// combat queue outright: it plays as the ambush battle spins up, so its line speaks
-    /// with the battle's opening. Loot toasts ride the loot event (RoadSense).
+    /// with the battle's opening. Loot toasts speak here too, each item by title, a trashed one marked as discarded.
     /// </summary>
     public static class ToastEvents {
         private static bool _attached;
@@ -43,6 +43,7 @@ namespace DD2A11y.Game {
                 nameof(ObjectiveShown));
             PatchPostfix(harmony, typeof(StageCoachTorchUiBhv),
                 nameof(StageCoachTorchUiBhv.ShowLowTorchAmbushPopText), nameof(AmbushPopShown));
+            PatchPostfix(harmony, typeof(ToastManager), nameof(ToastManager.ShowLootToast), nameof(LootShown));
         }
 
         private static void PatchPostfix(Harmony harmony, System.Type type, string original, string postfix) {
@@ -101,6 +102,23 @@ namespace DD2A11y.Game {
                 }
             }
             Deliver(line);
+        }
+
+        // A loot toast: each item's own title, an item the game trashed for want of room
+        // marked as discarded (the toast shows a trash icon and no word). The corner toast is
+        // the only surface a road grant reaches (road pickups never raise the inventory
+        // widgets' loot event), and the trashed toast shows in every mode.
+        private static void LootShown(List<ItemInstance> lootItems, bool isTrashed) {
+            if (lootItems == null) {
+                return;
+            }
+            foreach (var item in lootItems) {
+                if (item == null) {
+                    continue;
+                }
+                string title = ItemDescription.GetTitle(item.GetItemDefinition(), item.GetQty());
+                Deliver(isTrashed ? S.ItemDiscarded(title) : title);
+            }
         }
 
         private static void AmbushPopShown() {

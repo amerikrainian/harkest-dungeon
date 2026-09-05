@@ -132,7 +132,6 @@ namespace DD2A11y.Game {
             if (!_canCollect) {
                 Plugin.Log.LogError("RoadSense: RoadEventBhv trigger methods not found; auto collect disabled");
             }
-            EventManager.AddListener<EventLootToastPresented>(HandleLootToast);
             EventManager.AddListener<EventActorHealthDamage>(HandleDamage);
             EventManager.AddListener<EventRunResist>(HandleRunResist);
             EventManager.AddListener<EventBiomeTitleStateChanged>(HandleBiomeTitle);
@@ -145,18 +144,6 @@ namespace DD2A11y.Game {
         /// patches use on the road.</summary>
         public void Post(string line) {
             _pending.Add(new KeyValuePair<AudioCue?, string>(null, line));
-        }
-
-        // A pickup rolled over: its title speaks (the game's own item name; the game's own
-        // pickup sfx already marks the moment, so no mod cue). A road grant surfaces ONLY as
-        // the corner loot toast - road pickups never raise the inventory widgets' loot event -
-        // so the toast presenting is the hook.
-        private void HandleLootToast(EventLootToastPresented evt) {
-            if (!OnRoad || evt.m_item == null) {
-                return;
-            }
-            _pending.Add(new KeyValuePair<AudioCue?, string>(
-                null, ItemDescription.GetTitle(evt.m_item.GetItemDefinition(), evt.m_item.GetQty())));
         }
 
         // Road hazards (spikes, corpses) damage heroes outside combat; same wording as battle.

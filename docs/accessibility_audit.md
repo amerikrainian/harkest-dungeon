@@ -1364,11 +1364,15 @@ collection is the game's own sfx plus speech, and everything else on the road is
   road-snap curves the coach steers itself sound too; start over 25% strength, end under 12%,
   the gap against micro-correction chatter. A capture or mode change cuts the loop silently -
   the end cue marks only a real settle.
-- **Pickup titles ride the loot toast** (`EventLootToastPresented`): a road grant never raises
-  the inventory widgets' loot event (the mod's original hook, dead code on the road - found
-  live 2026-07-25 as "collection sound but no name"), so the item's own title speaks when the
-  game's corner toast presents - speech only, no mod cue, because the game's own pickup sfx
-  already marks the moment.
+- **Pickup titles ride the loot toast** (`ToastManager.ShowLootToast`): a road grant never
+  raises the inventory widgets' loot event, so the item's own title speaks when the game's
+  corner toast presents - speech only, no mod cue, because the game's own pickup sfx already
+  marks the moment. As of 2026-09-05 this is a postfix on the toast manager's own show method
+  rather than the old `EventLootToastPresented` listener in RoadSense (found live 2026-07-25
+  as "collection sound but no name"): the same road title, plus the toast in every other mode
+  (a hero-goal reward off the road still speaks through its objective toast) and an item the
+  game trashed for want of room marked as discarded (the toast shows a trash icon and no
+  word). Deployed, the road path awaiting a re-verification pass.
 - **Auto collect** (wired 2026-08-07, awaiting live verification; the "auto collect pickups"
   toggle in the mod settings tab, default off): the pings fall silent and a pickup collects
   itself as the coach passes it abeam - first seen clearly ahead, then within the road's
