@@ -1992,6 +1992,20 @@ A battle's Victory rewards; the same surface serves road caches.
   leave-items confirmation dialog, which the dialog screen reads ("You will leave items
   behind. Still press onwards?").
 
+- **Reward captions and unlocked skills** (2026-09-04): the widget's own reward texts beside
+  the items read as readouts after the description - "+2 Mastery", "+3 Flame", "+1 Armor"
+  (the game's own strings; the coach line carries armor and wheels), a completed contract and
+  an unlocked origin skin when the widget shows them - each with its tooltip in the buffer,
+  then one readout per skill a hero-story fight unlocked (`LootSkillUnlockBhv`, the game's
+  loot-visible skills only): the skill's name with its card in the buffer ("Splitting
+  Edge": ranks, targets, damage, effects, type). The captions and rows are written and
+  spawned in the widget's open step, after the push the router matches, so the captions
+  read live (an inactive one live-skips; the prefab's unresolved placeholders never speak),
+  the rows fill on an instance-id signature, and the entry waits for the screen's Open
+  state - which also ends the "Description" placeholder the entry used to read. Verified
+  with a loot screen pushed through the game's own `ShowLoot` with rewards and a skill.
+  `QuirkRewardBhv` has no caller in the shipped game.
+
 **Known gaps:** Take All's per-item toast stream is unspoken; the utility buttons read via
 their tooltips only.
 
