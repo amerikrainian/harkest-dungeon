@@ -36,6 +36,8 @@ namespace DD2A11y.Screens {
             AccessTools.FieldRefAccess<StageCoachConfigUiBhv, DataContextBhv>("m_DataContextBhv");
         private static readonly AccessTools.FieldRef<StageCoachConfigUiBhv, TMP_InputField> NameFieldRef =
             AccessTools.FieldRefAccess<StageCoachConfigUiBhv, TMP_InputField>("m_coachNameInputLabel");
+        private static readonly AccessTools.FieldRef<StageCoachConfigUiBhv, RectTransform> TorchGridButtonField =
+            AccessTools.FieldRefAccess<StageCoachConfigUiBhv, RectTransform>("m_torchGridButton");
         // The rename key is live here: the coach's name and, at a Kingdoms inn, its pet.
         private static readonly Core.Input.InputCategory[] Categories =
             { Core.Input.InputCategory.Roster, Core.Input.InputCategory.UI };
@@ -150,6 +152,13 @@ namespace DD2A11y.Screens {
                 _root.Add(new ReadoutElement(SlotSelect.EquippingLine));
             }
             _root.Add(new CoachNameElement(sheet));
+            // The sheet's own Infernal Flame Vitrine button (shown once the vitrine is
+            // unlocked, on a Confessions run), named for the screen it opens.
+            var torch = TorchGridButtonField(sheet);
+            var torchButton = torch == null ? null : torch.GetComponent<Button>();
+            if (torchButton != null && torch.gameObject.activeInHierarchy) {
+                _root.Add(new SelectableElement(torchButton, () => GameLoc.TryGet("infernal_torch_boss_completion_title")));
+            }
 
             var bag = Object.FindObjectOfType<Assets.Code.UI.Screens.InventoryUiBhv>();
             var currencies = bag == null ? null : FindChild(bag.transform, "Currencies");

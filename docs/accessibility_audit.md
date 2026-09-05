@@ -1118,8 +1118,11 @@ tab switching (both our selector and the game keeping the tab across hero switch
 closes through `HideCharacterSheet` with the crossroads re-announcing, physical **I** key
 entry from a hero slot.
 
-**Known gaps:** hero rename (the name input field and edit button) is not modeled; the game's
-own tab hotkeys and tooltip-view mode are not used.
+**Hero rename** (2026-09-05, deployed, unverified live): the header drives the sheet's own
+inline name edit, the way the coach sheet's rename works - Enter or the rename key starts it,
+keystrokes echo, and Return reads the name the hero now carries (the game restores the
+previous one on an empty field). **Known gaps:** the game's own tab hotkeys and tooltip-view
+mode are not used.
 
 ### 4.2.4 Skill Loadouts (`SkillLoadoutScreen`) - WORKS
 
@@ -2413,9 +2416,9 @@ Live-verified: full walk. Unexercised: a repair press (stats were full), equip/u
 sheet.
 
 - **The coach sheet's vitrine button** (`StageCoachConfigUiBhv.ToggleTorchCompletionScreen`)
-  is not an element; the screen declares the Roster category, so the mod's Z key (the game's
-  own vitrine hotkey, 4.3) opens the Infernal Flame Vitrine from here as it does at the
-  crossroads (noted 2026-09-05).
+  now reads among the sheet's controls, named for the Infernal Flame Vitrine it opens (shown
+  once the vitrine is unlocked, on a Confessions run); the Z key (the screen's Roster
+  category) opens it too, as at the crossroads (2026-09-05, deployed, unverified live).
 
 ## 8.6 Select Route (`RouteSelectScreen`) - WORKS
 
