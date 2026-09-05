@@ -942,6 +942,16 @@ counts after the class blurb ("Skills per rank" / "Skills per enemy rank"), plus
 row's friendly-reach glow as an "Ally skills reach" rank list when the hero has
 ally-targeting skills.
 
+- **The confession and each hero's goal offer** (2026-09-04, live-verified on a fresh
+  confession): the actions list opens with the selected confession as a readout - the run's
+  boss from the model, worded as the scene's boss icon tooltip does ("I. Denial"; the icon's
+  own tooltip, hotkey hint included, in the buffer; hidden on a Kingdoms run, so the line
+  live-skips) - and every hero slot's buffer carries the goal the hero brings to the run the
+  way the hero-select panel words it for the selected hero: the game's "Goal: ..." line over
+  the goal's description, then the reward its icon's tooltip names ("Reward: Candle of Hope
+  1"; a trinket, rest, candle-item or loot-table goal reads the game's own tooltip for it).
+  The panel shows these only for the selected hero; the buffer gives every hero's on focus.
+
 ## 4.2 Hero Sheet (`CharacterSheetScreen`) - WORKS
 
 Live-verified 2026-07-23 from the crossroads; relationships tab 2026-07-24. First met here;
@@ -2032,6 +2042,17 @@ Live-verified 2026-07-24: arrival restore, full arrow walk. The inn-arrival run 
 
 **Known gaps:** the innkeeper portrait button (unlabeled, flavor) is not modeled; a reopened
 travelogue (from the hub) is unexercised live.
+
+- **Quirk entries and row tooltips** (2026-09-04): a quirk entry (`QuirkLogEntryBhv`) keeps
+  the quirk's name behind a mask until clicked - the sighted row shows only "Audrey gained a
+  Quirk!" and a "Click to Reveal" hint - so its element (`QuirkLogEntryElement`) reads that
+  title as a button with the hint in the buffer while unrevealed, Enter is the row's own
+  reveal and speaks the revealed line, and a revealed row reads the game's bound line ("Damian
+  gained Amateur Weaponsmith, From Encounter"; a rare quirk's glyph reads as its word) with
+  the quirk's own tooltip - its effects - in the buffer ("+15% Resolute Chance"). Every other
+  row keeps its rendered line and gains its tooltips as buffer lines. Verified at the Drakia
+  inn on real siege-loss quirk rows and an entry added unrevealed through the run log's own
+  populate. Before this the row read the masked name outright.
 
 ## 8.2 Inn Hub (`InnScreen`) - WORKS
 

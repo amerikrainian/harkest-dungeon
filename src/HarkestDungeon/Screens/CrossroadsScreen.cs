@@ -37,6 +37,17 @@ namespace DD2A11y.Screens {
         // The shown hero's name field and the icon-only buttons beside it.
         private static readonly AccessTools.FieldRef<HeroSelectBhv, TMPro.TMP_InputField> NameFieldRef =
             AccessTools.FieldRefAccess<HeroSelectBhv, TMPro.TMP_InputField>("m_textInput");
+        private static readonly AccessTools.FieldRef<HeroSelectBhv, GameObject> BossIconField =
+            AccessTools.FieldRefAccess<HeroSelectBhv, GameObject>("m_bossIcon");
+
+        // The chosen boss's name, the string the icon's tooltip leads with.
+        private static string BossName() {
+            if (!SingletonMonoBehaviour<Assets.Code.Run.RunBhv>.HasInstance()) {
+                return null;
+            }
+            var run = SingletonMonoBehaviour<Assets.Code.Run.RunBhv>.Instance.RunManager;
+            return run == null || run.Boss == null ? null : GameLoc.TryGet("boss_choice_" + run.Boss.m_Id + "_label");
+        }
         // Serialized as a GameObject (the game reaches its Selectable through GetComponent).
         private static readonly AccessTools.FieldRef<HeroSelectBhv, GameObject> ResetButtonField =
             AccessTools.FieldRefAccess<HeroSelectBhv, GameObject>("m_resetButton");
@@ -208,6 +219,14 @@ namespace DD2A11y.Screens {
                 actions.Add(new ReadoutElement(
                     () => partyName == null ? null : UiText.FirstLabel(partyName.gameObject)));
             }
+            // The selected confession: the scene's boss icon shows its blessing sprite with the
+            // boss's name as its tooltip (plus the vitrine hotkey on mouse and keyboard). The
+            // name reads from the run's model, the icon's own tooltip in the buffer; without a
+            // chosen boss (a Kingdoms run) the icon stays hidden and the line live-skips.
+            var bossIcon = BossIconField(_heroSelect);
+            actions.Add(new ReadoutElement(
+                () => bossIcon == null || !bossIcon.activeInHierarchy ? null : BossName(),
+                detail: () => bossIcon == null ? System.Linq.Enumerable.Empty<string>() : TooltipReader.Lines(bossIcon)));
             // Restores the shown hero's cosmetics and memories; the game asks to confirm.
             // Only present on a run survivor, hence the live active check.
             var reset = ResetButtonField(_heroSelect);

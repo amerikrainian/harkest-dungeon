@@ -214,6 +214,11 @@ namespace DD2A11y.Elements {
             // ally-targeting skills can reach, spoken only when the hero has any.
             if (HasHero) {
                 var actor = Slot.ActorInstance;
+                // The goal the hero brings to the run and its reward - the panel's objective
+                // line and its icon's tooltip, shown for the selected hero only.
+                foreach (var line in Actors.GoalOfferLines(actor)) {
+                    yield return line;
+                }
                 yield return S.PathLaunchSkills(CountList(RankCoverage.LaunchCounts(actor)));
                 yield return S.PathTargetSkills(CountList(RankCoverage.TargetCounts(actor)));
                 string reach = RankList(RankCoverage.AllyReachRanks(actor));

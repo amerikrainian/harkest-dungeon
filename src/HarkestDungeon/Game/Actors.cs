@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Assets.Code.Actor;
 using Assets.Code.Actor.Queries;
 using Assets.Code.Library;
+using Assets.Code.Run;
 using Assets.Code.Skill;
 using Assets.Code.Token;
 using Assets.Code.Utils;
@@ -120,6 +121,51 @@ namespace DD2A11y.Game {
                 return null;
             }
             return S.StatusComplete;
+        }
+
+        /// <summary>The crossroads' goal offer for a hero, as the hero-select panel words it: the
+        /// game's "Goal:" label over the goal's description, then the reward its icon's tooltip
+        /// carries (a candle score, a trinket, a rest, a candle item, a loot table, or the
+        /// goal's own override text); nothing without a goal.</summary>
+        public static IEnumerable<string> GoalOfferLines(ActorInstance hero) {
+            var goal = hero?.RunGoal;
+            if (goal == null) {
+                yield break;
+            }
+            string description = RunGoalDescription.GetDescription(goal, addCandleBonus: false);
+            if (string.IsNullOrEmpty(description)) {
+                yield break;
+            }
+            string label = GameLoc.TryGet("hero_select_objective_label");
+            yield return label == null ? description : string.Format(label, description);
+            string reward = GoalRewardText(hero, goal);
+            if (reward != null) {
+                yield return reward;
+            }
+        }
+
+        // The hero-select panel's own switch over the goal's icon override.
+        private static string GoalRewardText(ActorInstance hero, RunGoalDefinition goal) {
+            if (!string.IsNullOrEmpty(goal.m_GoalTooltipLocKeyOverride)) {
+                return GameLoc.TryGet(goal.m_GoalTooltipLocKeyOverride);
+            }
+            switch (goal.m_GoalIconOverride) {
+                case "trinket": {
+                    string loot = hero.GetRunGoalLootDescription();
+                    return string.IsNullOrEmpty(loot) ? GameLoc.TryGet("goal_trinket_reward_tooltip") : loot;
+                }
+                case "rest": {
+                    string loot = hero.GetRunGoalLootDescription();
+                    return string.IsNullOrEmpty(loot) ? GameLoc.TryGet("goal_hero_rest_reward_tooltip") : loot;
+                }
+                case "candle_item":
+                    return GameLoc.TryGet("goal_" + goal.m_LootTableId + "_reward_tooltip");
+            }
+            if (!string.IsNullOrEmpty(goal.m_LootTableId)) {
+                return GameLoc.TryGet("goal_default_loot_reward_tooltip");
+            }
+            string candle = GameLoc.TryGet("goal_candle_reward_tooltip");
+            return candle == null ? null : string.Format(candle, goal.m_Score);
         }
 
         /// <summary>The hero's run goal as the game's own rows word it: the goal's progress

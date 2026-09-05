@@ -26,6 +26,8 @@
 - A tutorial the game opens in the archive now starts the reading on that tutorial.
 - The Kingdoms siege results panel now reads its outcome, a defeat's hero effects, the rewards and its buttons, and Escape closes it.
 - The loot screen now reads its reward captions (mastery, flame, coach gains) and any skill a hero-story fight unlocked, with the skill card in the buffer.
+- Travelogue quirk entries no longer give away a hidden quirk: they read as the game's click-to-reveal button, Enter reveals, and a revealed entry carries the quirk's effects in the buffer.
+- The crossroads now reads the selected confession, and each hero's buffer carries the goal they bring to the run with its reward.
 
 ## V0.3.9
 
