@@ -2591,10 +2591,11 @@ mountain biomes, boss combat, game over, flame unlock - mostly rides covered sur
 these holes (audit 2026-08-13, re-verified 2026-09-05):
 
 - **Infernal-flame unlock toast** (`GameOverScreenWidgetBhv`, the only message toast the
-  game ships): its text speaks since the toast patches route every mode (5.2), but its click
-  action (opening the vitrine) has no keyboard path on the game-over floor - the vitrine
-  Z key is a Roster-category action (crossroads, coach sheet, the vitrine itself). The
-  vitrine is reachable from the next crossroads. Open, low.
+  game ships): its text speaks since the toast patches route every mode (5.2), and its click
+  action (opening the vitrine) now has a keyboard path - the results floor declares the
+  Roster category in RESULTS mode, so the vitrine Z key answers on the game-over screen as it
+  does at the crossroads and the coach sheet (2026-09-05, deployed, unverified live). The
+  vitrine is also reachable from the next crossroads.
 - **Last-chance trophy presentation** (`GameUIBhv.ShowLastChanceTrophyBiomeAnim`): a
   timeline that pauses the road on `OnTrophyShownPause` and waits for any key - an invisible
   modal pause. The driving screen sweeps the trophy button; the presentation itself is

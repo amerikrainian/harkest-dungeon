@@ -38,6 +38,15 @@ namespace DD2A11y.Screens {
             }
         }
 
+        // The game-over screen's flame-unlock toast opens the vitrine on click; the vitrine
+        // key answers there too, so the results floor declares the Roster category.
+        private static readonly Core.Input.InputCategory[] ResultsCategories =
+            { Core.Input.InputCategory.Roster, Core.Input.InputCategory.UI };
+
+        public override Core.Input.InputCategory[] InputCategories =>
+            Assets.Code.Game.GameModeMgr.CurrentMode == Assets.Code.Game.GameModeType.RESULTS
+                ? ResultsCategories : base.InputCategories;
+
         public override object ResolveTarget() {
             if (!SingletonMonoBehaviour<ScreenStackBhv>.HasInstance() || StackTop.Veiled) {
                 return null;
