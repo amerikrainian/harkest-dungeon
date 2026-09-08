@@ -2390,9 +2390,12 @@ Live-verified 2026-07-24 at the first Denial inn. Over `InnUpgradeSkillsBhv`.
 Live-verified: walk, hero paging wiring, queue ("selected", points drop), Reset (queue
 cleared, points restored), the path panel (open/close announcements, seal cards, preview
 select, pip lines, purchase-button arming). Unexercised: Apply/commit (the batch confirm),
-an actual path purchase, hero paging with a full party. Known quirk: the trainer's entry
-announcement can read the inn's name instead of "Mastery Trainer" - the station header
-binds a frame late (`InnStations.Title`); the fold-back from the path panel reads it right.
+an actual path purchase, hero paging with a full party. The entry reads the panel's own
+station name (`SubScreenElementBhv.GetScreenName`, the loc key the inn header binds a frame
+late) and holds until the panel's state is Opening or Open - its push step browses the party
+to the first hero and spawns the skill rows a frame after the object tops the stack, so an
+earlier read named the inn, spoke a nameless "hero, mastery points N", and re-landed on the
+named line (fixed 2026-09-08; the hold costs a frame, not the 0.65 s opening animation).
 
 ## 8.5 The Wainwright (`WainwrightScreen`) - WORKS
 

@@ -37,7 +37,15 @@ namespace DD2A11y.Screens {
         private Container _root;
         private int _builtSignature;
 
-        public override string Name => InnStations.Title() ?? S.ScreenGeneric;
+        // The game's own station name, from the panel's loc key; the inn header's title binds
+        // to it a frame after the panel tops the stack.
+        public override string Name => _panel != null ? _panel.GetScreenName() : S.ScreenGeneric;
+
+        // The panel tops the stack a frame before its push step (OnScreenPushed, which moves
+        // the state to Opening) browses the party to its first hero and spawns the skill rows;
+        // read before that, the hero header has no name and the rows are absent.
+        public override bool EntrySettled =>
+            _panel.ScreenState == UiScreenState.Opening || _panel.ScreenState == UiScreenState.Open;
 
         public override object ResolveTarget() {
             var top = StackTop.Object();
