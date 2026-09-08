@@ -364,6 +364,14 @@ namespace DD2A11y.Core.Strings {
             D("CrossroadsRank", "rank {0}"),
             // A roster hero currently placed in the party, appended to their readout.
             D("CrossroadsInParty", "in party"),
+            // A pool hero marked to deploy in a Kingdoms campaign's roster beyond the party:
+            // the state word on their readout, and the feedback when the toggle marks them.
+            D("CrossroadsInKingdomRoster", "in kingdom roster"),
+            // The toggle's feedback when it unmarks the focused hero.
+            D("CrossroadsOutOfKingdomRoster", "out of kingdom roster"),
+            // The game drops the oldest mark when a new one passes the roster limit; {0} = the
+            // hero whose mark it dropped.
+            D("CrossroadsRosterEvicted", "{0} out of kingdom roster"),
 
             // Grab-and-place, shared by the crossroads hero move and the inventory stack move.
             // Spoken when something is picked up to move; {0} = the hero's or item's name.
@@ -618,6 +626,8 @@ namespace DD2A11y.Core.Strings {
             // The hero-name keys at the crossroads, acting on the focused hero.
             D("InputRename", "Rename hero"),
             D("InputReroll", "Roll a new hero name"),
+            // The game's shift-click on a pool hero at a Kingdoms crossroads.
+            D("InputRosterToggle", "Toggle kingdom roster"),
             // The crossroads vitrine key, mirroring the game's own StageCoach hotkey.
             D("InputVitrine", "Toggle Infernal Flame Vitrine"),
             // The tutorial archive's jump to its first unviewed entry.
@@ -850,6 +860,9 @@ namespace DD2A11y.Core.Strings {
         public static string EmptySlot => T("EmptySlot");
         public static string CrossroadsRank(int rank) => F("CrossroadsRank", rank);
         public static string CrossroadsInParty => T("CrossroadsInParty");
+        public static string CrossroadsInKingdomRoster => T("CrossroadsInKingdomRoster");
+        public static string CrossroadsOutOfKingdomRoster => T("CrossroadsOutOfKingdomRoster");
+        public static string CrossroadsRosterEvicted(string hero) => F("CrossroadsRosterEvicted", hero);
         public static string Grabbed(string what) => F("Grabbed", what);
         public static string GrabCancelled => T("GrabCancelled");
         public static string CannotPlace => T("CannotPlace");
@@ -979,6 +992,7 @@ namespace DD2A11y.Core.Strings {
         public static string InputDiscard => T("InputDiscard");
         public static string InputRename => T("InputRename");
         public static string InputReroll => T("InputReroll");
+        public static string InputRosterToggle => T("InputRosterToggle");
         public static string InputVitrine => T("InputVitrine");
         public static string InputArchiveNew => T("InputArchiveNew");
         public static string InputKingdomPoiPrev => T("InputKingdomPoiPrev");

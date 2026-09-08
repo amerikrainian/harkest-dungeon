@@ -6,6 +6,8 @@ The Crossroads is the pre-run hub: assemble four questionably stable adventurers
 
 The screen offers the party slots and the wider roster. Space (or Enter) grabs the focused hero; press it again on a slot to seat them there, or on another hero to swap the two. R renames the focused hero, Shift+R rolls them a random name.
 
+In a Kingdoms campaign the roster also decides who deploys in the kingdom beyond your party of four. Shift+Enter on a roster hero marks them for it (the game's Shift-Click); marked heroes read "in kingdom roster", a second press unmarks them, and marking one past the limit drops the oldest mark and names the hero it dropped. Whatever you leave unmarked, the game fills at random when you embark.
+
 ## The Hero Sheet
 
 C on a hero opens their sheet: skills to equip and unequip, trinkets, the conditions tab with quirks, hero goals, and memories, and the cosmetics tab with palettes, weapon kits, and skins - locked ones refuse politely and put their unlock hint in the buffer.

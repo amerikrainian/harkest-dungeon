@@ -51,6 +51,8 @@ namespace DD2A11y.Screens {
         // Serialized as a GameObject (the game reaches its Selectable through GetComponent).
         private static readonly AccessTools.FieldRef<HeroSelectBhv, GameObject> ResetButtonField =
             AccessTools.FieldRefAccess<HeroSelectBhv, GameObject>("m_resetButton");
+        private static readonly AccessTools.FieldRef<HeroSelectBhv, List<uint>> PreferredGuidsField =
+            AccessTools.FieldRefAccess<HeroSelectBhv, List<uint>>("m_kingdomPreferredActorGuids");
         private static readonly System.Reflection.MethodInfo IsDropValidMethod =
             AccessTools.Method(typeof(HeroSelectActorUIBhv), "IsDropValid");
         private static readonly System.Reflection.MethodInfo IsDropAcceptedMethod =
@@ -300,7 +302,8 @@ namespace DD2A11y.Screens {
                 if (button != null && slot.gameObject.activeInHierarchy) {
                     strip.Add(new HeroSlotElement(slot, button, Display, ToggleGrab,
                         rename: _heroSelect.OnEditNameButtonPressed,
-                        reroll: RerollName));
+                        reroll: RerollName,
+                        rosterToggle: ToggleKingdomRoster));
                 }
             }
             if (!strip.IsEmptyContainer) {
@@ -322,6 +325,31 @@ namespace DD2A11y.Screens {
         private void RerollName() {
             _heroSelect.RollNewActorName();
             _speak(Core.Text.SpokenLine.Join(S.HeroNameField, HeroName()), true);
+        }
+
+        // The game's shift-click on a pool hero (HeroSelectActorUIBhv.OnClicked): in a Kingdoms
+        // campaign, an unlocked hero not seated in the party joins or leaves the kingdom's
+        // roster - the heroes deployed beyond the party, the rest of which the game fills at
+        // random on embark. The game caps the marks at the roster limit less the party and
+        // drops the oldest mark for one past the cap; that drop is spoken, since the game only
+        // dims the dropped hero's marker. The new state reads back as the feedback.
+        private bool ToggleKingdomRoster(HeroSlotElement hero) {
+            var types = Singleton<GameTypeMgr>.Instance;
+            if (types == null || types.CurrentGameType != GameType.KINGDOM
+                || !hero.KingdomRosterToggleable || _heroSelect.IsSelected(hero.Slot.ActorGuid)) {
+                return false;
+            }
+            var before = new List<uint>(PreferredGuidsField(_heroSelect));
+            hero.Slot.ToggleKingdomRosterPreferred();
+            _speak(hero.InKingdomRoster ? S.CrossroadsInKingdomRoster : S.CrossroadsOutOfKingdomRoster, true);
+            var after = PreferredGuidsField(_heroSelect);
+            foreach (uint guid in before) {
+                if (guid != hero.Slot.ActorGuid && !after.Contains(guid)) {
+                    var dropped = Actors.Get(guid);
+                    _speak(S.CrossroadsRosterEvicted(dropped == null ? null : dropped.ActorName), false);
+                }
+            }
+            return true;
         }
 
         private static int BySiblingIndex(HeroSelectActorUIBhv a, HeroSelectActorUIBhv b)

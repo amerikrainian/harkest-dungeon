@@ -8,6 +8,7 @@
 - Picking a skill at the Mastery Trainer now keeps the focus on that skill instead of jumping back to the hero header on the first pick.
 - A refused Enter (a locked trainer skill or hero upgrade, a locked cosmetic, an inn upgrade you cannot afford) now says "unavailable" once instead of twice.
 - Opening the Mastery Trainer now announces "Mastery Trainer" and the named hero line once, instead of the inn's name, a nameless hero line, and the named line after it.
+- At a Kingdoms crossroads, Shift+Enter on a roster hero now toggles them for the kingdom's roster.
 - The Kingdoms Mastery Trainer now honors the inn's trainer upgrades: until the requisite upgrades are purchased, the game will not let you master or unlock skills.
 
 ## V0.4.0

@@ -34,6 +34,12 @@ namespace DD2A11y.Elements {
             AccessTools.FieldRefAccess<HeroSelectActorUIBhv, ResourceActor>("m_ResourceActor");
         private static readonly AccessTools.FieldRef<HeroSelectActorUIBhv, GameObject> RosteredOutlineField =
             AccessTools.FieldRefAccess<HeroSelectActorUIBhv, GameObject>("m_RosteredOutline");
+        private static readonly AccessTools.FieldRef<HeroSelectActorUIBhv, GameObject> KingdomRosterMarkField =
+            AccessTools.FieldRefAccess<HeroSelectActorUIBhv, GameObject>("m_kingdomRosterPreferredObj");
+        private static readonly AccessTools.FieldRef<HeroSelectActorUIBhv, bool> LockedField =
+            AccessTools.FieldRefAccess<HeroSelectActorUIBhv, bool>("m_locked");
+        private static readonly System.Reflection.FieldInfo DlcField =
+            AccessTools.Field(typeof(HeroSelectActorUIBhv), "m_dlcConfig");
 
         public HeroSelectActorUIBhv Slot { get; }
 
@@ -41,23 +47,44 @@ namespace DD2A11y.Elements {
         private readonly System.Action<HeroSlotElement> _toggleGrab;
         private readonly System.Action _rename;
         private readonly System.Action _reroll;
+        private readonly System.Func<HeroSlotElement, bool> _rosterToggle;
 
         /// <param name="display">Makes this slot's hero the one the scene shows (the game's own
         /// selection). The name, path, and reroll controls all act on the SHOWN hero, so the
         /// hero-targeted actions here call it first.</param>
         /// <param name="toggleGrab">Picks this hero up, or places a held one here. BOTH Enter
         /// and the grab key run it, so the two are one move with one state.</param>
+        /// <param name="rosterToggle">The game's shift-click on a pool hero at a Kingdoms
+        /// crossroads: marks or unmarks them for the kingdom's roster. Answers false where the
+        /// game's own click would do nothing, so the press reads as refused.</param>
         public HeroSlotElement(HeroSelectActorUIBhv slot, Button button,
                                System.Action<HeroSlotElement> display = null,
                                System.Action<HeroSlotElement> toggleGrab = null,
-                               System.Action rename = null, System.Action reroll = null)
+                               System.Action rename = null, System.Action reroll = null,
+                               System.Func<HeroSlotElement, bool> rosterToggle = null)
             : base(button, null, slot.gameObject) {
             Slot = slot;
             _display = display;
             _toggleGrab = toggleGrab;
             _rename = rename;
             _reroll = reroll;
+            _rosterToggle = rosterToggle;
         }
+
+        /// <summary>Whether the game's marker for a hero deployed in the kingdom's roster
+        /// beyond the party is lit on this slot.</summary>
+        public bool InKingdomRoster {
+            get {
+                var mark = KingdomRosterMarkField(Slot);
+                return mark != null && mark.activeSelf;
+            }
+        }
+
+        /// <summary>The slot's half of the game's shift-click rule
+        /// (<c>HeroSelectActorUIBhv.OnClicked</c>): a pool slot holding a hero that is neither
+        /// locked nor a store offer. The screen adds the game type and the party check.</summary>
+        public bool KingdomRosterToggleable
+            => !Slot.IsRosterSlot && Slot.IsOccupied && !LockedField(Slot) && DlcField.GetValue(Slot) == null;
 
         /// <summary>Whether this slot holds a hero the scene can display.</summary>
         public bool HasHero => Slot.IsOccupied && !Slot.IsLocked() && Slot.ActorInstance != null;
@@ -119,6 +146,9 @@ namespace DD2A11y.Elements {
                     if (outline != null && outline.activeSelf) {
                         return S.CrossroadsInParty;
                     }
+                    if (InKingdomRoster) {
+                        return S.CrossroadsInKingdomRoster;
+                    }
                 }
                 return null;
             }
@@ -154,6 +184,11 @@ namespace DD2A11y.Elements {
                     _display?.Invoke(this);
                     _reroll();
                 });
+            }
+            // The game's shift-click on a pool hero at a Kingdoms crossroads; the screen owns
+            // the rule and the words, and refuses where the game's own click would do nothing.
+            if (_rosterToggle != null) {
+                yield return ElementAction.Refusable("roster-toggle", () => _rosterToggle(this));
             }
         }
 

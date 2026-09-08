@@ -511,6 +511,16 @@ namespace DD2A11y {
                     Speech.Speak(S.StatusUnavailable, interrupt: true);
                 }
             }, InputCategory.Roster).AddBinding(K(Key.R, shift: true));
+            // The game's shift-click on a pool hero at a Kingdoms crossroads: toggle them in the
+            // kingdom's roster. Shift+Enter is the mod's shift-click, as the discard key is on
+            // an item; the Roster category shadows that global chord here, where nothing
+            // discards, and a hero the game would not toggle answers "unavailable".
+            Reg("ui.roster.toggle", () => S.InputRosterToggle, () => {
+                if (Navigator.Current?.InvokeAction("roster-toggle") != true) {
+                    Speech.Speak(S.StatusUnavailable, interrupt: true);
+                }
+            }, InputCategory.Roster).AddBinding(K(Key.Enter, shift: true)).AddBinding(K(Key.NumpadEnter, shift: true))
+                .AddBinding(P(PadInput.A, PadInput.RightTrigger));
             // The game's own crossroads key for the Infernal Flame Vitrine (its "StageCoach"
             // action), which the captured gate swallows; the vitrine also sits in the
             // actions strip for arrow reach. The vitrine screen declares the category too,

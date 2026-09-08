@@ -919,6 +919,22 @@ Over `AltarCollectionSubscreenBhv`, live-verified 2026-07-28; always unlocked.
 Live-verified 2026-07-23. The pre-run hub (the HERO_SELECT mode - `HeroSelectBhv`,
 `EmbarkUiBhv`, hero widgets `HeroSelectActorUIBhv`).
 
+**Kingdoms roster toggle** (2026-09-08, user-caught: the game's "Shift-Click to toggle from
+Kingdom roster" tooltip reached the buffer with no key behind it, and Shift+Enter hit the
+discard hotkey). At a Kingdoms crossroads the game's shift-click on a pool hero marks or
+unmarks them for the kingdom's roster - the heroes deployed beyond the party, up to the
+difficulty's `ROSTER_ACTIVE_ENTRY_LIMIT` less four (eight on Normal); a mark past the cap
+drops the oldest, and the game fills unmarked places at random on embark. The game binds
+the toggle only to the gamepad right shoulder besides the mouse. The mod's `ui.roster.toggle`
+(Roster category, Shift+Enter, shadowing the global discard chord there; pad A + RT the same
+way) runs the slot's own `ToggleKingdomRosterPreferred` behind the game's own click rule
+(Kingdoms, a pool slot, unlocked, no store offer, not seated in the party - `CrossroadsScreen
+.ToggleKingdomRoster`), speaks the new state ("in kingdom roster" / "out of kingdom roster")
+and the dropped hero when the cap evicts one ("Dismas out of kingdom roster", diffed from the
+screen's preferred-guid list around the call), and refuses everywhere else. A marked hero
+reads "in kingdom roster" as a status word, from the widget's own marker object, the way "in
+party" reads from its outline.
+
 - Party ranks (the game's "roster slots", Rank1-4), then the hero pool as horizontal strips,
   then the actions strip: the party's name when the composition has one, the shown hero's
   name controls, the two overlay openers, the **Infernal Flame Vitrine** button (added

@@ -45,6 +45,7 @@ Every mod key can be rebound from the game's Settings screen, **Mod keys** tab, 
 | --- | --- | --- | --- |
 | Rename | R | Unbound | Rename the focused hero, or the stagecoach on its sheet, or its pet at a Kingdoms inn (type, Enter to accept) |
 | Reroll name | Shift+R | Unbound | Roll the focused hero a random name |
+| Toggle kingdom roster | Shift+Enter | A + RightTrigger | At a Kingdoms crossroads, mark or unmark the focused roster hero to deploy in the kingdom beyond the party (the game's Shift-Click) |
 | Vitrine | Z | Unbound | Toggle the Infernal Flame Vitrine at the crossroads |
 | First new tutorial | N | Unbound | Jump to the first entry still marked New in the tutorial archive |
 
