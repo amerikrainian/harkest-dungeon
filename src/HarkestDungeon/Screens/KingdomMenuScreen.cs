@@ -116,12 +116,17 @@ namespace DD2A11y.Screens {
             var saveSelect = SaveSelectField(_ui);
             if (saveSelect != null && saveSelect.gameObject.activeInHierarchy) {
                 foreach (var item in saveSelect.GetComponentsInChildren<KingdomSaveItemBhv>(includeInactive: false)) {
+                    // One silent row per save: the save, then to its right the row's side
+                    // buttons (its Delete button on mouse and keyboard, and whatever else the
+                    // game shows), captioned by their own tooltips, so the delete the sighted
+                    // player sees is a Right away and not only behind the discard key. Enter
+                    // runs the button's own click. The row is reused like its elements, so
+                    // focus survives a rebuild that keeps the save.
                     var saveItem = item;
-                    Add(previous, saveItem, () => new KingdomSaveElement(saveItem));
-                    // The row's side buttons (its Delete button on mouse and keyboard, and
-                    // whatever else the game shows), captioned by their own tooltips, so the
-                    // delete the sighted player sees is in arrow reach and not only behind the
-                    // discard key. Enter runs the button's own click.
+                    var row = (Container)Add(previous, "row:" + saveItem.GetInstanceID(),
+                        () => new Container(ContainerShape.HorizontalList));
+                    row.Clear();
+                    Add(previous, saveItem, () => new KingdomSaveElement(saveItem), row);
                     foreach (var button in saveItem.GetComponentsInChildren<Button>(includeInactive: false)) {
                         if (button.gameObject == saveItem.gameObject
                             || button.GetComponentInChildren<TMP_InputField>(includeInactive: true) != null
@@ -131,7 +136,7 @@ namespace DD2A11y.Screens {
                         var rowButton = button;
                         Add(previous, rowButton, () => new ActionElement(
                             () => UiText.FirstLabel(rowButton.gameObject), S.RoleButton,
-                            () => rowButton.onClick.Invoke()));
+                            () => rowButton.onClick.Invoke()), row);
                     }
                 }
                 var load = LoadButtonField(saveSelect);
@@ -229,12 +234,13 @@ namespace DD2A11y.Screens {
             return GameLoc.TryGet("kingdom_difficulty_" + (custom ? "custom" : definition.m_Id));
         }
 
-        private UIElement Add(Dictionary<object, UIElement> previous, object key, Func<UIElement> make) {
+        private UIElement Add(Dictionary<object, UIElement> previous, object key, Func<UIElement> make,
+                              Container into = null) {
             if (!previous.TryGetValue(key, out var element)) {
                 element = make();
             }
             _byWidget[key] = element;
-            _root.Add(element);
+            (into ?? _root).Add(element);
             return element;
         }
 

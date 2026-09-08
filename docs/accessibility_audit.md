@@ -183,10 +183,12 @@ scene owns the menu. Three phases rebuilt in place:
   then its enemy gang by the game's campaign title for it ("Secrets of the Coven" - the row
   shows the gang only as its banner and flag; the id comes from the list's own per-directory
   `KingdomSaveStats`, `KingdomGangs.Title` shared with the coach livery). Enter loads through
-  the widget's click path. The row's Delete button follows it in the tree, captioned by its
-  own tooltip ("Delete Profile"), Enter running its click - the game's `OnDeleteSavePressed`
-  and its confirmation - the way the profile list's row buttons already read; Shift+Enter on
-  the row opens the same confirmation (2026-09-08, user-caught: the delete was reachable only
+  the widget's click path. Each save is a silent horizontal row: the save, then to its right
+  the row's Delete button, captioned by its own tooltip ("Delete Profile"), Enter running its
+  click - the game's `OnDeleteSavePressed` and its confirmation - the way the profile list's
+  row buttons already read; Right from a save reaches its Delete, Up/Down step between saves
+  (a row entered from above lands on its remembered child, else the save), and Shift+Enter on
+  the save opens the same confirmation (2026-09-08, user-caught: the delete was reachable only
   through the discard key, which nothing on the screen advertised).
 - **Creation wizard**, steps read one at a time, landing on the new step's first element after
   the game's cross-fade:
