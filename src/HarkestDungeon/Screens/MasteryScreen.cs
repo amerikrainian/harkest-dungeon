@@ -27,6 +27,11 @@ namespace DD2A11y.Screens {
     public sealed class MasteryScreen : GameScreen {
         private static readonly HarmonyLib.AccessTools.FieldRef<InnUpgradeSkillsBhv, GameObject> ResetButtonField =
             HarmonyLib.AccessTools.FieldRefAccess<InnUpgradeSkillsBhv, GameObject>("m_ResetButton");
+        // The hero the party browser stands on, kept current by the trainer's own
+        // party-browsed listener on either tab. Its public ActiveActorGuid is the skills
+        // widget's, which drops its listener while the Hero Upgrades tab hides the widget.
+        private static readonly HarmonyLib.AccessTools.FieldRef<InnUpgradeSkillsBhv, uint> BrowsedActorField =
+            HarmonyLib.AccessTools.FieldRefAccess<InnUpgradeSkillsBhv, uint>("m_activeActorGuid");
 
         private InnUpgradeSkillsBhv _panel;
         private Container _root;
@@ -130,7 +135,7 @@ namespace DD2A11y.Screens {
             var next = FindChild(panel.transform, "right_button");
             _root.Add(new MasteryHeroElement(
                 () => {
-                    var actor = Actors.Get(panel.ActiveActorGuid);
+                    var actor = Actors.Get(BrowsedActorField(panel));
                     return actor == null ? null : actor.ActorName;
                 },
                 () => (int)Singleton<GameTypeMgr>.Instance.RunValues.GetValue(RunValueType.HERO_UPGRADE_POINTS)
