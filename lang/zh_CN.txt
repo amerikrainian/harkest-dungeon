@@ -193,6 +193,7 @@ CombatUsedSkill = {0}对{2}使用{1}
 CombatMoved = {0} {1}
 CombatGained = {0}获得{1}
 CombatResisted = {0}抵抗了{1}
+CombatImmune = {0}免疫{1}
 CombatTurnOrder = 行动顺序，{0}
 CombatantNumbered = {0}{1}
 CombatBattleCount = 第{0}场战斗，共{1}场

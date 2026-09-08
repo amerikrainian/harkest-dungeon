@@ -17,6 +17,7 @@ using Assets.Code.Game.Events;
 using Assets.Code.Library;
 using Assets.Code.Quirk;
 using Assets.Code.Quirk.Events;
+using Assets.Code.Resist;
 using Assets.Code.Skill;
 using Assets.Code.Skill.Events;
 using Assets.Code.Source;
@@ -471,21 +472,54 @@ namespace DD2A11y.Game {
                 PartyEvents.HandleResist(evt);
                 return;
             }
-            if (!evt.m_IsPopTextValid) {
-                return;
+            string line = ResistLine(evt);
+            if (line != null) {
+                _pending.Add(line);
+            }
+        }
+
+        // The game's resist pop, with its gates: sources the resist definition keeps off the
+        // pop text, and a deathblow resist (the survival line covers it). An always-resist
+        // (a barricade's positive-token immunity) pops "Immune" rather than "Resist", and
+        // speaks as an immunity so the player knows not to try again.
+        internal static string ResistLine(EventActorResist evt) {
+            if (!evt.m_IsPopTextValid || evt.m_ResistId == "death") {
+                return null;
             }
             string owner = Actors.SpokenName(Actors.Get(evt.m_TargetActorGuid));
             if (owner == null) {
-                return;
+                return null;
             }
-            _pending.Add(S.CombatResisted(owner, ResistName(evt.m_ResistId)));
+            string what = ResistName(evt.m_ResistId);
+            return evt.m_IsAlwaysResist ? S.CombatImmune(owner, what) : S.CombatResisted(owner, what);
         }
 
-        // The resist id names the icon the game's own resist pop shows ("icon_stress",
-        // "icon_move"), so the icon-word resolver speaks it in the game language (a dot
-        // name, a token name, the story legend's word, an authored word).
+        // A resist over a whole token class has no icon ("positivetoken"), so its
+        // definition's token tag names it by the game's word for that class ("Positive
+        // Token"). Every other resist id names the icon the game's own resist pop shows
+        // ("icon_stress", "icon_move"), so the icon-word resolver speaks it in the game
+        // language (a dot name, a token name, the story legend's word, an authored word),
+        // logging its humanized fallback for an icon it knows no word for.
         internal static string ResistName(string resistId)
-            => SpriteWords.Resolve("icon_" + resistId) ?? resistId;
+            => TokenClassResistName(resistId) ?? SpriteWords.Resolve("icon_" + resistId);
+
+        private static string TokenClassResistName(string resistId) {
+            if (!SingletonMonoBehaviour<Library<string, ResistDefinition>>.HasInstance()) {
+                return null;
+            }
+            var definition = SingletonMonoBehaviour<Library<string, ResistDefinition>>.Instance
+                .GetLibraryElement(resistId);
+            if (definition == null) {
+                return null;
+            }
+            foreach (string tag in definition.TokenTags) {
+                string name = GameLoc.TryGet("token_" + tag);
+                if (name != null) {
+                    return name;
+                }
+            }
+            return null;
+        }
 
         private static void HandleStressDamage(EventStressDamage evt) {
             if (!InCombat) {

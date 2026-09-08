@@ -193,6 +193,7 @@ CombatUsedSkill = {0} wandte {1} auf {2} an
 CombatMoved = {0} {1}
 CombatGained = {0} erhielt {1}
 CombatResisted = {0} widerstand {1}
+CombatImmune = {0} immun gegen {1}
 CombatTurnOrder = Zugreihenfolge, {0}
 CombatantNumbered = {0} {1}
 CombatBattleCount = Kampf {0} von {1}

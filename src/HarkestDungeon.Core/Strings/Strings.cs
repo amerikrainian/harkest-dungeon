@@ -455,6 +455,9 @@ namespace DD2A11y.Core.Strings {
             D("CombatGained", "{0} gained {1}"),
             // A combatant shrugged off an applied effect; {0} = who, {1} = what was resisted.
             D("CombatResisted", "{0} resisted {1}"),
+            // A combatant is immune to an applied effect (the game's "Immune" pop, for an
+            // effect it always resists); {0} = who, {1} = what.
+            D("CombatImmune", "{0} immune to {1}"),
             // The upcoming acting order, current actor first; {0} = the combatant names, joined.
             D("CombatTurnOrder", "turn order, {0}"),
             // A combatant whose name several living teammates share (a pack of Lost Souls):
@@ -888,6 +891,7 @@ namespace DD2A11y.Core.Strings {
         public static string CombatMoved(string name, string movement) => F("CombatMoved", name, movement);
         public static string CombatGained(string name, string what) => F("CombatGained", name, what);
         public static string CombatResisted(string name, string what) => F("CombatResisted", name, what);
+        public static string CombatImmune(string name, string what) => F("CombatImmune", name, what);
         public static string CombatTurnOrder(string names) => F("CombatTurnOrder", names);
         public static string CombatantNumbered(string name, int rank) => F("CombatantNumbered", name, rank);
         public static string CombatBattleCount(int current, int total) => F("CombatBattleCount", current, total);

@@ -204,14 +204,7 @@ namespace DD2A11y.Game {
         }
 
         internal static void HandleResist(EventActorResist evt) {
-            if (!evt.m_IsPopTextValid) {
-                return;
-            }
-            string owner = NameOf(evt.m_TargetActorGuid);
-            if (owner == null) {
-                return;
-            }
-            Deliver(S.CombatResisted(owner, CombatEvents.ResistName(evt.m_ResistId)));
+            Deliver(CombatEvents.ResistLine(evt));
         }
 
         internal static void HandleWound(EventActorWoundApplied evt) {

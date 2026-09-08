@@ -193,6 +193,7 @@ CombatUsedSkill = {0} застосовує {1}, ціль {2}
 CombatMoved = {0} {1}
 CombatGained = {0} отримує {1}
 CombatResisted = {0} витримує {1}
+CombatImmune = {0}, імунітет: {1}
 CombatTurnOrder = порядок ходів, {0}
 CombatantNumbered = {0} {1}
 CombatBattleCount = бій {0} з {1}

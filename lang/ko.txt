@@ -193,6 +193,7 @@ CombatUsedSkill = {0}, {2}에게 {1} 사용
 CombatMoved = {0} {1}
 CombatGained = {0}, {1} 획득
 CombatResisted = {0}, {1} 저항
+CombatImmune = {0}, {1} 면역
 CombatTurnOrder = 턴 순서, {0}
 CombatantNumbered = {0} {1}
 CombatBattleCount = 전투 {0}, 총 {1}

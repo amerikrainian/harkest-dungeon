@@ -1,5 +1,10 @@
 # Changelog
 
+## V0.4.1
+
+- An effect a combatant always resists now reads as "immune to" instead of "resisted", and a resist against a whole token class names it ("Positive Token") instead of leaking the game's raw id.
+
+
 ## V0.4.0
 
 - On the kingdom map, hero rows now say where each hero is (in the party or the inn they are stationed at), any curse they carry, and where a scheduled trip is taking them.

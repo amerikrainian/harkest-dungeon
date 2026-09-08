@@ -193,6 +193,7 @@ CombatUsedSkill = {0}が{2}に{1}を使用
 CombatMoved = {0} {1}
 CombatGained = {0}に{1}が付与
 CombatResisted = {0}が{1}に抵抗
+CombatImmune = {0}は{1}に免疫
 CombatTurnOrder = ターン順、{0}
 CombatantNumbered = {0} {1}
 CombatBattleCount = 戦闘{0}、全{1}
