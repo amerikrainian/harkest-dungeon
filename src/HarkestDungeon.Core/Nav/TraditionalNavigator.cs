@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using static DD2A11y.Core.Strings.Strings;
 
 namespace DD2A11y.Core.Nav {
     /// <summary>
@@ -52,17 +53,25 @@ namespace DD2A11y.Core.Nav {
                         OpenPopup(popup);
                         return true;
                     }
-                    // Consume only when something actually activated; a focused element with no
-                    // Activate action leaves the key unconsumed rather than silently eating it.
-                    bool activated = Current.InvokeAction(ActionIds.Activate);
-                    if (activated && Current.ReannounceOnActivate) {
+                    // Consume only when the element answered the press; a focused element with
+                    // no Activate action leaves the key unconsumed rather than silently eating
+                    // it. A refusal speaks once, here, with no re-announce: the element's state
+                    // did not change.
+                    switch (Current.Perform(ActionIds.Activate)) {
+                        case ActionOutcome.Missing:
+                            return false;
+                        case ActionOutcome.Refused:
+                            Speak(StatusUnavailable, interrupt: true);
+                            return true;
+                    }
+                    if (Current.ReannounceOnActivate) {
                         Speak(Current.GetValueText(), interrupt: true);
                         // An activation that rebuilds the screen under the cursor (a pick that
                         // shows the Reset button) re-lands on the element's replacement;
                         // recording the line keeps that re-land from repeating the new state.
                         MarkCurrentLineAnnounced();
                     }
-                    return activated;
+                    return true;
                 }
                 case UiActions.Back:
                     if (PopupOpen) {

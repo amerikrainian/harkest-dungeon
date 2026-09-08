@@ -83,13 +83,13 @@ namespace DD2A11y.Elements {
         public override bool ReannounceOnActivate => true;
 
         public override IEnumerable<ElementAction> GetActions() {
-            yield return new ElementAction(ActionIds.Activate, () => {
-                if (_node.CanUpgrade
-                    && CostCalculation.CanAffordCost(_node.InnUpgradeDefinition.CostDefinition)) {
-                    _node.Unlock();
-                } else {
-                    Core.Speech.SpeechPipeline.Instance?.Speak(S.StatusUnavailable);
+            yield return ElementAction.Refusable(ActionIds.Activate, () => {
+                if (!_node.CanUpgrade
+                    || !CostCalculation.CanAffordCost(_node.InnUpgradeDefinition.CostDefinition)) {
+                    return false;
                 }
+                _node.Unlock();
+                return true;
             });
         }
 

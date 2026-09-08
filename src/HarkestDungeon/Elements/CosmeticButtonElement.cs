@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Assets.Code.Data;
 using Assets.Code.UI;
 using DD2A11y.Core.Nav;
-using DD2A11y.Core.Speech;
 using DD2A11y.Core.Text;
 using DD2A11y.Game;
 using HarmonyLib;
@@ -54,8 +53,7 @@ namespace DD2A11y.Elements {
             // The game's own submit flips the selected border before its locked gate refuses,
             // leaving a locked skin looking applied; refusing here keeps the state honest.
             if (Locked) {
-                yield return new ElementAction(ActionIds.Activate,
-                    () => SpeechPipeline.Instance?.Speak(S.StatusUnavailable, interrupt: true));
+                yield return ElementAction.Refusable(ActionIds.Activate, () => false);
                 yield break;
             }
             foreach (var action in base.GetActions()) {

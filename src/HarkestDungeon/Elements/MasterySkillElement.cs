@@ -7,7 +7,6 @@ using Assets.Code.UI;
 using Assets.Code.UI.Screens;
 using DD2A11y.Core.Buffers;
 using DD2A11y.Core.Nav;
-using DD2A11y.Core.Speech;
 using DD2A11y.Game;
 using S = DD2A11y.Core.Strings.Strings;
 using UnityEngine.UI;
@@ -84,17 +83,17 @@ namespace DD2A11y.Elements {
         public override string GlossaryContext => DisplayedSkillId();
 
         public override IEnumerable<ElementAction> GetActions() {
-            yield return new ElementAction(ActionIds.Activate, () => {
+            yield return ElementAction.Refusable(ActionIds.Activate, () => {
                 var actor = _button.ActorInstance;
                 string id = _button.SkillId;
                 if (actor == null || IsMastered() || !Pickable) {
-                    SpeechPipeline.Instance?.Speak(S.StatusUnavailable, interrupt: true);
-                    return;
+                    return false;
                 }
                 _panel.TrySelectSkillToUnlock(actor, id);
                 // The game's completed hold fires this after its pick; the skills widget
                 // answers by refreshing every row's limit flags against the new queue.
                 EventSkillUpgradeExecuted.Trigger(id, actor.ActorGuid);
+                return true;
             });
         }
 

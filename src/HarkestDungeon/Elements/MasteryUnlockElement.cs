@@ -5,7 +5,6 @@ using Assets.Code.UI.Screens;
 using Assets.Code.UI.Tooltips;
 using Assets.Code.Unlock;
 using DD2A11y.Core.Nav;
-using DD2A11y.Core.Speech;
 using DD2A11y.Core.Text;
 using DD2A11y.Game;
 using HarmonyLib;
@@ -62,14 +61,14 @@ namespace DD2A11y.Elements {
         }
 
         public override IEnumerable<ElementAction> GetActions() {
-            yield return new ElementAction(ActionIds.Activate, () => {
+            yield return ElementAction.Refusable(ActionIds.Activate, () => {
                 // The row's own press gate (next in the track, opened by the inn, affordable);
                 // the purchase respawns the rows, and the rebuild announces the new state.
-                if (Purchasable && _panel.CanAffordSkill) {
-                    _panel.PurchaseActorUnlock();
-                } else {
-                    SpeechPipeline.Instance?.Speak(S.StatusUnavailable);
+                if (!Purchasable || !_panel.CanAffordSkill) {
+                    return false;
                 }
+                _panel.PurchaseActorUnlock();
+                return true;
             });
         }
 

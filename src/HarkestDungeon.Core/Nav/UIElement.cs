@@ -42,16 +42,20 @@ namespace DD2A11y.Core.Nav {
         /// navigator opens it instead of invoking the activate action.</summary>
         public virtual Popup? BuildPopup() => null;
 
-        /// <summary>Find an advertised action by id and run it. Returns true if found.</summary>
-        public bool InvokeAction(string id) {
+        /// <summary>Find an advertised action by id and run it: whether it ran, the element
+        /// refused it, or it is not advertised.</summary>
+        public ActionOutcome Perform(string id) {
             foreach (var a in GetActions()) {
                 if (a.Id == id) {
-                    a.Execute();
-                    return true;
+                    return a.Execute() ? ActionOutcome.Done : ActionOutcome.Refused;
                 }
             }
-            return false;
+            return ActionOutcome.Missing;
         }
+
+        /// <summary>Find an advertised action by id and run it. True only when it ran; a refused
+        /// or missing action answers false, so a hotkey's caller speaks "unavailable".</summary>
+        public bool InvokeAction(string id) => Perform(id) == ActionOutcome.Done;
 
         /// <summary>The composed spoken focus message: status, label, role, value, joined by ", "
         /// (non-empty only). Virtual so an element with a richer composition can override the

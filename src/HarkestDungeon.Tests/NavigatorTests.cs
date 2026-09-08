@@ -29,14 +29,22 @@ namespace DD2A11y.Tests {
         }
     }
 
-    /// <summary>A toggle: activation flips its value in place and asks for the re-announce.</summary>
+    /// <summary>A toggle: activation flips its value in place and asks for the re-announce;
+    /// while <see cref="Locked"/> it refuses the press instead.</summary>
     internal sealed class TestToggle : UIElement {
         public bool On;
+        public bool Locked;
         public override string Label => "Sound";
         public override string? Value => On ? "on" : "off";
         public override bool ReannounceOnActivate => true;
         public override IEnumerable<ElementAction> GetActions() {
-            yield return new ElementAction(ActionIds.Activate, () => On = !On);
+            yield return ElementAction.Refusable(ActionIds.Activate, () => {
+                if (Locked) {
+                    return false;
+                }
+                On = !On;
+                return true;
+            });
         }
     }
 
@@ -202,6 +210,20 @@ namespace DD2A11y.Tests {
             _spoken.Clear();
             _nav.AnnounceCurrentIfChanged();
             Assert.Empty(_spoken);
+        }
+
+        [Fact]
+        public void RefusedActivate_SpeaksUnavailableOnce_AndIsConsumed() {
+            var toggle = new TestToggle { Locked = true };
+            _nav.Attach(VerticalMenu(toggle));
+            _nav.AnnounceCurrent();
+            _spoken.Clear();
+            Assert.True(_nav.Handle(UiActions.Activate));
+            Assert.Equal("unavailable", Assert.Single(_spoken));
+            Assert.False(toggle.On);
+            Assert.False(toggle.InvokeAction(ActionIds.Activate));
+            Assert.Equal(ActionOutcome.Refused, toggle.Perform(ActionIds.Activate));
+            Assert.Equal(ActionOutcome.Missing, toggle.Perform("rename"));
         }
 
         [Fact]

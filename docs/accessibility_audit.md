@@ -2339,6 +2339,10 @@ Live-verified 2026-07-24 at the first Denial inn. Over `InnUpgradeSkillsBhv`.
   takes (unlocking a skill the hero lacks, else mastering) against the trainer's matching
   limit, then the points; after a pick the element fires the game's own
   `EventSkillUpgradeExecuted` so every row's flags refresh as they do after a sighted hold.
+  A refused press answers false from a refusable action (`ElementAction.Refusable`) and the
+  navigator speaks "unavailable" once with no re-announce - the skill rows, the upgrade
+  rows, the cosmetics swatches and the inn-upgrade nodes all refuse this way (fixed
+  2026-09-08: the elements spoke "unavailable" themselves and the re-announce repeated it).
   A Kingdoms inn gates the trainer through its stats: `UPGRADE_SKILL_LIMIT` is 0 until the
   Gymnasium inn upgrade and `UNLOCK_SKILL_LIMIT` sits at the hero's starting count until
   the Specialist Instructor, and the trainer's own `GetIsUpgradable` / `GetIsUnlockable`
