@@ -51,11 +51,7 @@ namespace DD2A11y.Elements {
             if (bare == "slime") {
                 return S.CoachSkinSlime;
             }
-            return GameLoc.TryGet("kingdom_select_gang_disclaimer_title_" + bare)
-                ?? (bare.EndsWith("s", System.StringComparison.Ordinal)
-                    ? GameLoc.TryGet("kingdom_select_gang_disclaimer_title_"
-                        + bare.Substring(0, bare.Length - 1)) : null)
-                ?? bare.Replace('_', ' ');
+            return KingdomGangs.Title(bare);
         }
     }
 }

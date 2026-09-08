@@ -9,6 +9,7 @@
 - A refused Enter (a locked trainer skill or hero upgrade, a locked cosmetic, an inn upgrade you cannot afford) now says "unavailable" once instead of twice.
 - Opening the Mastery Trainer now announces "Mastery Trainer" and the named hero line once, instead of the inn's name, a nameless hero line, and the named line after it.
 - At a Kingdoms crossroads, Shift+Enter on a roster hero now toggles them for the kingdom's roster.
+- The Kingdoms save list now reads each save's enemy gang after its map, and each save's Delete button follows it in the list, so deleting a save no longer depends on knowing the Shift+Enter shortcut.
 - The Kingdoms Mastery Trainer now honors the inn's trainer upgrades: until the requisite upgrades are purchased, the game will not let you master or unlock skills.
 
 ## V0.4.0

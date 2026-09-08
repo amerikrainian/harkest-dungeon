@@ -4,7 +4,7 @@ Kingdoms is the game's other campaign: instead of one doomed pilgrimage to the M
 
 ## Setup
 
-The Kingdoms menu and its creation wizard read like any other screen - options, text entry for the save's name included - and existing saves list with their details for loading.
+The Kingdoms menu and its creation wizard read like any other screen - options, text entry for the save's name included - and existing saves list with their details for loading: name, day, difficulty, map, and the enemy gang. Each save's Delete button follows it in the list; Shift+Enter on the save itself opens the same delete confirmation.
 
 ## The Overworld Map
 

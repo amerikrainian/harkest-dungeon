@@ -179,9 +179,15 @@ scene owns the menu. Three phases rebuilt in place:
 
 - **Entry menu:** Continue Kingdom (where a save exists), New Kingdom, Back, the game-type
   description.
-- **Save select:** each save reads its name plus the widget's own day/difficulty/map labels;
-  Enter loads through the widget's click path, Shift+Enter opens the game's delete
-  confirmation.
+- **Save select:** each save reads its name plus the widget's own day/difficulty/map labels,
+  then its enemy gang by the game's campaign title for it ("Secrets of the Coven" - the row
+  shows the gang only as its banner and flag; the id comes from the list's own per-directory
+  `KingdomSaveStats`, `KingdomGangs.Title` shared with the coach livery). Enter loads through
+  the widget's click path. The row's Delete button follows it in the tree, captioned by its
+  own tooltip ("Delete Profile"), Enter running its click - the game's `OnDeleteSavePressed`
+  and its confirmation - the way the profile list's row buttons already read; Shift+Enter on
+  the row opens the same confirmation (2026-09-08, user-caught: the delete was reachable only
+  through the discard key, which nothing on the screen advertised).
 - **Creation wizard**, steps read one at a time, landing on the new step's first element after
   the game's cross-fade:
   - The name field: Enter starts the game's own edit flow - every key then goes to the field,

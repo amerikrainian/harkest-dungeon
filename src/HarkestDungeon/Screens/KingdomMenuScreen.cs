@@ -118,6 +118,21 @@ namespace DD2A11y.Screens {
                 foreach (var item in saveSelect.GetComponentsInChildren<KingdomSaveItemBhv>(includeInactive: false)) {
                     var saveItem = item;
                     Add(previous, saveItem, () => new KingdomSaveElement(saveItem));
+                    // The row's side buttons (its Delete button on mouse and keyboard, and
+                    // whatever else the game shows), captioned by their own tooltips, so the
+                    // delete the sighted player sees is in arrow reach and not only behind the
+                    // discard key. Enter runs the button's own click.
+                    foreach (var button in saveItem.GetComponentsInChildren<Button>(includeInactive: false)) {
+                        if (button.gameObject == saveItem.gameObject
+                            || button.GetComponentInChildren<TMP_InputField>(includeInactive: true) != null
+                            || !UiText.HasAnyTextSource(button.gameObject)) {
+                            continue;
+                        }
+                        var rowButton = button;
+                        Add(previous, rowButton, () => new ActionElement(
+                            () => UiText.FirstLabel(rowButton.gameObject), S.RoleButton,
+                            () => rowButton.onClick.Invoke()));
+                    }
                 }
                 var load = LoadButtonField(saveSelect);
                 Add(previous, load, () => new SelectableElement(load));
