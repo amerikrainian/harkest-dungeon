@@ -61,7 +61,7 @@ namespace DD2A11y.Screens {
         public override bool OnUpdate(object target) {
             var panel = (InnUpgradeSkillsBhv)target;
             if (Signature(panel) != _builtSignature) {
-                var focused = _root.FocusedChild;
+                var focused = FocusedLeaf(_root);
                 int unlockIndex = UnlockIndex(focused);
                 var control = (focused as SelectableElement)?.Selectable;
                 _root.Clear();
@@ -69,21 +69,35 @@ namespace DD2A11y.Screens {
                 if (unlockIndex >= 0) {
                     SeedUnlock(unlockIndex);
                 } else if (control != null) {
-                    SeedControl(control);
+                    SeedControl(_root, control);
                 }
             }
             return false;
         }
 
-        // A rebuild lands back where the player was: a persistent control (a tab, the seal)
-        // by identity, so pressing Hero Upgrades leaves the focus on that tab.
-        private void SeedControl(Selectable control) {
-            foreach (var child in _root.Children) {
-                if (child is SelectableElement element && element.Selectable == control) {
-                    _root.SetFocusedChild(child);
-                    return;
+        // The element the cursor stands on: the remembered child at every level down to the
+        // leaf (a skill sits one list below the root).
+        private static UIElement FocusedLeaf(Container root) {
+            UIElement node = root;
+            while (node is Container container && container.FocusedChild != null) {
+                node = container.FocusedChild;
+            }
+            return node;
+        }
+
+        // A rebuild lands back where the player was: a persistent control (a skill, a tab, the
+        // seal) by identity at any depth, so a pick that shows the Reset button leaves the focus
+        // on the picked skill and pressing Hero Upgrades leaves it on that tab.
+        private static bool SeedControl(Container container, Selectable control) {
+            foreach (var child in container.Children) {
+                bool found = (child is SelectableElement element && element.Selectable == control)
+                    || (child is Container nested && SeedControl(nested, control));
+                if (found) {
+                    container.SetFocusedChild(child);
+                    return true;
                 }
             }
+            return false;
         }
 
         // The upgrade track's rows are recycled and respawned on every purchase; the row at

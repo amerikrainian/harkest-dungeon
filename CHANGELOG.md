@@ -5,6 +5,7 @@
 - An effect a combatant always resists now reads as "immune to" instead of "resisted", and a resist against a whole token class names it ("Positive Token") instead of leaking the game's raw id.
 - Entering the crossroads no longer reads a "healed" line per hero for the game's silent full-heal.
 - The Kingdoms Mastery Trainer's hero header now names the hero you page to while the Hero Upgrades tab is up, instead of repeating the Skills tab's hero.
+- Picking a skill at the Mastery Trainer now keeps the focus on that skill instead of jumping back to the hero header on the first pick.
 - The Kingdoms Mastery Trainer now honors the inn's trainer upgrades: until the Gymnasium and Specialist Instructor are bought, skills the game will not let you master or unlock read as "unavailable" and Enter refuses them, instead of queueing a pick the game rejects.
 
 ## V0.4.0

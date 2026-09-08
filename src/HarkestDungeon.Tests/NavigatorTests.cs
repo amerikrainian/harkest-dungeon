@@ -29,6 +29,17 @@ namespace DD2A11y.Tests {
         }
     }
 
+    /// <summary>A toggle: activation flips its value in place and asks for the re-announce.</summary>
+    internal sealed class TestToggle : UIElement {
+        public bool On;
+        public override string Label => "Sound";
+        public override string? Value => On ? "on" : "off";
+        public override bool ReannounceOnActivate => true;
+        public override IEnumerable<ElementAction> GetActions() {
+            yield return new ElementAction(ActionIds.Activate, () => On = !On);
+        }
+    }
+
     /// <summary>A dropdown-style element: activation opens a popup of its options, committing an
     /// option updates <see cref="Choice"/>.</summary>
     internal sealed class TestDropdown : UIElement {
@@ -176,6 +187,21 @@ namespace DD2A11y.Tests {
             _nav.Attach(VerticalMenu(item));
             Assert.True(_nav.Handle(UiActions.Activate));
             Assert.Equal(1, item.Activations);
+        }
+
+        [Fact]
+        public void ActivateReannounce_SilencesAnIdenticalRebuildReland() {
+            var toggle = new TestToggle();
+            _nav.Attach(VerticalMenu(toggle));
+            _nav.AnnounceCurrent();
+            Assert.Equal("Sound, off", Assert.Single(_spoken));
+            _spoken.Clear();
+            Assert.True(_nav.Handle(UiActions.Activate));
+            Assert.Equal("on", Assert.Single(_spoken));
+            // A rebuild that re-lands on the toggle reads nothing the player has not heard.
+            _spoken.Clear();
+            _nav.AnnounceCurrentIfChanged();
+            Assert.Empty(_spoken);
         }
 
         [Fact]

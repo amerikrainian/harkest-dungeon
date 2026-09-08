@@ -2326,8 +2326,14 @@ Live-verified 2026-07-24 at the first Denial inn. Over `InnUpgradeSkillsBhv`.
   hero's mastery state, so the element normalizes the id before judging mastery and picking
   the displayed card (fixed 2026-08-08, user-caught: every unmastered trainer skill answered
   "no upgrade available" and read the mastered card as its current one).
-- Enter queues a skill through the trainer's own `TrySelectSkillToUnlock` (the mouse holds);
-  the rebuild announces the new points. The pick and the "unavailable" state sit behind the
+- Enter queues a skill through the trainer's own `TrySelectSkillToUnlock` (the mouse holds)
+  and re-reads the skill's new state; the first pick and a Reset toggle the Reset button,
+  which rebuilds the tree, and the rebuild re-lands on the picked skill by its game control
+  at any depth (`SeedControl` walks nested lists, and the navigator records an activation's
+  re-announce so the re-land stays silent; fixed 2026-09-08 - the seed walked root children
+  only, so every first pick threw the focus back to the hero header). A Reset removes the
+  element under the cursor, so it lands on the hero header, whose line reads the restored
+  points. The pick and the "unavailable" state sit behind the
   game's own press gate (`UpgradeSkillButton.ApplySkillButtonDown`): the row's
   `mastery_locked` / `kingdom_upgrade_locked_unpurchaseable` flags, then the step the press
   takes (unlocking a skill the hero lacks, else mastering) against the trainer's matching

@@ -57,6 +57,10 @@ namespace DD2A11y.Core.Nav {
                     bool activated = Current.InvokeAction(ActionIds.Activate);
                     if (activated && Current.ReannounceOnActivate) {
                         Speak(Current.GetValueText(), interrupt: true);
+                        // An activation that rebuilds the screen under the cursor (a pick that
+                        // shows the Reset button) re-lands on the element's replacement;
+                        // recording the line keeps that re-land from repeating the new state.
+                        MarkCurrentLineAnnounced();
                     }
                     return activated;
                 }
