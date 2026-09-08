@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Code.Data;
 using Assets.Code.Skill;
+using Assets.Code.Skill.Events;
 using Assets.Code.UI;
 using Assets.Code.UI.Screens;
 using DD2A11y.Core.Buffers;
@@ -17,8 +19,9 @@ namespace DD2A11y.Elements {
     /// the points are short), and the full skill card as buffer lines - the mastered card once
     /// mastered, else the current card. The mastery preview (the sighted tooltip's second half)
     /// is the upgrade buffer, and the trainer's hero fills the hero buffer. Enter queues the
-    /// skill through the trainer's own selection (the mouse gesture is a hold); Apply and Reset
-    /// are the screen's own buttons.
+    /// skill through the trainer's own selection (the mouse gesture is a hold) behind the
+    /// game's own press gate, which at a Kingdoms inn holds the trainer's unlock and mastery
+    /// limits; Apply and Reset are the screen's own buttons.
     /// </summary>
     public sealed class MasterySkillElement : SelectableElement {
         private readonly UpgradeSkillButton _button;
@@ -51,9 +54,28 @@ namespace DD2A11y.Elements {
                     || _panel.IsSkillSelectedForUpgrade(actor, id + "_u")) {
                     return S.StatusSelected;
                 }
-                bool pickable = (_panel.GetIsUpgradable(actor, id) || _panel.GetIsUnlockable(actor, id))
-                    && _panel.CanAffordSkill;
-                return pickable ? null : S.StatusUnavailable;
+                return Pickable ? null : S.StatusUnavailable;
+            }
+        }
+
+        // The game's own press gate (UpgradeSkillButton.ApplySkillButtonDown): the row's limit
+        // flags - at a Kingdoms inn, a trainer whose upgrades have not opened mastering, or an
+        // unlock limit the hero has reached - then the step this press takes, unlocking a
+        // skill the hero lacks or else mastering, against the trainer's matching limit, then
+        // the points. The trainer's limit methods alone read a limit of zero as no limit; the
+        // row's flags, refreshed by the game after every pick, read it as locked.
+        private bool Pickable {
+            get {
+                var actor = _button.ActorInstance;
+                string id = _button.SkillId;
+                var context = _button.GetComponent<DataContextBhv>();
+                if (context.GetBoolValue("kingdom_upgrade_locked_unpurchaseable") || context.GetBoolValue("mastery_locked")) {
+                    return false;
+                }
+                var skill = actor.GetCombatSkillInstance(id);
+                bool unlocking = skill != null && !skill.GetIsUnlocked() && !_panel.IsSkillSelectedForUnlock(actor, id);
+                bool allowed = unlocking ? _panel.GetIsUnlockable(actor, id) : _panel.GetIsUpgradable(actor, id);
+                return allowed && _panel.CanAffordSkill;
             }
         }
 
@@ -65,13 +87,14 @@ namespace DD2A11y.Elements {
             yield return new ElementAction(ActionIds.Activate, () => {
                 var actor = _button.ActorInstance;
                 string id = _button.SkillId;
-                if (actor == null || IsMastered()
-                    || !(_panel.GetIsUpgradable(actor, id) || _panel.GetIsUnlockable(actor, id))
-                    || !_panel.CanAffordSkill) {
+                if (actor == null || IsMastered() || !Pickable) {
                     SpeechPipeline.Instance?.Speak(S.StatusUnavailable, interrupt: true);
                     return;
                 }
                 _panel.TrySelectSkillToUnlock(actor, id);
+                // The game's completed hold fires this after its pick; the skills widget
+                // answers by refreshing every row's limit flags against the new queue.
+                EventSkillUpgradeExecuted.Trigger(id, actor.ActorGuid);
             });
         }
 

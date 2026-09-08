@@ -2327,7 +2327,20 @@ Live-verified 2026-07-24 at the first Denial inn. Over `InnUpgradeSkillsBhv`.
   the displayed card (fixed 2026-08-08, user-caught: every unmastered trainer skill answered
   "no upgrade available" and read the mastered card as its current one).
 - Enter queues a skill through the trainer's own `TrySelectSkillToUnlock` (the mouse holds);
-  the rebuild announces the new points. A skill selected for upgrade speaks "mastered", not
+  the rebuild announces the new points. The pick and the "unavailable" state sit behind the
+  game's own press gate (`UpgradeSkillButton.ApplySkillButtonDown`): the row's
+  `mastery_locked` / `kingdom_upgrade_locked_unpurchaseable` flags, then the step the press
+  takes (unlocking a skill the hero lacks, else mastering) against the trainer's matching
+  limit, then the points; after a pick the element fires the game's own
+  `EventSkillUpgradeExecuted` so every row's flags refresh as they do after a sighted hold.
+  A Kingdoms inn gates the trainer through its stats: `UPGRADE_SKILL_LIMIT` is 0 until the
+  Gymnasium inn upgrade and `UNLOCK_SKILL_LIMIT` sits at the hero's starting count until
+  the Specialist Instructor, and the trainer's own `GetIsUpgradable` / `GetIsUnlockable`
+  read a limit of 0 as no limit while the row flags read it as locked - the element used to
+  consult only the methods, so at an unupgraded Kingdoms trainer every skill read as a plain
+  button and Enter queued unlocks and masteries the game refuses (fixed 2026-09-08,
+  user-caught; live-verified at The Low Point with both limits closed: every row
+  "unavailable", Enter refused). A skill selected for upgrade speaks "mastered", not
   "selected" - the game's own row rule (`IsSkillVisiblyUpgraded`): the points are spent and
   the row wears the full mastered look, with only the Reset button distinguishing pending
   from committed (2026-08-08, user-caught; "selected" remains for a pending kingdom skill
