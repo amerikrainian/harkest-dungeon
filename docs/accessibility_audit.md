@@ -1623,7 +1623,11 @@ pressed in testing.
   route each event to `PartyEvents` outside combat, so one listener serves both sides and
   neither can double-speak; gates mirror the game's non-combat pop handlers (already-shown
   heals, debug/dot/regen/hospital sources skipped), road collision damage stays with
-  RoadSense, and lines ride the road or inn transient queue, else queued speech.
+  RoadSense, and lines ride the road or inn transient queue, else queued speech. Heals,
+  quirk cures and the hospital's "Cured" speak only where the game registers those pops
+  (the road and the inn); every other mode stays silent for them, the crossroads included,
+  whose setup heals each roster hero to full (fixed 2026-09-07: entering the crossroads
+  read one "healed" line per hero, a pop the game never shows there).
 
 **Known gaps:** choices spawning after screen entry leave focus on the utility buttons until
 the player moves (Home reaches the choices).

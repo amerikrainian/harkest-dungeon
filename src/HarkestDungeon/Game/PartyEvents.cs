@@ -44,6 +44,12 @@ namespace DD2A11y.Game {
 
         private static string NameOf(uint actorGuid) => Actors.SpokenName(Actors.Get(actorGuid));
 
+        // The game registers its non-combat heal and quirk-cure pops for the road and the inn
+        // only (its driving and rest listeners); its other modes show nothing for either, the
+        // crossroads included, where its setup heals every roster hero to full.
+        private static bool ShowsRestPops
+            => GameModeMgr.CurrentMode == GameModeType.DRIVING || GameModeMgr.CurrentMode == GameModeType.INN;
+
         // The same source condition the combat quirk line mirrors from the game's pop text.
         internal static void HandleQuirkAdded(EventQuirkAdded evt) {
             bool hasSource = !string.IsNullOrEmpty(evt.m_SourceId);
@@ -88,7 +94,7 @@ namespace DD2A11y.Game {
         // The game's non-combat heal pop skips already-displayed heals and the passive
         // sources (debug, dot ticks, road regen, the hospital's own presentation).
         internal static void HandleHeal(EventActorHealthHeal evt) {
-            if (evt.m_HasDisplayed
+            if (!ShowsRestPops || evt.m_HasDisplayed
                 || evt.m_SourceType == SourceType.DEBUG || evt.m_SourceType == SourceType.DOT
                 || evt.m_SourceType == SourceType.DRIVING || evt.m_SourceType == SourceType.HOSPITAL) {
                 return;
@@ -171,7 +177,11 @@ namespace DD2A11y.Game {
             Deliver(CombatEvents.DotTickLine(evt));
         }
 
+        // The hospital's "Cured" pop is a road listener of the game's.
         internal static void HandleHospitalTreated(Assets.Code.Game.Events.EventHospitalQuirkTreated evt) {
+            if (GameModeMgr.CurrentMode != GameModeType.DRIVING) {
+                return;
+            }
             string name = NameOf(evt.m_ActorGuid);
             string cured = GameLoc.TryGet("pop_text_cured");
             if (name != null && cured != null) {
@@ -183,7 +193,7 @@ namespace DD2A11y.Game {
         // for a curse or disease; the named removal speaks as a loss so it cannot read as a
         // gain.
         internal static void HandleQuirkRemoved(EventQuirkRemoved evt) {
-            if (!CombatEvents.IsCuredQuirkSource(evt.m_Source)) {
+            if (!ShowsRestPops || !CombatEvents.IsCuredQuirkSource(evt.m_Source)) {
                 return;
             }
             var actor = Actors.Get(evt.m_ActorGuid);
