@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.4.2
+
+- Added ctrl+shift+a for making the mod stand down. Press it again to turn it on.
+
 ## V0.4.1
 
 - An effect a combatant always resists now reads as "immune to" instead of "resisted", and a resist against a whole token class names it ("Positive Token") instead of leaking the game's raw id.
