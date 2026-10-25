@@ -372,6 +372,7 @@ namespace DD2A11y.Dev {
         private string DescribeNav() {
             var sb = new StringBuilder();
             sb.Append(_runtime.Router.Describe()).Append('\n');
+            sb.Append("mod: ").Append(_runtime.StoodDown ? "stood down" : "on").Append('\n');
             sb.Append("gate: ").Append(_runtime.Gate.Captured ? "captured" : "released").Append('\n');
             foreach (var buffer in _runtime.Buffers.Buffers) {
                 sb.Append("buffer ").Append(buffer.Key).Append(": ")

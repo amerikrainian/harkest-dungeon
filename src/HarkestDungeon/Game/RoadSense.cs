@@ -327,6 +327,17 @@ namespace DD2A11y.Game {
             _turnLoop.Update(volume, pan);
         }
 
+        /// <summary>The pump's tick while the mod stands down: lines posted meanwhile are
+        /// dropped, the loops fall silent, and a collection already in flight still gets its
+        /// balancing exit. The ahead marks are forgotten, so on resume only a pickup seen
+        /// clearly ahead again is taken.</summary>
+        public void TickStoodDown() {
+            _pending.Clear();
+            _aheadPickups.Clear();
+            TickPendingExits();
+            StopAllLoops();
+        }
+
         private void StopPickupLoops() {
             foreach (var pair in _pickupLoops) {
                 pair.Value.Stop();

@@ -3,6 +3,8 @@
 _plural = czech
 ModLoaded = Harkest Dungeon {0} načten
 UpdateAvailable = je k dispozici aktualizace {0}
+ModStoodDown = Harkest Dungeon vypnut
+ModResumed = Harkest Dungeon zapnut
 ScreenMainMenu = hlavní nabídka
 ScreenKingdoms = království
 ScreenSettings = nastavení
@@ -280,6 +282,7 @@ InputDiscard = Zahodit předmět
 InputRename = Přejmenovat hrdinu
 InputReroll = Vylosovat nové jméno hrdiny
 InputRosterToggle = Přepnout seznam království
+InputStandDown = Vypnout nebo zapnout mod
 InputVitrine = Přepnout vitrínu pekelného plamene
 InputArchiveNew = Přejít na první novou výuku
 InputKingdomPoiPrev = Předchozí zajímavé místo

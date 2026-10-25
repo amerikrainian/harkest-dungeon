@@ -3,6 +3,8 @@
 _plural = one
 ModLoaded = Harkest Dungeon {0} 로드됨
 UpdateAvailable = 업데이트 {0} 사용 가능
+ModStoodDown = Harkest Dungeon 꺼짐
+ModResumed = Harkest Dungeon 켜짐
 ScreenMainMenu = 메인 메뉴
 ScreenKingdoms = 왕국
 ScreenSettings = 설정
@@ -280,6 +282,7 @@ InputDiscard = 아이템 버리기
 InputRename = 영웅 이름 변경
 InputReroll = 영웅 이름 새로고침
 InputRosterToggle = 왕국 명단 토글
+InputStandDown = 모드 끄기 또는 켜기
 InputVitrine = 지옥불 진열장 전환
 InputArchiveNew = 첫 번째 신규 튜토리얼로 이동
 InputKingdomPoiPrev = 이전 관심 지점

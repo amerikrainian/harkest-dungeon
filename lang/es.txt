@@ -3,6 +3,8 @@
 _plural = english
 ModLoaded = Harkest Dungeon {0} cargado
 UpdateAvailable = actualización {0} disponible
+ModStoodDown = Harkest Dungeon desactivado
+ModResumed = Harkest Dungeon activado
 ScreenMainMenu = menú principal
 ScreenKingdoms = reinos
 ScreenSettings = opciones
@@ -280,6 +282,7 @@ InputDiscard = Tirar objeto
 InputRename = Renombrar héroe
 InputReroll = Generar otro nombre de héroe
 InputRosterToggle = Alternar lista del reino
+InputStandDown = Desactivar o activar el mod
 InputVitrine = Alternar la Vitrina de la Llama Infernal
 InputArchiveNew = Ir al primer tutorial nuevo
 InputKingdomPoiPrev = Punto de interés anterior

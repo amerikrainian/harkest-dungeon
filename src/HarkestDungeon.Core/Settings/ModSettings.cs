@@ -28,6 +28,10 @@ namespace DD2A11y.Core.Settings {
         /// smashed by a skill or crumbling on its round timer).</summary>
         public BoolSetting CorpseDeaths { get; }
 
+        /// <summary>Whether the player turned the whole mod off (Ctrl+Shift+A); persisted so a
+        /// relaunch keeps it off. Toggled by its key only, never listed on a tab.</summary>
+        public BoolSetting StoodDown { get; }
+
         public IReadOnlyList<ModSetting> General { get; }
 
         public IReadOnlyList<ModSetting> Announcements { get; }
@@ -43,6 +47,7 @@ namespace DD2A11y.Core.Settings {
                 () => Strings.Strings.SettingCrossroadsTones, true, store);
             CorpseDeaths = new BoolSetting("corpse_deaths", () => Strings.Strings.SettingCorpseDeaths,
                 true, store);
+            StoodDown = new BoolSetting("stood_down", () => Strings.Strings.InputStandDown, false, store);
             General = new ModSetting[] { Separator, SensingRange, AutoCollect, CrossroadsTones };
             Announcements = new ModSetting[] { CorpseDeaths };
         }

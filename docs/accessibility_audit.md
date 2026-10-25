@@ -30,6 +30,14 @@
 
 Conventions every supported screen follows. Individual sections below note only departures.
 
+- **Ctrl+Shift+A stands the whole mod down** (global, rebindable): the active screen leaves
+  and the input gate releases, speech is disabled at the pipeline (so the event handlers
+  that speak outside the pump fall silent too), the road soundscape stops (an auto-collect
+  already in flight still gets its balancing exit), and the event queues are dropped every
+  frame so a resume replays nothing. Only the toggle key is polled. The same key resumes:
+  "Harkest Dungeon on", then the current screen's entry, queued behind it. Persisted
+  (`stood_down` in the mod's settings config, default off, on no tab): a launch stood down
+  speaks nothing at all, the loaded line included.
 - Arrows move the mod's own focus; Enter activates; Escape backs out; Home/End jump;
   Tab/Shift-Tab cross panels.
 - Run-status glances (2026-08-12), global and rebindable, composed from the run model so

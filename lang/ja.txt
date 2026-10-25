@@ -3,6 +3,8 @@
 _plural = one
 ModLoaded = Harkest Dungeon {0} 読み込み完了
 UpdateAvailable = アップデート{0}があります
+ModStoodDown = Harkest Dungeon オフ
+ModResumed = Harkest Dungeon オン
 ScreenMainMenu = メインメニュー
 ScreenKingdoms = 王国
 ScreenSettings = オプション
@@ -280,6 +282,7 @@ InputDiscard = アイテムを捨てる
 InputRename = 英雄の名前を変更
 InputReroll = 英雄の名前を振り直す
 InputRosterToggle = 王国名簿を切替
+InputStandDown = モッドのオフとオンを切り替え
 InputVitrine = 煉獄の炎の陳列棚を切り替え
 InputArchiveNew = 最初の新着チュートリアルへ移動
 InputKingdomPoiPrev = 前の注目地点

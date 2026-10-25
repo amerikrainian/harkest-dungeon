@@ -28,6 +28,10 @@ namespace DD2A11y.Core.Strings {
             // Follows the loaded line when the newest release outranks the running build;
             // {0} = that newer version. Up to date (or ahead) stays silent.
             D("UpdateAvailable", "update {0} available"),
+            // Ctrl+Shift+A: the mod hands the whole game back (keyboard, mouse, speech) until
+            // the same key brings it back.
+            D("ModStoodDown", "Harkest Dungeon off"),
+            D("ModResumed", "Harkest Dungeon on"),
 
             // Screen names, spoken when the mod takes over a screen. Match the game's own word for
             // the screen where it has one (the settings screen's title, the pause header).
@@ -628,6 +632,8 @@ namespace DD2A11y.Core.Strings {
             D("InputReroll", "Roll a new hero name"),
             // The game's shift-click on a pool hero at a Kingdoms crossroads.
             D("InputRosterToggle", "Toggle kingdom roster"),
+            // The key that turns the whole mod off and back on.
+            D("InputStandDown", "Turn the mod off or on"),
             // The crossroads vitrine key, mirroring the game's own StageCoach hotkey.
             D("InputVitrine", "Toggle Infernal Flame Vitrine"),
             // The tutorial archive's jump to its first unviewed entry.
@@ -709,6 +715,8 @@ namespace DD2A11y.Core.Strings {
 
         public static string ModLoaded(string version) => F("ModLoaded", version);
         public static string UpdateAvailable(string version) => F("UpdateAvailable", version);
+        public static string ModStoodDown => T("ModStoodDown");
+        public static string ModResumed => T("ModResumed");
 
         public static string ScreenMainMenu => T("ScreenMainMenu");
         public static string ScreenKingdoms => T("ScreenKingdoms");
@@ -993,6 +1001,7 @@ namespace DD2A11y.Core.Strings {
         public static string InputRename => T("InputRename");
         public static string InputReroll => T("InputReroll");
         public static string InputRosterToggle => T("InputRosterToggle");
+        public static string InputStandDown => T("InputStandDown");
         public static string InputVitrine => T("InputVitrine");
         public static string InputArchiveNew => T("InputArchiveNew");
         public static string InputKingdomPoiPrev => T("InputKingdomPoiPrev");

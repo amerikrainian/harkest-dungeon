@@ -3,6 +3,8 @@
 _plural = one
 ModLoaded = Harkest Dungeon {0} 已加载
 UpdateAvailable = 有可用更新 {0}
+ModStoodDown = Harkest Dungeon 已关闭
+ModResumed = Harkest Dungeon 已开启
 ScreenMainMenu = 主菜单
 ScreenKingdoms = 王国
 ScreenSettings = 选项
@@ -280,6 +282,7 @@ InputDiscard = 丢弃物品
 InputRename = 重命名英雄
 InputReroll = 重骰英雄名字
 InputRosterToggle = 切换王国名册
+InputStandDown = 关闭或开启模组
 InputVitrine = 切换渊狱之炬总览
 InputArchiveNew = 跳至第一个新教程
 InputKingdomPoiPrev = 上一个兴趣点

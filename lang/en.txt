@@ -5,6 +5,8 @@
 _plural = english
 ModLoaded = Harkest Dungeon {0} loaded
 UpdateAvailable = update {0} available
+ModStoodDown = Harkest Dungeon off
+ModResumed = Harkest Dungeon on
 ScreenMainMenu = main menu
 ScreenKingdoms = kingdoms
 ScreenSettings = settings
@@ -282,6 +284,7 @@ InputDiscard = Discard item
 InputRename = Rename hero
 InputReroll = Roll a new hero name
 InputRosterToggle = Toggle kingdom roster
+InputStandDown = Turn the mod off or on
 InputVitrine = Toggle Infernal Flame Vitrine
 InputArchiveNew = Jump to first new tutorial
 InputKingdomPoiPrev = Previous point of interest

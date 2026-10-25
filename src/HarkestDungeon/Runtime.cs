@@ -63,6 +63,11 @@ namespace DD2A11y {
         private readonly UpdateChecker _updateCheck = new UpdateChecker();
         private bool _updateAnnounced;
 
+        /// <summary>The player's Ctrl+Shift+A stand-down: no screen, no keyboard capture, no
+        /// speech or sound - the game runs as if the mod were absent until the same key brings
+        /// it back. Persisted, so a relaunch keeps the choice.</summary>
+        public bool StoodDown => Settings.StoodDown.Value;
+
         public Core.Settings.ModSettings Settings { get; }
         public Core.Settings.SoundVolumes Sounds { get; }
         public Core.Input.ModKeymap Keymap { get; }
@@ -110,6 +115,7 @@ namespace DD2A11y {
             Core.Nav.UIElement.BufferGlossary = Game.TokenGlossary.Lines;
 
             Settings = new Core.Settings.ModSettings(new Settings.BepInExSettingsStore(config));
+            Speech.Enabled = !StoodDown;
             Sounds = new Core.Settings.SoundVolumes(new Settings.BepInExSettingsStore(config, "Sounds"));
             Keymap = new Core.Input.ModKeymap(Input, new Settings.BepInExSettingsStore(config, "Keys"),
                 ParseBinding, message => Plugin.Log.LogWarning(message));
@@ -569,6 +575,35 @@ namespace DD2A11y {
                 .AddBinding(P(PadInput.A, PadInput.LeftTrigger));
             Reg("ui.place.one", () => S.InputPlaceOne, () => ToggleGrab(takeOne: true))
                 .AddBinding(K(Key.Space, shift: true));
+            // Global, so it stays live with no screen up - the only key the mod answers while
+            // stood down.
+            Reg("mod.standdown", () => S.InputStandDown, ToggleStandDown, InputCategory.Global)
+                .AddBinding(K(Key.A, ctrl: true, shift: true));
+        }
+
+        private void ToggleStandDown() {
+            if (!StoodDown) {
+                Router.StandDown();
+                Speech.Speak(S.ModStoodDown, interrupt: true);
+                Speech.Enabled = false;
+                Settings.StoodDown.Set(true);
+            } else {
+                Settings.StoodDown.Set(false);
+                Speech.Enabled = true;
+                Speech.Speak(S.ModResumed, interrupt: true);
+                Router.QueueNextEntry();
+            }
+            Plugin.Log.LogInfo("mod " + (StoodDown ? "stood down" : "resumed"));
+        }
+
+        // The pump's frame while stood down. The game's events still land in the mod's queues;
+        // they are dropped here so a resume does not replay what happened meanwhile.
+        private void TickStoodDown() {
+            _roadSense.TickStoodDown();
+            Game.SubtitleEvents.Drain();
+            Game.InnEvents.Clear();
+            Game.CombatEvents.Clear();
+            Game.KingdomEvents.Drain();
         }
 
         // The road's stacked item surfaces. The game's own driving hotkeys (DrivingUiBhv's C
@@ -636,8 +671,13 @@ namespace DD2A11y {
                 // a release outranks the running build - up to date stays silent.
                 if (!_loadedAnnounced && _language.Resolved) {
                     _loadedAnnounced = true;
-                    Speech.Speak(S.ModLoaded(_version));
+                    Speech.Speak(S.ModLoaded(_version)); // silent on a launch stood down
                     _updateCheck.Start(_version);
+                }
+                if (StoodDown) {
+                    TickStoodDown();
+                    Input.Tick(Time.unscaledTimeAsDouble);
+                    return;
                 }
                 if (_loadedAnnounced && !_updateAnnounced && _updateCheck.NewerVersion != null) {
                     _updateAnnounced = true;

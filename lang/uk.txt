@@ -3,6 +3,8 @@
 _plural = slavic
 ModLoaded = Harkest Dungeon {0} завантажено
 UpdateAvailable = доступне оновлення {0}
+ModStoodDown = Harkest Dungeon вимкнено
+ModResumed = Harkest Dungeon увімкнено
 ScreenMainMenu = головне меню
 ScreenKingdoms = королівства
 ScreenSettings = налаштування
@@ -280,6 +282,7 @@ InputDiscard = Викинути предмет
 InputRename = Перейменувати героя
 InputReroll = Згенерувати нове ім'я героя
 InputRosterToggle = Перемкнути список королівства
+InputStandDown = Вимкнути або увімкнути мод
 InputVitrine = Перемкнути вітрину пекельного полум'я
 InputArchiveNew = Перейти до першого нового розділу навчання
 InputKingdomPoiPrev = Попередня точка інтересу

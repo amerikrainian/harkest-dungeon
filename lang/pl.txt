@@ -3,6 +3,8 @@
 _plural = polish
 ModLoaded = Harkest Dungeon {0} załadowany
 UpdateAvailable = dostępna aktualizacja {0}
+ModStoodDown = Harkest Dungeon wyłączony
+ModResumed = Harkest Dungeon włączony
 ScreenMainMenu = menu główne
 ScreenKingdoms = królestwa
 ScreenSettings = opcje
@@ -280,6 +282,7 @@ InputDiscard = Wyrzuć przedmiot
 InputRename = Zmień imię bohatera
 InputReroll = Wylosuj nowe imię bohatera
 InputRosterToggle = Przełącz listę królestwa
+InputStandDown = Wyłącz lub włącz moda
 InputVitrine = Przełącz gablotę piekielnego płomienia
 InputArchiveNew = Przejdź do pierwszego nowego samouczka
 InputKingdomPoiPrev = Poprzedni punkt zainteresowania

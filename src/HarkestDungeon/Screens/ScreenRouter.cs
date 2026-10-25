@@ -23,6 +23,7 @@ namespace DD2A11y.Screens {
         private object _target;
         private bool _entryPending;
         private int _entryHeld;
+        private bool _queueEntry;
 
         // Frames a screen may hold its entry announcement (EntrySettled false) before the
         // router announces anyway - a screen that never settles must not stay silent.
@@ -52,6 +53,7 @@ namespace DD2A11y.Screens {
             }
 
             if (match == null) {
+                _queueEntry = false; // a resume onto no screen leaves later entries interrupting
                 if (_active != null) {
                     Leave();
                 }
@@ -104,9 +106,24 @@ namespace DD2A11y.Screens {
             }
         }
 
+        /// <summary>Hand everything back to the game: the active screen leaves and the keyboard
+        /// is released. The pump stops ticking the router until the mod resumes.</summary>
+        public void StandDown() {
+            if (_active != null) {
+                Leave();
+            }
+        }
+
+        /// <summary>The next entry announcement queues instead of interrupting, so the resume
+        /// line ahead of it is heard.</summary>
+        public void QueueNextEntry() {
+            _queueEntry = true;
+        }
+
         private void AnnounceEntry() {
             _active.EntryAnnounced = true;
-            _speak(_active.Name, true);
+            _speak(_active.Name, !_queueEntry);
+            _queueEntry = false;
             _navigator.AnnounceCurrent();
         }
 
