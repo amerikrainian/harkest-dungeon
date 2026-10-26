@@ -302,6 +302,7 @@ InputCombatActor = Status des aktiven Kämpfers
 InputCombatTargets = Gültige Ziele der fokussierten Fähigkeit
 InputCombatTurnOrder = Zugreihenfolge
 InputCombatAffinity = Angekündigte Affinitätsänderungen
+InputCombatSkill = Kampffähigkeit {0}
 InputStoryHero = Status des Helden der fokussierten Entscheidung
 InputFlame = Flammenstufe
 InputCoach = Panzerung und Räder der Kutsche

@@ -302,6 +302,7 @@ InputCombatActor = Стан діючого бійця
 InputCombatTargets = Допустимі цілі навички у фокусі
 InputCombatTurnOrder = Порядок ходів
 InputCombatAffinity = Майбутні зміни думок
+InputCombatSkill = Навичка бою {0}
 InputStoryHero = Стан героя вибору у фокусі
 InputFlame = Рівень полум'я
 InputCoach = Броня та колеса диліжанса

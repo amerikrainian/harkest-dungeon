@@ -302,6 +302,7 @@ InputCombatActor = Estado del combatiente activo
 InputCombatTargets = Objetivos válidos de la habilidad enfocada
 InputCombatTurnOrder = Orden de los turnos
 InputCombatAffinity = Cambios de afinidad anunciados
+InputCombatSkill = Habilidad de combate {0}
 InputStoryHero = Estado del héroe de la elección enfocada
 InputFlame = Nivel de la llama
 InputCoach = Blindaje y ruedas del carruaje

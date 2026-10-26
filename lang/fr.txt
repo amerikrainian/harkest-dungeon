@@ -302,6 +302,7 @@ InputCombatActor = État du combattant actif
 InputCombatTargets = Cibles valides de la compétence en focus
 InputCombatTurnOrder = Ordre de tour
 InputCombatAffinity = Changements d'affinité annoncés
+InputCombatSkill = Compétence de combat {0}
 InputStoryHero = État du héros du choix en focus
 InputFlame = Niveau de la flamme
 InputCoach = Blindage et roues du carrosse

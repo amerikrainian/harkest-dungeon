@@ -302,6 +302,7 @@ InputCombatActor = Stav bojovníka na tahu
 InputCombatTargets = Platné cíle zaměřené dovednosti
 InputCombatTurnOrder = Pořadí tahů
 InputCombatAffinity = Chystané změny náklonnosti
+InputCombatSkill = Bojová dovednost {0}
 InputStoryHero = Stav hrdiny zaměřené možnosti
 InputFlame = Úroveň plamene
 InputCoach = Pancíř a kola dostavníku

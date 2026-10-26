@@ -32,6 +32,14 @@ namespace DD2A11y.Elements {
 
         public uint ActorGuid => _button.ActorGuid;
 
+        /// <summary>The bar slot the game's own skill hotkeys address (CombatSkill1 is 0); -1
+        /// for a button off the indexed bar (move, pass) or an unpopulated one.</summary>
+        public int Slot => _button.SkillButtonIndex;
+
+        public bool IsShown => _button.gameObject.activeInHierarchy;
+
+        public bool IsValid => _button.IsValid;
+
         public override bool CanFocus
             => _button != null && _button.gameObject.activeInHierarchy && !IsDuplicate();
 

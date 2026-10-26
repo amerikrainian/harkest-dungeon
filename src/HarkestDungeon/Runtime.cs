@@ -332,8 +332,9 @@ namespace DD2A11y {
             InputAction Reg(string key, Func<string> label, Action handler = null,
                             InputCategory category = InputCategory.UI)
                 => Input.Register(key, label, category, handler);
-            KeyboardBinding K(UnityEngine.InputSystem.Key key, bool ctrl = false, bool shift = false)
-                => new KeyboardBinding(key, ctrl, shift);
+            KeyboardBinding K(UnityEngine.InputSystem.Key key, bool ctrl = false, bool shift = false,
+                              bool alt = false)
+                => new KeyboardBinding(key, ctrl, shift, alt);
             PadBinding P(PadInput input, PadInput? modifier = null) => new PadBinding(input, modifier);
 
             // Pad defaults mirror say-the-spire2's layout: dpad navigates, A activates, B backs
@@ -475,6 +476,21 @@ namespace DD2A11y {
                     () => _combat.GlanceResists(friendly: true, slot), InputCategory.Combat)
                     .AddBinding(K(heroKeys[slot], ctrl: true))
                     .AddBinding(P(heroDpads[slot], PadInput.RightTrigger));
+            }
+            // The game's own skill hotkeys (its CombatSkill1-10 on the bare digit row), moved
+            // to Alt+digit because the bare digits glance enemies. Each picks the button in
+            // that slot of the game's numbering (skills, combat item, Move) from anywhere on
+            // the battlefield, as Enter on it would; labelled with the game's own keybinding
+            // names.
+            var skillKeys = new[] { Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4, Key.Digit5,
+                Key.Digit6, Key.Digit7, Key.Digit8, Key.Digit9, Key.Digit0 };
+            for (int i = 0; i < skillKeys.Length; i++) {
+                int slot = i;
+                int number = i + 1;
+                Reg("combat.skill." + number,
+                    () => Game.GameLoc.TryGet("input_label_combatskill" + number) ?? S.InputCombatSkill(number),
+                    () => _combat.PickSkillSlot(slot), InputCategory.Combat)
+                    .AddBinding(K(skillKeys[slot], alt: true));
             }
             // The acting combatant, the focused skill's valid targets with previews, and the
             // turn order - the reads a skill choice hinges on, one press from anywhere.

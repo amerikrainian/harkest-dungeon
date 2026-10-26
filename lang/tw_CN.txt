@@ -302,6 +302,7 @@ InputCombatActor = 行動中戰鬥者狀態
 InputCombatTargets = 焦點技能的有效目標
 InputCombatTurnOrder = 行動順序
 InputCombatAffinity = 預告的好感度變化
+InputCombatSkill = 戰鬥技能{0}
 InputStoryHero = 焦點選項的英雄狀態
 InputFlame = 火焰等級
 InputCoach = 馬車護甲與車輪

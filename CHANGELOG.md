@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.4.3
+
+- Alt+digits now select skills at that skill slot.
+
 ## V0.4.2
 
 - Added ctrl+shift+a for making the mod stand down. Press it again to turn it on.

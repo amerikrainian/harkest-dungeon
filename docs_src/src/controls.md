@@ -83,6 +83,7 @@ Glances speak in place; your focus does not move. Enemy slots count from the fro
 | Inspector | I | Select | Open or close the inspector on the focused combatant |
 | Inspector previous / next | A / D | LeftStickLeft / LeftStickRight | Cycle combatants while the inspector is open |
 | Affinity glance | A | LeftTrigger+RightStickClick | The focused skill's or target's relationship consequences |
+| Combat Skill 1-10 | Alt+1 to Alt+0 | Unbound | Pick what the game's own key for that slot picks - the acting hero's skills in bar order, then the combat item, then Move - as Enter on it would, from anywhere in the battle |
 
 ## Stories
 

@@ -304,6 +304,7 @@ InputCombatActor = Acting combatant status
 InputCombatTargets = Focused skill's valid targets
 InputCombatTurnOrder = Turn order
 InputCombatAffinity = Telegraphed affinity changes
+InputCombatSkill = Combat Skill {0}
 InputStoryHero = Focused choice's hero status
 InputFlame = Flame level
 InputCoach = Coach armor and wheels

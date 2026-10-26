@@ -302,6 +302,7 @@ InputCombatActor = 行動中の戦闘員の状態
 InputCombatTargets = フォーカス中のスキルの有効な対象
 InputCombatTurnOrder = ターン順
 InputCombatAffinity = 予告された親密度の変化
+InputCombatSkill = 戦闘スキル{0}
 InputStoryHero = フォーカス中の選択肢の英雄の状態
 InputFlame = 炎レベル
 InputCoach = 馬車の装甲と車輪

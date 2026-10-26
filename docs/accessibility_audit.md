@@ -1889,6 +1889,15 @@ screens' keys; all 24 are rebindable from the mod keys tab.
   RESIST word stripped (`CommonAffix`, language-agnostic character-level affix strip):
   "STUN 20%, BLIGHT 40%, ... DEATHBLOW 90%".
 - **S**: the acting combatant's status glance, no strip key to hunt for.
+- **Alt+1..Alt+0** (combat.skill.N, labelled with the game's `input_label_combatskill<N>`):
+  the game's CombatSkill1-10 hotkeys, whose bare digits the captured screen gives to the
+  enemy glances. Picks the button whose `SkillButtonIndex` is the slot - the game numbers
+  the skills, then the combat item, then Move, then Pass (which its key ignores, as ours
+  does) - through its own `OnClick` (the Enter path); target-select's focus snap lands on the first valid target,
+  and a pick made while already targeting snaps there directly. A grey skill speaks
+  "name, grey reason" over the game's invalid click; a pick the game declines otherwise
+  (mid-presentation) speaks unavailable; an empty slot is silent like the game's key. No
+  game action binds Alt+digit (Alt alone is the academic-view hold, dead under capture).
 - **T on a focused skill**: every combatant the skill could take right now, each with a
   terse preview ("Lost Soul, 100% hit, 5% crit, 4-6 DMG; Woodsman, ...") - the game's own
   precomputed valid-target entries (`GetValidSkillTargetEntries`), read without picking;

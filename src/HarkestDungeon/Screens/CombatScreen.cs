@@ -74,6 +74,7 @@ namespace DD2A11y.Screens {
         private Container _battlefield;
         private Container _skills;
         private Container _commands;
+        private CombatSkillElement _pass;
         private uint _builtTurnGuid;
         private List<uint> _builtOrder = new List<uint>();
         private SkillSelectionBhv.InputState _lastInputState;
@@ -519,12 +520,14 @@ namespace DD2A11y.Screens {
         private void PopulateActions() {
             _skills.Clear();
             _commands.Clear();
+            _pass = null;
             if (_skillSelection != null) {
                 for (int i = 0; i < _skillSelection.SkillButtonCount; i++) {
                     _skills.Add(new CombatSkillElement(_skillSelection.GetSkillButton(i), _skillSelection, i));
                 }
                 _commands.Add(new CombatSkillElement(MoveButtonField(_skillSelection)));
-                _commands.Add(new CombatSkillElement(PassButtonField(_skillSelection)));
+                _pass = new CombatSkillElement(PassButtonField(_skillSelection));
+                _commands.Add(_pass);
             }
             if (_battleInfo != null) {
                 var retreatButton = RetreatButtonField(_battleInfo);
@@ -534,6 +537,45 @@ namespace DD2A11y.Screens {
                         battleInfo.ButtonFuncAttemptRetreat,
                         () => TooltipReader.LinesOf(RetreatTooltipField(battleInfo))));
                 }
+            }
+        }
+
+        // ---- Skill hotkeys ----
+
+        /// <summary>Alt+digit: the button in that slot of the game's own hotkey numbering -
+        /// the acting hero's skills, then the combat item, then Move, then Pass. The game's
+        /// key ignores Pass and an empty slot, and so does this one.</summary>
+        public void PickSkillSlot(int slot) {
+            foreach (var strip in new[] { _skills, _commands }) {
+                foreach (var child in strip.Children) {
+                    if (child is CombatSkillElement skill && skill != _pass && skill.IsShown && skill.Slot == slot) {
+                        Pick(skill);
+                        return;
+                    }
+                }
+            }
+        }
+
+        // A hotkey pick runs the same game handler as Enter on the button, from wherever
+        // focus sits. A taken pick flips into target-select, whose focus snap lands on the
+        // first valid target; a pick made while already targeting leaves the state
+        // unchanged, so it snaps there itself. An invalid skill reads its name and the game's
+        // grey reason under the game's own invalid click; a pick the game declines otherwise
+        // (mid-presentation) reads unavailable.
+        private void Pick(CombatSkillElement element) {
+            bool targeting = _skillSelection.CurrentInputState == SkillSelectionBhv.InputState.ACTOR_SELECT;
+            element.InvokeAction(ActionIds.Activate);
+            if (!element.IsValid) {
+                _speak(SpokenLine.Join(element.Label, element.InvalidReasonText() ?? S.StatusUnavailable), true);
+                return;
+            }
+            if (!Game.Targeting.TryGetPick(out var performer, out _) || performer.SelectedSkillId != element.SkillId) {
+                _speak(S.StatusUnavailable, true);
+                return;
+            }
+            if (targeting) {
+                _lastTargetValid = null;
+                FocusFirstValidTarget();
             }
         }
 

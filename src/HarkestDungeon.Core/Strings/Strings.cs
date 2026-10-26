@@ -661,6 +661,9 @@ namespace DD2A11y.Core.Strings {
             D("InputCombatTurnOrder", "Turn order"),
             // The affinity glance: the changes the focused skill or pending pick telegraphs.
             D("InputCombatAffinity", "Telegraphed affinity changes"),
+            // The skill-slot picks, the fallback for the game's own "input_label_combatskill<N>"
+            // labels; {0} = the slot number.
+            D("InputCombatSkill", "Combat Skill {0}"),
             // The road-story glance, live on the story screen's choices.
             D("InputStoryHero", "Focused choice's hero status"),
             // Run-status glances, answering from any screen during a run.
@@ -1021,6 +1024,7 @@ namespace DD2A11y.Core.Strings {
         public static string InputCombatTargets => T("InputCombatTargets");
         public static string InputCombatTurnOrder => T("InputCombatTurnOrder");
         public static string InputCombatAffinity => T("InputCombatAffinity");
+        public static string InputCombatSkill(int slot) => F("InputCombatSkill", slot);
         public static string InputStoryHero => T("InputStoryHero");
         public static string InputFlame => T("InputFlame");
         public static string InputCoach => T("InputCoach");

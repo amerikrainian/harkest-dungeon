@@ -24,7 +24,7 @@ A skill that would move party relationships plays a soft cue when you land on it
 
 ## Targeting
 
-Enter on a skill drops the cursor straight onto its first valid target. Arrows browse the rest of the field - a high beep marks a valid target, a low beep an invalid one - and each landing reads the target with the skill's preview against them: hit chance, crit, damage, and what the tokens will do about it. Enter executes; Escape backs out to the skill bar with nothing spent.
+Enter on a skill drops the cursor straight onto its first valid target. When you're comfortable remembering skill loadouts, Alt+1 through Alt+0 pick the skill in that bar slot from wherever your cursor is, numbered like the game's own skill keys: the skills, then the combat item, then Move, and land the same way; a grey skill reads its name and why it is grey instead. Arrows browse the rest of the field - a high beep marks a valid target, a low beep an invalid one - and each landing reads the target with the skill's preview against them: hit chance, crit, damage, and what the tokens will do about it. Enter executes; Escape backs out to the skill bar with nothing spent.
 
 ## Glances
 
