@@ -26,6 +26,8 @@ namespace DD2A11y.Screens {
         /// <summary>The grab key (Space / Shift+Space), routed here while this screen stands.</summary>
         public void ToggleGrab(UIElement current, bool takeOne) => _panel.ToggleGrab(current, takeOne);
 
+        public bool CanToggleGrab(UIElement current, bool takeOne) => _panel.CanToggleGrab(current, takeOne);
+
         public override string Name => S.ScreenInventory;
 
         public override object ResolveTarget() {

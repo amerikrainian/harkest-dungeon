@@ -60,6 +60,9 @@ namespace DD2A11y.Screens {
             return _dialog;
         }
 
+        // Escape only refuses here ("unavailable"), so the key help leaves it out.
+        public override bool? DryRunAction(string actionKey) => actionKey == UiActions.Back ? false : (bool?)null;
+
         public override Container BuildRoot(object target) {
             var dialog = (DungeonConfirmationDialogBhv)target;
             var root = new RootContainer(ContainerShape.VerticalList,

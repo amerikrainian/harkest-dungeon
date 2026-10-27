@@ -56,8 +56,21 @@ namespace DD2A11y.Input {
                 if (Alt) {
                     s += "Alt+";
                 }
-                return s + Key;
+                return s + KeyName(Key);
             }
+        }
+
+        // A key as a player names it: "Down Arrow", "Numpad Enter", "Left Bracket", "1" for
+        // Digit1 (the enum runs the words together).
+        private static readonly System.Text.RegularExpressions.Regex WordSeam =
+            new System.Text.RegularExpressions.Regex("(?<=[a-z])(?=[A-Z0-9])");
+
+        private static string KeyName(Key key) {
+            string name = key.ToString();
+            if (name.StartsWith("Digit", System.StringComparison.Ordinal)) {
+                return name.Substring("Digit".Length);
+            }
+            return WordSeam.Replace(name, " ");
         }
 
         public override string Type => KeyboardType;

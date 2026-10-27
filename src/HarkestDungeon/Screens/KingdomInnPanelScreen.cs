@@ -115,6 +115,12 @@ namespace DD2A11y.Screens {
         /// <summary>The grab key: pick up the focused garrison hero, then place on another
         /// slot - the two widgets swap slots and the new order commits through the cell's own
         /// SetActorOrder, the same call the panel's drag release runs.</summary>
+        /// <summary>Whether the grab key would act on the element: a garrison row, holding a
+        /// hero or on one (a militia slot refuses the pick-up).</summary>
+        public bool CanToggleGrab(UIElement current)
+            => current is KingdomGarrisonElement element && _panel != null
+               && (_held != null || element.Widget.ActorGuid != 0);
+
         public void ToggleGrab(UIElement current) {
             var element = current as KingdomGarrisonElement;
             if (element == null || _panel == null) {

@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.4.5
+
+- We now have a mod keys help screen.
+
 ## V0.4.4
 
 - You can now switch heroes with A/D on the hero sheet.

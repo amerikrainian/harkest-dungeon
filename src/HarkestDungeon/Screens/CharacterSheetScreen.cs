@@ -147,6 +147,8 @@ namespace DD2A11y.Screens {
         /// <summary>The grab key (Space / Shift+Space), routed here while this screen stands.</summary>
         public void ToggleGrab(UIElement current, bool takeOne) => _bagPanel.ToggleGrab(current, takeOne);
 
+        public bool CanToggleGrab(UIElement current, bool takeOne) => _bagPanel.CanToggleGrab(current, takeOne);
+
         public override string Name => S.ScreenHeroSheet;
 
         public override Core.Input.InputCategory[] InputCategories => Categories;

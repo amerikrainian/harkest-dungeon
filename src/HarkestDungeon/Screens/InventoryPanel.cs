@@ -40,6 +40,8 @@ namespace DD2A11y.Screens {
         public void CancelGrab() => _grab.Cancel();
         public void ToggleGrab(UIElement current, bool takeOne) => _grab.Toggle(current, takeOne);
 
+        public bool CanToggleGrab(UIElement current, bool takeOne) => _grab.CanToggle(current, takeOne);
+
         /// <summary>The filter tab element - the landing when a sheet slot flips the bag's
         /// filter and no item of that type is carried (it reads the applied filter's name).</summary>
         public UIElement FilterTab { get; private set; }

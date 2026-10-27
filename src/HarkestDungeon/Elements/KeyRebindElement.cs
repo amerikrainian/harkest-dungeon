@@ -42,6 +42,8 @@ namespace DD2A11y.Elements {
         public override string GetFocusText()
             => _listening && _rebind.Active ? _prompt : base.GetFocusText();
 
+        public override bool OpensPopup => true;
+
         public override Popup BuildPopup() {
             var root = new Container(ContainerShape.VerticalList, _action.Label);
             root.Add(new ActionElement(() => S.KeyAddBinding, null,

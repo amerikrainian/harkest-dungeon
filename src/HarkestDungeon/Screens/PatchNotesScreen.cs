@@ -119,6 +119,14 @@ namespace DD2A11y.Screens {
             return true;
         }
 
+        public override bool? DryRunAction(string actionKey) {
+            switch (actionKey) {
+                case UiActions.Left: return _widget.GetCanGoToPreviousPage();
+                case UiActions.Right: return _widget.GetCanGoToNextPage();
+                default: return null;
+            }
+        }
+
         public override bool OnUpdate(object target) {
             // A page flip (and the settle that first fills the page) swaps every note; focus
             // sits on the page selector outside this container, so it survives the rebuild.

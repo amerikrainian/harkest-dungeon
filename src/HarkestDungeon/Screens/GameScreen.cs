@@ -56,6 +56,11 @@ namespace DD2A11y.Screens {
         /// A bespoke-cursor screen (the map viewer) consumes its keys here.</summary>
         public virtual bool HandleAction(string actionKey) => false;
 
+        /// <summary>What <see cref="HandleAction"/> would do with the key, decided without
+        /// acting (the key help): true = it acts on it, false = it takes the key to no effect,
+        /// null = it passes the key on to the navigator. Mirrors HandleAction.</summary>
+        public virtual bool? DryRunAction(string actionKey) => null;
+
         /// <summary>Called once when the router leaves this screen (it stopped matching or a
         /// higher screen took over) - the place to undo per-screen state (binding suppression)
         /// and to speak a dismissal where no underlying screen will re-announce.</summary>

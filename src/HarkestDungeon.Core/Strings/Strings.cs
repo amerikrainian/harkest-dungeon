@@ -637,6 +637,12 @@ namespace DD2A11y.Core.Strings {
             D("InputRosterToggle", "Toggle kingdom roster"),
             // The key that turns the whole mod off and back on.
             D("InputStandDown", "Turn the mod off or on"),
+            // The context-sensitive key help (F1): the keys that do something on this screen,
+            // on this control, each runnable with Enter. Also the help list's own name.
+            D("InputHelp", "Keys here"),
+            D("HelpNone", "no keys here"),
+            // A key help row: {0} = what the key does, {1} = the keys bound to it.
+            D("HelpRow", "{0}: {1}"),
             // The crossroads vitrine key, mirroring the game's own StageCoach hotkey.
             D("InputVitrine", "Toggle Infernal Flame Vitrine"),
             // The tutorial archive's jump to its first unviewed entry.
@@ -1010,6 +1016,9 @@ namespace DD2A11y.Core.Strings {
         public static string InputReroll => T("InputReroll");
         public static string InputRosterToggle => T("InputRosterToggle");
         public static string InputStandDown => T("InputStandDown");
+        public static string InputHelp => T("InputHelp");
+        public static string HelpNone => T("HelpNone");
+        public static string HelpRow(string label, string keys) => F("HelpRow", label, keys);
         public static string InputVitrine => T("InputVitrine");
         public static string InputArchiveNew => T("InputArchiveNew");
         public static string InputKingdomPoiPrev => T("InputKingdomPoiPrev");

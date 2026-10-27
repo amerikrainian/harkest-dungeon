@@ -61,6 +61,8 @@ namespace DD2A11y.Tests {
         public override string? Role => "dropdown";
         public override string? Value => Options[Choice];
 
+        public override bool OpensPopup => true;
+
         public override Popup BuildPopup() {
             var list = new Container(ContainerShape.VerticalList, Label);
             for (int i = 0; i < Options.Length; i++) {

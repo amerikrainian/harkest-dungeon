@@ -58,11 +58,21 @@ namespace DD2A11y.Game {
             }
         }
 
+        /// <summary>Whether <see cref="Toggle"/> would act on the element: a held stack places
+        /// anywhere, a grab needs a filled bag or storage slot, and a single place needs a held
+        /// stack.</summary>
+        public bool CanToggle(UIElement current, bool takeOne) => Armed || !takeOne && GrabbableSlot(current) != null;
+
         // Only player bag / inn storage slots are grabbable; loot and store widgets keep
         // their own transfer flows on Enter.
-        private void Grab(UIElement current) {
+        private static PlayerInventoryItemBhv GrabbableSlot(UIElement current) {
             var slot = (current as InventoryItemElement)?.Slot as PlayerInventoryItemBhv;
-            if (slot == null || !ItemUtils.IsValid(slot.Item)) {
+            return slot != null && ItemUtils.IsValid(slot.Item) ? slot : null;
+        }
+
+        private void Grab(UIElement current) {
+            var slot = GrabbableSlot(current);
+            if (slot == null) {
                 return;
             }
             _inventory = slot.ItemContainer.Inventory;

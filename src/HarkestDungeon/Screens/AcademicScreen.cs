@@ -225,11 +225,8 @@ namespace DD2A11y.Screens {
             if (!(router.Active is CombatScreen)) {
                 return;
             }
-            uint guid = navigator.Current is CombatantElement combatant ? combatant.Guid
-                : SingletonMonoBehaviour<CombatBhv>.HasInstance()
-                    ? SingletonMonoBehaviour<CombatBhv>.Instance.CurrentActorGuid : 0;
-            var actor = Actors.Get(guid);
-            if (actor == null || actor.ActorDataClass == null || !actor.ActorDataClass.m_TokenViewValid) {
+            uint guid = InspectGuid(navigator);
+            if (!Inspectable(guid)) {
                 _speak(S.StatusUnavailable, true);
                 return;
             }
@@ -247,9 +244,27 @@ namespace DD2A11y.Screens {
             }
         }
 
+        /// <summary>Whether the toggle key would act: close the view, or open it on a combatant
+        /// that has one.</summary>
+        public bool CanToggle(ScreenRouter router, TraditionalNavigator navigator)
+            => router.Active == this || router.Active is CombatScreen && Inspectable(InspectGuid(navigator));
+
+        // The focused combatant, else the one whose turn it is.
+        private static uint InspectGuid(TraditionalNavigator navigator)
+            => navigator.Current is CombatantElement combatant ? combatant.Guid
+                : SingletonMonoBehaviour<CombatBhv>.HasInstance()
+                    ? SingletonMonoBehaviour<CombatBhv>.Instance.CurrentActorGuid : 0;
+
+        private static bool Inspectable(uint guid) {
+            var actor = Actors.Get(guid);
+            return actor != null && actor.ActorDataClass != null && actor.ActorDataClass.m_TokenViewValid;
+        }
+
+        public bool CanCycle(ScreenRouter router) => router.Active == this && _view != null;
+
         /// <summary>A/D: the game's own combatant cycling, battlefield order, both teams.</summary>
         public void Cycle(ScreenRouter router, int direction) {
-            if (router.Active != this || _view == null) {
+            if (!CanCycle(router)) {
                 return;
             }
             SwitchToActorMethod.Invoke(_view, new object[] { SelectedIndexField(_view) + direction });

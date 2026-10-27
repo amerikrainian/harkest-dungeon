@@ -54,5 +54,19 @@ namespace DD2A11y.Core.Input {
         }
 
         internal void InvokePerformed() => Performed?.Invoke();
+
+        /// <summary>Whether a handler listens: an action without one is a key the navigator or
+        /// the screen answers, or nothing.</summary>
+        public bool HasHandler => Performed != null;
+
+        /// <summary>Whether the handler would do anything right now, for the key help: a glance
+        /// is silent where its fact is not on screen, and is not listed there. Null = always.
+        /// Set via <see cref="When"/>.</summary>
+        public Func<bool>? Available { get; private set; }
+
+        public InputAction When(Func<bool> available) {
+            Available = available;
+            return this;
+        }
     }
 }

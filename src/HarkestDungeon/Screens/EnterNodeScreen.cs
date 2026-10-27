@@ -34,6 +34,9 @@ namespace DD2A11y.Screens {
             return _widget;
         }
 
+        // Escape only refuses here ("unavailable"), so the key help leaves it out.
+        public override bool? DryRunAction(string actionKey) => actionKey == UiActions.Back ? false : (bool?)null;
+
         public override Container BuildRoot(object target) {
             var widget = (EnterNodeScreenWidgetBhv)target;
             var screen = widget.GetComponentInParent<UiScreenBhv>();

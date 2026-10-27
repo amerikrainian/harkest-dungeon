@@ -75,6 +75,21 @@ namespace DD2A11y.Screens {
         /// <summary>The next (+1) or previous (-1) point of the current category from the
         /// cursor: the cursor jumps there and reads the cell. The list's end is silent, like
         /// the buffers' ends.</summary>
+        /// <summary>Whether the point-of-interest keys answer at all: the map stands.</summary>
+        public bool PoiLive => Standing();
+
+        /// <summary>Whether a step has a point to land on that way.</summary>
+        public bool CanPoiStep(int direction) => Standing() && _poi.Step(_cursor, direction) != null;
+
+        /// <summary>Whether the category's first or last point lies off the cursor.</summary>
+        public bool CanPoiEdge(int direction) {
+            if (!Standing()) {
+                return false;
+            }
+            var cells = _poi.Cells();
+            return cells.Count != 0 && (direction > 0 ? cells[cells.Count - 1] : cells[0]) != _cursor;
+        }
+
         public void PoiStep(int direction) {
             if (!Standing()) {
                 return;
@@ -246,6 +261,23 @@ namespace DD2A11y.Screens {
             }
         }
 
+        public override bool? DryRunAction(string actionKey) {
+            if (actionKey == UiActions.Back && Manager().GetSelectedTransferActorGuid() != 0) {
+                return true;
+            }
+            if (_navigator.Current != _cursorElement) {
+                return null;
+            }
+            switch (actionKey) {
+                case UiActions.Up: return CanStep(0, -1);
+                case UiActions.Down: return CanStep(0, 1);
+                case UiActions.Left: return CanStep(-1, 0);
+                case UiActions.Right: return CanStep(1, 0);
+                case UiActions.Home: return true;
+                default: return null;
+            }
+        }
+
         // ---- Grid cursor ----
 
         private static KingdomMapManager Manager() =>
@@ -253,6 +285,10 @@ namespace DD2A11y.Screens {
 
         private static Assets.Code.Roster.RosterManager Roster() =>
             Singleton<Assets.Code.Game.GameTypeMgr>.Instance.RosterManager;
+
+        // A step off the grid's edge is consumed to no effect.
+        private bool CanStep(int dx, int dy)
+            => Manager().KingdomMap.IsValidCoordinate(new Vector2Int(_cursor.x + dx, _cursor.y + dy));
 
         private bool Step(int dx, int dy) {
             var map = Manager().KingdomMap;

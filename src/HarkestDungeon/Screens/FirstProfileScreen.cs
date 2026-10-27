@@ -56,6 +56,9 @@ namespace DD2A11y.Screens {
             return creation != null && creation.gameObject.activeInHierarchy ? creation : null;
         }
 
+        // Escape only refuses here ("unavailable"), so the key help leaves it out.
+        public override bool? DryRunAction(string actionKey) => actionKey == UiActions.Back ? false : (bool?)null;
+
         public override Container BuildRoot(object target) {
             _creation = (ProfileCreationWidgetBhv)target;
             // The game offers no way out of the first-boot window; a profile must be created.

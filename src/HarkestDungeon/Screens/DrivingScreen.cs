@@ -243,7 +243,12 @@ namespace DD2A11y.Screens {
 
         // On the driving area the arrows belong to the game (steering, speed); consuming them
         // keeps the mod's own focus parked there.
-        public override bool HandleAction(string actionKey) {
+        public override bool HandleAction(string actionKey) => TakesArrow(actionKey);
+
+        // The arrows over the driving area steer the game's wagon, not the mod.
+        public override bool? DryRunAction(string actionKey) => TakesArrow(actionKey) ? false : (bool?)null;
+
+        private bool TakesArrow(string actionKey) {
             if (_navigator.Current != _drivingArea) {
                 return false;
             }
@@ -262,6 +267,12 @@ namespace DD2A11y.Screens {
         /// The in-between ribbons shift exactly as the game's own drag shifts them, each move
         /// committing through the ribbon's SetSlot (the actor's team position); the landing
         /// speaks the resulting marching order.</summary>
+        /// <summary>Whether the grab key would act on the element: a hero ribbon that is not
+        /// locked, or the held one itself (a second press drops the grab).</summary>
+        public bool CanToggleGrab(UIElement current)
+            => current is HeroRibbonElement element
+               && (element.Ribbon == _held || !element.Ribbon.IsLocked());
+
         public void ToggleGrab(UIElement current) {
             var element = current as HeroRibbonElement;
             if (element == null) {

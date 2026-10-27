@@ -37,6 +37,8 @@ namespace DD2A11y.Screens {
         /// inventories.</summary>
         public void ToggleGrab(UIElement current, bool takeOne) => _panel.ToggleGrab(current, takeOne);
 
+        public bool CanToggleGrab(UIElement current, bool takeOne) => _panel.CanToggleGrab(current, takeOne);
+
         public override string Name {
             get {
                 var screen = _storage == null ? null : _storage.GetComponentInParent<UiScreenBhv>();

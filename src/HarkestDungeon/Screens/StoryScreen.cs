@@ -19,7 +19,6 @@ namespace DD2A11y.Screens {
     /// Escape is deliberately inert - a story blocks its screen from closing until resolved.
     /// </summary>
     public sealed class StoryScreen : GameScreen {
-        private readonly Action<string, bool> _speak;
         private readonly TraditionalNavigator _navigator;
         private StoryScreenBhv _story;
         private Container _root;
@@ -28,8 +27,7 @@ namespace DD2A11y.Screens {
         private bool _awaitingValue;
         private string _lastValue;
 
-        public StoryScreen(Action<string, bool> speak, TraditionalNavigator navigator) {
-            _speak = speak;
+        public StoryScreen(TraditionalNavigator navigator) {
             _navigator = navigator;
         }
 
@@ -98,12 +96,7 @@ namespace DD2A11y.Screens {
 
         /// <summary>S: the focused choice's hero vitals (name, HP, stress), spoken in place.
         /// Off a choice the key is silent.</summary>
-        public void GlanceSelf() {
-            string line = _navigator.Current is StoryChoiceElement choice ? choice.GlanceLine() : null;
-            if (line != null) {
-                _speak(line, true);
-            }
-        }
+        public string SelfLine() => _navigator.Current is StoryChoiceElement choice ? choice.GlanceLine() : null;
 
         private void Populate(StoryScreenBhv story) {
             var choices = new Container(ContainerShape.VerticalList);

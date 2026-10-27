@@ -31,6 +31,16 @@ namespace DD2A11y.Core.Input {
         /// player is typing in a game text field). Null = never suppress.</summary>
         public Func<bool>? SuppressAll;
 
+        /// <summary>When set, an action it refuses is dead this frame whatever its category, and
+        /// claims no chord (the key help keeps only its own keys live while it is up). Null =
+        /// every action of a live category is live.</summary>
+        public Func<InputAction, bool>? Admits;
+
+        /// <summary>Invoked once per real key press or repeat, before the action fires - never
+        /// for <see cref="FireAction"/>. The plugin ends a speech hold here: a press the player
+        /// makes interrupts as ever.</summary>
+        public Action? Pressed;
+
         /// <summary>Key-repeat timing (seconds).</summary>
         public double InitialDelay = 0.4;
         public double RepeatInterval = 0.06;
@@ -64,6 +74,17 @@ namespace DD2A11y.Core.Input {
         private readonly List<InputCategory> _activeCats = new List<InputCategory>();
         private readonly HashSet<InputBinding> _live = new HashSet<InputBinding>();
         private readonly Dictionary<string, int> _chordRank = new Dictionary<string, int>();
+
+        /// <summary>Whether a key of the action is live this frame: its category is active, the
+        /// filter admits it, and its chord is not shadowed by a higher-priority category's.</summary>
+        public bool IsLive(InputAction a) {
+            for (int i = 0; i < a.Bindings.Count; i++) {
+                if (_live.Contains(a.Bindings[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         private bool JustPressedLive(InputAction a) {
             for (int i = 0; i < a.Bindings.Count; i++) {
@@ -106,7 +127,7 @@ namespace DD2A11y.Core.Input {
                 var cat = _activeCats[rank];
                 for (int i = 0; i < _actions.Count; i++) {
                     var a = _actions[i];
-                    if (a.Category != cat) {
+                    if (a.Category != cat || (Admits != null && !Admits(a))) {
                         continue;
                     }
                     for (int j = 0; j < a.Bindings.Count; j++) {
@@ -153,6 +174,7 @@ namespace DD2A11y.Core.Input {
                 if (!fire) {
                     continue;
                 }
+                Pressed?.Invoke();
                 bool consumed = JustPressedDispatcher != null && JustPressedDispatcher(action);
                 if (!consumed) {
                     action.InvokePerformed();

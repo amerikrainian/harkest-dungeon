@@ -61,12 +61,22 @@ namespace DD2A11y.Screens {
         /// <summary>Focuses and speaks the first entry the game still marks unviewed; with
         /// none left the key is silent.</summary>
         public void FocusFirstNew(TraditionalNavigator navigator) {
+            var option = FirstNew();
+            if (option != null) {
+                navigator.Focus(option, announce: true);
+            }
+        }
+
+        /// <summary>Whether any entry is still unviewed for the jump to land on.</summary>
+        public bool HasNew => FirstNew() != null;
+
+        private TutorialOptionElement FirstNew() {
             foreach (var element in _root.Children) {
                 if (element is TutorialOptionElement option && option.IsNew) {
-                    navigator.Focus(option, announce: true);
-                    return;
+                    return option;
                 }
             }
+            return null;
         }
 
         private void Populate(TutorialArchiveWidgetBhv widget) {

@@ -64,6 +64,8 @@ namespace DD2A11y.Screens {
         /// <summary>The grab key (Space / Shift+Space), routed here while this screen stands.</summary>
         public void ToggleGrab(Core.Nav.UIElement current, bool takeOne) => _panel.ToggleGrab(current, takeOne);
 
+        public bool CanToggleGrab(Core.Nav.UIElement current, bool takeOne) => _panel.CanToggleGrab(current, takeOne);
+
         public override string Name {
             get {
                 // The instance's Name already holds the inn's localized title.

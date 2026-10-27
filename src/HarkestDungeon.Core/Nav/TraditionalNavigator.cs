@@ -85,6 +85,50 @@ namespace DD2A11y.Core.Nav {
             }
         }
 
+        public override bool WouldHandle(string actionKey) {
+            switch (actionKey) {
+                case UiActions.Up: return CanArrow(NavDirection.Up);
+                case UiActions.Down: return CanArrow(NavDirection.Down);
+                case UiActions.Left: return CanArrow(NavDirection.Left);
+                case UiActions.Right: return CanArrow(NavDirection.Right);
+                case UiActions.Next: return CanTab(1);
+                case UiActions.Prev: return CanTab(-1);
+                case UiActions.Home: return CanJump(first: true);
+                case UiActions.End: return CanJump(first: false);
+                case UiActions.Activate:
+                    return Current != null
+                        && (Current.HasAction(ActionIds.Activate) || !PopupOpen && Current.OpensPopup);
+                case UiActions.Back:
+                    return PopupOpen || (Root != null && Root.HasAction(ActionIds.Back));
+                default:
+                    return false;
+            }
+        }
+
+        // An arrow answers where the focused element adjusts that way, or where the lists (or
+        // the vertical spill) have somewhere to go.
+        private bool CanArrow(NavDirection dir) {
+            if (Current == null) {
+                return false;
+            }
+            if (dir == NavDirection.Left || dir == NavDirection.Right) {
+                return Current.HasAction(dir == NavDirection.Left ? ActionIds.Decrease : ActionIds.Increase)
+                    || FindMove(dir) != null;
+            }
+            return FindMove(dir) != null || FindSpill(dir) != null;
+        }
+
+        private bool CanTab(int step) {
+            var stops = ComputeTabStops();
+            var target = stops.Count == 0 ? null : TabTarget(stops, step);
+            return target != null && !Path.Contains(target);
+        }
+
+        private bool CanJump(bool first) {
+            var target = EdgeTarget(first);
+            return target != null && target != Current;
+        }
+
         private bool Arrow(NavDirection dir) {
             if (Current == null) {
                 return false;
@@ -129,13 +173,32 @@ namespace DD2A11y.Core.Nav {
         // list still spills to whatever sits above that list. Returns false at the outer edge so
         // the caller consumes without wrapping.
         private bool TrySpillVertical(NavDirection dir) {
+            var spill = FindSpill(dir);
+            if (spill == null) {
+                return false;
+            }
+            var (list, block, neighbor) = spill.Value;
+            var snapshot = new List<UIElement>(Path);
+            int idx = Path.IndexOf(block);
+            if (idx >= 0) {
+                Path.RemoveRange(idx, Path.Count - idx);
+            }
+            AppendWithDescend(neighbor, dir);
+            list.SetFocusedChild(neighbor);
+            AnnounceDelta(snapshot, interrupt: true);
+            return true;
+        }
+
+        // Where a vertical spill lands: the enclosing VerticalList, the block of it the move
+        // leaves, and the neighbor block it enters. Null at the outer edge.
+        private (Container list, UIElement block, UIElement neighbor)? FindSpill(NavDirection dir) {
             UIElement? block = Current;
             while (block != null) {
                 while (block != null && (block.Parent == null || block.Parent.Shape != ContainerShape.VerticalList)) {
                     block = block.Parent;
                 }
                 if (block == null) {
-                    return false;
+                    return null;
                 }
                 var list = block.Parent!;
                 var neighbor = list.GetNeighbor(block, dir);
@@ -143,34 +206,36 @@ namespace DD2A11y.Core.Nav {
                     block = list;
                     continue;
                 }
-
-                var snapshot = new List<UIElement>(Path);
-                int idx = Path.IndexOf(block);
-                if (idx >= 0) {
-                    Path.RemoveRange(idx, Path.Count - idx);
-                }
-                AppendWithDescend(neighbor, dir);
-                list.SetFocusedChild(neighbor);
-                AnnounceDelta(snapshot, interrupt: true);
-                return true;
+                return (list, block, neighbor);
             }
-            return false;
+            return null;
         }
 
         // Arrow movement within list-shaped containers, spilling into a same-shape parent at the edge.
         private bool Move(NavDirection dir) {
+            var move = FindMove(dir);
+            if (move == null) {
+                return false;
+            }
+            var (container, movingFrom, next) = move.Value;
+            int idx = Path.IndexOf(movingFrom);
+            if (idx >= 0) {
+                Path.RemoveRange(idx, Path.Count - idx);
+            }
+            AppendWithDescend(next, dir);
+            container.SetFocusedChild(next);
+            return true;
+        }
+
+        // Where an arrow move lands: the container it moves in, the path element it leaves, and
+        // the neighbor it enters. Null when the lists have nowhere to go that way.
+        private (Container container, UIElement from, UIElement next)? FindMove(NavDirection dir) {
             var movingFrom = Current;
             var container = movingFrom?.Parent;
             while (container != null && movingFrom != null) {
                 var next = container.GetNeighbor(movingFrom, dir);
                 if (next != null) {
-                    int idx = Path.IndexOf(movingFrom);
-                    if (idx >= 0) {
-                        Path.RemoveRange(idx, Path.Count - idx);
-                    }
-                    AppendWithDescend(next, dir);
-                    container.SetFocusedChild(next);
-                    return true;
+                    return (container, movingFrom, next);
                 }
                 var parent = container.Parent;
                 if (parent != null && parent.Shape == container.Shape) {
@@ -178,9 +243,9 @@ namespace DD2A11y.Core.Nav {
                     container = parent;
                     continue;
                 }
-                return false;
+                return null;
             }
-            return false;
+            return null;
         }
 
         private bool Tab(int step) {
@@ -188,24 +253,13 @@ namespace DD2A11y.Core.Nav {
             if (stops.Count == 0) {
                 return false;
             }
-
-            // Current may be deeper than its tab-stop (an item inside a list whose stop is the list's
-            // representative), so walk up to the nearest element that IS a stop.
-            int idx = -1;
-            for (var e = Current; e != null && idx < 0; e = e.Parent) {
-                idx = stops.IndexOf(e);
-            }
-
-            int ni = idx < 0 ? (step >= 0 ? 0 : stops.Count - 1) : idx + step;
-            if (ni < 0 || ni >= stops.Count) {
-                if (Root == null || !Root.WrapTabStops) {
-                    return true; // at an end; consume, no wrap
-                }
-                ni = (ni + stops.Count) % stops.Count;
+            var target = TabTarget(stops, step);
+            if (target == null) {
+                return true; // at an end; consume, no wrap
             }
 
             var snapshot = new List<UIElement>(Path);
-            BuildPathTo(stops[ni]);
+            BuildPathTo(target);
             // Re-descend so re-entering a list restores its remembered/representative item.
             var landed = Current;
             if (landed != null) {
@@ -216,22 +270,31 @@ namespace DD2A11y.Core.Nav {
             return true;
         }
 
+        // The stop Tab lands on, or null at an end of a root that does not wrap.
+        private UIElement? TabTarget(List<UIElement> stops, int step) {
+            // Current may be deeper than its tab-stop (an item inside a list whose stop is the list's
+            // representative), so walk up to the nearest element that IS a stop.
+            int idx = -1;
+            for (var e = Current; e != null && idx < 0; e = e.Parent) {
+                idx = stops.IndexOf(e);
+            }
+
+            int ni = idx < 0 ? (step >= 0 ? 0 : stops.Count - 1) : idx + step;
+            if (ni < 0 || ni >= stops.Count) {
+                if (Root == null || !Root.WrapTabStops) {
+                    return null;
+                }
+                ni = (ni + stops.Count) % stops.Count;
+            }
+            return stops[ni];
+        }
+
         // Home/End: jump to the first/last element of the enclosing tab stop - Panels are hard
         // boundaries (Home/End never cross what Tab separates), and with no Panel above the
         // focus the jump spans the whole screen. Nested lists flatten: the landing is the true
         // edge leaf, not an inner list's representative.
         private bool JumpEdge(bool first) {
-            if (Current == null) {
-                return true;
-            }
-            UIElement scope = Current;
-            while (scope.Parent != null && scope.Parent.Shape != ContainerShape.Panel) {
-                scope = scope.Parent;
-            }
-            UIElement? target = scope;
-            while (target is Container c) {
-                target = first ? c.FirstFocusable() : c.LastFocusable();
-            }
+            var target = EdgeTarget(first);
             if (target == null || target == Current) {
                 return true;
             }
@@ -248,6 +311,22 @@ namespace DD2A11y.Core.Nav {
             }
             AnnounceDelta(snapshot, interrupt: true);
             return true;
+        }
+
+        // The edge leaf of the enclosing tab stop, or null with nothing focused.
+        private UIElement? EdgeTarget(bool first) {
+            if (Current == null) {
+                return null;
+            }
+            UIElement scope = Current;
+            while (scope.Parent != null && scope.Parent.Shape != ContainerShape.Panel) {
+                scope = scope.Parent;
+            }
+            UIElement? target = scope;
+            while (target is Container c) {
+                target = first ? c.FirstFocusable() : c.LastFocusable();
+            }
+            return target;
         }
     }
 }

@@ -49,6 +49,10 @@ namespace DD2A11y.Core.Nav {
             return match != null && match.InvokeAction(ActionIds.Activate);
         }
 
+        /// <summary>Whether a focusable element's label carries the hotkey caption, so
+        /// <see cref="ActivateCaptionHotkey"/> has a button to press.</summary>
+        public bool HasCaptionHotkey(string caption) => Root != null && FindCaption(Root, caption) != null;
+
         private static UIElement? FindCaption(Container container, string caption) {
             foreach (var child in container.Children) {
                 if (child is Container nested) {
@@ -114,13 +118,15 @@ namespace DD2A11y.Core.Nav {
 
         /// <summary>Close the open popup and restore the saved focus path, re-announcing the
         /// restored focus - the sole feedback for commit and cancel alike (a commit's new value
-        /// reads back as part of the restored line).</summary>
-        public void ClosePopup() {
+        /// reads back as part of the restored line). Without <paramref name="announce"/> the
+        /// restore is silent: the key help closes to run a key and reads the focus itself,
+        /// after the key's own feedback.</summary>
+        public void ClosePopup(bool announce = true) {
             if (_popup == null) {
                 return;
             }
             ClosePopupState();
-            if (Current != null) {
+            if (announce && Current != null) {
                 Speak(Current.GetFocusText(), interrupt: true);
             }
             _lastAnnouncedLine = ComposeLine(0);
@@ -179,6 +185,11 @@ namespace DD2A11y.Core.Nav {
         /// <summary>Handle a semantic UI action (a <see cref="UiActions"/> key). Returns true if
         /// consumed.</summary>
         public abstract bool Handle(string actionKey);
+
+        /// <summary>Whether <see cref="Handle"/> would DO something with the key right now,
+        /// decided without acting: the key help lists a navigation key only where it answers.
+        /// A press Handle consumes to no effect (Tab past the last stop) answers false.</summary>
+        public abstract bool WouldHandle(string actionKey);
 
         /// <summary>Move focus to a specific element (e.g. restoring position after a screen rebuilt
         /// its content under the cursor). Rebuilds the path to it; speaks the landing only when

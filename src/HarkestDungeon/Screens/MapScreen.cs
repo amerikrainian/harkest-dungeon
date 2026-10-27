@@ -81,6 +81,20 @@ namespace DD2A11y.Screens {
             }
         }
 
+        public override bool? DryRunAction(string actionKey) {
+            switch (actionKey) {
+                case UiActions.Up:
+                case UiActions.Down:
+                case UiActions.Left:
+                case UiActions.Right:
+                case UiActions.Home:
+                case UiActions.End:
+                    return true;
+                default:
+                    return null;
+            }
+        }
+
         // A cursor move is this screen's focus change: the buffers re-home on the new stop, so
         // the review keys never resume mid-way through the previous node's lines.
         private bool Moved(Action move) {

@@ -546,14 +546,24 @@ namespace DD2A11y.Screens {
         /// the acting hero's skills, then the combat item, then Move, then Pass. The game's
         /// key ignores Pass and an empty slot, and so does this one.</summary>
         public void PickSkillSlot(int slot) {
+            var skill = SkillInSlot(slot);
+            if (skill != null) {
+                Pick(skill);
+            }
+        }
+
+        /// <summary>Whether a skill-bar button stands in the slot for its hotkey to pick.</summary>
+        public bool HasSkillSlot(int slot) => SkillInSlot(slot) != null;
+
+        private CombatSkillElement SkillInSlot(int slot) {
             foreach (var strip in new[] { _skills, _commands }) {
                 foreach (var child in strip.Children) {
                     if (child is CombatSkillElement skill && skill != _pass && skill.IsShown && skill.Slot == slot) {
-                        Pick(skill);
-                        return;
+                        return skill;
                     }
                 }
             }
+            return null;
         }
 
         // A hotkey pick runs the same game handler as Enter on the button, from wherever
@@ -584,20 +594,22 @@ namespace DD2A11y.Screens {
         // The combatant hotkeys speak one side's slot left to right - the battlefield row's
         // own order - without moving focus: the digit row glances enemies (1 = their rank
         // 1), the QWER row the party (Q = the backmost, R = the front line). A slot with no
-        // combatant is silent - the empty slot is the answer.
+        // combatant is silent - the empty slot is the answer. Each glance is a LINE, read at
+        // the keypress: its key speaks the line, and the key help lists the key only where
+        // there is one. Null is the silence.
 
-        public void GlanceStatus(bool friendly, int index)
-            => Glance(friendly, index, e => e.GlanceLine());
+        public string StatusLine(bool friendly, int index)
+            => GlanceLine(friendly, index, e => e.GlanceLine());
 
-        public void GlanceEffects(bool friendly, int index)
-            => Glance(friendly, index, e => e.GlanceEffectsLine());
+        public string EffectsLine(bool friendly, int index)
+            => GlanceLine(friendly, index, e => e.GlanceEffectsLine());
 
-        public void GlanceResists(bool friendly, int index)
-            => Glance(friendly, index, e => e.GlanceResistsLine());
+        public string ResistsLine(bool friendly, int index)
+            => GlanceLine(friendly, index, e => e.GlanceResistsLine());
 
-        private void Glance(bool friendly, int index, Func<CombatantElement, string> line) {
+        private string GlanceLine(bool friendly, int index, Func<CombatantElement, string> line) {
             if (_battlefield == null) {
-                return;
+                return null;
             }
             CombatantElement element = null;
             int slot = 0;
@@ -608,38 +620,27 @@ namespace DD2A11y.Screens {
                 }
             }
             if (element == null || !element.CanFocus) {
-                return;
+                return null;
             }
-            string text = line(element);
-            if (text != null) {
-                _speak(text, true);
-            }
+            return line(element);
         }
 
         /// <summary>S: the acting combatant's glance, without hunting for its strip key.</summary>
-        public void GlanceActor() {
+        public string ActorLine() {
             var element = FindCombatant(CurrentTurnGuid());
-            string line = element != null && element.CanFocus ? element.GlanceLine() : null;
-            if (line != null) {
-                _speak(line, true);
-            }
+            return element != null && element.CanFocus ? element.GlanceLine() : null;
         }
 
         /// <summary>Shift+T: the header's turn-order line from anywhere in the battle.</summary>
-        public void GlanceTurnOrder() {
-            string line = _turnOrder.Label;
-            if (line != null) {
-                _speak(line, true);
-            }
-        }
+        public string TurnOrderLine() => _turnOrder.Label;
 
         /// <summary>T on a focused skill: every combatant the skill could take right now, each
         /// with its terse preview - the game's own precomputed valid-target entries, read
         /// without picking. On a skill with no valid use it speaks the skill's grey reason;
         /// off the skill bar the key is silent.</summary>
-        public void GlanceTargets() {
+        public string TargetsLine() {
             if (!(_navigator.Current is CombatSkillElement skill)) {
-                return;
+                return null;
             }
             var performer = Actors.Get(skill.ActorGuid);
             var targets = Game.Targeting.ValidTargets(performer, skill.SkillId);
@@ -655,14 +656,7 @@ namespace DD2A11y.Screens {
                     }
                 }
             }
-            if (parts.Count > 0) {
-                _speak(string.Join("; ", parts), true);
-                return;
-            }
-            string reason = skill.InvalidReasonText();
-            if (reason != null) {
-                _speak(reason, true);
-            }
+            return parts.Count > 0 ? string.Join("; ", parts) : skill.InvalidReasonText();
         }
 
         /// <summary>A: the telegraphed affinity changes - on a focused skill every valid
@@ -671,7 +665,7 @@ namespace DD2A11y.Screens {
         /// or target that telegraphs nothing answers with silence. The chord is shared with
         /// the inspector's combatant cycling; the focus gates keep exactly one of the two
         /// live at a time.</summary>
-        public void GlanceAffinity() {
+        public string AffinityLine() {
             string text = null;
             if (_navigator.Current is CombatSkillElement skill) {
                 var performer = Actors.Get(skill.ActorGuid);
@@ -684,9 +678,7 @@ namespace DD2A11y.Screens {
                 text = Game.Targeting.AffinityPreview(
                     performer2, performer2.SelectedSkillId, combatant.Guid);
             }
-            if (!string.IsNullOrEmpty(text)) {
-                _speak(text, true);
-            }
+            return string.IsNullOrEmpty(text) ? null : text;
         }
 
         private CombatantElement FindCombatant(uint guid) {

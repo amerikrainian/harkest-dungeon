@@ -113,6 +113,9 @@ namespace DD2A11y.Elements {
         /// <summary>A dropdown's choices as an option popup: one action per option (committing
         /// fires the game's own onValueChanged), read live from the dropdown. The game's own list
         /// is shown alongside so the screen matches what the popup reads.</summary>
+        public override bool OpensPopup
+            => Selectable is TMP_Dropdown dropdown && dropdown.interactable && (dropdown.options?.Count ?? 0) > 0;
+
         public override Popup BuildPopup() {
             if (!(Selectable is TMP_Dropdown dropdown) || !dropdown.interactable) {
                 return null;

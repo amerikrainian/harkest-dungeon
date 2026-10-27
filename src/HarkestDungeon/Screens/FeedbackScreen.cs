@@ -168,6 +168,9 @@ namespace DD2A11y.Screens {
 
             public override string Role => S.RoleDropdown;
 
+            public override bool OpensPopup
+                => _dropdown != null && _dropdown.interactable && (_dropdown.options?.Count ?? 0) > 0;
+
             public override Popup BuildPopup() {
                 if (_dropdown == null || !_dropdown.interactable) {
                     return null;

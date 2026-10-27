@@ -42,6 +42,21 @@ namespace DD2A11y.Core.Nav {
         /// navigator opens it instead of invoking the activate action.</summary>
         public virtual Popup? BuildPopup() => null;
 
+        /// <summary>Whether activating would open a popup right now - what <see cref="BuildPopup"/>
+        /// would answer non-null for, decided without building it (building one shows the game's
+        /// own list). The key help's dry run reads this.</summary>
+        public virtual bool OpensPopup => false;
+
+        /// <summary>Whether the element advertises an action by id (it may still refuse it).</summary>
+        public bool HasAction(string id) {
+            foreach (var a in GetActions()) {
+                if (a.Id == id) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /// <summary>Find an advertised action by id and run it: whether it ran, the element
         /// refused it, or it is not advertised.</summary>
         public ActionOutcome Perform(string id) {

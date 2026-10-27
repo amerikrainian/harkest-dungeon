@@ -17,6 +17,7 @@ namespace DD2A11y {
     /// screen routing, input-gate re-assert, then key dispatch.</summary>
     public sealed class Runtime : IDisposable {
         private static readonly InputCategory[] NoCategories = { };
+        private static readonly InputCategory[] UiOnlyCategories = { InputCategory.UI };
 
         public SpeechPipeline Speech { get; }
         public InputManager Input { get; } = new InputManager();
@@ -54,6 +55,7 @@ namespace DD2A11y {
         private TutorialArchiveScreen _archive;
         private KingdomMapScreen _kingdomMap;
         private DrivingScreen _driving;
+        private KeyHelpPanel _help;
         private string _lastTickError;
         private float _lastTickErrorTime;
         private bool _wasTyping;
@@ -83,6 +85,7 @@ namespace DD2A11y {
             }
             Speech = new SpeechPipeline(_backend);
             SpeechPipeline.Instance = Speech;
+            Speech.Clock = () => Time.unscaledTimeAsDouble;
 
             Action<string, bool> speak = (text, interrupt) => Speech.Speak(text, interrupt);
             Navigator = new TraditionalNavigator(speak);
@@ -167,7 +170,7 @@ namespace DD2A11y {
             Router.Register(_skillLoadouts);
             Router.Register(new LootScreen());
             Router.Register(new SiegeResultsScreen());
-            _storyScreen = new StoryScreen(speak, Navigator);
+            _storyScreen = new StoryScreen(Navigator);
             Router.Register(_storyScreen);
             Router.Register(new BossSelectScreen());
             Router.Register(new DoomResetScreen());
@@ -286,15 +289,21 @@ namespace DD2A11y {
                 }
             };
 
+            _help = new KeyHelpPanel(Input, Navigator, Router, Gate, Speech);
             RegisterInputs();
             Keymap.Load();
             // Keys are live while the gate holds the keyboard, and also under a screen that
             // deliberately shares it (the road map claims arrows, the game keeps WASD). The
             // live categories are the active screen's own declaration, so screen-specific
-            // commands (combat glances, the crossroads rename) die with their screen.
+            // commands (combat glances, the crossroads rename) die with their screen. While
+            // the key help is up only its own keys are live, over any screen or none.
             Input.ActiveCategoriesProvider = () =>
-                Router.Active != null && (Gate.Captured || !Router.Active.CapturesKeyboard)
+                _help.Open ? UiOnlyCategories
+                : Router.Active != null && (Gate.Captured || !Router.Active.CapturesKeyboard)
                     ? Router.Active.InputCategories : NoCategories;
+            Input.Admits = action => !_help.Open || KeyHelpPanel.KeepsLive(action);
+            // A press the player makes interrupts as ever, ending any hold the key help opened.
+            Input.Pressed = Speech.EndHold;
             // While a game text field is being typed into, every key belongs to the field - and
             // for one tick after the edit ends: the field processes its closing Enter/Escape
             // earlier in the same frame, so that key is still this frame's press and would
@@ -311,9 +320,12 @@ namespace DD2A11y {
                 _wasTyping = typing;
                 return suppress;
             };
+            // An open popup (a dropdown's choices, the key help) is the whole navigable tree:
+            // the screen's own key handling sits it out. KeyHelpPanel's dry run mirrors this.
             Input.JustPressedDispatcher = action =>
-                action.Key.StartsWith("ui.", StringComparison.Ordinal) && Router.HasScreen
-                && (Router.Active.HandleAction(action.Key) || Navigator.Handle(action.Key));
+                action.Key.StartsWith("ui.", StringComparison.Ordinal)
+                && (Navigator.PopupOpen ? Navigator.Handle(action.Key)
+                    : Router.HasScreen && (Router.Active.HandleAction(action.Key) || Navigator.Handle(action.Key)));
 
             _language = new LanguageSync(Path.Combine(pluginDir, "lang"));
             _language.AttachLanguagePatch();
@@ -336,6 +348,12 @@ namespace DD2A11y {
                               bool alt = false)
                 => new KeyboardBinding(key, ctrl, shift, alt);
             PadBinding P(PadInput input, PadInput? modifier = null) => new PadBinding(input, modifier);
+            // A glance: a key that speaks one line in place. The line is its whole definition:
+            // the key speaks it, and the key help lists the key only where there is one.
+            InputAction Glance(string key, Func<string> label, Func<string> line, InputCategory category)
+                => Reg(key, label, () => GlanceRun(line()), category).When(() => line() != null);
+            // A key acting on the focused element's own action, listed where the element has it.
+            Func<bool> Focused(string actionId) => () => Navigator.Current?.HasAction(actionId) == true;
 
             // Pad defaults mirror say-the-spire2's layout: dpad navigates, A activates, B backs
             // out, shoulders cross panels, the right stick reviews buffers. The triggers are the
@@ -390,7 +408,8 @@ namespace DD2A11y {
                             isSkillsEditable: true, isInventoryEditable: true,
                             autoSelectTrinketSlot: false);
                 }
-            }).AddBinding(K(Key.C));
+            }).AddBinding(K(Key.C)).When(() => Focused("inspect")()
+                || Gate.Captured && (Navigator.HasCaptionHotkey("(C)") || OnRoadItemScreen));
             // The game captions its screen shortcuts on the buttons themselves ("Map (M)",
             // "Inventory (I)"); a captured screen swallows those keys, so the advertised key
             // presses the advertising button. On a shared-keyboard screen (driving) the game's
@@ -408,7 +427,8 @@ namespace DD2A11y {
                     Assets.Code.Utils.SingletonMonoBehaviour<Assets.Code.Map.MapMgrBhv>
                         .Instance.GetMinimapMgr().HandleInputToggleMinimapTap();
                 }
-            }).AddBinding(K(Key.M));
+            }).AddBinding(K(Key.M)).When(() => Gate.Captured && (Navigator.HasCaptionHotkey("(M)")
+                || OnRoadItemScreen && Assets.Code.Utils.SingletonMonoBehaviour<Assets.Code.Map.MapMgrBhv>.HasInstance()));
             // On the road's item screens I runs the toggle the game's own driving key performs
             // (open the bag beside the sheet, or close it again), highlight included.
             Reg("ui.hotkey.inventory", () => S.InputHotkeyInventory, () => {
@@ -424,22 +444,28 @@ namespace DD2A11y {
                         hud.ToggleMoreInfo(active: false);
                     }
                 }
-            }).AddBinding(K(Key.I));
+            }).AddBinding(K(Key.I))
+                .When(() => Gate.Captured && (Navigator.HasCaptionHotkey("(I)") || OnRoadItemScreen));
             // The combat inspector (the game's academic view): I toggles it on the focused
             // combatant; while it is up, A/D cycle combatants - the game's own keys for it.
             Reg("combat.inspector", () => S.InputInspector, () => _academic.Toggle(Router, Navigator),
-                InputCategory.Combat).AddBinding(K(Key.I)).AddBinding(P(PadInput.Select));
+                InputCategory.Combat).AddBinding(K(Key.I)).AddBinding(P(PadInput.Select))
+                .When(() => _academic.CanToggle(Router, Navigator));
             Reg("combat.inspector.prev", () => S.InputInspectorPrev, () => _academic.Cycle(Router, -1),
-                InputCategory.Combat).AddBinding(K(Key.A)).AddBinding(P(PadInput.LeftStickLeft));
+                InputCategory.Combat).AddBinding(K(Key.A)).AddBinding(P(PadInput.LeftStickLeft))
+                .When(() => _academic.CanCycle(Router));
             Reg("combat.inspector.next", () => S.InputInspectorNext, () => _academic.Cycle(Router, +1),
-                InputCategory.Combat).AddBinding(K(Key.D)).AddBinding(P(PadInput.LeftStickRight));
+                InputCategory.Combat).AddBinding(K(Key.D)).AddBinding(P(PadInput.LeftStickRight))
+                .When(() => _academic.CanCycle(Router));
             // The hero sheet's party paging from anywhere on it, and over its skill-loadout
             // screen, which the game retargets to the landed hero: the game's own A/D, in the
             // header's Left/Right order (previous, next).
             Reg("sheet.hero.prev", () => S.InputSheetHeroPrev, () => CycleSheetHero(-1),
-                InputCategory.Sheet).AddBinding(K(Key.A)).AddBinding(P(PadInput.LeftStickLeft));
+                InputCategory.Sheet).AddBinding(K(Key.A)).AddBinding(P(PadInput.LeftStickLeft))
+                .When(OnSheet);
             Reg("sheet.hero.next", () => S.InputSheetHeroNext, () => CycleSheetHero(+1),
-                InputCategory.Sheet).AddBinding(K(Key.D)).AddBinding(P(PadInput.LeftStickRight));
+                InputCategory.Sheet).AddBinding(K(Key.D)).AddBinding(P(PadInput.LeftStickRight))
+                .When(OnSheet);
             // Combatant glances, one key per strip slot in rank order: the digit row reads
             // enemies, the QWER row the party. Bare = name and health, Shift = the token/buff
             // summary, Ctrl = resistances - spoken in place, focus stays put. Combat-category,
@@ -459,28 +485,28 @@ namespace DD2A11y {
             for (int i = 0; i < enemyKeys.Length; i++) {
                 int slot = i;
                 int number = i + 1;
-                Reg("combat.enemy." + number, () => S.InputCombatEnemy(number),
-                    () => _combat.GlanceStatus(friendly: false, slot), InputCategory.Combat)
+                Glance("combat.enemy." + number, () => S.InputCombatEnemy(number),
+                    () => _combat.StatusLine(friendly: false, slot), InputCategory.Combat)
                     .AddBinding(K(enemyKeys[slot]))
                     .AddBinding(P(enemyPads[slot], PadInput.LeftTrigger));
-                Reg("combat.enemy.effects." + number, () => S.InputCombatEnemyEffects(number),
-                    () => _combat.GlanceEffects(friendly: false, slot), InputCategory.Combat)
+                Glance("combat.enemy.effects." + number, () => S.InputCombatEnemyEffects(number),
+                    () => _combat.EffectsLine(friendly: false, slot), InputCategory.Combat)
                     .AddBinding(K(enemyKeys[slot], shift: true))
                     .AddBinding(P(enemyFacePads[slot], PadInput.LeftTrigger));
-                Reg("combat.enemy.resists." + number, () => S.InputCombatEnemyResists(number),
-                    () => _combat.GlanceResists(friendly: false, slot), InputCategory.Combat)
+                Glance("combat.enemy.resists." + number, () => S.InputCombatEnemyResists(number),
+                    () => _combat.ResistsLine(friendly: false, slot), InputCategory.Combat)
                     .AddBinding(K(enemyKeys[slot], ctrl: true))
                     .AddBinding(P(enemyFacePads[slot], PadInput.RightTrigger));
-                Reg("combat.hero." + number, () => S.InputCombatHero(number),
-                    () => _combat.GlanceStatus(friendly: true, slot), InputCategory.Combat)
+                Glance("combat.hero." + number, () => S.InputCombatHero(number),
+                    () => _combat.StatusLine(friendly: true, slot), InputCategory.Combat)
                     .AddBinding(K(heroKeys[slot]))
                     .AddBinding(P(heroPads[slot], PadInput.LeftTrigger));
-                Reg("combat.hero.effects." + number, () => S.InputCombatHeroEffects(number),
-                    () => _combat.GlanceEffects(friendly: true, slot), InputCategory.Combat)
+                Glance("combat.hero.effects." + number, () => S.InputCombatHeroEffects(number),
+                    () => _combat.EffectsLine(friendly: true, slot), InputCategory.Combat)
                     .AddBinding(K(heroKeys[slot], shift: true))
                     .AddBinding(P(heroDpads[slot], PadInput.LeftTrigger));
-                Reg("combat.hero.resists." + number, () => S.InputCombatHeroResists(number),
-                    () => _combat.GlanceResists(friendly: true, slot), InputCategory.Combat)
+                Glance("combat.hero.resists." + number, () => S.InputCombatHeroResists(number),
+                    () => _combat.ResistsLine(friendly: true, slot), InputCategory.Combat)
                     .AddBinding(K(heroKeys[slot], ctrl: true))
                     .AddBinding(P(heroDpads[slot], PadInput.RightTrigger));
             }
@@ -497,34 +523,35 @@ namespace DD2A11y {
                 Reg("combat.skill." + number,
                     () => Game.GameLoc.TryGet("input_label_combatskill" + number) ?? S.InputCombatSkill(number),
                     () => _combat.PickSkillSlot(slot), InputCategory.Combat)
-                    .AddBinding(K(skillKeys[slot], alt: true));
+                    .AddBinding(K(skillKeys[slot], alt: true))
+                    .When(() => _combat.HasSkillSlot(slot));
             }
             // The acting combatant, the focused skill's valid targets with previews, and the
             // turn order - the reads a skill choice hinges on, one press from anywhere.
-            Reg("combat.actor", () => S.InputCombatActor, () => _combat.GlanceActor(),
+            Glance("combat.actor", () => S.InputCombatActor, _combat.ActorLine,
                 InputCategory.Combat).AddBinding(K(Key.S)).AddBinding(P(PadInput.LeftStickClick));
-            Reg("combat.targets", () => S.InputCombatTargets, () => _combat.GlanceTargets(),
+            Glance("combat.targets", () => S.InputCombatTargets, _combat.TargetsLine,
                 InputCategory.Combat).AddBinding(K(Key.T));
-            Reg("combat.turnorder", () => S.InputCombatTurnOrder, () => _combat.GlanceTurnOrder(),
+            Glance("combat.turnorder", () => S.InputCombatTurnOrder, _combat.TurnOrderLine,
                 InputCategory.Combat).AddBinding(K(Key.T, shift: true))
                 .AddBinding(P(PadInput.LeftStickClick, PadInput.LeftTrigger));
             // The affinity glance shares A with the inspector's combatant cycling: the cycle
             // acts only while the inspector view is up, the glance only on a focused skill or
             // target, so each press answers exactly one of the two.
-            Reg("combat.affinity", () => S.InputCombatAffinity, () => _combat.GlanceAffinity(),
+            Glance("combat.affinity", () => S.InputCombatAffinity, _combat.AffinityLine,
                 InputCategory.Combat).AddBinding(K(Key.A))
                 .AddBinding(P(PadInput.RightStickClick, PadInput.LeftTrigger));
             // The focused story choice's hero vitals - what the choice line no longer carries.
-            Reg("story.hero", () => S.InputStoryHero, () => _storyScreen.GlanceSelf(),
+            Glance("story.hero", () => S.InputStoryHero, _storyScreen.SelfLine,
                 InputCategory.Story).AddBinding(K(Key.S));
             // Run-status glances, answering from any screen and silent outside a run. Global,
             // so a screen category claiming the same key wins there; the keys are ones the
             // game leaves unbound even on the shared road keyboard.
-            Reg("glance.flame", () => S.InputFlame, () => GlanceRun(Game.RunStatus.FlameLine()))
+            Glance("glance.flame", () => S.InputFlame, Game.RunStatus.FlameLine, InputCategory.Global)
                 .AddBinding(K(Key.F)).AddBinding(P(PadInput.RightStickClick, PadInput.RightTrigger));
-            Reg("glance.coach", () => S.InputCoach, () => GlanceRun(Game.RunStatus.CoachLine()))
+            Glance("glance.coach", () => S.InputCoach, Game.RunStatus.CoachLine, InputCategory.Global)
                 .AddBinding(K(Key.H)).AddBinding(P(PadInput.LeftStickClick, PadInput.RightTrigger));
-            Reg("glance.wallet", () => S.InputWallet, () => GlanceRun(Game.RunStatus.WalletLine()))
+            Glance("glance.wallet", () => S.InputWallet, Game.RunStatus.WalletLine, InputCategory.Global)
                 .AddBinding(K(Key.B)).AddBinding(P(PadInput.Select, PadInput.RightTrigger));
             // Rename the focused hero, and roll them a random name. The game puts both on one
             // key by tap-versus-hold; a hold is poor for a screen-reader user, so they get a
@@ -534,12 +561,12 @@ namespace DD2A11y {
                 if (Navigator.Current?.InvokeAction("rename") != true) {
                     Speech.Speak(S.StatusUnavailable, interrupt: true);
                 }
-            }, InputCategory.Roster).AddBinding(K(Key.R));
+            }, InputCategory.Roster).AddBinding(K(Key.R)).When(Focused("rename"));
             Reg("ui.reroll", () => S.InputReroll, () => {
                 if (Navigator.Current?.InvokeAction("reroll") != true) {
                     Speech.Speak(S.StatusUnavailable, interrupt: true);
                 }
-            }, InputCategory.Roster).AddBinding(K(Key.R, shift: true));
+            }, InputCategory.Roster).AddBinding(K(Key.R, shift: true)).When(Focused("reroll"));
             // The game's shift-click on a pool hero at a Kingdoms crossroads: toggle them in the
             // kingdom's roster. Shift+Enter is the mod's shift-click, as the discard key is on
             // an item; the Roster category shadows that global chord here, where nothing
@@ -549,39 +576,38 @@ namespace DD2A11y {
                     Speech.Speak(S.StatusUnavailable, interrupt: true);
                 }
             }, InputCategory.Roster).AddBinding(K(Key.Enter, shift: true)).AddBinding(K(Key.NumpadEnter, shift: true))
-                .AddBinding(P(PadInput.A, PadInput.RightTrigger));
+                .AddBinding(P(PadInput.A, PadInput.RightTrigger)).When(Focused("roster-toggle"));
             // The game's own crossroads key for the Infernal Flame Vitrine (its "StageCoach"
             // action), which the captured gate swallows; the vitrine also sits in the
             // actions strip for arrow reach. The vitrine screen declares the category too,
             // so the key toggles closed like the game's.
             Reg("ui.vitrine", () => S.InputVitrine, () => {
-                var types = Assets.Code.Utils.Singleton<Assets.Code.Game.GameTypeMgr>.Instance;
-                if (types != null && types.CurrentGameType == Assets.Code.Game.GameType.EXPEDITION) {
+                if (InExpedition()) {
                     Assets.Code.Utils.SingletonMonoBehaviour<Assets.Code.UI.Managers.CommonUiBhv>
                         .Instance.ToggleTorchCompletionScreen();
                 }
-            }, InputCategory.Roster).AddBinding(K(Key.Z));
+            }, InputCategory.Roster).AddBinding(K(Key.Z)).When(InExpedition);
             // The tutorial archive's jump to its first unviewed entry; silent once every
             // entry has been viewed.
             Reg("archive.new", () => S.InputArchiveNew, () => _archive.FocusFirstNew(Navigator),
-                InputCategory.Archive).AddBinding(K(Key.N));
+                InputCategory.Archive).AddBinding(K(Key.N)).When(() => _archive.HasNew);
             // The kingdom map's points of interest, say-the-spire2's layout: comma and period
             // step through the current category, the brackets switch categories, backslash
             // toggles the reachable filter.
             Reg("kingdom.poi.prev", () => S.InputKingdomPoiPrev, () => _kingdomMap.PoiStep(-1),
-                InputCategory.Kingdom).AddBinding(K(Key.Comma));
+                InputCategory.Kingdom).AddBinding(K(Key.Comma)).When(() => _kingdomMap.CanPoiStep(-1));
             Reg("kingdom.poi.next", () => S.InputKingdomPoiNext, () => _kingdomMap.PoiStep(+1),
-                InputCategory.Kingdom).AddBinding(K(Key.Period));
+                InputCategory.Kingdom).AddBinding(K(Key.Period)).When(() => _kingdomMap.CanPoiStep(+1));
             Reg("kingdom.poi.category.prev", () => S.InputKingdomPoiCategoryPrev, () => _kingdomMap.PoiCategory(-1),
-                InputCategory.Kingdom).AddBinding(K(Key.LeftBracket));
+                InputCategory.Kingdom).AddBinding(K(Key.LeftBracket)).When(() => _kingdomMap.PoiLive);
             Reg("kingdom.poi.category.next", () => S.InputKingdomPoiCategoryNext, () => _kingdomMap.PoiCategory(+1),
-                InputCategory.Kingdom).AddBinding(K(Key.RightBracket));
+                InputCategory.Kingdom).AddBinding(K(Key.RightBracket)).When(() => _kingdomMap.PoiLive);
             Reg("kingdom.poi.reachable", () => S.InputKingdomPoiReachable, () => _kingdomMap.PoiToggleReachable(),
-                InputCategory.Kingdom).AddBinding(K(Key.Backslash));
+                InputCategory.Kingdom).AddBinding(K(Key.Backslash)).When(() => _kingdomMap.PoiLive);
             Reg("kingdom.poi.first", () => S.InputKingdomPoiFirst, () => _kingdomMap.PoiEdge(-1),
-                InputCategory.Kingdom).AddBinding(K(Key.Comma, shift: true));
+                InputCategory.Kingdom).AddBinding(K(Key.Comma, shift: true)).When(() => _kingdomMap.CanPoiEdge(-1));
             Reg("kingdom.poi.last", () => S.InputKingdomPoiLast, () => _kingdomMap.PoiEdge(+1),
-                InputCategory.Kingdom).AddBinding(K(Key.Period, shift: true));
+                InputCategory.Kingdom).AddBinding(K(Key.Period, shift: true)).When(() => _kingdomMap.CanPoiEdge(+1));
             // Discard the focused item (the game's shift-click); the element advertises the
             // action only where the game allows the discard, so anything else answers
             // "unavailable" rather than silence.
@@ -590,14 +616,18 @@ namespace DD2A11y {
                     Speech.Speak(S.StatusUnavailable, interrupt: true);
                 }
             }).AddBinding(K(Key.Enter, shift: true)).AddBinding(K(Key.NumpadEnter, shift: true))
-                .AddBinding(P(PadInput.A, PadInput.RightTrigger));
+                .AddBinding(P(PadInput.A, PadInput.RightTrigger)).When(Focused("discard"));
             // Grab-and-place: hero moves at the crossroads, inventory stacks at the inn - one
             // key, routed by what stands under focus. Shift+Space never initiates; it places
             // a single item off the held stack, repeatable until the stack runs out.
             Reg("ui.grab", () => S.InputGrab, () => ToggleGrab(takeOne: false)).AddBinding(K(Key.Space))
-                .AddBinding(P(PadInput.A, PadInput.LeftTrigger));
+                .AddBinding(P(PadInput.A, PadInput.LeftTrigger)).When(() => CanGrab(takeOne: false));
             Reg("ui.place.one", () => S.InputPlaceOne, () => ToggleGrab(takeOne: true))
-                .AddBinding(K(Key.Space, shift: true));
+                .AddBinding(K(Key.Space, shift: true)).When(() => CanGrab(takeOne: true));
+            // The keys that would do something here, each runnable from the list. Global, so
+            // it answers over any screen, or none.
+            Reg(KeyHelpPanel.ActionKey, () => S.InputHelp, _help.Toggle, InputCategory.Global)
+                .AddBinding(K(Key.F1));
             // Global, so it stays live with no screen up - the only key the mod answers while
             // stood down.
             Reg("mod.standdown", () => S.InputStandDown, ToggleStandDown, InputCategory.Global)
@@ -606,6 +636,7 @@ namespace DD2A11y {
 
         private void ToggleStandDown() {
             if (!StoodDown) {
+                _help.Dismiss();
                 Router.StandDown();
                 Speech.Speak(S.ModStoodDown, interrupt: true);
                 Speech.Enabled = false;
@@ -637,14 +668,21 @@ namespace DD2A11y {
             Assets.Code.Game.GameModeMgr.CurrentMode == Assets.Code.Game.GameModeType.DRIVING
             && (Router.Active is InventoryScreen || Router.Active is CharacterSheetScreen);
 
-        // A run-status glance: speak in place, silence when the run has nothing to say.
+        // A glance: speak its line in place; a null line is the silence.
         private void GlanceRun(string line) {
             if (line != null) {
                 Speech.Speak(line, interrupt: true);
             }
         }
 
+        private static bool InExpedition() {
+            var types = Assets.Code.Utils.Singleton<Assets.Code.Game.GameTypeMgr>.Instance;
+            return types != null && types.CurrentGameType == Assets.Code.Game.GameType.EXPEDITION;
+        }
+
         // The Sheet category is declared only by these two screens.
+        private bool OnSheet() => Router.Active == _sheet || Router.Active == _skillLoadouts;
+
         private void CycleSheetHero(int direction) {
             if (Router.Active == _sheet) {
                 _sheet.CycleHero(direction);
@@ -690,6 +728,33 @@ namespace DD2A11y {
                     _driving.ToggleGrab(Navigator.Current);
                 }
             }
+        }
+
+        // Whether the grab keys would act here: ToggleGrab's routing, asked without acting.
+        private bool CanGrab(bool takeOne) {
+            var current = Navigator.Current;
+            if (!takeOne && current?.HasAction("grab") == true) {
+                return true;
+            }
+            if (Router.Active == _inn) {
+                return _inn.CanToggleGrab(current, takeOne);
+            }
+            if (Router.Active == _inventory) {
+                return _inventory.CanToggleGrab(current, takeOne);
+            }
+            if (Router.Active == _sheet) {
+                return _sheet.CanToggleGrab(current, takeOne);
+            }
+            if (Router.Active == _innStorage) {
+                return _innStorage.CanToggleGrab(current, takeOne);
+            }
+            if (Router.Active == _kingdomInnPanel) {
+                return !takeOne && _kingdomInnPanel.CanToggleGrab(current);
+            }
+            if (Router.Active == _driving) {
+                return !takeOne && _driving.CanToggleGrab(current);
+            }
+            return false;
         }
 
         public void Tick() {
@@ -742,6 +807,7 @@ namespace DD2A11y {
                 Gate.Reassert();
                 _textEdit.Tick();
                 _rebind.Tick();
+                _help.Tick();
                 // Any controller press silences ongoing speech (say-the-spire2's behavior):
                 // the player acted, so whatever was being said is stale. Ahead of the input
                 // tick, so an announcement the press itself causes is not the thing cut.
