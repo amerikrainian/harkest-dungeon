@@ -626,6 +626,9 @@ namespace DD2A11y.Core.Strings {
             D("InputInspector", "Toggle inspector"),
             D("InputInspectorPrev", "Inspector previous combatant"),
             D("InputInspectorNext", "Inspector next combatant"),
+            // The hero sheet's party paging, from anywhere on the sheet.
+            D("InputSheetHeroPrev", "Hero sheet previous hero"),
+            D("InputSheetHeroNext", "Hero sheet next hero"),
             D("InputDiscard", "Discard item"),
             // The hero-name keys at the crossroads, acting on the focused hero.
             D("InputRename", "Rename hero"),
@@ -1000,6 +1003,8 @@ namespace DD2A11y.Core.Strings {
         public static string InputInspector => T("InputInspector");
         public static string InputInspectorPrev => T("InputInspectorPrev");
         public static string InputInspectorNext => T("InputInspectorNext");
+        public static string InputSheetHeroPrev => T("InputSheetHeroPrev");
+        public static string InputSheetHeroNext => T("InputSheetHeroNext");
         public static string InputDiscard => T("InputDiscard");
         public static string InputRename => T("InputRename");
         public static string InputReroll => T("InputReroll");

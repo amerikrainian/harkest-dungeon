@@ -34,5 +34,9 @@ namespace DD2A11y.Core.Input {
         /// <summary>Kingdom-map keys (the points-of-interest cycling), declared by the map
         /// screen.</summary>
         Kingdom,
+
+        /// <summary>Hero-sheet keys (paging through the party), declared by the hero sheet and
+        /// the skill-loadout screen pushed over it.</summary>
+        Sheet,
     }
 }

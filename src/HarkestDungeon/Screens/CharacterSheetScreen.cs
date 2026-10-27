@@ -124,6 +124,14 @@ namespace DD2A11y.Screens {
         private int _builtTab = -1;
         private int _builtCount = -1;
         private int _builtTabsSignature;
+        private CharacterSheetUiBhv _builtSheet;
+        // Where focus sat when a screen pushed over the open sheet took the surface; the
+        // return lands there.
+        private FocusSpot _returnSpot;
+        private CharacterSheetUiBhv _returnSheet;
+
+        private static readonly Core.Input.InputCategory[] Categories =
+            { Core.Input.InputCategory.Sheet, Core.Input.InputCategory.UI };
 
         public CharacterSheetScreen(TraditionalNavigator navigator, System.Action<string, bool> speak) {
             _navigator = navigator;
@@ -141,6 +149,12 @@ namespace DD2A11y.Screens {
 
         public override string Name => S.ScreenHeroSheet;
 
+        public override Core.Input.InputCategory[] InputCategories => Categories;
+
+        /// <summary>The sheet the tree was last built over, while its screen stays open (under
+        /// a screen pushed above it, too); null once it closes.</summary>
+        public CharacterSheetUiBhv OpenSheet => IsOpen(_builtSheet) ? _builtSheet : null;
+
         public override object ResolveTarget() {
             var top = StackTop.Object();
             _sheet = top == null ? null : top.GetComponent<CharacterSheetUiBhv>();
@@ -150,11 +164,64 @@ namespace DD2A11y.Screens {
             if (_sheet == null && Game.SlotSelect.ArmedForSheet) {
                 _sheet = Game.SlotSelect.Sheet();
             }
+            // A sheet that closed under the screen covering it never returns; a later open
+            // starts at the top.
+            if (_sheet == null && _returnSheet != null && !IsOpen(_returnSheet)) {
+                _returnSpot = null;
+                _returnSheet = null;
+            }
             return _sheet;
+        }
+
+        // A screen pushed over the still-open sheet (the skill loadouts, a confirmation) hands
+        // the surface back when it closes: remember where focus sat in the hero's content.
+        public override void OnLeave() {
+            bool covered = IsOpen(_builtSheet) && StackTop.Raw() != _builtSheet.gameObject;
+            _returnSpot = covered ? FocusSpot.Capture(_items, _navigator.FocusPath) : null;
+            _returnSheet = _returnSpot == null ? null : _builtSheet;
+        }
+
+        private static bool IsOpen(CharacterSheetUiBhv sheet) {
+            var screen = sheet == null ? null : sheet.GetComponentInParent<UiScreenBhv>();
+            return screen != null && screen.ScreenState == UiScreenState.Open;
+        }
+
+        internal static void SwitchHero(CharacterSheetUiBhv sheet, int direction) {
+            if (direction > 0) {
+                sheet.HandleNextActorButton();
+            } else {
+                sheet.HandlePreviousActorButton();
+            }
+        }
+
+        /// <summary>Page to the previous or next hero from anywhere on the sheet (the game's
+        /// own A/D) with focus kept on the same spot of the landed hero's content. The hero's
+        /// name leads the landing read; on the header the header's own read carries it.</summary>
+        public void CycleHero(int direction) {
+            var sheet = _builtSheet;
+            var spot = FocusSpot.Capture(_items, _navigator.FocusPath);
+            SwitchHero(sheet, direction);
+            // Rebuilt now rather than on the next update, so the landing reads the new hero.
+            RebuildTabIndices(sheet);
+            RebuildItems(sheet);
+            var landing = spot?.Resolve(_items);
+            if (landing != null) {
+                _navigator.Focus(landing, announce: false);
+            }
+            var current = _navigator.Current;
+            if (current is HeroHeaderElement) {
+                _speak(current.GetFocusText(), true);
+                return;
+            }
+            // An emptied content leaves focus orphaned: the name alone, and the router's
+            // re-home reads the landing.
+            string landed = spot != null && landing == null ? null : current?.GetFocusText();
+            _speak(Core.Text.SpokenLine.Join(Actors.Get(sheet.ActorGuid)?.ActorName, landed), true);
         }
 
         public override Container BuildRoot(object target) {
             var sheet = (CharacterSheetUiBhv)target;
+            _builtSheet = sheet;
             _root = new RootContainer(ContainerShape.VerticalList, back: Close);
             // The armed pick's held item ("Equipping Sun Cracked Pendant") - the item riding
             // the cursor for sighted players. The line is null while no pick is armed, so the
@@ -193,31 +260,23 @@ namespace DD2A11y.Screens {
             RebuildBag();
             // Entered under an armed pick: the entry lands on the slot the held item is for,
             // the same first-empty-else-first choice the game's own arming selects.
+            // Otherwise a return from a screen pushed over the sheet lands where focus was.
             _wasArmed = Game.SlotSelect.ArmedForSheet;
             if (_wasArmed) {
                 SeedFocus(PickDestinationSlot());
+            } else if (_returnSpot != null && _returnSheet == sheet) {
+                SeedFocus(_returnSpot.Resolve(_items));
             }
+            _returnSpot = null;
+            _returnSheet = null;
             return _root;
         }
 
-        // Route the entry descent (root -> items -> row -> slot) to the element, so the
+        // Route the entry descent (root -> items -> row -> leaf) to the element, so the
         // attach lands there and the entry announcement reads it.
-        private void SeedFocus(UIElement element) {
-            if (element == null) {
-                return;
-            }
-            foreach (var row in new[] { _trinkets, _combatItems }) {
-                if (row == null) {
-                    continue;
-                }
-                foreach (var child in row.Children) {
-                    if (child == element) {
-                        _root.SetFocusedChild(_items);
-                        _items.SetFocusedChild(row);
-                        row.SetFocusedChild(element);
-                        return;
-                    }
-                }
+        private static void SeedFocus(UIElement element) {
+            for (var node = element; node?.Parent != null; node = node.Parent) {
+                node.Parent.SetFocusedChild(node);
             }
         }
 

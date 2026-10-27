@@ -1,5 +1,10 @@
 # Changelog
 
+## V0.4.4
+
+- You can now switch heroes with A/D on the hero sheet.
+- When selecting skill loadouts, your focus is now kept on the loadouts button when coming back to the hero sheet.
+
 ## V0.4.3
 
 - Alt+digits now select skills at that skill slot.

@@ -27,19 +27,30 @@ namespace DD2A11y.Screens {
         private static readonly AccessTools.FieldRef<SkillLoadoutWidgetBhv, Button> SaveButtonField =
             AccessTools.FieldRefAccess<SkillLoadoutWidgetBhv, Button>("m_saveLoadoutButton");
 
+        private static readonly Core.Input.InputCategory[] Categories =
+            { Core.Input.InputCategory.Sheet, Core.Input.InputCategory.UI };
+
         private readonly System.Action<string, bool> _speak;
+        private readonly TraditionalNavigator _navigator;
+        private readonly System.Func<CharacterSheetUiBhv> _sheet;
         private readonly TypingEcho _echo;
         private SkillLoadoutWidgetBhv _widget;
         private Container _root;
         private int _builtSignature;
         private LoadoutSelectBhv _renaming;
 
-        public SkillLoadoutScreen(System.Action<string, bool> speak) {
+        /// <param name="sheet">The open hero sheet beneath, whose hero the rows are for.</param>
+        public SkillLoadoutScreen(System.Action<string, bool> speak, TraditionalNavigator navigator,
+                                  System.Func<CharacterSheetUiBhv> sheet) {
             _speak = speak;
+            _navigator = navigator;
+            _sheet = sheet;
             _echo = new TypingEcho(() => Renaming() != null, RenamedText, speak);
         }
 
         public override string Name => GameLoc.TryGet("skill_loadout_title_label") ?? S.ScreenSkillLoadouts;
+
+        public override Core.Input.InputCategory[] InputCategories => Categories;
 
         /// <summary>Whether a loadout's name field is capturing keystrokes (the game reports it
         /// through the widget, but the mod's keys must pause either way).</summary>
@@ -83,6 +94,28 @@ namespace DD2A11y.Screens {
                 Populate(widget);
             }
             return false;
+        }
+
+        /// <summary>Page the hero sheet beneath to the previous or next hero (the game's own A/D,
+        /// live over this screen too): the game repopulates the rows for the landed hero, and
+        /// focus keeps its place, read after the hero's name.</summary>
+        public void CycleHero(int direction) {
+            var sheet = _sheet();
+            if (sheet == null) {
+                Plugin.Log.LogWarning("skill loadouts: no open hero sheet beneath to page");
+                return;
+            }
+            var spot = FocusSpot.Capture(_root, _navigator.FocusPath);
+            CharacterSheetScreen.SwitchHero(sheet, direction);
+            if (Signature(_widget) != _builtSignature) {
+                _root.Clear();
+                Populate(_widget);
+            }
+            var landing = spot?.Resolve(_root);
+            if (landing != null) {
+                _navigator.Focus(landing, announce: false);
+            }
+            _speak(SpokenLine.Join(Actors.Get(sheet.ActorGuid)?.ActorName, _navigator.Current?.GetFocusText()), true);
         }
 
         private void Populate(SkillLoadoutWidgetBhv widget) {

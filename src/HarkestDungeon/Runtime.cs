@@ -163,7 +163,7 @@ namespace DD2A11y {
             _sheet = new CharacterSheetScreen(Navigator, speak);
             Router.Register(_sheet);
             // The sheet's saved-skill-sets screen, pushed above the sheet by its button.
-            _skillLoadouts = new SkillLoadoutScreen(speak);
+            _skillLoadouts = new SkillLoadoutScreen(speak, Navigator, () => _sheet.OpenSheet);
             Router.Register(_skillLoadouts);
             Router.Register(new LootScreen());
             Router.Register(new SiegeResultsScreen());
@@ -433,6 +433,13 @@ namespace DD2A11y {
                 InputCategory.Combat).AddBinding(K(Key.A)).AddBinding(P(PadInput.LeftStickLeft));
             Reg("combat.inspector.next", () => S.InputInspectorNext, () => _academic.Cycle(Router, +1),
                 InputCategory.Combat).AddBinding(K(Key.D)).AddBinding(P(PadInput.LeftStickRight));
+            // The hero sheet's party paging from anywhere on it, and over its skill-loadout
+            // screen, which the game retargets to the landed hero: the game's own A/D, in the
+            // header's Left/Right order (previous, next).
+            Reg("sheet.hero.prev", () => S.InputSheetHeroPrev, () => CycleSheetHero(-1),
+                InputCategory.Sheet).AddBinding(K(Key.A)).AddBinding(P(PadInput.LeftStickLeft));
+            Reg("sheet.hero.next", () => S.InputSheetHeroNext, () => CycleSheetHero(+1),
+                InputCategory.Sheet).AddBinding(K(Key.D)).AddBinding(P(PadInput.LeftStickRight));
             // Combatant glances, one key per strip slot in rank order: the digit row reads
             // enemies, the QWER row the party. Bare = name and health, Shift = the token/buff
             // summary, Ctrl = resistances - spoken in place, focus stays put. Combat-category,
@@ -634,6 +641,15 @@ namespace DD2A11y {
         private void GlanceRun(string line) {
             if (line != null) {
                 Speech.Speak(line, interrupt: true);
+            }
+        }
+
+        // The Sheet category is declared only by these two screens.
+        private void CycleSheetHero(int direction) {
+            if (Router.Active == _sheet) {
+                _sheet.CycleHero(direction);
+            } else if (Router.Active == _skillLoadouts) {
+                _skillLoadouts.CycleHero(direction);
             }
         }
 
