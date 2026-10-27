@@ -10,6 +10,26 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
+  <!-- The mod version lives in Directory.Build.props alone; this generates the BuildVersion constant. -->
+  <Target Name="GenerateBuildVersion" BeforeTargets="BeforeCompile">
+    <PropertyGroup>
+      <_BuildVersionFile>$(IntermediateOutputPath)BuildVersion.g.cs</_BuildVersionFile>
+    </PropertyGroup>
+    <ItemGroup>
+      <_BuildVersionLine Include="namespace DD2A11y {" />
+      <_BuildVersionLine Include="    internal static class BuildVersion {" />
+      <_BuildVersionLine Include='        public const string Value = "$(Version)"%3B' />
+      <_BuildVersionLine Include="    }" />
+      <_BuildVersionLine Include="}" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(_BuildVersionFile)" Lines="@(_BuildVersionLine)"
+                      Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <Compile Include="$(_BuildVersionFile)" />
+      <FileWrites Include="$(_BuildVersionFile)" />
+    </ItemGroup>
+  </Target>
+
   <ItemGroup>
     <ProjectReference Include="..\HarkestDungeon.Core\HarkestDungeon.Core.csproj" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
